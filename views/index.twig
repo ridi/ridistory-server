@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>changelog 101</title>
+		<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<style>
+			.label-added {
+			  background-color: #468847;
+			}
+			
+			.label-fixed {
+			  background-color: #3a87ad;
+			}
+			
+			.label-removed {
+			  background-color: #b94a48;
+			}
+			
+			.label-improved {
+			  background-color: #f89406;
+			}
+		</style>
+	</head>
+	<body>
+		<div class='container'>
+			<div class='page-header'>
+        <h1>Hello, world!</h1>
+        <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+        <form class="form-inline" method='post' action='/login'>
+				  <input type="text" name="id" class="input-small" placeholder="ID">
+				  <input type="password" name="password" class="input-small" placeholder="Password">
+				  <button type="submit" class="btn">Sign in</button>
+				</form>
+      </div>
+
+			<ul class='nav nav-tabs'>
+				<li class='active'><a href='#'>Store</a></li>
+				<li><a href='#'>iOS</a></li>
+				<li><a href='#'>Android</a></li>
+			</ul>
+			
+			<div class='form-horizontal' style='margin-left: 80px;'>
+				<form id='change-add' action='/add' method='post'>
+					<fieldset>
+						<input type='text' name='date' class='input-small' placeholder="{{ today }}" value="{{ today }}">
+						<select name='type' class='span2'>
+							<option>added</option>
+							<option>fixed</option>
+							<option>improved</option>
+							<option>removed</option>
+							<option>revamped</option>
+						</select>
+						<div class='input-append'>
+							<input type='text' name='comment' class='input-xxlarge'>
+							<button type='submit' class='btn'>
+								Add!
+							</button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			
+			<div class='tab-content'>
+				{% for date, changes in all_changes %}
+				<section style='padding-top: 20px;'>
+				<h4 class='offset2'>{{ date }}</h4>
+				<dl class='dl-horizontal'>
+					{% for change in changes %}
+					<dt>
+						<span class='label label-{{ change.type }}'>{{ change.type }}</span> 
+					</dt>
+					<dd>
+						{{ change.comment }}
+					</dd>
+					{% endfor %}
+				</dl>
+				</section>
+				{% endfor %}
+			</div>
+			
+		</div>
+		<script src='http://code.jquery.com/jquery-latest.min.js'></script>
+		<script src='/bootstrap/js/bootstrap.min.js'></script>
+		<script>
+			$(document).ready(function() {
+			});
+		</script>
+	</body>
+</html>
