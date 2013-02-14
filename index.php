@@ -16,7 +16,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 		'host' => 'localhost',
 		'user' => 'root',
 		'password' => '10',
-		'dbname' => 'changelog',
+		'dbname' => 'story',
 		'charset' => 'utf8',
 	),
 ));
@@ -25,58 +25,16 @@ $app->register(new Silex\Provider\SessionServiceProvider(), array());
 
 $app['debug'] = true;
 
-$app->get('/', function () use ($app) {
-	$recentDates = $app['db']->fetchAll('SELECT distinct(date) FROM changes ORDER BY date DESC');
-	$changes = array();
-	foreach ($recentDates as $d) {
-		$date = $d['date'];
-		$changes[$date] = $app['db']->fetchAll('SELECT type, comment FROM changes WHERE date = ?', array($date));
-		usort($changes[$date], function($a, $b) {
-			return strcmp($a['type'], $b['type']);
-		});
-	}
-	return $app['twig']->render('index.twig', array(
-		'today' => date('Ymd'),
-		'all_changes' => $changes,
-	));
-});
-
-$app->post('/add', function (Request $request) use ($app) {
-	/*
-	$user = $app['session']->get('user');
-	if ($user === null) {
-		return $app->redirect('/');
-	}
-	 */
-	
-	$ret = $app['db']->insert('changes', array(
-		'date' => $request->get('date'),
-		'type' => $request->get('type'),
-		'comment' => $request->get('comment'),
-	));
-	
-	if ($ret !== 1) {
-		$app->abort(500, "Couldn't add an item.");
-	}
-	
-	return $app->redirect('/');
-});
-
-$app->post('/login', function (Request $request) use ($app) {
-	$id = $request->get('id');
-	$password = $request->get('password');
-	
-	if ($id === 'admin' && $password === '10') {
-		$app['session']->set('user', array('id' => $id)); 
-		return $app->redirect('/');
+$app->get('/whole_list', function () use ($app) {
+	$ar = $app['db']->fetchAll('SELECT C.name, B.title, B.author, B.catchphrase FROM book B JOIN category C ON C.id = c_id');
+	$list = array();
+	foreach ($ar as $b) {
+		$cat_name = $b['name'];
+		unset($b['name']);
+		$list[$cat_name][] = $b;
 	} 
 	
-	return 'Not authorized.';
-});
-
-$app->get('/admin', function () use ($app) {
-	$user = $app['session']->get('user');
-	return "Welcome {$user['id']}";
+	return $app->json($list);
 });
 
 $app->run();
