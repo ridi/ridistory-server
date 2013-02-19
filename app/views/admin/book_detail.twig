@@ -1,0 +1,29 @@
+{% extends 'admin/base.twig' %}
+
+
+{% block container %}
+<table class='table'>
+    <tr>
+        <th>스토어ID</th>
+        <th>제목</th>
+        <th>저자</th>
+        <th>제목</th>
+        <th>시작일</th>
+        <th>종료일</th>
+    </tr>
+    <tr>
+        <td>{{ book.store_id }}</td>
+        <td>{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.catchphrase }}</td>
+        <td>{{ book.begin_date }}</td>
+        <td>{{ book.end_date }}</td>
+    </tr>
+</table>
+
+{% endblock %}
+
+
+{% block script %}
+<script src="/static/js/main.js"></script>
+{% endblock %}

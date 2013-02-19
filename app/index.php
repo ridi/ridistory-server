@@ -1,5 +1,5 @@
 <?
-require_once 'silex/vendor/autoload.php';
+require_once '../lib/silex/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -36,5 +36,11 @@ $app->get('/whole_list', function () use ($app) {
 	
 	return $app->json($list);
 });
+
+require_once 'controllers/admin/book.php';
+
+$app->get('/admin/book/list', 'Admin\BookController::index');
+$app->get('/admin/book/{id}/', 'Admin\BookController::detail');
+$app->get('/admin/book/edit/{id}/', 'Admin\BookController::edit');
 
 $app->run();

@@ -1,0 +1,15 @@
+{% extends 'admin/base.twig' %}
+
+{% block container %}
+
+<ul>
+	{% for book in books %}
+	<li>
+	    <a href='/admin/book/edit/{{ book.id }}/'>
+		{{ book.title }}
+		</a>
+	</li>
+	{% endfor %}
+</ul>
+
+{% endblock %}
