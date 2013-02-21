@@ -1,29 +1,42 @@
 {% extends 'admin/base.twig' %}
 
-
 {% block container %}
+<form action="/admin/book/edit/{{ book.id }}/">
 <table class='table'>
-    <tr>
-        <th>스토어ID</th>
-        <th>제목</th>
-        <th>저자</th>
-        <th>제목</th>
-        <th>시작일</th>
-        <th>종료일</th>
-    </tr>
-    <tr>
-        <td>{{ book.store_id }}</td>
-        <td>{{ book.title }}</td>
-        <td>{{ book.author }}</td>
-        <td>{{ book.catchphrase }}</td>
-        <td>{{ book.begin_date }}</td>
-        <td>{{ book.end_date }}</td>
-    </tr>
+    <colgroup>
+        <col class="span1">
+        <col class="span7">
+    </colgroup>
+	<tr>
+		<th>스토어ID</th>
+		<td><input type='text' class='input-small' name='store_id' value='{{ book.store_id }}'></input></td>
+	</tr>
+	<tr>
+		<th>제목</th>
+		<td>{{ book.title }}</td>
+	</tr>
+	<tr>
+		<th>저자</th>
+		<td>{{ book.author }}</td>
+	</tr>
+	<tr>
+		<th>제목</th>
+		<td>{{ book.catchphrase }}</td>
+	</tr>
+	<tr>
+		<th>시작일</th>
+		<td>{{ book.begin_date }}</td>
+	</tr>
+	<tr>
+		<th>종료일</th>
+		<td>{{ book.end_date }}</td>
+	</tr>
 </table>
+<button class='btn btn-success'>저장</button>
+</form>
 
 {% endblock %}
 
-
 {% block script %}
-<script src="/static/js/main.js"></script>
+<script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
 {% endblock %}

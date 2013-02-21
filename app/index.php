@@ -25,7 +25,10 @@ $app->register(new Silex\Provider\SessionServiceProvider(), array());
 
 $app['debug'] = true;
 
-$app->get('/whole_list', function () use ($app) {
+require_once 'controllers/controllers.php';
+require_once 'models/models.php';
+
+$app->get('/api/book/list', function () use ($app) {
 	$ar = $app['db']->fetchAll('SELECT C.name, B.title, B.author, B.catchphrase FROM book B JOIN category C ON C.id = c_id');
 	$list = array();
 	foreach ($ar as $b) {
@@ -37,10 +40,21 @@ $app->get('/whole_list', function () use ($app) {
 	return $app->json($list);
 });
 
-require_once 'controllers/admin/book.php';
+$app->get('/api/book/{id}', function ($id) use ($app) {
+	$book = Book::get($id);
+	return $app->json($book); 
+});
 
-$app->get('/admin/book/list', 'Admin\BookController::index');
-$app->get('/admin/book/{id}/', 'Admin\BookController::detail');
-$app->get('/admin/book/edit/{id}/', 'Admin\BookController::edit');
+$app->get('/api/book/parts/{id}', function ($id) use ($app) {
+	$parts = Part::getByBid($id);
+	return $app->json($parts);
+});
+
+
+$app->get('/admin/book/list', 'BookController::index');
+$app->get('/admin/book/{id}/', 'BookController::detail');
+$app->get('/admin/book/edit/{id}/', 'BookController::edit');
+
+$app->get('/admin/part/{id}/', 'PartController::detail');
 
 $app->run();
