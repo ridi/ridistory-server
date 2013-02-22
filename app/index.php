@@ -40,21 +40,30 @@ $app->get('/api/book/list', function () use ($app) {
 	return $app->json($list);
 });
 
+$app->get('/', function() use ($app) {
+	return $app->redirect('/admin/book/list');
+});
+
 $app->get('/api/book/{id}', function ($id) use ($app) {
 	$book = Book::get($id);
 	return $app->json($book); 
 });
 
-$app->get('/api/book/parts/{id}', function ($id) use ($app) {
+$app->get('/api/book/{id}/parts', function ($id) use ($app) {
 	$parts = Part::getByBid($id);
 	return $app->json($parts);
 });
 
 
 $app->get('/admin/book/list', 'BookController::index');
-$app->get('/admin/book/{id}/', 'BookController::detail');
-$app->get('/admin/book/edit/{id}/', 'BookController::edit');
+$app->get('/admin/book/add', 'BookController::add');
+$app->get('/admin/book/{id}', 'BookController::detail');
+$app->get('/admin/book/{id}/delete', 'BookController::delete');
+$app->post('/admin/book/{id}/edit', 'BookController::edit');
 
-$app->get('/admin/part/{id}/', 'PartController::detail');
+$app->get('/admin/part/add', 'PartController::add');
+$app->get('/admin/part/{id}', 'PartController::detail');
+$app->get('/admin/part/{id}/delete', 'PartController::delete');
+$app->post('/admin/part/{id}/edit', 'PartController::edit');
 
 $app->run();

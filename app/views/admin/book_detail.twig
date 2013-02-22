@@ -1,7 +1,7 @@
 {% extends 'admin/base.twig' %}
 
 {% block container %}
-<form action="/admin/book/edit/{{ book.id }}/">
+<form action="/admin/book/{{ book.id }}/edit" method='post'>
 <table class='table'>
     <colgroup>
         <col class="span1">
@@ -13,30 +13,53 @@
 	</tr>
 	<tr>
 		<th>제목</th>
-		<td>{{ book.title }}</td>
+		<td><input type='text' class='input-xlarge' name='title' value='{{ book.title }}'></input></td>
 	</tr>
 	<tr>
 		<th>저자</th>
-		<td>{{ book.author }}</td>
+		<td><input type='text' class='input' name='author' value='{{ book.author }}'></input></td>
 	</tr>
 	<tr>
-		<th>제목</th>
-		<td>{{ book.catchphrase }}</td>
+		<th>짧은 소개말</th>
+		<td><input type='text' class='input-xxlarge' name='catchphrase' value='{{ book.catchphrase }}'></input></td>
 	</tr>
 	<tr>
 		<th>시작일</th>
-		<td>{{ book.begin_date }}</td>
+		<td><input type='text' class='input-small' name='begin_date' value='{{ book.begin_date }}'></input></td>
 	</tr>
 	<tr>
 		<th>종료일</th>
-		<td>{{ book.end_date }}</td>
+		<td><input type='text' class='input-small' name='end_date' value='{{ book.end_date }}'></input></td>
+	</tr>
+	<tr>
+	    <th>연재분</th>
+	    <td>
+	        {% include 'admin/part_list.twig' with {'parts': parts} only %}
+	        <button class='btn btn-small btn-primary' id='js_add'>추가</button>
+        </td>
 	</tr>
 </table>
-<button class='btn btn-success'>저장</button>
+<div class='form-actions'>
+	<button class='btn btn-success'>수정</button>
+	<button class='btn btn-cancel'>취소</button>
+</div>
 </form>
 
 {% endblock %}
 
 {% block script %}
 <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+<script>
+$(function() {
+    $('.btn-cancel').click(function() {
+        location.href = '/admin/book/list';
+        return false;
+    })
+    
+    $('#js_add').click(function() {
+        location.href = '/admin/part/add?b_id={{ book.id }}';
+        return false;
+    })
+});
+</script>
 {% endblock %}

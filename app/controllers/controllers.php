@@ -11,34 +11,55 @@ class BaseController
 class BookController extends BaseController
 {
 	// book list
-	public function index(Request $request, Application $app) {
+	public function index(Request $req, Application $app) {
 		$books = Book::getWholeList();
-		return $app['twig']->render('admin/index.twig', array('books' => $books));
+		return $app['twig']->render('admin/book_list.twig', array('books' => $books));
 	}
 	
-	public function detail(Request $request, Application $app, $id) {
+	public function detail(Request $req, Application $app, $id) {
 		$book = Book::get($id);
-		
-		return $app['twig']->render('admin/book_detail.twig', array('book' => $book));
+		$parts = Part::getByBid($id);
+		return $app['twig']->render('admin/book_detail.twig', array(
+			'book' => $book,
+			'parts' => $parts,
+		));
 	}
 	
 	// add book
 	public function add(Request $req, Application $app) {
+		$b_id = Book::create();
+		return $app->redirect('/admin/book/' . $b_id);
 	}
 
 	public function edit(Request $req, Application $app, $id) {
-		$store_id = $req->get('store_id'); 
-		$app['db']->update('book', array('store_id' => $store_id), array('id' => $id)); 
-		return $app->redirect("/admin/book/$id/");
+		$inputs = $req->request->all();
+		Book::update($id, $inputs);
+		return $app->redirect('/admin/book/' . $id);
 	}
-
 }
 
 class PartController extends BaseController
 {
 	public function detail(Request $req, Application $app, $id) {
-		$part = $app->json(Part::get($id));
-		return $part;
-		//return $app['twig']->render('admin/part_detail.twig', array('part' => $part));
+		$part = Part::get($id);
+		return $app['twig']->render('admin/part_detail.twig', array('part' => $part));
+	}
+	
+	public function add(Request $req, Application $app) {
+		$b_id = $req->get('b_id');
+		$p_id = Part::create($b_id);
+		return $app->redirect('/admin/part/' . $p_id);
+	}
+	
+	public function edit(Request $req, Application $app, $id) {
+		$inputs = $req->request->all();
+		Part::update($id, $inputs);
+		return $app->redirect('/admin/book/' . $id);
+	}
+	
+	public function delete(Request $req, Application $app, $id) {
+		$part = Part::get($id);
+		Part::delete($id);
+		return $app->redirect('/admin/book/' . $part['b_id']);
 	}
 }

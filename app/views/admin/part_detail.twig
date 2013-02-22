@@ -1,0 +1,57 @@
+{% extends 'admin/base.twig' %}
+
+{% block container %}
+<form action="/admin/part/{{ part.id }}/edit" method='POST'>
+<table class='table'>
+    <colgroup>
+        <col class="span1">
+        <col class="span7">
+    </colgroup>
+	<tr>
+		<th>책 ID</th>
+		<td><input type='text' class='input-xlarge' name='b_id' value='{{ part.b_id }}'></input></td>
+	</tr>
+	<tr>
+		<th>스토어ID</th>
+		<td><input type='text' class='input-small' name='store_id' value='{{ part.store_id }}'></input></td>
+	</tr>
+	<tr>
+		<th>제목</th>
+		<td><input type='text' class='input' name='title' value='{{ part.title }}'></input></td>
+	</tr>
+	<tr>
+		<th>시작일</th>
+		<td><input type='text' class='input-small' name='begin_date' value='{{ part.begin_date }}'></input></td>
+	</tr>
+	<tr>
+		<th>종료일</th>
+		<td><input type='text' class='input-small' name='end_date' value='{{ part.end_date }}'></input></td>
+	</tr>
+</table>
+<div class='form-actions'>
+	<button class='btn btn-success'>저장</button>
+	<button class='btn btn-danger'>삭제</button>
+	<button class='btn btn-cancel'>취소</button>
+</div>
+</form>
+
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+<script>
+$(function() {
+    $('.btn-cancel').click(function() {
+        history.back(-1);
+        return false;
+    });
+    
+    $('.btn-danger').click(function() {
+        if (confirm('삭제하시겠습니까?')) {
+            location.href = '/admin/part/{{ part.id }}/delete';
+        }
+        return false;
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+<ol>
+	{% for part in parts %}
+    <a href='/admin/part/{{ part.id }}'>
+	<li>
+		{{ part.title }}
+	</li>
+	</a>
+	{% endfor %}
+</ol>
