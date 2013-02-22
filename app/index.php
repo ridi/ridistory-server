@@ -58,7 +58,7 @@ $app->get('/api/book/{id}/parts', function ($id) use ($app) {
 $app->get('/admin/book/list', 'BookController::index');
 $app->get('/admin/book/add', 'BookController::add');
 $app->get('/admin/book/{id}', 'BookController::detail');
-$app->get('/admin/book/{id}/delete', 'BookController::delete');
+$app->post('/admin/book/{id}/delete', 'BookController::delete');
 $app->post('/admin/book/{id}/edit', 'BookController::edit');
 
 $app->get('/admin/part/add', 'PartController::add');

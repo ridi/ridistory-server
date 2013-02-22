@@ -36,6 +36,15 @@ class BookController extends BaseController
 		Book::update($id, $inputs);
 		return $app->redirect('/admin/book/' . $id);
 	}
+	
+	public function delete(Request $req, Application $app, $id) {
+		$parts = Part::getByBid($id);
+		if (count($parts)) {
+			return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
+		}
+		Book::delete($id);
+		return $app->json(array('success' => true));
+	}
 }
 
 class PartController extends BaseController

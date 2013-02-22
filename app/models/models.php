@@ -22,6 +22,11 @@ class Book
 		global $app;
 		return $app['db']->update('book', $values, array('id' => $id));
 	}
+	
+	public static function delete($id) {
+		global $app;
+		return $app['db']->delete('book', array('id' => $id));
+	}
 }
 
 class Part
