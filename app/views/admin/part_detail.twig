@@ -35,6 +35,20 @@
 </div>
 </form>
 
+<div class='span6'>
+<p>API result</p>
+<table class='table'>
+    <thead>
+        <tr>
+            <th class='span2'>
+            <td>
+        </tr>
+    </thead>
+    <tbody id='js_api_result'>
+    </tbody>
+</table>
+</div>
+
 {% endblock %}
 
 {% block script %}
@@ -51,6 +65,13 @@ $(function() {
             location.href = '/admin/part/{{ part.id }}/delete';
         }
         return false;
+    });
+    
+    var store_id = '{{ part.meta_url }}';
+    $.get(store_id, function(data) {
+        for (var key in data) {
+            $('#js_api_result').append('<tr><th>' + key + '</th><td>' + data[key] + '</td></tr>');
+    	}
     });
 });
 </script>

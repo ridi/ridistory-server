@@ -1,9 +1,18 @@
-<ol>
-	{% for part in parts %}
-    <a href='/admin/part/{{ part.id }}'>
-	<li>
-		{{ part.title }}
-	</li>
-	</a>
-	{% endfor %}
-</ol>
+<table class='table table-hover table-bordered'>
+    <thead>
+        <tr>
+            <th>제목</th>
+            <th class='span2'>시작일</th>
+            <th class='span2'>종료일</th>
+        </tr>
+    </thead>
+	<tbody>
+		{% for part in parts %}
+		<tr data-cid='{{ part.id }}'>
+			<td><a href='/admin/part/{{ part.id }}'>{{ part.id }}. {{ part.title }} </a></td>
+			<td>{{ part.begin_date }} </a></td>
+			<td>{{ part.end_date }} </a></td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>

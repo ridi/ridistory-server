@@ -12,6 +12,12 @@
 		<td><input type='text' class='input-small' name='store_id' value='{{ book.store_id }}'></input></td>
 	</tr>
 	<tr>
+		<th>표지</th>
+		<td>
+		    <img src='{{ book.cover_url }}'>
+		</td>
+	</tr>
+	<tr>
 		<th>제목</th>
 		<td><input type='text' class='input-xlarge' name='title' value='{{ book.title }}'></input></td>
 	</tr>
@@ -34,9 +40,21 @@
 	<tr>
 	    <th>연재분</th>
 	    <td>
-	        {% include 'admin/part_list.twig' with {'parts': parts} only %}
+	        {% embed 'admin/part_list.twig' with {'parts': parts} only %}
+	        {% endembed %}
 	        <button class='btn btn-small btn-primary' id='js_add'>추가</button>
         </td>
+	</tr>
+	<tr>
+		<th>완료 여부</th>
+		<td>
+		    <label class="radio">
+			    <input type='radio' name='is_completed' value='0'>연재 중</input>
+		    </label>
+		    <label class="radio">
+			    <input type='radio' name='is_completed' value='1'>연재 완료</input>
+		    </label>
+		</td>
 	</tr>
 </table>
 <div class='form-actions'>
@@ -52,6 +70,11 @@
 <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
 <script>
 $(function() {
+    
+    $('input:radio[name="is_completed"]')
+    .filter('[value="{{ book.is_completed }}"]')
+    .attr('checked', true);
+    
     $('.btn-cancel').click(function() {
         location.href = '/admin/book/list';
         return false;

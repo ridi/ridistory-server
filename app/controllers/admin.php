@@ -2,13 +2,7 @@
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
-class BaseController
-{
-	function __construct() {
-	}
-}
-
-class BookController extends BaseController
+class BookController
 {
 	// book list
 	public function index(Request $req, Application $app) {
@@ -28,12 +22,14 @@ class BookController extends BaseController
 	// add book
 	public function add(Request $req, Application $app) {
 		$b_id = Book::create();
+		$app['session']->set('alert', array('success' => '책이 추가되었습니다.'));
 		return $app->redirect('/admin/book/' . $b_id);
 	}
 
 	public function edit(Request $req, Application $app, $id) {
 		$inputs = $req->request->all();
 		Book::update($id, $inputs);
+		$app['session']->set('alert', array('info' => '책이 수정되었습니다.'));
 		return $app->redirect('/admin/book/' . $id);
 	}
 	
@@ -47,7 +43,8 @@ class BookController extends BaseController
 	}
 }
 
-class PartController extends BaseController
+
+class PartController
 {
 	public function detail(Request $req, Application $app, $id) {
 		$part = Part::get($id);
@@ -57,18 +54,49 @@ class PartController extends BaseController
 	public function add(Request $req, Application $app) {
 		$b_id = $req->get('b_id');
 		$p_id = Part::create($b_id);
+		$app['session']->set('alert', array('success' => '파트가 추가되었습니다.'));
 		return $app->redirect('/admin/part/' . $p_id);
 	}
 	
 	public function edit(Request $req, Application $app, $id) {
 		$inputs = $req->request->all();
+		$part = Part::get($id);
 		Part::update($id, $inputs);
-		return $app->redirect('/admin/book/' . $id);
+		return $app->redirect('/admin/book/' . $part['b_id']);
 	}
 	
 	public function delete(Request $req, Application $app, $id) {
 		$part = Part::get($id);
 		Part::delete($id);
+		$app['session']->set('alert', array('success' => '파트가 삭제되었습니다.'));
 		return $app->redirect('/admin/book/' . $part['b_id']);
 	}
 }
+
+
+$admin = $app['controllers_factory'];
+
+$admin->get('/login', function() use ($app) {
+	return $app['twig']->render('/admin/login.twig');
+});
+
+$admin->get('/book/list', 'BookController::index');
+$admin->get('/book/add', 'BookController::add');
+$admin->get('/book/{id}', 'BookController::detail');
+$admin->post('/book/{id}/delete', 'BookController::delete');
+$admin->post('/book/{id}/edit', 'BookController::edit');
+
+$admin->get('/part/add', 'PartController::add');
+$admin->get('/part/{id}', 'PartController::detail');
+$admin->get('/part/{id}/delete', 'PartController::delete');
+$admin->post('/part/{id}/edit', 'PartController::edit');
+
+$admin->before(function (Request $request) use ($app) {
+	$alert = $app['session']->get('alert');
+	if ($alert) {
+		$app['twig']->addGlobal('alert', $alert);
+		$app['session']->remove('alert');
+	}
+});
+
+return $admin;
