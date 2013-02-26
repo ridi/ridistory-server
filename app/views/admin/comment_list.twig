@@ -1,0 +1,29 @@
+{% extends '/base.twig' %}
+
+{% block container %}
+<form>
+<table class='table'>
+	<thead>
+		<tr>
+			<th class='span1'><input type='checkbox'></input></th>
+			<th class='span1'>파트 ID</th>
+			<th>Comment</th>
+			<th class='span3'>Timestamp</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for comment in comments %}
+		<tr>
+			<td><input type='checkbox'></input></td>
+			<td>{{ comment.p_id }}</td>
+			<td>{{ comment.device_id }} ~ {{ comment.comment }}</td>
+			<td>{{ comment.timestamp }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<div class="form-actions">
+	<button class='btn btn-danger'>삭제</button>
+</div>
+</form>
+{% endblock %}

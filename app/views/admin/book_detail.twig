@@ -1,4 +1,4 @@
-{% extends 'admin/base.twig' %}
+{% extends '/base.twig' %}
 
 {% block container %}
 <form action="/admin/book/{{ book.id }}/edit" method='post'>
@@ -44,6 +44,14 @@
 	        {% endembed %}
 	        <button class='btn btn-small btn-primary' id='js_add'>추가</button>
         </td>
+	</tr>
+	<tr>
+		<th>연재 횟수</th>
+		<td>
+		    <label>
+			    <input type='text' class='input-small' name='total_part_count' value='{{ book.total_part_count }}'> 회</input>
+		    </label>
+	    </td>
 	</tr>
 	<tr>
 		<th>완료 여부</th>

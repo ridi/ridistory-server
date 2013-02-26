@@ -7,6 +7,13 @@ class BookController
 	// book list
 	public function index(Request $req, Application $app) {
 		$books = Book::getWholeList();
+		foreach ($books as &$book) {
+			$progress = 0;
+			if ($book['total_part_count'] > 0) {
+				$progress = 100 * $book['num_parts'] / $book['total_part_count'];
+			}
+			$book['progress'] = $progress . '%';
+		}
 		return $app['twig']->render('admin/book_list.twig', array('books' => $books));
 	}
 	
@@ -97,6 +104,11 @@ $admin->before(function (Request $request) use ($app) {
 		$app['twig']->addGlobal('alert', $alert);
 		$app['session']->remove('alert');
 	}
+});
+
+$admin->get('/comment/list', function (Request $req, Application $app) {
+	$comments = $app['db']->fetchAll('select * from user_comment order by id desc limit 100');
+	return $app['twig']->render('/admin/comment_list.twig', array('comments' => $comments));
 });
 
 return $admin;

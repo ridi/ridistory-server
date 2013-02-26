@@ -11,7 +11,7 @@ class Book
 
 	public static function getWholeList() {
 		global $app;
-		return $app['db']->fetchAll('select * from book');
+		return $app['db']->fetchAll('select book.*, count(part.b_id) num_parts from book left join part on book.id = part.b_id group by id, part.b_id');
 	}
 	
 	public static function getOpenedBookList() {

@@ -1,0 +1,19 @@
+{% extends '/base.twig' %}
+
+{% block container %}
+<pre>
+ * 리스트, 상세 정보
+    /api/book/list
+    /api/book/{id}
+    /api/book/{id}/parts
+    
+ * 댓글
+    /api/user/{device}/comment/add
+    /api/user/{device}/comment/{comment_id}/delete
+    /api/user/{device}/comment/{comment_id}/like
+    
+ * 관심책
+    /api/user/{device}/interest/{b_id}/set
+    /api/user/{device}/interest/{b_id}/clear
+</pre>
+{% endblock %}

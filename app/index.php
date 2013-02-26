@@ -25,14 +25,18 @@ $app->register(new Silex\Provider\SessionServiceProvider(), array());
 
 $app['debug'] = true;
 
-require_once 'controllers/controllers.php';
 require_once 'models/models.php';
 
 $app->get('/', function() use ($app) {
 	return $app->redirect('/api/book/list');
 });
 
+$app->get('/api_list', function() use ($app) {
+	return $app['twig']->render('api_list.twig');
+});
+
 $app->mount('/api', include 'controllers/api.php');
 $app->mount('/admin', include 'controllers/admin.php');
+
 
 $app->run();

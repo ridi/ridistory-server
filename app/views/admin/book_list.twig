@@ -1,4 +1,4 @@
-{% extends 'admin/base.twig' %}
+{% extends '/base.twig' %}
 
 {% block container %}
 
@@ -7,6 +7,7 @@
 		<tr>
 			<th class='span1'>책 ID</th>
 			<th>제목</th>
+			<th class='span2'>Progress</th>
 			<th class='span2'>시작일</th>
 			<th class='span2'>종료일</th>
 		</tr>
@@ -16,6 +17,11 @@
 		<tr data-bid='{{ book.id }}'>
 			<td>{{ book.id }}</td>
 			<td>{{ book.title }}</td>
+			<td>
+			    <div class='progress'>
+                    <div class='bar' style='width: {{ book.progress }};'></div>
+                </div>			    
+			</td>
 			<td>{{ book.begin_date }}</td>
 			<td>{{ book.end_date }}</td>
 		</tr>
@@ -37,6 +43,13 @@ $(function() {
         var b_id = $(this).data('bid');
         location.href = '/admin/book/' + b_id;
     });
+    
+    $('#js_tbody tr').hover(function() {
+         	$(this).css('cursor', 'pointer');
+        }, function() {
+         	$(this).css('cursor', '');
+        }
+    );
 });
 </script>
 {% endblock %}
