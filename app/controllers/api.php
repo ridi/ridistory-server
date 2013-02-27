@@ -37,4 +37,14 @@ class CommentController
 
 $api->get('/comment/add', 'CommentController::add');
 
+$api->get('/user/{device_id}/interest/{b_id}/set', function($device_id, $b_id) use ($app) {
+	$r = $app['db']->executeUpdate('insert ignore user_interest (device_id, b_id) values (?, ?)', array($device_id, $b_id));
+	return $app->json(array('success' => ($r == 1)));
+});
+
+$api->get('/user/{device_id}/interest/{b_id}/clear', function($device_id, $b_id) use ($app) {
+	$r = $app['db']->delete('user_interest', compact('device_id', 'b_id'));
+	return $app->json(array('success' => ($r == 1)));
+});
+
 return $api;

@@ -1,5 +1,5 @@
 <?
-require_once '../lib/silex/vendor/autoload.php';
+require_once '../lib/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -28,7 +28,7 @@ $app['debug'] = true;
 require_once 'models/models.php';
 
 $app->get('/', function() use ($app) {
-	return $app->redirect('/api/book/list');
+	return $app->redirect('/admin/book/list');
 });
 
 $app->get('/api_list', function() use ($app) {

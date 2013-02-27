@@ -12,19 +12,15 @@
         <meta name="viewport" content="width=device-width">
 
         <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-        <style>
-            body {
-                padding-top: 20px;
-                padding-bottom: 20px;
-            }
-        </style>
+        <link rel="stylesheet" href="/static/css/base.css">
         <!--<link rel="stylesheet" href="/static/css/bootstrap-responsive.min.css">-->
         {% block css %}
         {% endblock %}
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
     <body>
-        <div class="container">
+        <header class="header">
+            <div class="container">
             {% block header %}
             <div>
                 <ul class="nav nav-pills pull-right">
@@ -32,6 +28,12 @@
                 </ul>
                 <h3 class="muted">Story Project <small>by Ridibooks</small></h3>
             </div>
+            {% endblock %}
+            </div>
+        </header>
+        
+        <div class="container">
+			
             <div class="navbar">
 				<div class="navbar-inner">
 					<div class="container">
@@ -45,14 +47,10 @@
 							<li>
 							    <a href="/admin/comment/list">리뷰 관리</a>
 							</li>
-							<li>
-							    <a href="/api_list">API List</a>
-							</li>
 						</ul>
 					</div>
 				</div>
 			</div>
-			
 			{% if alert is defined %}
 				{% for key in alert|keys %}
 				<div class='alert alert-{{ key }}'>
@@ -60,12 +58,30 @@
     		    </div>
 				{% endfor %}
 			{% endif %}
-			
-            {% endblock %}
             
             {% block container %}
             {% endblock %}
         </div> <!-- /container -->
+
+		<footer class="footer">
+			<div class="container">
+			    <hr>
+				<p>
+				    Ridibooks © 2013
+				</p>
+				<ul class="footer-links">
+					<li>
+						<a href="/api_list">API List</a>
+					</li>
+					<li class="muted">
+						&middot;
+					</li>
+					<li>
+						<a href="#">Changelog</a>
+					</li>
+				</ul>
+			</div>
+		</footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="/static/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
