@@ -68,7 +68,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		foreach ($r as $row) {
 			$b_ids[] = $row['b_id'];
 		}
-		
+
 		$list = Book::getListByIds($b_ids);
 		return $app->json($list);
 	}

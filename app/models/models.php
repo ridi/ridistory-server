@@ -5,7 +5,7 @@ class Book
 	public static function get($id) {
 		global $app;
 		$b = $app['db']->fetchAssoc('select * from book where id = ?', array($id));
-		$b['cover_url'] = 'http://misc.ridibooks.com/cover/' . $b['store_id'] . '/xlarge';
+		$b['cover_url'] = Book::getCoverUrl($b['store_id']);
 		return $b;
 	}
 
@@ -33,7 +33,7 @@ EOT;
 			if ($b['interest_count'] === null) {
 				$b['interest_count'] = "0";
 			}
-			$b['cover_url'] = 'http://misc.ridibooks.com/cover/' . $b['store_id'] . '/xlarge';
+			$b['cover_url'] = Book::getCoverUrl($b['store_id']);
 		}
 
 		return $ar;
@@ -55,7 +55,13 @@ EOT;
 			array($b_ids),
 			array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
 		);
-		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+		
+		$ar = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($ar as &$b) {
+			$b['cover_url'] = Book::getCoverUrl($b['store_id']);
+		}
+
+		return $ar;
 	}
 	
 	public static function create() {
@@ -72,6 +78,10 @@ EOT;
 	public static function delete($id) {
 		global $app;
 		return $app['db']->delete('book', array('id' => $id));
+	}
+
+	private static function getCoverUrl($store_id) {
+		return 'http://misc.ridibooks.com/cover/' . $store_id . '/xlarge';
 	}
 }
 
