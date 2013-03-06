@@ -2,31 +2,32 @@
 
 {% block container %}
 <pre>
- * 리스트, 상세 정보
+* 리스트, 상세 정보
     /api/book/list
     /api/book/{id}
     /api/book/{id}/parts
     
- * 댓글
-    /api/user/{device}/comment/add
+* 댓글
+	/api/part/{p_id}/comment/list
+    /api/part/{p_id}/comment/add?device_id=&amp;comment=
  
- * 파트 좋아요
- 	/api/user/{device}/part/{p_id}/like
- 	/api/user/{device}/part/{p_id}/unlike
+* 파트 좋아요
+    /api/user/{device}/part/{p_id}/like
+    /api/user/{device}/part/{p_id}/unlike
     
- == 관심책 ==
+== 관심책 ==
  
- * 관심책 조회
-    /api/user/{device}/interest/{b_id}
-    
-     - {"success": true}
-     - {"success": false}
+* 관심책 조회
+    /api/user/{device}/interest/{b_id
 
- * 관심책 설정/해제    
+    - {"success": true}
+    - {"success": false}
+
+* 관심책 설정/해제
     /api/user/{device}/interest/{b_id}/set
     /api/user/{device}/interest/{b_id}/clear
     
- * 관심책 목록
+* 관심책 목록
     /api/user/{device}/interest/list
 </pre>
 {% endblock %}

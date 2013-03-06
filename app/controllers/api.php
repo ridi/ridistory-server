@@ -20,7 +20,8 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userPartLike'));
 		$api->get('/user/{device_id}/part/{p_id}/unlike', array($this, 'userPartUnlike'));
 		
-		$api->get('/user/{device_id}/comment/add', array($this, 'userCommentAdd'));
+		$api->get('/part/{p_id}/comment/add', array($this, 'partCommentAdd'));
+		$api->get('/part/{p_id}/comment/list', array($this, 'partCommentList'));
 		
 		return $api;
 	}
@@ -47,17 +48,17 @@ class ApiControllerProvider implements ControllerProviderInterface
 	}
 	
 
-	public function userInterestSet(Request $req, Application $app, $device_id, $b_id) {
+	public function userInterestSet(Application $app, $device_id, $b_id) {
 		$r = $app['db']->executeUpdate('insert ignore user_interest (device_id, b_id) values (?, ?)', array($device_id, $b_id));
 		return $app->json(array('success' => ($r === 1)));
 	}
 	
-	public function userInterestClear(Request $req, Application $app, $device_id, $b_id) {
+	public function userInterestClear(Application $app, $device_id, $b_id) {
 		$r = $app['db']->delete('user_interest', compact('device_id', 'b_id'));
 		return $app->json(array('success' => ($r === 1)));
 	}
 	
-	public function userInterestGet(Request $req, Application $app, $device_id, $b_id) {
+	public function userInterestGet(Application $app, $device_id, $b_id) {
 		$r = $app['db']->fetchColumn('select id from user_interest where device_id = ? and b_id = ?', array($device_id, $b_id));
 		return $app->json(array('success' => ($r !== false)));
 	}
@@ -74,7 +75,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 	}
 	
 	
-	public function userPartLike(Request $req, Application $app, $device_id, $p_id) {
+	public function userPartLike(Application $app, $device_id, $p_id) {
 		$p = Part::get($p_id);
 		if ($p == false) {
 			return $app->json(array('success' => false));
@@ -83,21 +84,25 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $app->json(array('success' => ($r === 1)));
 	}
 	
-	public function userPartUnlike(Request $req, Application $app, $device_id, $p_id) {
+	public function userPartUnlike(Application $app, $device_id, $p_id) {
 		$r = $app['db']->delete('user_part_like', compact('device_id', 'p_id'));
 		return $app->json(array('success' => ($r === 1)));
 	}
 
 
-	public function userCommentAdd(Request $req, Application $app) {
-		$p_id = $req->get('p_id');
+	public function partCommentAdd(Request $req, Application $app, $p_id) {
 		$device_id = $req->get('device_id');
 		$comment = $req->get('comment');
 		
 		// TODO: abuse detection
-
-		$app['db']->insert('user_comment', compact('p_id', 'device_id', 'comment'));
+		
+		$r = PartComment::add($p_id, $device_id, $comment);
 		return $app->json(array('success' => true));
+	}
+	
+	public function partCommentList(Application $app, $p_id) {
+		$r = PartComment::getList($p_id);
+		return $app->json($r);
 	}
 }
 

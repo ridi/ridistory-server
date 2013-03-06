@@ -18,9 +18,10 @@ class Book
 		// 카테고리별
 		$today = date('Y-m-d');
 		$sql = <<<EOT
-select c.name category, p.interest_count, b.* from book b
+select c.name category, u.interest_count, last_update, b.* from book b
  join category c on c.id = c_id
- left join (select b_id, count(*) interest_count from user_interest group by b_id) p on b.id = b_id
+ left join (select b_id, max(begin_date) last_update from part group by b_id) p on b.id = p.b_id
+ left join (select b_id, count(*) interest_count from user_interest group by b_id) u on b.id = u.b_id
 where b.begin_date <= ? and end_date >= ?
 EOT;
 		$bind = array($today, $today);
@@ -137,6 +138,21 @@ class UserInterest
 		global $app;
 		$r = $app['db']->fetchAssoc('select * from user_interest where device_id = ? and b_id = ?', array($device_id, $b_id));
 		return ($r !== false);
+	}
+}
+
+class PartComment
+{
+	public static function add($p_id, $device_id, $comment) {
+		global $app;
+		$r = $app['db']->insert('part_comment', compact('p_id', 'device_id', 'comment'));
+		return $r;
+	}
+	
+	public static function getList($p_id) {
+		global $app;
+		$r = $app['db']->fetchAll('select * from part_comment where p_id = ? order by timestamp desc limit 100', array($p_id));
+		return $r;
 	}
 }
 
