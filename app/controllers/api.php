@@ -11,6 +11,10 @@ $api->get('/book/list', function () use ($app) {
 
 $api->get('/book/{id}', function ($id) use ($app) {
 	$book = Book::get($id);
+	$parts = Part::getByBid($id);
+
+	$book["parts"] = $parts;
+	
 	return $app->json($book); 
 });
 
