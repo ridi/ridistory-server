@@ -77,7 +77,9 @@ class Part
 	public static function get($id) {
 		global $app;
 		$b = $app['db']->fetchAssoc('select * from part where id = ?', array($id));
-		self::_fill_additional($b);
+		if ($b !== false) {
+			self::_fill_additional($b);
+		}
 		return $b;
 	}
 

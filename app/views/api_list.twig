@@ -9,12 +9,24 @@
     
  * 댓글
     /api/user/{device}/comment/add
-    /api/user/{device}/comment/{comment_id}/delete
-    /api/user/{device}/comment/{comment_id}/like
+ 
+ * 파트 좋아요
+ 	/api/user/{device}/part/{p_id}/like
+ 	/api/user/{device}/part/{p_id}/unlike
     
- * 관심책
+ == 관심책 ==
+ 
+ * 관심책 조회
+    /api/user/{device}/interest/{b_id}
+    
+     - {"success": true}
+     - {"success": false}
+
+ * 관심책 설정/해제    
     /api/user/{device}/interest/{b_id}/set
     /api/user/{device}/interest/{b_id}/clear
+    
+ * 관심책 목록
     /api/user/{device}/interest/list
 </pre>
 {% endblock %}
