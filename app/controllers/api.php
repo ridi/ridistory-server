@@ -34,17 +34,35 @@ class CommentController
 	}
 }
 
+class InterestController
+{
+	public function set(Request $req, Application $app, $device_id, $b_id) {
+		$r = $app['db']->executeUpdate('insert ignore user_interest (device_id, b_id) values (?, ?)', array($device_id, $b_id));
+		return $app->json(array('success' => ($r == 1)));
+	}
+	
+	public function clear(Request $req, Application $app, $device_id, $b_id) {
+		$r = $app['db']->delete('user_interest', compact('device_id', 'b_id'));
+		return $app->json(array('success' => ($r == 1)));
+	}
+	
+	public function list_(Request $req, Application $app, $device_id) {
+		$r = $app['db']->fetchAll('select b_id from user_interest where device_id = ?', array($device_id));
+		$b_ids = array();
+		foreach ($r as $row) {
+			$b_ids[] = $row['b_id'];
+		}
+		
+		$list = Book::getListByIds($b_ids);
+		return $app->json($list);
+	}
+}
+
 
 $api->get('/comment/add', 'CommentController::add');
 
-$api->get('/user/{device_id}/interest/{b_id}/set', function($device_id, $b_id) use ($app) {
-	$r = $app['db']->executeUpdate('insert ignore user_interest (device_id, b_id) values (?, ?)', array($device_id, $b_id));
-	return $app->json(array('success' => ($r == 1)));
-});
-
-$api->get('/user/{device_id}/interest/{b_id}/clear', function($device_id, $b_id) use ($app) {
-	$r = $app['db']->delete('user_interest', compact('device_id', 'b_id'));
-	return $app->json(array('success' => ($r == 1)));
-});
+$api->get('/user/{device_id}/interest/{b_id}/set', 'InterestController::set');
+$api->get('/user/{device_id}/interest/{b_id}/clear', 'InterestController::clear');
+$api->get('/user/{device_id}/interest/list', 'InterestController::list_');
 
 return $api;

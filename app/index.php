@@ -23,7 +23,10 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 
 $app->register(new Silex\Provider\SessionServiceProvider(), array());
 
-$app['debug'] = true;
+use Doctrine\DBAL\Logging\EchoSQLLogger;
+if ($app['debug'] = true) {
+	//$app['db']->getConfiguration()->setSQLLogger(new EchoSQLLogger());
+}
 
 require_once 'models/models.php';
 

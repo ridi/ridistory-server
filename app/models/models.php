@@ -15,8 +15,6 @@ class Book
 	}
 	
 	public static function getOpenedBookList() {
-		global $app;
-		
 		// 카테고리별
 		$today = date('Y-m-d');
 		$sql = <<<EOT
@@ -27,6 +25,7 @@ where b.begin_date <= ? and end_date >= ?
 EOT;
 		$bind = array($today, $today);
 
+		global $app;
 		$ar = $app['db']->fetchAll($sql, $bind);
 		$list = array();
 
@@ -35,6 +34,25 @@ EOT;
 		}
 
 		return $ar;
+	}
+	
+	public static function getListByIds(array $b_ids) {
+		if (count($b_ids) === 0) {
+			return array();
+		}
+		
+		$sql = <<<EOT
+select c.name category, p.popularity, b.* from book b
+ join category c on c.id = c_id
+ left join (select b_id, count(*) popularity from user_interest group by b_id) p on b.id = b_id
+where b.id in (?)
+EOT;
+		global $app;
+		$stmt = $app['db']->executeQuery($sql,
+			array($b_ids),
+			array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+		);
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 	
 	public static function create() {
