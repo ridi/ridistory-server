@@ -63,7 +63,7 @@ class InterestController
 		foreach ($r as $row) {
 			$b_ids[] = $row['b_id'];
 		}
-		
+
 		$list = Book::getListByIds($b_ids);
 		return $app->json($list);
 	}
@@ -89,10 +89,10 @@ class PartLikeController
 
 $api->get('/comment/add', 'CommentController::add');
 
+$api->get('/user/{device_id}/interest/list', 'InterestController::list_');
 $api->get('/user/{device_id}/interest/{b_id}/set', 'InterestController::set');
 $api->get('/user/{device_id}/interest/{b_id}/clear', 'InterestController::clear');
 $api->get('/user/{device_id}/interest/{b_id}', 'InterestController::get');
-$api->get('/user/{device_id}/interest/list', 'InterestController::list_');
 
 $api->get('/user/{device_id}/part/{p_id}/like', 'PartLikeController::like');
 $api->get('/user/{device_id}/part/{p_id}/unlike', 'PartLikeController::unlike');
