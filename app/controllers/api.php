@@ -9,11 +9,13 @@ $api->get('/book/list', function () use ($app) {
 	return $app->json($book);
 });
 
-$api->get('/book/{id}', function ($id) use ($app) {
-	$book = Book::get($id);
-	$parts = Part::getByBid($id);
-
+$api->get('/book/{b_id}', function (Request $req, $b_id) use ($app) {
+	$book = Book::get($b_id);
+	$parts = Part::getByBid($b_id);
 	$book["parts"] = $parts;
+	
+	$device_id = $req->get('device_id');
+	$book['interest'] = ($device_id === null) ? false : UserInterest::hasInterestInBook($device_id, $b_id);
 	
 	return $app->json($book); 
 });

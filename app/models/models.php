@@ -117,4 +117,14 @@ class Part
 		return $app['db']->delete('part', array('id' => $id));
 	}
 }
+
+class UserInterest
+{
+	public static function hasInterestInBook($device_id, $b_id) {
+		global $app;
+		$r = $app['db']->fetchAssoc('select * from user_interest where device_id = ? and b_id = ?', array($device_id, $b_id));
+		return ($r !== false);
+	}
+}
+
 ?>
