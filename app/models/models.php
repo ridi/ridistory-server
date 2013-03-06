@@ -18,9 +18,9 @@ class Book
 		// 카테고리별
 		$today = date('Y-m-d');
 		$sql = <<<EOT
-select c.name category, p.popularity, b.* from book b
+select c.name category, p.interest_count, b.* from book b
  join category c on c.id = c_id
- left join (select b_id, count(*) popularity from user_interest group by b_id) p on b.id = b_id
+ left join (select b_id, count(*) interest_count from user_interest group by b_id) p on b.id = b_id
 where b.begin_date <= ? and end_date >= ?
 EOT;
 		$bind = array($today, $today);
@@ -30,6 +30,9 @@ EOT;
 		$list = array();
 
 		foreach ($ar as &$b) {
+			if ($b['interest_count'] === null) {
+				$b['interest_count'] = "0";
+			}
 			$b['cover_url'] = 'http://misc.ridibooks.com/cover/' . $b['store_id'] . '/xlarge';
 		}
 
@@ -96,7 +99,7 @@ class Part
 
 	private static function _fill_additional(&$b) {
 		$b['meta_url'] = 'http://ridi.com/api/book/metadata.php?id=' . $b['store_id'];
-		 
+		
 		$query = '?token=' . $b['store_id'];
 		$b['download_url'] = 'http://ridi.com/api/story/download_part.php' . $query;
 	}
