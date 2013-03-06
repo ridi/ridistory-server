@@ -13,7 +13,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 	'db.options' => array(
 		'driver' => 'pdo_mysql',
-		'host' => 'localhost',
+		'host' => '192.168.1.216',
 		'user' => 'root',
 		'password' => '10',
 		'dbname' => 'story',

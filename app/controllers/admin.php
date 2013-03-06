@@ -1,6 +1,7 @@
 <?
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class BookController
 {
@@ -97,6 +98,13 @@ $admin->get('/part/add', 'PartController::add');
 $admin->get('/part/{id}', 'PartController::detail');
 $admin->get('/part/{id}/delete', 'PartController::delete');
 $admin->post('/part/{id}/edit', 'PartController::edit');
+
+// authority check
+/*
+$admin->before(function (Request $request) use ($app) {
+	return new RedirectResponse('/login');
+});
+ */
 
 $admin->before(function (Request $request) use ($app) {
 	$alert = $app['session']->get('alert');

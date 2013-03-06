@@ -17,27 +17,24 @@ class Book
 	public static function getOpenedBookList() {
 		global $app;
 		
+		// 카테고리별
 		$today = date('Y-m-d');
 		$sql = <<<EOT
-select c.name, b.*, max(p.begin_date) last_update from book b
+select c.name category, p.popularity, b.* from book b
  join category c on c.id = c_id
- left join part p on b.id = p.b_id
-where b.begin_date <= ? and b.end_date >= ? and p.begin_date <= ? and p.end_date >= ?
-group by b.id
+ left join (select b_id, count(*) popularity from user_interest group by b_id) p on b.id = b_id
+where b.begin_date <= ? and end_date >= ?
 EOT;
+		$bind = array($today, $today);
 
-		$ar = $app['db']->fetchAll($sql, array($today, $today, $today, $today));
+		$ar = $app['db']->fetchAll($sql, $bind);
 		$list = array();
-		foreach ($ar as $b) {
-			$cat_name = $b['name'];
-			unset($b['name']);
-			
+
+		foreach ($ar as &$b) {
 			$b['cover_url'] = 'http://misc.ridibooks.com/cover/' . $b['store_id'] . '/xlarge';
-			
-			$list[$cat_name][] = $b;
 		}
-		
-		return $list; 
+
+		return $ar;
 	}
 	
 	public static function create() {
