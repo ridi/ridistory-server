@@ -20,9 +20,6 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userPartLike'));
 		$api->get('/user/{device_id}/part/{p_id}/unlike', array($this, 'userPartUnlike'));
 		
-		$api->get('/part/{p_id}/comment/add', array($this, 'partCommentAdd'));
-		$api->get('/part/{p_id}/comment/list', array($this, 'partCommentList'));
-		
 		return $api;
 	}
 
@@ -49,18 +46,18 @@ class ApiControllerProvider implements ControllerProviderInterface
 	
 
 	public function userInterestSet(Application $app, $device_id, $b_id) {
-		$r = $app['db']->executeUpdate('insert ignore user_interest (device_id, b_id) values (?, ?)', array($device_id, $b_id));
-		return $app->json(array('success' => ($r === 1)));
+		$r = UserInterest::set($device_id, $b_id);
+		return $app->json(array('success' => $r));
 	}
 	
 	public function userInterestClear(Application $app, $device_id, $b_id) {
-		$r = $app['db']->delete('user_interest', compact('device_id', 'b_id'));
-		return $app->json(array('success' => ($r === 1)));
+		$r = UserInterest::clear($device_id, $b_id);
+		return $app->json(array('success' => $r));
 	}
 	
 	public function userInterestGet(Application $app, $device_id, $b_id) {
-		$r = $app['db']->fetchColumn('select id from user_interest where device_id = ? and b_id = ?', array($device_id, $b_id));
-		return $app->json(array('success' => ($r !== false)));
+		$r = UserInterest::get($device_id, $b_id);
+		return $app->json(array('success' => $r));
 	}
 
 	public function userInterestList(Application $app, $device_id) {
@@ -87,22 +84,6 @@ class ApiControllerProvider implements ControllerProviderInterface
 	public function userPartUnlike(Application $app, $device_id, $p_id) {
 		$r = $app['db']->delete('user_part_like', compact('device_id', 'p_id'));
 		return $app->json(array('success' => ($r === 1)));
-	}
-
-
-	public function partCommentAdd(Request $req, Application $app, $p_id) {
-		$device_id = $req->get('device_id');
-		$comment = $req->get('comment');
-		
-		// TODO: abuse detection
-		
-		$r = PartComment::add($p_id, $device_id, $comment);
-		return $app->json(array('success' => true));
-	}
-	
-	public function partCommentList(Application $app, $p_id) {
-		$r = PartComment::getList($p_id);
-		return $app->json($r);
 	}
 }
 

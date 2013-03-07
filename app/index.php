@@ -31,6 +31,7 @@ if ($app['debug'] = true) {
 require_once 'models/models.php';
 require_once 'controllers/api.php';
 require_once 'controllers/admin.php';
+require_once 'controllers/comment.php';
 
 $app->get('/', function() use ($app) {
 	return $app->redirect('/admin/book/list');
@@ -43,5 +44,7 @@ $app->get('/api_list', function() use ($app) {
 
 $app->mount('/api', new ApiControllerProvider());
 $app->mount('/admin', new AdminControllerProvider());
+
+$app->mount('/comment', new CommentControllerProvider());
 
 $app->run();
