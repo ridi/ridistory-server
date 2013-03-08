@@ -1,4 +1,4 @@
-{% extends '/base.twig' %}
+{% extends '/admin/base.twig' %}
 
 {% block container %}
 <form action="/admin/book/{{ book.id }}/edit" method='post'>
@@ -26,8 +26,12 @@
 		<td><input type='text' class='input' name='author' value='{{ book.author }}'></input></td>
 	</tr>
 	<tr>
-		<th>짧은 소개말</th>
+		<th>캐치프레이즈</th>
 		<td><input type='text' class='input-xxlarge' name='catchphrase' value='{{ book.catchphrase }}'></input></td>
+	</tr>
+	<tr>
+		<th>짧은 소개말</th>
+		<td><textarea rows='3' class='input-xxlarge' name='short_description' maxlength='256'>{{ book.short_description }}</textarea></td>
 	</tr>
 	<tr>
 		<th>시작일</th>
@@ -42,7 +46,7 @@
 	    <td>
 	        {% embed 'admin/part_list.twig' with {'parts': parts} only %}
 	        {% endembed %}
-	        <button class='btn btn-small btn-primary' id='js_add'>추가</button>
+	        <button class='btn btn-small btn-primary pull-right' id='js_add'>파트 추가</button>
         </td>
 	</tr>
 	<tr>
@@ -66,7 +70,7 @@
 	</tr>
 </table>
 <div class='form-actions'>
-	<button class='btn btn-success'>수정</button>
+	<button class='btn btn-success'>수정 완료</button>
 	<button class='btn btn-danger'>삭제</button>
 	<button class='btn btn-cancel'>취소</button>
 </div>

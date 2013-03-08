@@ -39,10 +39,6 @@ $app->get('/', function() use ($app) {
 	return $app->redirect('/admin/book/list');
 });
 
-$app->get('/api_list', function() use ($app) {
-	return $app['twig']->render('api_list.twig');
-});
-
 
 $app->mount('/api', new ApiControllerProvider());
 $app->mount('/admin', new AdminControllerProvider());
