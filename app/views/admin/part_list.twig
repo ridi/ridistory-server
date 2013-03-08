@@ -9,7 +9,7 @@
 	<tbody>
 		{% for part in parts %}
 		<tr data-cid='{{ part.id }}'>
-			<td><a href='/admin/part/{{ part.id }}'>{{ part.order }}. {{ part.title }} </a></td>
+			<td><a href='/admin/part/{{ part.id }}'>{{ part.seq }}. {{ part.title }} </a></td>
 			<td>{{ part.begin_date }} </a></td>
 			<td>{{ part.end_date }} </a></td>
 		</tr>

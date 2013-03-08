@@ -20,9 +20,10 @@ select p.*, ifnull(like_count, 0) like_count, ifnull(comment_count, 0) comment_c
  left join (select p_id, count(*) like_count from user_part_like group by p_id) l on p.id = l.p_id
  left join (select p_id, count(*) comment_count from part_comment group by p_id) c on p.id = c.p_id
 where b_id = ?
+order by seq
 EOT;
 		} else {
-			$sql = 'select * from part where b_id = ?';
+			$sql = 'select * from part where b_id = ? order by seq';
 		}
 		
 		$ar = $app['db']->fetchAll($sql, array($b_id));
@@ -34,10 +35,12 @@ EOT;
 	}
 
 	private static function _fill_additional(&$b) {
-		$b['meta_url'] = 'http://ridi.com/api/book/metadata.php?id=' . $b['store_id'];
+		define('STORE_API_BASE_URL', 'http://hw.dev.ridibooks.kr');
+		
+		$b['meta_url'] = STORE_API_BASE_URL . '/api/book/metadata.php?id=' . $b['store_id'];
 		
 		$query = '?token=' . $b['store_id'];
-		$b['download_url'] = 'http://ridi.com/api/story/download_part.php' . $query;
+		$b['download_url'] = STORE_API_BASE_URL . '/api/story/download_part.php' . $query;
 	}
 	
 	public static function create($b_id) {

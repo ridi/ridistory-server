@@ -26,6 +26,10 @@
 		<td><input type='text' class='input' name='author' value='{{ book.author }}'></input></td>
 	</tr>
 	<tr>
+		<th>출판사</th>
+		<td><input type='text' class='input' name='publisher' value='{{ book.publisher }}'></input></td>
+	</tr>
+	<tr>
 		<th>캐치프레이즈</th>
 		<td><input type='text' class='input-xxlarge' name='catchphrase' value='{{ book.catchphrase }}'></input></td>
 	</tr>
@@ -46,7 +50,6 @@
 	    <td>
 	        {% embed 'admin/part_list.twig' with {'parts': parts} only %}
 	        {% endembed %}
-	        <button class='btn btn-small btn-primary pull-right' id='js_add'>파트 추가</button>
         </td>
 	</tr>
 	<tr>
@@ -89,9 +92,9 @@
 	</tr>
 </table>
 <div class='form-actions'>
-	<button class='btn btn-success'>수정 완료</button>
-	<button class='btn btn-danger'>삭제</button>
-	<button class='btn btn-cancel'>취소</button>
+	<button type='submit' class='btn btn-success'>수정 완료</button>
+	<button class='btn btn-cancel'>목록으로</button>
+	<button class='btn btn-danger pull-right'>삭제</button>
 </div>
 </form>
 

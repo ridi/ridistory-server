@@ -5,7 +5,7 @@
 <table class='table'>
 	<thead>
 		<tr>
-			<th class='span1'><input type='checkbox'></input></th>
+			<th class='span1'><input type='checkbox' id='select_all'></input></th>
 			<th class='span1'>파트 ID</th>
 			<th>Comment</th>
 			<th class='span3'>Timestamp</th>
@@ -23,7 +23,15 @@
 	</tbody>
 </table>
 <div class="form-actions">
-	<button class='btn btn-danger'>삭제</button>
+	<button class='btn btn-danger'>선택 삭제</button>
 </div>
 </form>
+{% endblock %}
+
+{% block script %}
+<script>
+$('#select_all').change(function() {
+	$(':checkbox[id!="select_all"]').attr('checked', $(this).is(':checked'));
+});
+</script>
 {% endblock %}

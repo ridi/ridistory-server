@@ -40,7 +40,7 @@ class AdminControllerProvider implements ControllerProviderInterface
 		});
 		
 		$admin->get('/comment/list', function (Request $req, Application $app) {
-			$comments = $app['db']->fetchAll('select * from user_comment order by id desc limit 100');
+			$comments = $app['db']->fetchAll('select * from part_comment order by id desc limit 100');
 			return $app['twig']->render('/admin/comment_list.twig', array('comments' => $comments));
 		});
 		
@@ -96,6 +96,7 @@ class AdminControllerProvider implements ControllerProviderInterface
 			return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
 		}
 		Book::delete($id);
+		$app['session']->set('alert', array('info' => '책이 삭제되었습니다.'));
 		return $app->json(array('success' => true));
 	}
 	
@@ -116,13 +117,14 @@ class AdminControllerProvider implements ControllerProviderInterface
 		$inputs = $req->request->all();
 		$part = Part::get($id);
 		Part::update($id, $inputs);
+		$app['session']->set('alert', array('info' => '파트가 수정되었습니다.'));
 		return $app->redirect('/admin/book/' . $part['b_id']);
 	}
 	
 	public function partDelete(Request $req, Application $app, $id) {
 		$part = Part::get($id);
 		Part::delete($id);
-		$app['session']->set('alert', array('success' => '파트가 삭제되었습니다.'));
+		$app['session']->set('alert', array('info' => '파트가 삭제되었습니다.'));
 		return $app->redirect('/admin/book/' . $part['b_id']);
 	}
 }

@@ -16,6 +16,10 @@
 		<td><input type='text' class='input-small' name='store_id' value='{{ part.store_id }}'></input></td>
 	</tr>
 	<tr>
+		<th>순서</th>
+		<td><input type='text' class='input-small' name='seq' value='{{ part.seq }}'></input></td>
+	</tr>
+	<tr>
 		<th>제목</th>
 		<td><input type='text' class='input' name='title' value='{{ part.title }}'></input></td>
 	</tr>
@@ -30,8 +34,8 @@
 </table>
 <div class='form-actions'>
 	<button class='btn btn-success'>저장</button>
-	<button class='btn btn-danger'>삭제</button>
 	<button class='btn btn-cancel'>취소</button>
+	<button class='btn btn-danger pull-right'>삭제</button>
 </div>
 </form>
 
