@@ -1,7 +1,8 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-<pre>
+<h4>JSON API</h4>
+<pre class='well'>
 * 리스트, 상세 정보
     /api/book/list
     /api/book/{id}
@@ -14,7 +15,7 @@
 == 관심책 ==
  
 * 관심책 조회
-    /api/user/{device}/interest/{b_id
+    /api/user/{device}/interest/{b_id}
 
     - {"success": true}
     - {"success": false}
@@ -25,5 +26,17 @@
     
 * 관심책 목록
     /api/user/{device}/interest/list
+</pre>
+
+<h4>HTML Pages</h4>
+<pre class='well'>
+* 메인 홈
+    /home
+	
+* 파트 댓글 남기기
+    /comment/list?p_id=1
+
+* 작품 상세 정보
+    /book/{b_id}/intro
 </pre>
 {% endblock %}

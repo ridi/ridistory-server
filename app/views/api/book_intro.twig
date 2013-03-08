@@ -5,13 +5,9 @@
 <h2>{{ book.title }}</h2>
 
 <h3>작품 소개</h3>
-<p>
-    {{ book.intro.description }}
-</p>
+<p>{{ book.intro.description is defined ? book.intro.description : '작품 정보가 없습니다.' }}</p>
 
 <h3>저자 소개</h3>
-<p>
-    {{ book.intro.about_author }}
-</p>
+<p>{{ book.intro.about_author is defined ? book.intro.about_author : '저자 정보가 없습니다.' }}</p>
 
 {% endblock %}
