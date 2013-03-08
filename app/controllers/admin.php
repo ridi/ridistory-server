@@ -44,7 +44,7 @@ class AdminControllerProvider implements ControllerProviderInterface
 			return $app['twig']->render('/admin/comment_list.twig', array('comments' => $comments));
 		});
 		
-		$app->get('/api_list', function() use ($app) {
+		$admin->get('/api_list', function() use ($app) {
 			return $app['twig']->render('/admin/api_list.twig');
 		});
 		
@@ -80,6 +80,11 @@ class AdminControllerProvider implements ControllerProviderInterface
 
 	public function bookEdit(Request $req, Application $app, $id) {
 		$inputs = $req->request->all();
+		$upload_days = 0;
+		foreach ($inputs['upload_days'] as $k => $v) {
+			$upload_days += intval($v);
+		}
+		$inputs['upload_days'] = $upload_days;
 		Book::update($id, $inputs);
 		$app['session']->set('alert', array('info' => '책이 수정되었습니다.'));
 		return $app->redirect('/admin/book/' . $id);

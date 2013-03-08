@@ -80,4 +80,10 @@ EOT;
 	private static function getCoverUrl($store_id) {
 		return 'http://misc.ridibooks.com/cover/' . $store_id . '/xlarge';
 	}
+	
+	
+	public static function getIntro($b_id) {
+		global $app;
+		return $app['db']->fetchAssoc('select * from book_intro where b_id = ?', array($b_id));
+	}
 }
