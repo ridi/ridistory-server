@@ -28,7 +28,9 @@ if ($app['debug'] = true) {
 	//$app['db']->getConfiguration()->setSQLLogger(new EchoSQLLogger());
 }
 
-require_once 'models/models.php';
+require_once 'models/Book.php';
+require_once 'models/Part.php';
+require_once 'models/User.php';
 require_once 'controllers/api.php';
 require_once 'controllers/admin.php';
 require_once 'controllers/comment.php';

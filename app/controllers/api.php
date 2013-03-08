@@ -28,9 +28,18 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $app->json($book);
 	}
 	
+	/**
+	 * 상세페이지에서 보여질 데이터를 JSON 형태로 전송
+	 *  - 책 정보
+	 *  - 파트 정보 리스트 (각 파트별 좋아요, 댓글 갯수 포함)
+	 *  - 관심책 지정 여부
+	 */
 	public function book(Request $req, Application $app, $b_id) {
 		$book = Book::get($b_id);
-		$parts = Part::getByBid($b_id);
+		$parts = Part::getListByBid($b_id, true);
+		foreach ($parts as $part) {
+			//$part['comment_count'] = PartCom
+		}
 		$book["parts"] = $parts;
 		
 		$device_id = $req->get('device_id');
@@ -40,7 +49,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 	}
 	
 	public function bookParts(Application $app, $b_id) {
-		$parts = Part::getByBid($b_id);
+		$parts = Part::getListByBid($b_id);
 		return $app->json($parts);
 	}
 	

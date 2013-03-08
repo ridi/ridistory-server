@@ -61,7 +61,7 @@ class AdminControllerProvider implements ControllerProviderInterface
 	
 	public function bookDetail(Request $req, Application $app, $id) {
 		$book = Book::get($id);
-		$parts = Part::getByBid($id);
+		$parts = Part::getListByBid($id);
 		return $app['twig']->render('admin/book_detail.twig', array(
 			'book' => $book,
 			'parts' => $parts,
@@ -82,7 +82,7 @@ class AdminControllerProvider implements ControllerProviderInterface
 	}
 	
 	public function bookDelete(Request $req, Application $app, $id) {
-		$parts = Part::getByBid($id);
+		$parts = Part::getListByBid($id);
 		if (count($parts)) {
 			return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
 		}
