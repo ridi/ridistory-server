@@ -13,9 +13,9 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 	'db.options' => array(
 		'driver' => 'pdo_mysql',
-		'host' => '192.168.1.216',
+		'host' => 'dev.ridibooks.kr',
 		'user' => 'root',
-		'password' => '10',
+		'password' => 'rbx120303',
 		'dbname' => 'story',
 		'charset' => 'utf8',
 	),
