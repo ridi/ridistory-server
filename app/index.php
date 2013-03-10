@@ -18,6 +18,10 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 		'password' => 'rbx120303',
 		'dbname' => 'story',
 		'charset' => 'utf8',
+		// MySQL 설정에 따라 필요할 수도, 안필요할 수도
+		'driverOptions' => array(
+			PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8'
+		)
 	),
 ));
 
