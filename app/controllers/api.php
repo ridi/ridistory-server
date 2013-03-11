@@ -20,6 +20,8 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userPartLike'));
 		$api->get('/user/{device_id}/part/{p_id}/unlike', array($this, 'userPartUnlike'));
 		
+		$api->get('/push_device/register', array($this, 'pushDeviceRegister'));
+		
 		return $api;
 	}
 
@@ -94,6 +96,24 @@ class ApiControllerProvider implements ControllerProviderInterface
 	public function userPartUnlike(Application $app, $device_id, $p_id) {
 		$r = $app['db']->delete('user_part_like', compact('device_id', 'p_id'));
 		return $app->json(array('success' => ($r === 1)));
+	}
+	
+	
+	public function pushDeviceRegister(Application $app, Request $req) {
+		$device_id = $req->get('device_id');
+		$platform = $req->get('platform');
+		$device_token = $req->get('device_token');
+		
+		if (strlen($device_id) == 0 || strlen($device_token) == 0 ||
+			(strcmp($platform, 'iOS') != 0 && strcmp($platform, 'Android') != 0)) {
+			return $app->json(array('success' => false, 'reason' => 'invalid parameters'));
+		}
+			
+		if (PushDevice::insertOrUpdate($device_id, $platform, $device_token)) {
+			return $app->json(array('success' => true));
+		} else {
+			return $app->json(array('success' => false, 'reason' => 'Insert or Update error'));
+		}
 	}
 }
 
