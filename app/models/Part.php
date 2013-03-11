@@ -15,18 +15,21 @@ class Part
 		global $app;
 		
 		if ($with_social_info) {
+			$today = date('Y-m-d');
 			$sql = <<<EOT
 select p.*, ifnull(like_count, 0) like_count, ifnull(comment_count, 0) comment_count from part p
  left join (select p_id, count(*) like_count from user_part_like group by p_id) l on p.id = l.p_id
  left join (select p_id, count(*) comment_count from part_comment group by p_id) c on p.id = c.p_id
-where b_id = ?
+where b_id = ? and begin_date <= ? and end_date >= ?
 order by seq
 EOT;
+			$bind = array($b_id, $today, $today);
 		} else {
 			$sql = 'select * from part where b_id = ? order by seq';
+			$bind = array($b_id);
 		}
 		
-		$ar = $app['db']->fetchAll($sql, array($b_id));
+		$ar = $app['db']->fetchAll($sql, $bind);
 		foreach ($ar as &$b) {
 			self::_fill_additional($b);
 		}

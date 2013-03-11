@@ -11,7 +11,6 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/book/list', array($this, 'bookList'));
 		$api->get('/book/{b_id}', array($this, 'book'));
 		$api->get('/book/{b_id}/intro', array($this, 'bookIntro'));
-		$api->get('/book/{b_id}/parts', array($this, 'bookParts'));
 		
 		$api->get('/user/{device_id}/interest/list', array($this, 'userInterestList'));
 		$api->get('/user/{device_id}/interest/{b_id}/set', array($this, 'userInterestSet'));
@@ -53,11 +52,6 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$book = Book::get($b_id);
 		$book['intro'] = Book::getIntro($b_id);
 		return $app['twig']->render('/api/book_intro.twig', array('book' => $book));
-	}
-	
-	public function bookParts(Application $app, $b_id) {
-		$parts = Part::getListByBid($b_id);
-		return $app->json($parts);
 	}
 	
 
