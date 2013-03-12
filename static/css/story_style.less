@@ -1,0 +1,161 @@
+@charset "utf-8";
+@default_bg:#f2efe9;
+
+// module
+.module_book_info{
+  .info_title{ 
+    margin-bottom:4px; font-size:16px; line-height:1.3em; letter-spacing:-1px; color:black; font-weight:bold; word-break:break-all;
+    a{font-size:16px; line-height:1.3em; letter-spacing:-1px; color:black; font-weight:bold; word-break:break-all;}
+  }
+  .info_title_sub{
+    margin-bottom:4px; color:#777; word-break:break-all;
+  }
+  .info_author{ 
+    li{
+      color:#777; float:left; padding: 0 7px; border-left: 1px solid #777; margin-bottom:5px; word-break:break-all;
+      a{ color:#777; word-break:break-all;}
+      &:first-child{ padding-left: 0; border-left:none;}
+      &:last-child{ padding-right: 0; }
+    }
+  }
+  .info_descript{ clear:both; padding-top:4px; color:#333; line-height:1.3em; word-break:break-all;}
+}
+
+.module_book_thumb{
+  .thumb_wrap{
+    display:inline-block; position:relative;
+    .img_wrap{
+      display:block; box-shadow: 2px 2px 5px #999;
+      img{ 
+        display:block; width:100px;
+      }
+      &:before{
+        display:block; content:''; height:100%; width:5px; position:absolute; left:0; top:0;
+        background:url(../images/book_lighting.png) left top repeat-y; background-size: 5px 1px;
+      }
+      &:after{
+        display:block; content:''; height:100%; width:12px; position:absolute; right:-12px; top:0; background:blue;
+        background:url(../images/book_side.png) left top repeat-y; background-size: 12px 100%;
+      }
+    }
+  }
+}
+
+.module_title1{
+  width:100%; height:28px; background:white; background-image: linear-gradient(180deg, #fff, #f5f3ec);
+  h2{
+    display:block; float:left; margin-left: 10px; height:28px; line-height:28px; color: black; font-weight:bold; letter-spacing:-1px;
+  }
+  .title_tip{ float:left; margin:5px 0 0 5px; height:16px; line-height:16px; color:white; font-size:10px; padding: 0 10px; border-radius:20px; background: #f58d83; }
+}//.module_title1
+
+.module_tab1{
+  width:100%; height:30px; background: #84c7dc; border-top: 1px solid #76bacf; border-bottom: 1px solid #76bacf; position:relative;
+  nav{
+    padding: 0 10px;
+    ul{
+      li{
+        width:33%; float:left; margin-top:9px; position:relative;
+        a{ display:block; height:12px; border-left:1px solid #b6d6de; text-align:center; font-weight:bold; color:white; }
+        &:first-child{
+          a{ border-left:none; }
+        }
+        &.active{
+          width:34%; margin-top:3px;
+          a{ 
+            width:101%; height:22px; padding-top:5px; position:absolute; left:0; top:0;  border-left:none; color:#666; 
+            background:#f2efe9; border:1px solid #76bacf; border-bottom:none; border-top-right-radius:3px; border-top-left-radius:3px; z-index:500;
+          }
+        }
+      }//li
+    }//ul
+  }//nav
+}//.module_tab1
+
+
+body{ width:100%; background:@default_bg; }
+#story{  
+  section.main{
+    width:100%;
+    article.main_recom{
+      background:url( ../images/bg_recom.png ) left top repeat; background-size: 100px 404px; position:relative;
+      height:202px; border-bottom:1px solid #ccb58e;
+      
+      h2.recom_title{
+        width:52%; height:18px; position:absolute; right:0; top:18px; text-indent:-20000px;
+        background:url( ../images/text_recom.png ) left top no-repeat; background-size: 72px 18px;
+      }
+      
+      // 겔러리 하단 원형버튼
+      nav.recom_nav{
+        width:100%; position:absolute; bottom: 16px; left: 0;
+        ul{
+          width:100%; text-align:center;
+          li{
+            display:inline-block;
+            button{
+              display:block; width:5px; height:5px; background: #d9c9ad; border: 1px solid #cdb895; border-radius:10px; 
+              -webkit-appearance:none; text-indent:-20000px;
+            }
+            &.active{
+              button{
+                background: #83cae1; border-color: #73b8ce;
+              }
+            }
+          }// li
+        }// ul
+      }// nav.recom_nav
+      
+      //겔러리 리스트
+      ul.recom_gallery{
+        width:100%; position:absolute; top:18px; left:0;
+        &>li{
+          width:100%; height:202px; position:absolute; top:0; left:0;
+          .book_list{
+            .module_book_thumb{
+              width:48%; float:left; text-align:right;
+              .thumb_wrap{
+                 margin-right:32px;
+              }
+            }
+            .module_book_info{
+              width:52%; float:left; margin-top:24px;
+              .info_title{
+                margin-bottom:9px;
+              }
+            }//.book_info
+          }//.book_list
+        }//li
+      }//ul
+      
+    }// article.main_recom
+    article.main_new{
+      
+      .book_list{
+        width:100%; border-bottom:1px solid #e1dcd4; margin-top:23px; padding-bottom:20px;
+        .module_book_thumb{
+          width:48%; float:left; text-align:right;
+          .thumb_wrap{
+            margin-right:55px;
+            img{ width: 78px;}
+          }
+        }
+        .module_book_info{
+          width:52%; float:left; margin-top:4px;
+        }
+      }
+    }// article.main_new
+    article.main_best{
+      width:100%;
+      .book_list_grid{
+        width:100%; border-top:1px solid #cac1b8;
+        li{
+          width:33%; text-align:center;
+          .list_wrap{
+            display:inline-block;
+          }
+        }
+      }
+    }// article.main_best
+  }// section.main
+}//#story

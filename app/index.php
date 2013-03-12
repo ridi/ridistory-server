@@ -37,16 +37,10 @@ require_once 'models/Part.php';
 require_once 'models/User.php';
 require_once 'controllers/api.php';
 require_once 'controllers/admin.php';
-require_once 'controllers/comment.php';
+require_once 'controllers/web.php';
 
-$app->get('/', function() use ($app) {
-	return $app->redirect('/admin/book/list');
-});
-
-
+$app->mount('/', new WebControllerProvider());
 $app->mount('/api', new ApiControllerProvider());
 $app->mount('/admin', new AdminControllerProvider());
-
-$app->mount('/comment', new CommentControllerProvider());
 
 $app->run();

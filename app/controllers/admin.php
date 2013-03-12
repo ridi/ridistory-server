@@ -9,6 +9,10 @@ class AdminControllerProvider implements ControllerProviderInterface
 	public function connect(Application $app) {
 		$admin = $app['controllers_factory'];
 		
+		$admin->get('/', function() use ($app) {
+			return $app->redirect('/admin/book/list');
+		});
+
 		$admin->get('/login', function() use ($app) {
 			return $app['twig']->render('/admin/login.twig');
 		});
@@ -46,6 +50,23 @@ class AdminControllerProvider implements ControllerProviderInterface
 		
 		$admin->get('/api_list', function() use ($app) {
 			return $app['twig']->render('/admin/api_list.twig');
+		});
+		
+		$admin->get('/test_push', function() {
+			
+			$message = 'test push';
+			$push_type = 0;
+			$url = 'http://naver.com';
+			
+			$notification = array(
+				"message" => $message,
+				"push_type" => $push_type,
+				"url" => $url);
+				
+			$device_tokens = array('APA91bFROD2RVA6iEWFgQ6v8BWKhcqZMZertE58aND6OHAVQDXxexAcoaBRzZ1Ot31CJL7RppsJ0rhuhxVUhFHHczFAk_m3BJcTssC00oPQS86WkaCNwN5Rtcy-YySuu_iLEGd_7qGdQF0a20J2siGzHKKgpsUUWVQ');
+				
+			$r = AdminControllerProvider::sendPushNotificationForAndroid($device_tokens, $notification);
+			return $r;
 		});
 		
 		return $admin;
@@ -126,6 +147,32 @@ class AdminControllerProvider implements ControllerProviderInterface
 		Part::delete($id);
 		$app['session']->set('alert', array('info' => '파트가 삭제되었습니다.'));
 		return $app->redirect('/admin/book/' . $part['b_id']);
+	}
+
+
+	public static function sendPushNotificationForAndroid($device_tokens, $notification) {
+	    static $GOOGLE_API_KEY_FOR_GCM = "AIzaSyCMwJbi_uk4UI8WJB1spxld4TDVtFbhYpc";
+		
+	    $post_data = array('data' => $notification,
+	                  'registration_ids' => $device_tokens);
+	    
+	    $headers = array('Content-Type:application/json',
+	                     'Authorization:key=' . $GOOGLE_API_KEY_FOR_GCM);
+	    
+	    $ch = curl_init();
+	    curl_setopt($ch, CURLOPT_URL, 'https://android.googleapis.com/gcm/send');
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	    curl_setopt($ch, CURLOPT_POST, true);
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
+	    
+		/* 테스트 진행 위해 구글에서 주는 결과값 로그에 찍음 */
+	    $result = curl_exec($ch);
+		
+	    curl_close($ch);
+		
+		return $result;
 	}
 }
 

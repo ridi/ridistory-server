@@ -3,15 +3,29 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class CommentControllerProvider implements ControllerProviderInterface
+class WebControllerProvider implements ControllerProviderInterface
 {
 	public function connect(Application $app) {
 		$api = $app['controllers_factory'];
 		
-		$api->get('/list', array($this, 'commentList'));
-		$api->post('/add', array($this, 'commentAdd')); 
+		$api->get('/', array($this, 'home'));
+		
+		$api->get('/book/{b_id}/intro', array($this, 'bookIntro'));
+		
+		$api->get('/comment/list', array($this, 'commentList'));
+		$api->post('/comment/add', array($this, 'commentAdd')); 
 		
 		return $api;
+	}
+	
+	public function home(Application $app) {
+		return $app['twig']->render('/main.html');
+	}
+	
+	public function bookIntro(Application $app, $b_id) {
+		$book = Book::get($b_id);
+		$book['intro'] = Book::getIntro($b_id);
+		return $app['twig']->render('/api/book_intro.twig', array('book' => $book));
 	}
 
 	public function commentList(Request $req, Application $app) {
