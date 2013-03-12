@@ -107,7 +107,7 @@
   overflow-y: hidden;
 }
 .module_list_grid li .list_grid .module_book_info .info_title {
-  font-size: 12px;
+  font-size: 0.9em;
   font-weight: normal;
   color: #333;
   overflow: hidden;

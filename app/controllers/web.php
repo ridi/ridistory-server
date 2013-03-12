@@ -19,7 +19,15 @@ class WebControllerProvider implements ControllerProviderInterface
 	}
 	
 	public function home(Application $app) {
-		return $app['twig']->render('/main.html');
+		$recommended_list = BookList::getRecommendedBooks();
+		$designated_list = BookList::getDesignatedBooks();
+		$today_list = BookList::getTodayBest();
+		
+		return $app['twig']->render('/main.twig', array(
+			'recommended_list' => $recommended_list,
+			'designated_list' => $designated_list,
+			'today_list' => $today_list,
+		));
 	}
 	
 	public function bookIntro(Application $app, $b_id) {

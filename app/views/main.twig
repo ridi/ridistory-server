@@ -44,27 +44,25 @@
 					</ul>
 				</nav>
 				<ul class="recom_gallery">
+				    {% for book in recommended_list %}
 					<li>
 						<div class="book_list">
 							<div class="module_book_thumb">
 								<a href="#" class="thumb_wrap">
-									<span class="img_wrap"><img src="/static/images/temp/book.jpg" alt="썸넬~" /></span>
+									<span class="img_wrap"><img src="{{ book.cover_url }}" alt="썸넬~" /></span>
 								</a>
 							</div>
 							<div class="module_book_info">
-								<h3 class="info_title"><a href="#">어디선가 나를 찾는 <br/>전화벨이 울리고</a></h3>
+								<h3 class="info_title">{{ book.title }}</h3>
 								<ul class="info_author">
-									<li><a href="#">임종진 저</a></li>
-									<li><a href="#">문학동네</a></li>
+									<li>{{ book.author }} 저</li>
+									<li>{{ book.publisher }}</li>
 								</ul>
-								<p class="info_descript">
-									“어둠의 그림자”를 붙잡느라<br />
-									본질적인 실체를 잃지 않도록<br />
-									조심하고 또 조심하라. 
-								</p>
+								<p class="info_descript">{{ book.short_description[:100] }}</p>
 							</div>
 						</div>
 					</li>
+					{% endfor %}
 				</ul>
 				<hr class="clear_both"/>
 			</article>
@@ -82,26 +80,25 @@
 						</ul>
 					</nav>
 				</div>
+				{% for book in designated_list[0:1] %}
 				<div class="book_list">
 					<div class="module_book_thumb">
 						<a href="#" class="thumb_wrap">
-							<span class="img_wrap"><img src="/static/images/temp/book.jpg" alt="썸넬~" /></span>
+							<span class="img_wrap"><img src="{{ book.cover_url }}" alt="썸넬~" /></span>
 						</a>
 					</div>
 					<div class="module_book_info">
-						<h3 class="info_title">덕혜옹주</h3>
-						<h4 class="info_title_sub">조선의 마지막 황녀</h4>
+						<h3 class="info_title">{{ book.title }}</h3>
+						<h4 class="info_title_sub">{{ book.catchphrase }}</h4>
 						<ul class="info_author">
-							<li>권비영 저</li>
-							<li>다산북스</li>
+							<li>{{ book.author }} 저</li>
+							<li>{{ book.publisher }}</li>
 						</ul>
-						<p class="info_descript">
-							“어둠의 그림자”를 붙잡느라<br />
-							부서질 듯 보여.
-						</p>
+						<p class="info_descript">{{ book.short_description[:100] }}</p>
 					</div>
 					<hr class="clear_both"/>
 				</div>
+				{% endfor %}
 			</article>
 			<article class="main_best">
 				<div class="module_title1">
@@ -109,66 +106,20 @@
 				</div>
 				<div class="list_grid_wrap">
 					<ul class="module_list_grid">
+					    {% for part in today_list %}
 						<li>
 							<div class="list_grid">
 								<div class="module_book_thumb">
-									<a href="#" class="thumb_wrap">
-										<span class="img_wrap"><img src="/static/images/temp/book.jpg" alt="썸넬~" /></span>
+									<a href="{{ part.href }}" class="thumb_wrap">
+										<span class="img_wrap"><img src="{{ part.cover_url }}" alt="썸넬~" /></span>
 									</a>
 								</div>
 								<div class="module_book_info">
-									<h3 class="info_title">3회 곁에서 지켜줄 사람이 덕혜옹주</h3>
+									<h3 class="info_title">{{ part.title }}</h3>
 								</div>
 							</div>
 						</li>
-						<li>
-							<div class="list_grid">
-								<div class="module_book_thumb">
-									<a href="#" class="thumb_wrap">
-										<span class="img_wrap"><img src="/static/images/temp/book.jpg" alt="썸넬~" /></span>
-									</a>
-								</div>
-								<div class="module_book_info">
-									<h3 class="info_title">덕혜옹주</h3>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="list_grid">
-								<div class="module_book_thumb">
-									<a href="#" class="thumb_wrap">
-										<span class="img_wrap"><img src="/static/images/temp/book.jpg" alt="썸넬~" /></span>
-									</a>
-								</div>
-								<div class="module_book_info">
-									<h3 class="info_title">12회 수상한 남자를 만나버렸다 덕혜옹주</h3>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="list_grid">
-								<div class="module_book_thumb">
-									<a href="#" class="thumb_wrap">
-										<span class="img_wrap"><img src="/static/images/temp/book.jpg" alt="썸넬~" /></span>
-									</a>
-								</div>
-								<div class="module_book_info">
-									<h3 class="info_title">덕혜옹주</h3>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="list_grid">
-								<div class="module_book_thumb">
-									<a href="#" class="thumb_wrap">
-										<span class="img_wrap"><img src="/static/images/temp/book.jpg" alt="썸넬~" /></span>
-									</a>
-								</div>
-								<div class="module_book_info">
-									<h3 class="info_title">한번쯤 넘어져도 괜찮아 덕혜옹주</h3>
-								</div>
-							</div>
-						</li>
+					    {% endfor %}
 					</ul>
 					<hr class="clear_both"/>
 				</div>
