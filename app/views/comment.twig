@@ -27,8 +27,8 @@
 			    {% for item in comments %}
 				<li>
 					<div class="avarta">
-					    {% set img = (loop.index0 is even) ? 'icon_comment01.png' : 'icon_comment02.png' %}
-						<img src="/static/images/{{ img }}" alt="아바타" />
+					    {% set icon_idx = (item.id % 4) + 1 %}
+						<img src="/static/images/icon_comment0{{ icon_idx }}.png" alt="아바타" />
 					</div>
 					<div class="contents_wrap">
 						<p class="contents_info">
