@@ -14,7 +14,7 @@ button.default_btn {
   font-weight: bold;
   font-size: 13px;
   letter-spacing: -1px;
-  padding: 0 13px;
+  padding: 0 10px;
 }
 #story {
   position: relative;
@@ -35,12 +35,12 @@ button.default_btn {
   display: block;
   content: '';
   height: 100%;
-  width: 5px;
+  width: 24px;
   position: absolute;
   left: 0;
   top: 0;
-  background: url(../images/book_lighting.png) left top repeat-y;
-  background-size: 5px 1px;
+  background: url(../images/book_lighting.png?1313) left top repeat-y;
+  background-size: 24px 1px;
 }
 .module_book_thumb .thumb_wrap .img_wrap:after {
   display: block;
@@ -53,6 +53,10 @@ button.default_btn {
   background: blue;
   background: url(../images/book_side.png) left top repeat-y;
   background-size: 12px 100%;
+}
+.module_book_info {
+  box-sizing: border-box;
+  padding-right: 15px;
 }
 .module_book_info .info_title {
   margin-bottom: 4px;
@@ -75,6 +79,7 @@ button.default_btn {
   margin-bottom: 4px;
   color: #777;
   word-break: break-all;
+  line-height: 1.3em;
 }
 .module_book_info .info_author li {
   color: #777;
@@ -180,7 +185,7 @@ button.default_btn {
   line-height: 16px;
   color: white;
   font-size: 10px;
-  padding: 0 10px;
+  padding: 0 7px;
   border-radius: 20px;
   background: #f58d83;
 }
@@ -289,13 +294,19 @@ button.default_btn {
   top: 0;
   background: rgba(0, 0, 0, 0.4);
 }
-.module_layer_popup article {
+.module_layer_popup .popup_wrap {
   padding: 0 10px;
+  position: absolute;
+  left: 0;
+  top: 100px;
 }
-.module_layer_popup article .popup_contents {
+.module_layer_popup .popup_wrap article {
+  width: 100%;
+}
+.module_layer_popup .popup_wrap article .popup_contents {
   box-shadow: 0 0 3px #333;
 }
-.module_layer_popup article .popup_contents p {
+.module_layer_popup .popup_wrap article .popup_contents p {
   padding: 10px 10px 20px 10px;
   background: white;
   line-height: 1.3em;
@@ -315,10 +326,10 @@ button.default_btn {
   height: 18px;
   position: absolute;
   right: 0;
-  top: 18px;
+  top: 20px;
   text-indent: -20000px;
   background: url(../images/text_recom.png) left top no-repeat;
-  background-size: 72px 18px;
+  background-size: 48px 18px;
 }
 #story section.main article.main_recom nav.recom_nav {
   width: 100%;
@@ -446,6 +457,23 @@ button.default_btn {
 #story section.comment article.comment_wrap .comment_tab .tab_off .btn_tab_open {
   float: right;
   margin: 4px 5px 0 0;
+  background: #b0a799;
+  background-image: linear-gradient(180deg, #fefdfd, #f5f4ed);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fefdfd), to(#f5f4ed));
+  /* Safari 4+, Chrome 1-9 */
+
+  background: -webkit-linear-gradient(top, #fefdfd, #f5f4ed);
+  /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+
+  background: -moz-linear-gradient(top, #fefdfd, #f5f4ed);
+  /* Firefox 3.6+ */
+
+  background: -ms-linear-gradient(top, #fefdfd, #f5f4ed);
+  /* IE 10+ */
+
+  background: -o-linear-gradient(top, #fefdfd, #f5f4ed);
+  /* Opera 11.10+ */
+
 }
 #story section.comment article.comment_wrap .comment_tab .tab_on {
   width: 100%;
@@ -503,7 +531,7 @@ button.default_btn {
   position: relative;
   padding-left: 63px;
   padding-right: 5px;
-  margin-bottom: 10px;
+  padding-bottom: 10px;
 }
 #story section.comment article.comment_wrap .comment_list ul.list_wrap li .avarta {
   position: absolute;

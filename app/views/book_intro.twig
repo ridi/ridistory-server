@@ -1,0 +1,29 @@
+{% extends '/base.twig' %}
+
+{% block container %}
+<section class="module_layer_popup">
+	<h2 class="popup_title hidden">팝업</h2>
+	<div class="popup_wrap">
+		<article>
+			<div class="popup_contents">
+				<div class="module_title3">
+					<h3 class="title">책 상세정보</h3>
+				</div>
+				<p>{{ book.intro.description is defined ? book.intro.description : '작품 정보가 없습니다.' }}</p>
+			</div>
+		</article>
+		<article>
+			<div class="popup_contents">
+				<div class="module_title3">
+					<h3 class="title">저자소개</h3>
+				</div>
+				<p>{{ book.intro.about_author is defined ? book.intro.about_author : '저자 정보가 없습니다.' }}</p>
+			</div>
+		</article>
+	</div>
+</section>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

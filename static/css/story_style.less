@@ -8,11 +8,27 @@
   background: -ms-linear-gradient(top, #fff, #f5f3ec);/* IE 10+ */
   background: -o-linear-gradient(top, #fff, #f5f3ec);/* Opera 11.10+ */
 }
+.title3_gradation(){
+  background: #b0a799; background-image: linear-gradient(180deg, #bab2a4, #a8a08f);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bab2a4), to(#a8a08f));/* Safari 4+, Chrome 1-9 */
+  background: -webkit-linear-gradient(top, #bab2a4, #a8a08f);/* Safari 5.1+, Mobile Safari, Chrome 10+ */
+  background: -moz-linear-gradient(top, #bab2a4, #a8a08f);/* Firefox 3.6+ */
+  background: -ms-linear-gradient(top, #bab2a4, #a8a08f);/* IE 10+ */
+  background: -o-linear-gradient(top, #bab2a4, #a8a08f);/* Opera 11.10+ */
+}
+.btn_gradation(){
+  background: #b0a799; background-image: linear-gradient(180deg, #fefdfd, #f5f4ed);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fefdfd), to(#f5f4ed));/* Safari 4+, Chrome 1-9 */
+  background: -webkit-linear-gradient(top, #fefdfd, #f5f4ed);/* Safari 5.1+, Mobile Safari, Chrome 10+ */
+  background: -moz-linear-gradient(top, #fefdfd, #f5f4ed);/* Firefox 3.6+ */
+  background: -ms-linear-gradient(top, #fefdfd, #f5f4ed);/* IE 10+ */
+  background: -o-linear-gradient(top, #fefdfd, #f5f4ed);/* Opera 11.10+ */
+}
 
 body{ width:100%; background:@default_bg; }
 button.default_btn{ 
   -webkit-appearance:none; border: 1px solid #cecac0; border-radius:2px; background:#faf8f4; height: 27px; line-height:27px; 
-  color: #736e66; font-weight:bold; font-size: 13px; letter-spacing:-1px; padding: 0 13px;
+  color: #736e66; font-weight:bold; font-size: 13px; letter-spacing:-1px; padding: 0 10px;
 
 }
 #story{ position:relative; }
@@ -26,8 +42,8 @@ button.default_btn{
         display:block; width:100px;
       }
       &:before{
-        display:block; content:''; height:100%; width:5px; position:absolute; left:0; top:0;
-        background:url(../images/book_lighting.png) left top repeat-y; background-size: 5px 1px;
+        display:block; content:''; height:100%; width:24px; position:absolute; left:0; top:0;
+        background:url(../images/book_lighting.png?1313) left top repeat-y; background-size: 24px 1px;
       }
       &:after{
         display:block; content:''; height:100%; width:12px; position:absolute; right:-12px; top:0; background:blue;
@@ -87,7 +103,7 @@ button.default_btn{
   h2{
     display:block; float:left; margin-left: 10px; height:28px; line-height:28px; color: black; font-weight:bold; letter-spacing:-1px;
   }
-  .title_tip{ float:left; margin:6px 0 0 5px; height:16px; line-height:16px; color:white; font-size:10px; padding: 0 10px; border-radius:20px; background: #f58d83; }
+  .title_tip{ float:left; margin:6px 0 0 5px; height:16px; line-height:16px; color:white; font-size:10px; padding: 0 7px; border-radius:20px; background: #f58d83; }
 }//.module_title1
 
 .module_title2{
@@ -98,9 +114,9 @@ button.default_btn{
 }//.module_title2
 
 .module_title3{
-  width:100%; height:28px; background: #b0a799;
+  width:100%; height:27px; border-bottom: 1px solid #989080; .title3_gradation();
   .title{
-    float:left; margin-left: 10px; height:28px; line-height:28px; color:white; font-size:12px; font-weight:bold;
+    float:left; margin-left: 10px; height:27px; line-height:28px; color:white; font-size:12px; font-weight:bold;
   }
 }
 
@@ -117,11 +133,10 @@ button.default_btn{
           a{ border-left:none; }
         }
         &.active{
-          width:34%; height:23px; margin-top:3px;
+          width:34%; height:27px; margin-top:3px; border-bottom: 1px solid @default_bg;
           a{ 
-            width:101%; height:22px; padding-top:5px; position:absolute; left:0; top:0;  border-left:none; color:#666; 
+            width:101%; height:22px; padding-top:5px; position:absolute; left:0; top:0;  border-left:none; color:#666;
             background:@default_bg; border:1px solid #76bacf; border-bottom:none; border-top-right-radius:3px; border-top-left-radius:3px; z-index:500;
-            border-bottom: 1px solid @default_bg;
           }
         }
       }//li
@@ -130,11 +145,17 @@ button.default_btn{
 }//.module_tab1
 
 .module_layer_popup{
-  width:100%;
-  article{
-    padding: 0 10px;
-    p{ padding: 10px 10px 20px 10px; background:white; line-height:1.3em; }
-  }
+  width:100%; height:100%; position:absolute; left:0; top:0; background:rgba( 0,0,0,0.4 );
+  .popup_wrap{
+    padding: 0 10px; position:absolute; left:0; top: 100px;
+    article{
+     width:100%;
+      .popup_contents{
+        box-shadow: 0 0 3px #333;
+        p{ padding: 10px 10px 20px 10px; background:white; line-height:1.3em;}
+      }
+    }
+  }//.popup_warp
 }
 
 
@@ -147,8 +168,8 @@ button.default_btn{
       height:202px; border-bottom:1px solid #ccb58e;
       
       h2.recom_title{
-        width:52%; height:18px; position:absolute; right:0; top:18px; text-indent:-20000px;
-        background:url( ../images/text_recom.png ) left top no-repeat; background-size: 72px 18px;
+        width:52%; height:18px; position:absolute; right:0; top:20px; text-indent:-20000px;
+        background:url( ../images/text_recom.png ) left top no-repeat; background-size: 48px 18px;
       }
       
       // 겔러리 하단 원형버튼
@@ -240,7 +261,7 @@ button.default_btn{
             .num{ font-weight:bold; color:#ee8d84; } 
           }
           .btn_tab_open{
-            float:right; margin: 4px 5px 0 0;
+            float:right; margin: 4px 5px 0 0; .btn_gradation();
           }
         }
         .tab_on{
@@ -270,7 +291,7 @@ button.default_btn{
         ul.list_wrap{
           width:100%; padding-top: 10px;
           li{
-            position:relative; padding-left: 63px; padding-right:5px; margin-bottom:10px;
+            position:relative; padding-left: 63px; padding-right:5px; padding-bottom:10px;
             .avarta{
               position:absolute; left:10px; top:5px; width:32px;
               img{ width:32px; }
@@ -296,7 +317,6 @@ button.default_btn{
     }//.comment_wrap
   }//.comment
 }//#story
-
 
 
 

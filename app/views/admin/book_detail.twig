@@ -38,12 +38,13 @@
 		<td><textarea rows='3' class='input-xxlarge' name='short_description' maxlength='256'>{{ book.short_description }}</textarea></td>
 	</tr>
 	<tr>
-		<th>시작일</th>
-		<td><input type='text' class='input-small' name='begin_date' value='{{ book.begin_date }}'></input></td>
-	</tr>
-	<tr>
-		<th>종료일</th>
-		<td><input type='text' class='input-small' name='end_date' value='{{ book.end_date }}'></input></td>
+		<th>연재 기간</th>
+		<td>
+		    <div class="form-inline">
+		    <input type='text' class='input-small' name='begin_date' value='{{ book.begin_date }}'></input>
+        	~ <input type='text' class='input-small' name='end_date' value='{{ book.end_date }}'></input>
+		    </div>
+	    </td>
 	</tr>
 	<tr>
 	    <th>연재분</th>

@@ -33,7 +33,7 @@ class WebControllerProvider implements ControllerProviderInterface
 	public function bookIntro(Application $app, $b_id) {
 		$book = Book::get($b_id);
 		$book['intro'] = Book::getIntro($b_id);
-		return $app['twig']->render('/api/book_intro.twig', array('book' => $book));
+		return $app['twig']->render('/book_intro.twig', array('book' => $book));
 	}
 
 	public function commentList(Request $req, Application $app) {
