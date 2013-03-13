@@ -1,4 +1,24 @@
 @charset "utf-8";
+body {
+  width: 100%;
+  background: #f2efe9;
+}
+button.default_btn {
+  -webkit-appearance: none;
+  border: 1px solid #cecac0;
+  border-radius: 2px;
+  background: #faf8f4;
+  height: 27px;
+  line-height: 27px;
+  color: #736e66;
+  font-weight: bold;
+  font-size: 13px;
+  letter-spacing: -1px;
+  padding: 0 13px;
+}
+#story {
+  position: relative;
+}
 .module_book_thumb .thumb_wrap {
   display: inline-block;
   position: relative;
@@ -89,12 +109,15 @@
   width: 33%;
   text-align: center;
   float: left;
+  display: block;
+  height: 160px;
 }
 .module_list_grid li .list_grid {
   display: inline-block;
+  height: 160px;
 }
 .module_list_grid li .list_grid .module_book_thumb {
-  margin-bottom: 7px;
+  height: 120px;
 }
 .module_list_grid li .list_grid .module_book_thumb img {
   width: 80px;
@@ -107,7 +130,7 @@
   overflow-y: hidden;
 }
 .module_list_grid li .list_grid .module_book_info .info_title {
-  font-size: 0.9em;
+  font-size: 11px;
   font-weight: normal;
   color: #333;
   overflow: hidden;
@@ -124,6 +147,21 @@
   height: 28px;
   background: white;
   background-image: linear-gradient(180deg, #ffffff, #f5f3ec);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f5f3ec));
+  /* Safari 4+, Chrome 1-9 */
+
+  background: -webkit-linear-gradient(top, #ffffff, #f5f3ec);
+  /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+
+  background: -moz-linear-gradient(top, #ffffff, #f5f3ec);
+  /* Firefox 3.6+ */
+
+  background: -ms-linear-gradient(top, #ffffff, #f5f3ec);
+  /* IE 10+ */
+
+  background: -o-linear-gradient(top, #ffffff, #f5f3ec);
+  /* Opera 11.10+ */
+
 }
 .module_title1 h2 {
   display: block;
@@ -145,6 +183,53 @@
   padding: 0 10px;
   border-radius: 20px;
   background: #f58d83;
+}
+.module_title2 {
+  width: 100%;
+  height: 44px;
+  background: #f2efe9;
+  border-bottom: 1px solid #d9d5cd;
+}
+.module_title2 h2.title {
+  float: left;
+  margin-left: 10px;
+  height: 44px;
+  line-height: 44px;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: -1px;
+}
+.module_title3 {
+  width: 100%;
+  height: 27px;
+  border-bottom: 1px solid #989080;
+  background: #b0a799;
+  background-image: linear-gradient(180deg, #bab2a4, #a8a08f);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bab2a4), to(#a8a08f));
+  /* Safari 4+, Chrome 1-9 */
+
+  background: -webkit-linear-gradient(top, #bab2a4, #a8a08f);
+  /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+
+  background: -moz-linear-gradient(top, #bab2a4, #a8a08f);
+  /* Firefox 3.6+ */
+
+  background: -ms-linear-gradient(top, #bab2a4, #a8a08f);
+  /* IE 10+ */
+
+  background: -o-linear-gradient(top, #bab2a4, #a8a08f);
+  /* Opera 11.10+ */
+
+}
+.module_title3 .title {
+  float: left;
+  margin-left: 10px;
+  height: 27px;
+  line-height: 28px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
 }
 .module_tab1 {
   width: 100%;
@@ -176,7 +261,9 @@
 }
 .module_tab1 nav ul li.active {
   width: 34%;
+  height: 27px;
   margin-top: 3px;
+  border-bottom: 1px solid #f2efe9;
 }
 .module_tab1 nav ul li.active a {
   width: 101%;
@@ -194,9 +281,24 @@
   border-top-left-radius: 3px;
   z-index: 500;
 }
-body {
+.module_layer_popup {
   width: 100%;
-  background: #f2efe9;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+.module_layer_popup article {
+  padding: 0 10px;
+}
+.module_layer_popup article .popup_contents {
+  box-shadow: 0 0 3px #333;
+}
+.module_layer_popup article .popup_contents p {
+  padding: 10px 10px 20px 10px;
+  background: white;
+  line-height: 1.3em;
 }
 #story section.main {
   width: 100%;
@@ -302,4 +404,152 @@ body {
 #story section.main article.main_best .list_grid_wrap {
   padding: 15px 0;
   border-top: 1px solid #cac1b8;
+}
+#story section.comment article.comment_wrap {
+  width: 100%;
+}
+#story section.comment article.comment_wrap .comment_tab {
+  background: #faf8f4;
+  width: 100%;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_off {
+  background: white;
+  width: 100%;
+  height: 35px;
+  background: white;
+  background-image: linear-gradient(180deg, #ffffff, #f5f3ec);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f5f3ec));
+  /* Safari 4+, Chrome 1-9 */
+
+  background: -webkit-linear-gradient(top, #ffffff, #f5f3ec);
+  /* Safari 5.1+, Mobile Safari, Chrome 10+ */
+
+  background: -moz-linear-gradient(top, #ffffff, #f5f3ec);
+  /* Firefox 3.6+ */
+
+  background: -ms-linear-gradient(top, #ffffff, #f5f3ec);
+  /* IE 10+ */
+
+  background: -o-linear-gradient(top, #ffffff, #f5f3ec);
+  /* Opera 11.10+ */
+
+}
+#story section.comment article.comment_wrap .comment_tab .tab_off .comment_num {
+  float: left;
+  margin: 12px 0 0 10px;
+  color: #666;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_off .comment_num .num {
+  font-weight: bold;
+  color: #ee8d84;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_off .btn_tab_open {
+  float: right;
+  margin: 4px 5px 0 0;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_on {
+  width: 100%;
+  background: #faf8f4;
+  border-top: 1px solid #fcfbf8;
+  border-bottom: 1px solid #d9d5cd;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_on form {
+  padding: 7px 10px 10px 10px;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_on form .input_nick {
+  width: 200px;
+  height: 24px;
+  background: white;
+  line-height: 24px;
+  text-indent: 10px;
+  border: 1px solid #d6d4ce;
+  border-radius: 2px;
+  -webkit-appearance: none;
+  margin-bottom: 5px;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_on form .input_text {
+  width: 100%;
+  height: 60px;
+  background: white;
+  box-sizing: border-box;
+  padding: 3px 10px;
+  border: 1px solid #d6d4ce;
+  border-radius: 2px;
+  -webkit-appearance: none;
+  margin-bottom: 5px;
+  line-height: 1.3em;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_on form .char_num {
+  float: left;
+  color: #aaa69f;
+  font-size: 10px;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_on form .char_num .now_num {
+  color: #76706b;
+  font-weight: bold;
+}
+#story section.comment article.comment_wrap .comment_tab .tab_on form .btn_submit {
+  float: right;
+  margin-bottom: 10px;
+}
+#story section.comment article.comment_wrap .comment_list {
+  width: 100%;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap {
+  width: 100%;
+  padding-top: 10px;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li {
+  position: relative;
+  padding-left: 63px;
+  padding-right: 5px;
+  margin-bottom: 10px;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .avarta {
+  position: absolute;
+  left: 10px;
+  top: 5px;
+  width: 32px;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .avarta img {
+  width: 32px;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap {
+  width: 100%;
+  box-sizing: border-box;
+  background: white;
+  border: 1px solid #d7d3ca;
+  border-radius: 10px;
+  padding: 10px 17px;
+  position: relative;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_info {
+  margin-bottom: 10px;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_info .box_left_arrow {
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: -17px;
+  top: 20px;
+  text-indent: -20000px;
+  background: url(../images/bg_comment.png) left top no-repeat;
+  background-size: 20px 20px;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_info .info_id {
+  color: #333;
+  font-size: 14px;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_info .info_date {
+  display: inline-block;
+  padding-left: 6px;
+  margin-left: 3px;
+  border-left: 1px solid #bbb;
+  color: #bbb;
+  font-size: 12px;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_text {
+  line-height: 1.3em;
+  word-break: break-all;
 }
