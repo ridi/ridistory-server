@@ -1,145 +1,114 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-	<meta charset="utf-8"/>
-	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
-	<meta name="ROBOTS" content="ALL"/>
-	<meta name="author" content="Initial Communications"/>
-	<meta name="description" content="스토리홀릭"/>
-	<meta name="keywords" content="스토리홀릭, story holic"/>
-	<title>스토리홀릭</title>
-	
-	<!-- ============== icon ========= -->
-	<link rel="apple-touch-icon-precomposed" href="/static/images/icon_story_72.png" />
-	<link rel="apple-touch-icon-precomposed" href="/static/images/icon_story_114.png" sizes="114x114" />
+{% extends '/base.twig' %}
 
-	<!-- ============== CSS ========= -->
-	<link rel="stylesheet" type="text/css" media="all" href="/static/css/reset.css"/>
-	<link rel="stylesheet" type="text/css" media="screen" href="/static/css/story_style.css"/>
-
-	<!-- ============== JS ========= -->
-	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
-	<!--
-	<script type="text/javascript" src="/static/js/jquery.placeholder.js"></script>
-	<script type="text/javascript" src="/static/js/prefixfree.min.js"></script>
-	<script type="text/javascript">
-		
-	</script>
-	-->
-</head>
-<body>
-	<div id="story">
-		<header class="hidden">
-			<h1>Story Holic</h1>	
-		</header>
-		<!-- ========= block ========= -->
-		<section class="main">
-			<article class="main_recom">
-				<h2 class="recom_title">오늘의 추천책</h2>
-				<nav class="recom_nav">
-					<ul>
-						<li class="active"><button>1</button></li>
-						<li><button>2</button></li>
-						<li><button>3</button></li>
-					</ul>
-				</nav>
-				<ul class="recom_gallery">
-				    {% for book in recommended_list %}
-					<li>
-						<div class="book_list">
-							<div class="module_book_thumb">
-								<a href="#" class="thumb_wrap">
-									<span class="img_wrap"><img src="{{ book.cover_url }}" alt="썸넬~" /></span>
-								</a>
-							</div>
-							<div class="module_book_info">
-								<h3 class="info_title">{{ book.title }}</h3>
-								<ul class="info_author">
-									<li>{{ book.author }} 저</li>
-									<li>{{ book.publisher }}</li>
-								</ul>
-								<p class="info_descript">{{ book.short_description[:100] }}</p>
-							</div>
-						</div>
-					</li>
-					{% endfor %}
-				</ul>
-				<hr class="clear_both"/>
-			</article>
-			<article class="main_new">
-				<div class="module_title1">
-					<h2>신규 컨텐츠 예고</h2>
-					<p class="title_tip">매주 월요일 오픈</p>
-				</div>
-				<div class="module_tab1">
-					<nav id='designated_nav'>
-						<ul>
-							<li class="active"><a href="#upcoming1"><span>D-7</span></a></li>
-							<li><a href="#upcoming2"><span>D-14</span></a></li>
-							<li><a href="#upcoming3"><span>D-21</span></a></li>
+{% block container %}
+<section class="main">
+	<article class="main_recom">
+		<h2 class="recom_title">오늘의 추천책</h2>
+		<nav class="recom_nav">
+			<ul>
+				<li class="active"><button>1</button></li>
+				<li><button>2</button></li>
+				<li><button>3</button></li>
+			</ul>
+		</nav>
+		<ul class="recom_gallery">
+		    {% for book in recommended_list %}
+			<li>
+				<div class="book_list">
+					<div class="module_book_thumb">
+						<a href="#" class="thumb_wrap">
+							<span class="img_wrap"><img src="{{ book.cover_url }}" alt="썸넬~" /></span>
+						</a>
+					</div>
+					<div class="module_book_info">
+						<h3 class="info_title">{{ book.title }}</h3>
+						<ul class="info_author">
+							<li>{{ book.author }} 저</li>
+							<li>{{ book.publisher }}</li>
 						</ul>
-					</nav>
+						<p class="info_descript">{{ book.short_description[:100] }}</p>
+					</div>
 				</div>
-				<ul id='designated_list'>
-					{% for book in designated_list %}
-    				<li class="book_list" id="upcoming{{ loop.index }}">
-    					<div class="module_book_thumb">
-    						<a href="#" class="thumb_wrap">
-    							<span class="img_wrap"><img src="{{ book.cover_url }}" alt="썸넬~" /></span>
-    						</a>
-    					</div>
-    					<div class="module_book_info">
-    						<h3 class="info_title">{{ book.title }}</h3>
-    						<h4 class="info_title_sub">{{ book.catchphrase }}</h4>
-    						<ul class="info_author">
-    							<li>{{ book.author }} 저</li>
-    							<li>{{ book.publisher }}</li>
-    						</ul>
-    						<p class="info_descript">{{ book.short_description[:100] }}</p>
-    					</div>
-    					<hr class="clear_both"/>
-    				</li>
-    				{% endfor %}
+			</li>
+			{% endfor %}
+		</ul>
+		<hr class="clear_both"/>
+	</article>
+	<article class="main_new">
+		<div class="module_title1">
+			<h2>신규 컨텐츠 예고</h2>
+			<p class="title_tip">매주 월요일 오픈</p>
+		</div>
+		<div class="module_tab1">
+			<nav id='designated_nav'>
+				<ul>
+					<li class="active"><a href="#upcoming1"><span>D-7</span></a></li>
+					<li><a href="#upcoming2"><span>D-14</span></a></li>
+					<li><a href="#upcoming3"><span>D-21</span></a></li>
 				</ul>
-			</article>
-			<article class="main_best">
-				<div class="module_title1">
-					<h2>TODAY BEST</h2>
+			</nav>
+		</div>
+		<ul id='designated_list'>
+			{% for book in designated_list %}
+			<li class="book_list" id="upcoming{{ loop.index }}">
+				<div class="module_book_thumb">
+					<a href="#" class="thumb_wrap">
+						<span class="img_wrap"><img src="{{ book.cover_url }}" alt="썸넬~" /></span>
+					</a>
 				</div>
-				<div class="list_grid_wrap">
-					<ul class="module_list_grid">
-					    {% for part in today_list %}
-						<li>
-							<div class="list_grid">
-								<div class="module_book_thumb">
-									<a href="{{ part.href }}" class="thumb_wrap">
-										<span class="img_wrap"><img src="{{ part.cover_url }}" alt="썸넬~" /></span>
-									</a>
-								</div>
-								<div class="module_book_info">
-									<h3 class="info_title">{{ part.title }}</h3>
-								</div>
-							</div>
-						</li>
-					    {% endfor %}
+				<div class="module_book_info">
+					<h3 class="info_title">{{ book.title }}</h3>
+					<h4 class="info_title_sub">{{ book.catchphrase }}</h4>
+					<ul class="info_author">
+						<li>{{ book.author }} 저</li>
+						<li>{{ book.publisher }}</li>
 					</ul>
-					<hr class="clear_both"/>
+					<p class="info_descript">{{ book.short_description[:100] }}</p>
 				</div>
-			</article>
-		</section>
-		<!-- ========= block ========= -->
-	</div>
-	<script>
-	    $(function() {
-    	    $('#designated_nav a').click(function (e) {
-    	        var a = $(this);
-    	        $('#designated_nav li')
-    	        	.removeClass('active')
-    	        	.has(a).addClass('active');
-    	        $(a.attr('href')).show()
-    	        	.siblings().hide();
-      		}).first().click();
-	    });
-	</script>
-</body>
-</html>
+				<hr class="clear_both"/>
+			</li>
+			{% endfor %}
+		</ul>
+	</article>
+	<article class="main_best">
+		<div class="module_title1">
+			<h2>TODAY BEST</h2>
+		</div>
+		<div class="list_grid_wrap">
+			<ul class="module_list_grid">
+			    {% for part in today_list %}
+				<li>
+					<div class="list_grid">
+						<div class="module_book_thumb">
+							<a href="{{ part.href }}" class="thumb_wrap">
+								<span class="img_wrap"><img src="{{ part.cover_url }}" alt="썸넬~" /></span>
+							</a>
+						</div>
+						<div class="module_book_info">
+							<h3 class="info_title">{{ part.title }}</h3>
+						</div>
+					</div>
+				</li>
+			    {% endfor %}
+			</ul>
+			<hr class="clear_both"/>
+		</div>
+	</article>
+</section>
+{% endblock %}
+	
+{% block script %}
+<script>
+    $(function() {
+	    $('#designated_nav a').click(function (e) {
+	        var a = $(this);
+	        $('#designated_nav li')
+	        	.removeClass('active')
+	        	.has(a).addClass('active');
+	        $(a.attr('href')).show()
+	        	.siblings().hide();
+        	return false;
+  		}).first().click();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+	<meta name="ROBOTS" content="ALL"/>
+	<meta name="author" content="Initial Communications"/>
+	<meta name="description" content="스토리홀릭"/>
+	<meta name="keywords" content="스토리홀릭, story holic"/>
+	<title>스토리홀릭</title>
+	<link rel="stylesheet" type="text/css" media="all" href="/static/css/reset.css"/>
+	<link rel="stylesheet" type="text/css" media="screen" href="/static/css/story_style.css"/>
+	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+</head>
+	<div id="story">
+		<header class="hidden">
+			<h1>Story Holic</h1>	
+		</header>
+		{% block container %}
+		{% endblock %}
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/static/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+        {% block script %}
+        {% endblock %}
+    </body>
+</html>

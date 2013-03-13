@@ -59,11 +59,11 @@ class WebControllerProvider implements ControllerProviderInterface
 	public function commentAdd(Request $req, Application $app) {
 		$p_id = $req->get('p_id');
 		$device_id = $req->get('device_id');
-		$nickname = $req->get('nickname');
-		$comment = $req->get('comment');
+		$nickname = trim($req->get('nickname'));
+		$comment = trim($req->get('comment'));
 		
 		if (empty($nickname) || empty($comment)) {
-			return '닉네임이나 댓글이 없다.';
+			return alert_and_back('닉네임이나 댓글이 없다.');
 		}
 		
 		// TODO: abuse detection
@@ -71,5 +71,13 @@ class WebControllerProvider implements ControllerProviderInterface
 		$r = PartComment::add($p_id, $device_id, $nickname, $comment);
 		return $app->redirect('/comment/list?p_id=' . $p_id);
 	}
+	
 }
 
+function alert_and_back($msg) {
+	$r = '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"></head><body><script>';
+	$r .= "alert(" . json_encode($msg) . ");";
+	$r .= "history.go(-1);";
+	$r .= "</script></body></html>";
+	return $r;
+}
