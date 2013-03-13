@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+	<meta name="ROBOTS" content="ALL"/>
+	<meta name="author" content="Initial Communications"/>
+	<meta name="description" content="스토리홀릭"/>
+	<meta name="keywords" content="스토리홀릭, story holic"/>
+	<title>스토리홀릭</title>
+	
+	<!-- ============== icon ========= -->
+	<link rel="apple-touch-icon-precomposed" href="/static/images/icon_story_72.png"/>
+	<link rel="apple-touch-icon-precomposed" href="/static/images/icon_story_114.png" sizes="114x114"/>
+
+	<!-- ============== CSS ========= -->
+	<link rel="stylesheet" type="text/css" media="all" href="/static/css/reset.css"/>
+	<link rel="stylesheet" type="text/css" media="screen" href="/static/css/story_style.css"/>
+
+	<!-- ============== JS ========= -->
+	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.placeholder.js"></script>
+	<script type="text/javascript" src="/static/js/prefixfree.min.js"></script>
+	<script type="text/javascript">
+		
+	</script>
+</head>
+<body>
+	<div id="story">
+		<header class="hidden">
+			<h1>Story Holic</h1>	
+		</header>
+		<!-- ========= block ========= -->
+		<section class="comment">
+			<article class="comment_wrap">
+				<div class="module_title2">
+					<h2 class="title">{{ part.title }}</h2>
+				</div>
+				<div class="comment_tab">
+					<div class="tab_off">
+						<p class="comment_num">댓글 <span class="num">{{ num_comments }}</span></p>
+						<button class="default_btn btn_tab_open">댓글쓰기</button>
+					</div>
+					<div class="tab_on">
+						<form action='/comment/add' method='post'>
+                            <input type='hidden' name='p_id' value='{{ part.id }}'>
+                            <input type='hidden' name='device_id' value='{{ device_id }}'>
+							<input type="text" name='nickname' class="input_nick" placeholder="닉네임을 입력하세요"/>
+							<textarea name="comment" id="input_comment" class="input_text" placeholder="댓글을 입력하세요"></textarea>
+							<p class="char_num"><span class="now_num">0</span>/300</p>
+							<button class="default_btn btn_submit" type="submit">등록하기</button>
+						</form>
+						<hr class="clear_both" />
+					</div>
+				</div>
+				<div class="comment_list">
+					<ul class="list_wrap">
+					    {% for item in comments %}
+						<li>
+							<div class="avarta">
+							    {% set img = (loop.index0 is even) ? 'icon_comment01.png' : 'icon_comment02.png' %}
+								<img src="/static/images/{{ img }}" alt="아바타" />
+							</div>
+							<div class="contents_wrap">
+								<p class="contents_info">
+									<span class="box_left_arrow">작성자</span>
+									<span class="info_id">{{ item.nickname }}</span>
+									<span class="info_date">{{ item.timestamp }}</span>
+								</p>
+								<p class="contents_text">{{ item.comment }}</p>
+							</div>
+						</li>
+					    {% endfor %}
+					</ul>
+				</div>
+			</article>
+		</section>
+		<!-- ========= block ========= -->
+	</div>
+</body>
+</html>

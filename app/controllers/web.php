@@ -48,7 +48,7 @@ class WebControllerProvider implements ControllerProviderInterface
 		
 		$num_comments = PartComment::getCommentCount($p_id);
 		$comments = PartComment::getList($p_id);
-		return $app['twig']->render('/api/comment_list.twig', array(
+		return $app['twig']->render('/comment.twig', array(
 			'part' => $part,
 			'device_id' => $device_id,
 			'num_comments' => $num_comments,
