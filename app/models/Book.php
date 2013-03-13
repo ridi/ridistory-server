@@ -36,23 +36,33 @@ EOT;
 		return $ar;
 	}
 	
-	public static function getListByIds(array $b_ids) {
+	public static function getListByIds(array $b_ids, $with_part_info = false) {
 		if (count($b_ids) === 0) {
 			return array();
 		}
 		
-		$sql = <<<EOT
+		if ($with_part_info) {
+			$sql = <<<EOT
+select c.name category, i.popularity, last_update, b.* from book b
+ join category c on c.id = c_id
+ left join (select b_id, count(*) popularity from user_interest group by b_id) i on b.id = b_id
+ left join (select b_id, max(begin_date) last_update from part group by b_id) p on b.id = p.b_id
+where b.id in (?)
+EOT;
+		} else {
+			$sql = <<<EOT
 select c.name category, p.popularity, b.* from book b
  join category c on c.id = c_id
  left join (select b_id, count(*) popularity from user_interest group by b_id) p on b.id = b_id
 where b.id in (?)
 EOT;
+		}
+		
 		global $app;
 		$stmt = $app['db']->executeQuery($sql,
 			array($b_ids),
 			array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
 		);
-		
 		$ar = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($ar as &$b) {
 			$b['cover_url'] = Book::getCoverUrl($b['store_id']);

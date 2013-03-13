@@ -25,6 +25,16 @@ class UserInterest
 		$r = $app['db']->fetchAssoc('select * from user_interest where device_id = ? and b_id = ?', array($device_id, $b_id));
 		return ($r !== false);
 	}
+	
+	public static function getList($device_id) {
+		global $app;
+		$r = $app['db']->fetchAll('select b_id from user_interest where device_id = ?', array($device_id));
+		$b_ids = array();
+		foreach ($r as $row) {
+			$b_ids[] = $row['b_id'];
+		}
+		return $b_ids;
+	}
 }
 
 

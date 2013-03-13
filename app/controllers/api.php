@@ -66,13 +66,9 @@ class ApiControllerProvider implements ControllerProviderInterface
 	}
 
 	public function userInterestList(Application $app, $device_id) {
-		$r = $app['db']->fetchAll('select b_id from user_interest where device_id = ?', array($device_id));
-		$b_ids = array();
-		foreach ($r as $row) {
-			$b_ids[] = $row['b_id'];
-		}
-
-		$list = Book::getListByIds($b_ids);
+		$b_ids = UserInterest::getList($device_id);
+		
+		$list = Book::getListByIds($b_ids, true);
 		return $app->json($list);
 	}
 	
