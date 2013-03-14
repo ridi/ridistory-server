@@ -92,6 +92,11 @@ EOT;
 	}
 	
 	
+	public static function createIntro($values) {
+		global $app;
+		return $app['db']->insert('book_intro', $values);
+	}
+	
 	public static function getIntro($b_id) {
 		global $app;
 		return $app['db']->fetchAssoc('select * from book_intro where b_id = ?', array($b_id));

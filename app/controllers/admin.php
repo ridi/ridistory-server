@@ -88,6 +88,11 @@ class AdminControllerProvider implements ControllerProviderInterface
 		$book = Book::get($id);
 		$parts = Part::getListByBid($id);
 		$intro = Book::getIntro($id);
+		if ($intro === false) {
+			$intro = array('b_id' => $id, 'description' => '', 'about_author' => '');
+			Book::createIntro($intro);
+		}
+		
 		return $app['twig']->render('admin/book_detail.twig', array(
 			'book' => $book,
 			'parts' => $parts,
