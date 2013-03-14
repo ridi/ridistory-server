@@ -315,7 +315,7 @@ button.default_btn {
   background: url(../images/bg_recom.png) left top repeat;
   background-size: 100px 404px;
   position: relative;
-  height: 202px;
+  height: 186px;
   border-bottom: 1px solid #ccb58e;
 }
 #story section.main article.main_recom h2.recom_title {
@@ -363,7 +363,7 @@ button.default_btn {
 }
 #story section.main article.main_recom ul.recom_gallery > li {
   width: 100%;
-  height: 202px;
+  height: 186px;
   position: absolute;
   top: 0;
   left: 0;
@@ -391,18 +391,15 @@ button.default_btn {
   padding-bottom: 20px;
 }
 #story section.main article.main_new .book_list .module_book_thumb {
-  width: 48%;
+  width: 40%;
   float: left;
   text-align: right;
 }
 #story section.main article.main_new .book_list .module_book_thumb .thumb_wrap {
-  margin-right: 55px;
-}
-#story section.main article.main_new .book_list .module_book_thumb .thumb_wrap img {
-  width: 78px;
+  margin-right: 25px;
 }
 #story section.main article.main_new .book_list .module_book_info {
-  width: 52%;
+  width: 60%;
   float: left;
   margin-top: 4px;
 }
