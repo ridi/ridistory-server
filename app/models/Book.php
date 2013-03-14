@@ -96,6 +96,11 @@ EOT;
 		global $app;
 		return $app['db']->fetchAssoc('select * from book_intro where b_id = ?', array($b_id));
 	}
+	
+	public static function updateIntro($b_id, $values) {
+		global $app;
+		return $app['db']->update('book_intro', $values, array('b_id' => $b_id));
+	}
 }
 
 class BookList
@@ -104,6 +109,9 @@ class BookList
 		$b_ids = array(15);
 		
 		$books = Book::getListByIds($b_ids);
+		foreach ($books as &$b) {
+			$b['href'] = 'storyholic://native/book/' . $b['id'] . '/detail';
+		}
 		return $books;
 	}
 	
@@ -115,6 +123,7 @@ class BookList
 		foreach ($books as &$b) {
 			$date->add(new DateInterval('P7D'));
 			$b['open_date'] = $date->format('Y-m-d');
+			$b['href'] = 'storyholic://native/book/' . $b['id'] . '/detail';
 		}
 		
 		return $books;
@@ -129,9 +138,9 @@ class BookList
 		);
 		
 		$ar = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		foreach ($ar as &$b) {
-			$b['cover_url'] = Book::getCoverUrl($b['store_id']);
-			$b['href'] = 'storyholic://native/book/' . $b['b_id'] . '/detail';
+		foreach ($ar as &$p) {
+			$p['cover_url'] = Book::getCoverUrl($p['store_id']);
+			$p['href'] = 'storyholic://native/book/' . $p['b_id'] . '/detail';
 		}
 		
 		return $ar;

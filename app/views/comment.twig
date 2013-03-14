@@ -24,11 +24,11 @@
 		</div>
 		<div class="comment_list">
 			<ul class="list_wrap">
+			    {% set icon_map = [1, 2, 3, 4, 1, 2, 1, 2, 3, 4, 1, 2] %}
 			    {% for item in comments %}
 				<li>
 					<div class="avarta">
-					    {% set icon_idx = (item.id % 4) + 1 %}
-						<img src="/static/images/icon_comment0{{ icon_idx }}.png" alt="아바타" />
+						<img src="/static/images/icon_comment0{{ icon_map[item.id % icon_map|length] }}.png" alt="아바타" />
 					</div>
 					<div class="contents_wrap">
 						<p class="contents_info">

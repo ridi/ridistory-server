@@ -54,34 +54,29 @@
         </td>
 	</tr>
 	<tr>
-		<th>연재 횟수</th>
-		<td>
-		    <label>
-			    <input type='text' class='input-small' name='total_part_count' value='{{ book.total_part_count }}'> 회</input>
-		    </label>
+		<th>연재 정보</th>
+		<td>     
+            <div class='span5'>
+                {% set weekday = ['일', '월', '화', '수', '목', '금', '토'] %}
+                {% for i in 0..6 %}
+                <label class="checkbox inline">
+                    <input type='checkbox' name='upload_days[]' value='{{ 2 ** i }}'>{{ weekday[i] }}</input>
+                </label>
+                {% endfor %}	                
+            </div>
+            <div class='span2'>
+    		    <label class="radio">
+    			    <input type='radio' name='is_completed' value='0'>연재 중</input>
+    		    </label>
+    		    <label class="radio">
+    			    <input type='radio' name='is_completed' value='1'>연재 완료</input>
+    		    </label>		                
+            </div>
+            <div class='span2'>
+    		    <label>총 <input type='text' class='input-small' name='total_part_count' value='{{ book.total_part_count }}'> 회</input>
+    		    </label>
+		    </div>
 	    </td>
-	</tr>
-	<tr>
-		<th>완료 여부</th>
-		<td>
-		    <label class="radio">
-			    <input type='radio' name='is_completed' value='0'>연재 중</input>
-		    </label>
-		    <label class="radio">
-			    <input type='radio' name='is_completed' value='1'>연재 완료</input>
-		    </label>
-		</td>
-	</tr>
-	<tr>
-	    <th>연재 요일</th>
-        <td>
-            {% set weekday = ['일', '월', '화', '수', '목', '금', '토'] %}
-            {% for i in 0..6 %}
-            <label class="checkbox inline">
-                <input type='checkbox' name='upload_days[]' value='{{ 2 ** i }}'>{{ weekday[i] }}</input>
-            </label>
-            {% endfor %}
-        </td>
 	</tr>
 	<tr>
 	    <th>작품 점수</th>
@@ -92,6 +87,22 @@
 	    </td>
 	</tr>
 </table>
+
+<table class='table'>
+    <thead>
+    	<tr>
+    	    <th>작품 소개(상세)</th>
+    	    <th>저자 소개(상세)</th>
+    	</tr>
+	</thead>
+    <tbody>
+    	<tr>
+    		<td><textarea rows='10' style='width: 400px' name='intro_description'>{{ intro.description }}</textarea></td>
+    		<td><textarea rows='10' style='width: 400px' name='intro_about_author'>{{ intro.about_author }}</textarea></td>
+    	</tr>
+	</tbody>
+</table>
+
 <div class='form-actions'>
 	<button type='submit' class='btn btn-success'>수정 완료</button>
 	<button class='btn btn-cancel'>목록으로</button>

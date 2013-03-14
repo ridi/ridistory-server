@@ -9,7 +9,7 @@
 				<div class="module_title3">
 					<h3 class="title">책 상세정보</h3>
 				</div>
-				<p>{{ book.intro.description is defined ? book.intro.description : '작품 정보가 없습니다.' }}</p>
+				<p>{{ book.intro.description is defined ? book.intro.description|nl2br : '작품 정보가 없습니다.' }}</p>
 			</div>
 		</article>
 		<article>
@@ -17,7 +17,7 @@
 				<div class="module_title3">
 					<h3 class="title">저자소개</h3>
 				</div>
-				<p>{{ book.intro.about_author is defined ? book.intro.about_author : '저자 정보가 없습니다.' }}</p>
+				<p>{{ book.intro.about_author is defined ? book.intro.about_author|nl2br : '저자 정보가 없습니다.' }}</p>
 			</div>
 		</article>
 	</div>

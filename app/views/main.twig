@@ -16,7 +16,7 @@
 			<li>
 				<div class="book_list">
 					<div class="module_book_thumb">
-						<a href="#" class="thumb_wrap">
+						<a href="{{ book.href }}" class="thumb_wrap">
 							<span class="img_wrap"><img src="{{ book.cover_url }}" alt="썸넬~" /></span>
 						</a>
 					</div>
@@ -52,7 +52,7 @@
 			{% for book in designated_list %}
 			<li class="book_list" id="upcoming{{ loop.index }}">
 				<div class="module_book_thumb">
-					<a href="#" class="thumb_wrap">
+					<a href="{{ book.href }}" class="thumb_wrap">
 						<span class="img_wrap"><img src="{{ book.cover_url }}" alt="썸넬~" /></span>
 					</a>
 				</div>
@@ -100,11 +100,10 @@
 {% block script %}
 <script>
     $(function() {
-	    $('#designated_nav a').click(function (e) {
-	        var a = $(this);
-	        $('#designated_nav li')
-	        	.removeClass('active')
-	        	.has(a).addClass('active');
+	    $('#designated_nav li').click(function (e) {
+	        $(this).addClass('active')
+	        	.siblings().removeClass('active');
+	        var a = $(this).find('a');
 	        $(a.attr('href')).show()
 	        	.siblings().hide();
         	return false;
