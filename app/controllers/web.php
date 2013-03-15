@@ -48,8 +48,7 @@ class WebControllerProvider implements ControllerProviderInterface
 			return '있지도 않은 스토리다.';
 		}
 		
-		// TODO:
-		$device_id = 'dd';
+		$device_id = $req->get('device_id');
 		
 		$num_comments = PartComment::getCommentCount($p_id);
 		$comments = PartComment::getList($p_id);

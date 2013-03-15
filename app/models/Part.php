@@ -71,6 +71,12 @@ class PartComment
 		return $r;
 	}
 	
+	public static function delete($c_id) {
+		global $app;
+		$r = $app['db']->delete('part_comment', array('id' => $c_id));
+		return $r === 1;
+	}
+	
 	public static function getList($p_id) {
 		global $app;
 		$r = $app['db']->fetchAll('select * from part_comment where p_id = ? order by timestamp desc limit 100', array($p_id));

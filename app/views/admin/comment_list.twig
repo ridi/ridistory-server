@@ -1,37 +1,41 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-<form>
 <table class='table'>
 	<thead>
 		<tr>
-			<th class='span1'><input type='checkbox' id='select_all'></input></th>
 			<th class='span1'>파트 ID</th>
 			<th>Comment</th>
 			<th class='span3'>Timestamp</th>
+			<th class='span1'></th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for comment in comments %}
 		<tr>
-			<td><input type='checkbox'></input></td>
 			<td>{{ comment.p_id }}</td>
-			<td>{{ comment.device_id }} ~ {{ comment.comment }}</td>
+			<td>{{ comment.comment }}</td>
 			<td>{{ comment.timestamp }}</td>
+			<td><button class='btn btn-danger btn-mini' onclick="location.href='/admin/comment/{{ comment.id }}/delete'">삭제</button></td>
 		</tr>
 		{% endfor %}
 	</tbody>
 </table>
-<div class="form-actions">
-	<button class='btn btn-danger'>선택 삭제</button>
-</div>
-</form>
+<ul class="pager">
+  <li class="next">
+    <a href="/admin/comment/list?page={{ cur_page + 1 }}">Older &rarr;</a>
+  </li>
+</ul>
 {% endblock %}
 
 {% block script %}
 <script>
 $('#select_all').change(function() {
-	$(':checkbox[id!="select_all"]').attr('checked', $(this).is(':checked'));
+    if ($(this).is(':checked')) {
+    	$(':checkbox[id!="select_all"]').attr('checked', 'checked');
+    } else {
+        $(':checkbox[id!="select_all"]').removeAttr('checked');
+    }
 });
 </script>
 {% endblock %}

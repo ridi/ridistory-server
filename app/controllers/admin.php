@@ -43,10 +43,8 @@ class AdminControllerProvider implements ControllerProviderInterface
 			}
 		});
 		
-		$admin->get('/comment/list', function (Request $req, Application $app) {
-			$comments = $app['db']->fetchAll('select * from part_comment order by id desc limit 100');
-			return $app['twig']->render('/admin/comment_list.twig', array('comments' => $comments));
-		});
+		$admin->get('/comment/list', array($this, 'commentList'));
+		$admin->get('/comment/{c_id}/delete', array($this, 'commentDelete'));
 		
 		$admin->get('/api_list', function() use ($app) {
 			return $app['twig']->render('/admin/api_list.twig');
@@ -193,8 +191,31 @@ class AdminControllerProvider implements ControllerProviderInterface
 		
 		return $result;
 	}
-}
 	
+	public static function commentList(Request $req, Application $app) {
+		$cur_page = $req->get('page', 0);
+		
+		$limit = 50;
+		$offset = $cur_page * $limit;
+		 
+		$comments = $app['db']->fetchAll("select * from part_comment order by id desc limit {$offset}, {$limit}");
+		$num_comments = $app['db']->fetchColumn('select count(*) from part_comment');
+		return $app['twig']->render('/admin/comment_list.twig', array(
+			'comments' => $comments,
+			'num_comments' => $num_comments,
+			'cur_page' => $cur_page,
+			'num_pages' => $num_comments / $limit,
+		));
+	}
+	
+	public static function commentDelete(Request $req, Application $app, $c_id) {
+		$r = PartComment::delete($c_id);
+		$app['session']->set('alert', array('info' => '댓글이 삭제되었습니다.'));
+		$redirect_url = $req->headers->get('referer', '/admin/comment/list');
+		return $app->redirect($redirect_url); 
+	}
+}
+
 function array_move_keys(&$src, &$dst, array $keys) {
 	foreach ($keys as $k1 => $k2) {
 		$dst[$k2] = $src[$k1];
