@@ -111,7 +111,12 @@ EOT;
 class BookList
 {
 	public static function getRecommendedBooks() {
-		$b_ids = array(15);
+		global $app;
+		$r = $app['db']->fetchAll('select b_id from recommended_books order by reg_date desc limit 3');
+		$b_ids = array();
+		foreach ($r as $row) {
+			$b_ids[] = $row['b_id'];
+		}
 		
 		$books = Book::getListByIds($b_ids);
 		foreach ($books as &$b) {
@@ -121,13 +126,15 @@ class BookList
 	}
 	
 	public static function getDesignatedBooks() {
-		$b_ids = array(14, 15, 16);
+		global $app;
+		$r = $app['db']->fetchAll('select id from book where begin_date > now() order by begin_date limit 2');
+		$b_ids = array();
+		foreach ($r as $row) {
+			$b_ids[] = $row['id'];
+		}
 		
 		$books = Book::getListByIds($b_ids);
-		$date = new DateTime();
 		foreach ($books as &$b) {
-			$date->add(new DateInterval('P7D'));
-			$b['open_date'] = $date->format('Y-m-d');
 			$b['href'] = 'storyholic://native/book/' . $b['id'] . '/detail';
 		}
 		

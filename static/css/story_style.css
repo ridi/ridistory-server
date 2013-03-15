@@ -245,7 +245,7 @@ button.default_btn {
   padding: 0 10px;
 }
 .module_tab1 nav ul li {
-  width: 33%;
+  width: 50%;
   float: left;
   margin-top: 9px;
   position: relative;
@@ -262,7 +262,7 @@ button.default_btn {
   border-left: none;
 }
 .module_tab1 nav ul li.active {
-  width: 34%;
+  width: 50%;
   height: 27px;
   margin-top: 3px;
   border-bottom: 1px solid #f2efe9;

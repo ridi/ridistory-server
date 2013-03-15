@@ -42,9 +42,9 @@
 		<div class="module_tab1">
 			<nav id='designated_nav'>
 				<ul>
-					<li class="active"><a href="#upcoming1"><span>D-7</span></a></li>
-					<li><a href="#upcoming2"><span>D-14</span></a></li>
-					<li><a href="#upcoming3"><span>D-21</span></a></li>
+				    {% for book in designated_list %}
+					<li {{ loop.first ? 'class="active"' }}><a href="#upcoming{{ loop.index }}"><span>{{ book.d_day }}</span></a></li>
+				    {% endfor %}
 				</ul>
 			</nav>
 		</div>

@@ -21,6 +21,11 @@ class WebControllerProvider implements ControllerProviderInterface
 	public function home(Application $app) {
 		$recommended_list = BookList::getRecommendedBooks();
 		$designated_list = BookList::getDesignatedBooks();
+		foreach ($designated_list as &$book) {
+			$begin_date = new DateTime($book['begin_date']);
+			$interval = $begin_date->diff(new DateTime());
+			$book['d_day'] = $interval->format('D%R%a');
+		}
 		$today_list = BookList::getTodayBest();
 		
 		return $app['twig']->render('/main.twig', array(
