@@ -319,11 +319,7 @@ button.default_btn {
   border-bottom: 1px solid #ccb58e;
 }
 #story section.main article.main_recom h2.recom_title {
-  width: 52%;
-  height: 18px;
-  position: absolute;
-  right: 0;
-  top: 20px;
+  height: 24px;
   text-indent: -20000px;
   background: url(../images/text_recom.png) left top no-repeat;
   background-size: 48px 18px;
@@ -369,17 +365,16 @@ button.default_btn {
   left: 0;
 }
 #story section.main article.main_recom ul.recom_gallery > li .book_list .module_book_thumb {
-  width: 48%;
+  width: 40%;
   float: left;
   text-align: right;
 }
 #story section.main article.main_recom ul.recom_gallery > li .book_list .module_book_thumb .thumb_wrap {
-  margin-right: 32px;
+  margin-right: 20px;
 }
 #story section.main article.main_recom ul.recom_gallery > li .book_list .module_book_info {
-  width: 52%;
+  width: 55%;
   float: left;
-  margin-top: 24px;
 }
 #story section.main article.main_recom ul.recom_gallery > li .book_list .module_book_info .info_title {
   margin-bottom: 9px;
@@ -396,10 +391,10 @@ button.default_btn {
   text-align: right;
 }
 #story section.main article.main_new .book_list .module_book_thumb .thumb_wrap {
-  margin-right: 25px;
+  margin-right: 20px;
 }
 #story section.main article.main_new .book_list .module_book_info {
-  width: 60%;
+  width: 55%;
   float: left;
   margin-top: 4px;
 }
