@@ -2,7 +2,7 @@
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminControllerProvider implements ControllerProviderInterface
 {
@@ -13,8 +13,13 @@ class AdminControllerProvider implements ControllerProviderInterface
 			return $app->redirect('/admin/book/list');
 		});
 
-		$admin->get('/login', function() use ($app) {
-			return $app['twig']->render('/admin/login.twig');
+		$admin->get('/logout', function() use ($app) {
+			// HTTP basic authentication logout 에는 이거밖에 없다..
+			session_destroy();
+			
+			$response = new Response();
+			$response->setStatusCode(401, 'Unauthorized.');
+			return $response;
 		});
 		
 		$admin->get('/book/list', array($this, 'bookList'));

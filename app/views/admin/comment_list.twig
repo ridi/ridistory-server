@@ -16,7 +16,7 @@
 			<td>{{ comment.p_id }}</td>
 			<td>{{ comment.comment }}</td>
 			<td>{{ comment.timestamp }}</td>
-			<td><button class='btn btn-danger btn-mini' onclick="location.href='/admin/comment/{{ comment.id }}/delete'">삭제</button></td>
+			<td><button class='btn btn-danger btn-mini' onclick="location.href='/admin/comment/{{ comment.id }}/delete'"><i class="icon-remove icon-white"></i></button></td>
 		</tr>
 		{% endfor %}
 	</tbody>

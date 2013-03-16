@@ -27,6 +27,18 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 
 $app->register(new Silex\Provider\SessionServiceProvider(), array());
 
+$app->register(new Silex\Provider\SecurityServiceProvider(), array(
+    'security.firewalls' => array(
+    	'admin' => array(
+    		'pattern' => '^/admin',
+    		'http' => true,
+    		'users' => array(
+    			'admin' => array('ROLE_ADMIN', 'Iv8muTbXrq3KkPHI2RT2gPQDJy3u5Bs8mTLOf0mC71+CfZLXpEuUaZhJKcG4BT3d0PZrfNhBlpXd6eQc5Wzxow=='),
+    		),
+    	),
+    ),
+));
+
 use Doctrine\DBAL\Logging\EchoSQLLogger;
 if ($app['debug'] = true) {
 	//$app['db']->getConfiguration()->setSQLLogger(new EchoSQLLogger());
