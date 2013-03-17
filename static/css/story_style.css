@@ -536,7 +536,7 @@ button.default_btn {
   background: white;
   border: 1px solid #d7d3ca;
   border-radius: 10px;
-  padding: 10px 17px;
+  padding: 10px 10px 10px 15px;
   position: relative;
 }
 #story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_info {
@@ -564,6 +564,12 @@ button.default_btn {
   border-left: 1px solid #bbb;
   color: #bbb;
   font-size: 12px;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_info .trash {
+  float: right;
+}
+#story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_info .trash img {
+  width: 15px
 }
 #story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_text {
   line-height: 1.3em;

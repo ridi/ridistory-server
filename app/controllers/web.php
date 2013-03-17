@@ -13,7 +13,8 @@ class WebControllerProvider implements ControllerProviderInterface
 		$api->get('/book/{b_id}/intro', array($this, 'bookIntro'));
 		
 		$api->get('/comment/list', array($this, 'commentList'));
-		$api->post('/comment/add', array($this, 'commentAdd')); 
+		$api->post('/comment/add', array($this, 'commentAdd'));
+		$api->get('/comment/{c_id}/delete', array($this, 'commentDelete')); 
 		
 		return $api;
 	}
@@ -73,7 +74,12 @@ class WebControllerProvider implements ControllerProviderInterface
 		// TODO: abuse detection
 		
 		$r = PartComment::add($p_id, $device_id, $nickname, $comment);
-		return $app->redirect('/comment/list?p_id=' . $p_id);
+		return $app->redirect($req->headers->get('Referer'));
+	}
+	
+	public function commentDelete(Request $req, Application $app, $c_id) {
+		PartComment::delete($c_id);
+		return $app->redirect($req->headers->get('Referer'));
 	}
 	
 }

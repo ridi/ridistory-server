@@ -36,6 +36,11 @@
 							<span class="box_left_arrow">작성자</span>
 							<span class="info_id">{{ item.nickname }}</span>
 							<span class="info_date">{{ item.timestamp }}</span>
+							{% if item.device_id == device_id %}
+							<span class="trash">
+							    <a href="/comment/{{ item.id }}/delete"><img src="/static/images/comment_trash.png" alt="삭제" /></a>
+							</span>
+							{% endif %}
 						</p>
 						<p class="contents_text">{{ item.comment|e }}</p>
 					</div>
