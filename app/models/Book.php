@@ -20,9 +20,9 @@ class Book
 		// 카테고리별
 		$today = date('Y-m-d');
 		$sql = <<<EOT
-select c.name category, last_update, b.* from book b
+select c.name category, ifnull(last_update, 0) last_update, b.* from book b
  join category c on c.id = c_id
- left join (select b_id, max(begin_date) last_update from part group by b_id) p on b.id = p.b_id
+ left join (select b_id, 1 last_update from part where begin_date = date(now()) group by b_id) p on b.id = p.b_id
 where b.begin_date <= ? and end_date >= ?
 EOT;
 		$bind = array($today, $today);
@@ -45,10 +45,10 @@ EOT;
 		
 		if ($with_part_info) {
 			$sql = <<<EOT
-select c.name category, i.popularity, last_update, b.* from book b
+select c.name category, i.popularity, ifnull(last_update, 0), b.* from book b
  join category c on c.id = c_id
  left join (select b_id, count(*) popularity from user_interest group by b_id) i on b.id = b_id
- left join (select b_id, max(begin_date) last_update from part group by b_id) p on b.id = p.b_id
+ left join (select b_id, 1 last_update from part where begin_date = date(now()) group by b_id) p on b.id = p.b_id
 where b.id in (?)
 EOT;
 		} else {
