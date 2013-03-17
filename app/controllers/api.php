@@ -44,6 +44,10 @@ class ApiControllerProvider implements ControllerProviderInterface
 		}
 
 		$parts = Part::getListByBid($b_id, true);
+		foreach ($parts as &$part) {
+			$part["last_update"] = ($part["begin_date"] == date("Y-m-d")) ? 1 : 0;
+		}
+
 		$book["parts"] = $parts;
 		
 		$device_id = $req->get('device_id');
