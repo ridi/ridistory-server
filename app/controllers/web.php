@@ -14,9 +14,16 @@ class WebControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/comment/list', array($this, 'commentList'));
 		$api->post('/comment/add', array($this, 'commentAdd'));
-		$api->get('/comment/{c_id}/delete', array($this, 'commentDelete')); 
+		$api->get('/comment/{c_id}/delete', array($this, 'commentDelete'));
+		
+		$api->get('/notice', array($this, 'notice')); 
 		
 		return $api;
+	}
+	
+	public function notice(Application $app) {
+		$notice = $app['db']->fetchAll('select * from notice');
+		return $app['twig']->render('/notice.twig', array('notice' => $notice));
 	}
 	
 	public function home(Application $app) {
