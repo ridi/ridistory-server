@@ -36,7 +36,14 @@ EOT;
 
 		return $ar; 
 	}
-
+	
+	public static function getOpendCount($b_id) {
+		$sql = "select count(*) open_part_count from part where b_id = ? and begin_date <= ? and end_date >= ?";
+		$today = date('Y-m-d');
+		$r = $app['db']->fetchColumn($sql, array($b_id, $today, $today));
+		return $r;
+	}
+	
 	private static function _fill_additional(&$b) {
 		define('STORE_API_BASE_URL', 'http://hw.dev.ridibooks.kr');
 		

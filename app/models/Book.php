@@ -22,11 +22,11 @@ class Book
 		$sql = <<<EOT
 select c.name category, ifnull(last_update, 0) last_update, open_part_count, b.* from book b
  join category c on c.id = c_id
- join (select b_id, count(*) open_part_count from part group by b_id) pc on b.id = pc.b_id
+ join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
  left join (select b_id, 1 last_update from part where begin_date = date(now()) group by b_id) p on b.id = p.b_id
 where b.begin_date <= ? and end_date >= ?
 EOT;
-		$bind = array($today, $today);
+		$bind = array($today, $today, $today, $today);
 
 		global $app;
 		$ar = $app['db']->fetchAll($sql, $bind);
@@ -44,15 +44,22 @@ EOT;
 			return array();
 		}
 		
+		global $app;
+		
 		if ($with_part_info) {
 			$sql = <<<EOT
-select c.name category, i.popularity, ifnull(last_update, 0), open_part_count, b.* from book b
+select c.name category, i.popularity, ifnull(last_update, 0) last_update, open_part_count, b.* from book b
  join category c on c.id = c_id
- join (select b_id, count(*) open_part_count from part group by b_id) pc on b.id = pc.b_id
+ join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
  left join (select b_id, count(*) popularity from user_interest group by b_id) i on b.id = i.b_id
  left join (select b_id, 1 last_update from part where begin_date = date(now()) group by b_id) p on b.id = p.b_id
 where b.id in (?)
 EOT;
+			$today = date('Y-m-d');
+			$stmt = $app['db']->executeQuery($sql,
+				array($today, $today, $b_ids),
+				array(\PDO::PARAM_STR, \PDO::PARAM_STR, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+			);
 		} else {
 			$sql = <<<EOT
 select c.name category, p.popularity, b.* from book b
@@ -60,13 +67,12 @@ select c.name category, p.popularity, b.* from book b
  left join (select b_id, count(*) popularity from user_interest group by b_id) p on b.id = b_id
 where b.id in (?)
 EOT;
+			$stmt = $app['db']->executeQuery($sql,
+				array($b_ids),
+				array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+			);
 		}
 		
-		global $app;
-		$stmt = $app['db']->executeQuery($sql,
-			array($b_ids),
-			array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
-		);
 		$ar = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($ar as &$b) {
 			$b['cover_url'] = Book::getCoverUrl($b['store_id']);
