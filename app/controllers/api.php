@@ -39,10 +39,11 @@ class ApiControllerProvider implements ControllerProviderInterface
 	 */
 	public function book(Request $req, Application $app, $b_id) {
 		$book = Book::get($b_id);
-		$parts = Part::getListByBid($b_id, true);
-		foreach ($parts as $part) {
-			//$part['comment_count'] = PartCom
+		if ($book == false) {
+			return $app->json(array('success' => false, 'error' => 'no such book'));
 		}
+
+		$parts = Part::getListByBid($b_id, true);
 		$book["parts"] = $parts;
 		
 		$device_id = $req->get('device_id');

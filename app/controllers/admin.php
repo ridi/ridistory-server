@@ -55,25 +55,18 @@ class AdminControllerProvider implements ControllerProviderInterface
 			return $app['twig']->render('/admin/api_list.twig');
 		});
 		
-		$admin->get('/push/notify_update', function(Request $req) use ($app) {
+		$admin->get('/push/dashboard', array($this, 'pushDashboard'));
+		$admin->get('/push/notify_update', array($this, 'pushNotifyUpdate'));
+		$admin->get('/push/target_count.ajax', function(Request $req) use ($app) {
 			$b_id = $req->get('b_id');
-			if (empty($b_id)) {
-				return 'no b_id';
-			}
-			
 			$sql = <<<EOT
-select device_token from user_interest u
- join push_devices p on u.device_id = p.device_id
-where b_id = ? and p.is_active = 1
+select platform, count(*) count from user_interest i
+ join push_devices p on p.device_id = i.device_id
+where b_id = ?
+group by platform
 EOT;
-			$params = array($b_id);
-			
-			$device_tokens = $app['db']->executeQuery($sql, $params)->fetchAll(PDO::FETCH_COLUMN, 0);
-			//$notification = AndroidNotification::createPartUpdateNotification(14, '덕혜옹주 14회가 등록되었습니다.');
-			$notification = AndroidNotification::createUrlNotofication('http://naver.com', '서점 보기');
-
-			$r = sendPushNotificationForAndroid($device_tokens, $notification);
-			return $r;
+			$r = $app['db']->fetchAssoc($sql, array($b_id));
+			return $app->json($r);
 		});
 		
 		return $admin;
@@ -196,6 +189,35 @@ EOT;
 		$app['session']->set('alert', array('info' => '댓글이 삭제되었습니다.'));
 		$redirect_url = $req->headers->get('referer', '/admin/comment/list');
 		return $app->redirect($redirect_url); 
+	}
+	
+	
+	public static function pushDashboard(Request $req, Application $app) {
+		return $app['twig']->render('/admin/dashboard.twig');
+	}
+	
+	public static function pushNotifyUpdate(Request $req, Application $app) {
+		$b_id = $req->get('b_id');
+		$title = $req->get('title');
+		$message = $req->get('message');
+		
+		if (empty($b_id)) {
+			return 'no b_id';
+		}
+		
+		$sql = <<<EOT
+select device_token from user_interest u
+ join push_devices p on u.device_id = p.device_id
+where b_id = ? and p.is_active = 1
+EOT;
+		$params = array($b_id);
+		
+		$device_tokens = $app['db']->executeQuery($sql, $params)->fetchAll(PDO::FETCH_COLUMN, 0);
+		$notification = AndroidNotification::createPartUpdateNotification($b_id, $title, $message);
+		//$notification = AndroidNotification::createUrlNotofication('http://naver.com', $title, $message);
+
+		$r = sendPushNotificationForAndroid($device_tokens, $notification);
+		return $r;
 	}
 }
 

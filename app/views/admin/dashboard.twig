@@ -1,0 +1,43 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<form action='/admin/push/notify_update'>
+	<fieldset>
+		<legend>관심 작품 PUSH 발송</legend>
+		<label>관심책 ID</label>
+		<input id='js_interest_bid' type="text" name='b_id' class='input-small'>
+		<label>제목</label>
+		<input type="text" name='title'>
+		<label>메세지</label>
+		<input type="text" name='message' class='input-xxlarge'>
+	</fieldset>
+	<button type="submit" class="btn btn-danger">PUSH 발송!</button>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(function() {
+        console.log();
+        $('#js_interest_bid').focusout(function() {
+            var b_id = $(this).val();
+            $.getJSON('/api/book/' + b_id, function(data) {
+                var title = $(':input[name="title"]');
+                if (data.error) {
+                    title.val(data.error);
+                } else {
+                	title.val(data.title);
+            	}
+            });
+            
+            //$.getJSON('/admin/push/target_count.ajax', function() {
+            //});
+        });
+        
+        $('form').submit(function() {
+            
+            return true;
+        });
+    });
+</script>
+{% endblock %}
