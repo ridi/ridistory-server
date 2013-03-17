@@ -21,6 +21,8 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/push_device/register', array($this, 'pushDeviceRegister'));
 		
+		$api->get('/latest_version', array($this, 'latestVersion'));
+		
 		return $api;
 	}
 
@@ -103,6 +105,21 @@ class ApiControllerProvider implements ControllerProviderInterface
 		} else {
 			return $app->json(array('success' => false, 'reason' => 'Insert or Update error'));
 		}
+	}
+
+	public function latestVersion(Request $req, Application $app) {
+		$platform = $req->get('platform');
+		if (strcasecmp($platform, 'android') === 0) {
+			$r = array(
+				'version' => '1.0.1',
+				'force' => false,
+				'update_url' => 'http://play.google.com/store/apps/details?id=com.initialcoms.story',
+				'description' => '스토리홀릭 최신 버전으로 업데이트 하시겠습니까?'
+			);
+			return $app->json($r);
+		}
+		
+		return $app->json(array('error' => 'invalid platform'));
 	}
 }
 
