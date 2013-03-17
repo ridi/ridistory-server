@@ -5,7 +5,9 @@ class Book
 	public static function get($id) {
 		global $app;
 		$b = $app['db']->fetchAssoc('select * from book where id = ?', array($id));
-		$b['cover_url'] = Book::getCoverUrl($b['store_id']);
+		if ($b) {
+			$b['cover_url'] = Book::getCoverUrl($b['store_id']);
+		}
 		return $b;
 	}
 

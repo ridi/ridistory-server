@@ -18,7 +18,7 @@
 					<input type="text" name='nickname' class="input_nick" placeholder="닉네임을 입력하세요"/>
 					<textarea name="comment" id="input_comment" class="input_text" placeholder="댓글을 입력하세요" maxlength='300'></textarea>
 					<p class="char_num"><span id='js_char_remain' class="now_num">0</span>/300</p>
-					<button class="default_btn btn_submit" type="submit">등록하기</button>
+					<button id="js_submit" class="default_btn btn_submit" type="submit">등록하기</button>
 				</form>
 				<hr class="clear_both" />
 			</div>
@@ -77,6 +77,9 @@ $(function() {
     	    console.log(e);
     	    return false;
     	}
+    	
+    	$('#js_submit').hide();
+    	
     	return true;
 	});
 });

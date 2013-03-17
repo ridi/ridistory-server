@@ -55,20 +55,24 @@ class AdminControllerProvider implements ControllerProviderInterface
 			return $app['twig']->render('/admin/api_list.twig');
 		});
 		
-		$admin->get('/test_push', function() {
+		$admin->get('/push/notify_update', function(Request $req) use ($app) {
+			$b_id = $req->get('b_id');
+			if (empty($b_id)) {
+				return 'no b_id';
+			}
 			
-			$message = 'test push';
-			$push_type = 0;
-			$url = 'http://naver.com';
+			$sql = <<<EOT
+select device_token from user_interest u
+ join push_devices p on u.device_id = p.device_id
+where b_id = ? and p.is_active = 1
+EOT;
+			$params = array($b_id);
 			
-			$notification = array(
-				"message" => $message,
-				"push_type" => $push_type,
-				"url" => $url);
-				
-			$device_tokens = array('APA91bFROD2RVA6iEWFgQ6v8BWKhcqZMZertE58aND6OHAVQDXxexAcoaBRzZ1Ot31CJL7RppsJ0rhuhxVUhFHHczFAk_m3BJcTssC00oPQS86WkaCNwN5Rtcy-YySuu_iLEGd_7qGdQF0a20J2siGzHKKgpsUUWVQ');
-				
-			$r = AdminControllerProvider::sendPushNotificationForAndroid($device_tokens, $notification);
+			$device_tokens = $app['db']->executeQuery($sql, $params)->fetchAll(PDO::FETCH_COLUMN, 0);
+			//$notification = AndroidNotification::createPartUpdateNotification(14, '덕혜옹주 14회가 등록되었습니다.');
+			$notification = AndroidNotification::createUrlNotofication('http://naver.com', '서점 보기');
+
+			$r = sendPushNotificationForAndroid($device_tokens, $notification);
 			return $r;
 		});
 		
@@ -170,32 +174,6 @@ class AdminControllerProvider implements ControllerProviderInterface
 		$app['session']->set('alert', array('info' => '파트가 삭제되었습니다.'));
 		return $app->redirect('/admin/book/' . $part['b_id']);
 	}
-
-
-	public static function sendPushNotificationForAndroid($device_tokens, $notification) {
-	    static $GOOGLE_API_KEY_FOR_GCM = "AIzaSyCMwJbi_uk4UI8WJB1spxld4TDVtFbhYpc";
-		
-	    $post_data = array('data' => $notification,
-	                  'registration_ids' => $device_tokens);
-	    
-	    $headers = array('Content-Type:application/json',
-	                     'Authorization:key=' . $GOOGLE_API_KEY_FOR_GCM);
-	    
-	    $ch = curl_init();
-	    curl_setopt($ch, CURLOPT_URL, 'https://android.googleapis.com/gcm/send');
-	    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-	    curl_setopt($ch, CURLOPT_POST, true);
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
-	    
-		/* 테스트 진행 위해 구글에서 주는 결과값 로그에 찍음 */
-	    $result = curl_exec($ch);
-		
-	    curl_close($ch);
-		
-		return $result;
-	}
 	
 	public static function commentList(Request $req, Application $app) {
 		$cur_page = $req->get('page', 0);
@@ -226,6 +204,52 @@ function array_move_keys(&$src, &$dst, array $keys) {
 		$dst[$k2] = $src[$k1];
 		unset($src[$k1]);
 	}
+}
+
+
+class AndroidNotification
+{
+	static function createPartUpdateNotification($p_id, $title, $message) {
+		return array(
+			'type' => 'part_update',
+			'title' => $title,
+			'message' => $message,
+			'part_id' => $p_id,
+		);
+	}
+	
+	static function createUrlNotofication($url, $title, $message) {
+		return array(
+			'type' => 'url',
+			'title' => $title,
+			'message' => $message,
+			'url' => $url);
+	}
+}
+
+function sendPushNotificationForAndroid($device_tokens, $notification) {
+    static $GOOGLE_API_KEY_FOR_GCM = "AIzaSyAS4rjn2l4oR4RveqUWZ2NQnWqlbBoFKic";
+				  
+    $headers = array('Authorization: key=' . $GOOGLE_API_KEY_FOR_GCM,
+    				 'Content-Type: application/json');
+	
+    $post_data = array('data' => $notification,
+                  'registration_ids' => $device_tokens);
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://android.googleapis.com/gcm/send');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
+    
+	/* 테스트 진행 위해 구글에서 주는 결과값 로그에 찍음 */
+    $result = curl_exec($ch);
+	
+    curl_close($ch);
+	
+	return $result;
 }
 
 

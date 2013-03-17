@@ -532,7 +532,6 @@ button.default_btn {
   width: 32px;
 }
 #story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap {
-  width: 100%;
   box-sizing: border-box;
   background: white;
   border: 1px solid #d7d3ca;

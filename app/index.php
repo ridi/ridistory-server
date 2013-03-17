@@ -26,7 +26,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 ));
 
 $app->register(new Silex\Provider\SessionServiceProvider(), array());
-
+/*
 $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     'security.firewalls' => array(
     	'admin' => array(
@@ -38,7 +38,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     	),
     ),
 ));
-
+*/
 use Doctrine\DBAL\Logging\EchoSQLLogger;
 if ($app['debug'] = true) {
 	//$app['db']->getConfiguration()->setSQLLogger(new EchoSQLLogger());
