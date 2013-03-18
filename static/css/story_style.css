@@ -230,7 +230,7 @@ button.default_btn {
   height: 30px;
   line-height: 30px;
   color: white;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
 }
 .module_title3 .date {
@@ -313,6 +313,7 @@ button.default_btn {
   padding: 10px 10px 20px 10px;
   background: white;
   line-height: 1.6em;
+  font-size: 14px;
 }
 #story section.main {
   width: 100%;

@@ -116,7 +116,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$platform = $req->get('platform');
 		if (strcasecmp($platform, 'android') === 0) {
 			$r = array(
-				'version' => '1.0',
+				'version' => '0.9',
 				'force' => false,
 				'update_url' => 'http://play.google.com/store/apps/details?id=com.initialcoms.story',
 				'description' => '스토리홀릭 최신 버전으로 업데이트 하시겠습니까?'

@@ -8,7 +8,7 @@ class WebControllerProvider implements ControllerProviderInterface
 	public function connect(Application $app) {
 		$api = $app['controllers_factory'];
 		
-		$api->get('/', array($this, 'home'));
+		//$api->get('/', array($this, 'home'));
 		
 		$api->get('/book/{b_id}/intro', array($this, 'bookIntro'));
 		
