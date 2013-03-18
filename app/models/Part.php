@@ -45,7 +45,7 @@ EOT;
 	}
 	
 	private static function _fill_additional(&$b) {
-		define('STORE_API_BASE_URL', 'http://hw.dev.ridibooks.kr');
+		define('STORE_API_BASE_URL', 'http://ridibooks.com');
 		
 		$b['meta_url'] = STORE_API_BASE_URL . '/api/book/metadata.php?id=' . $b['store_id'];
 		
