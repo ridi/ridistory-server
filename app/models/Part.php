@@ -72,9 +72,9 @@ EOT;
 
 class PartComment
 {
-	public static function add($p_id, $device_id, $nickname, $comment) {
+	public static function add($p_id, $device_id, $nickname, $comment, $ip) {
 		global $app;
-		$r = $app['db']->insert('part_comment', compact('p_id', 'device_id', 'nickname', 'comment'));
+		$r = $app['db']->insert('part_comment', compact('p_id', 'device_id', 'nickname', 'comment', 'ip'));
 		return $r;
 	}
 	

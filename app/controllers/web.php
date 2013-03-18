@@ -60,6 +60,13 @@ class WebControllerProvider implements ControllerProviderInterface
 		
 		$num_comments = PartComment::getCommentCount($p_id);
 		$comments = PartComment::getList($p_id);
+		
+		/*
+		$app['twig']->addFilter(new Twig_SimpleFilter('long2ip', function ($ip) {
+		    return long2ip($ip);
+		}));
+		 */
+
 		return $app['twig']->render('/comment.twig', array(
 			'part' => $part,
 			'device_id' => $device_id,
@@ -78,9 +85,11 @@ class WebControllerProvider implements ControllerProviderInterface
 			return alert_and_back('닉네임이나 댓글이 없다.');
 		}
 		
+		$ip = ip2long($_SERVER['REMOTE_ADDR']);
+		
 		// TODO: abuse detection
 		
-		$r = PartComment::add($p_id, $device_id, $nickname, $comment);
+		$r = PartComment::add($p_id, $device_id, $nickname, $comment, $ip);
 		return $app->redirect($req->headers->get('Referer'));
 	}
 	

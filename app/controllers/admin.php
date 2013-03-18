@@ -231,12 +231,12 @@ function array_move_keys(&$src, &$dst, array $keys) {
 
 class AndroidNotification
 {
-	static function createPartUpdateNotification($p_id, $title, $message) {
+	static function createPartUpdateNotification($b_id, $title, $message) {
 		return array(
 			'type' => 'part_update',
+			'book_id' => $b_id,
 			'title' => $title,
 			'message' => $message,
-			'part_id' => $p_id,
 		);
 	}
 	
