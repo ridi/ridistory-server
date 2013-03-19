@@ -1,0 +1,74 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<form action="/admin/notice/{{ notice.id }}/edit" method='post'>
+<table class='table'>
+	<tr>
+		<th>제목</th>
+		<td><input type='text' class='input-xlarge' name='title' value='{{ notice.title }}'></input></td>
+	</tr>
+	<tr>
+		<th>등록일</th>
+		<td>
+	    	<input type='text' class='input-small' name='reg_date' value='{{ notice.reg_date|date('Y-m-d') }}' placeholder='빈칸이면 오늘'></input>
+
+		    <label class="radio">
+			    <input type='radio' name='is_visible' value='1'>공개</input>
+		    </label>
+		    <label class="radio">
+			    <input type='radio' name='is_visible' value='0'>비공개</input>
+		    </label>
+	    </td>
+	</tr>
+	<tr>
+		<th>본문</th>
+		<td><textarea rows='20' style='width: 600px;' name='message'>{{ notice.message }}</textarea></td>
+	</tr>
+	<tr>
+		<th>본문 미리보기</th>
+		<td>
+		    <div class='well' style='width: 600px;'>
+		    {{ notice.message|raw|nl2br }}
+		    </blockquote>
+	    </td>
+	</tr>
+</table>
+
+<div class='form-actions'>
+	<button type='submit' class='btn btn-success'>수정 완료</button>
+	<button class='btn btn-cancel'>목록으로</button>
+	<button class='btn btn-danger pull-right'>삭제</button>
+</div>
+</form>
+
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+<script>
+$(function() {
+    
+    $('input:radio[name="is_visible"]')
+    .filter('[value="{{ notice.is_visible }}"]')
+    .attr('checked', true);
+    
+    $('.btn-cancel').click(function() {
+        location.href = '/admin/notice/list';
+        return false;
+    })
+    
+    $('.btn-danger').click(function() {
+        if (confirm('삭제하시겠습니까?')) {
+            $.post('/admin/notice/{{ notice.id }}/delete', function(r) {
+                if (r.error) {
+                    alert(r.error);
+                } else {
+                    location.href = '/admin/notice/list';
+                }
+            })
+        }
+        return false;
+    });
+});
+</script>
+{% endblock %}

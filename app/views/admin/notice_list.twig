@@ -1,0 +1,49 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+<table class='table table-hover'>
+	<thead>
+		<tr>
+			<th class='span1'>ID</th>
+			<th>제목</th>
+			<th class='span3'>시작일</th>
+			<th class='span1'>Open</th>
+		</tr>
+	</thead>
+	<tbody id='js_tbody'>
+		{% for n in notice_list %}
+		<tr data-bid='{{ n.id }}'>
+			<td>{{ n.id }}</td>
+			<td>{{ n.title }}</td>
+			<td>{{ n.reg_date }}</td>
+			<td>{{ n.is_visible }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<button class='btn btn-primary' id='js_add'>추가</button>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(function() {
+    $('#js_add').click(function() {
+        location.href = '/admin/notice/add';
+    });
+    
+    $('#js_tbody tr').click(function() {
+        var b_id = $(this).data('bid');
+        location.href = '/admin/notice/' + b_id;
+    });
+    
+    $('#js_tbody tr').hover(function() {
+         	$(this).css('cursor', 'pointer');
+        }, function() {
+         	$(this).css('cursor', '');
+        }
+    );
+});
+</script>
+{% endblock %}

@@ -9,11 +9,13 @@
 .header {
 	padding-top: 20px;
 	margin-bottom: 10px;
-	background-image: url('../img/straws.png');
+	background-color: #87b5d7;
 	border-bottom: 1px solid #e5e5e5; 
 }
 
-.header .container {
+.header img {
+	width: 200px;
+	padding-bottom: 10px;
 }
 
 .footer {
@@ -21,6 +23,7 @@
 	text-align: center;
 	padding: 20px 0;
 	margin-top: 70px;
+	background-image: url('../img/straws.png');
 }
 .footer p {
 	margin-bottom: 0;

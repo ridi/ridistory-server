@@ -69,6 +69,12 @@ EOT;
 			return $app->json($r);
 		});
 		
+		$admin->get('/notice/list', array($this, 'noticeList'));
+		$admin->get('/notice/add', array($this, 'noticeAdd'));
+		$admin->get('/notice/{n_id}', array($this, 'noticeDetail'));
+		$admin->post('/notice/{n_id}/edit', array($this, 'noticeEdit'));
+		$admin->post('/notice/{n_id}/delete', array($this, 'noticeDelete'));
+		
 		return $admin;
 	}
 
@@ -218,6 +224,40 @@ EOT;
 
 		$r = sendPushNotificationForAndroid($device_tokens, $notification);
 		return $r;
+	}
+	
+	
+	public static function noticeList(Request $req, Application $app) {
+		$notice_list = $app['db']->fetchAll('select * from notice');
+		return $app['twig']->render('/admin/notice_list.twig', array('notice_list' => $notice_list));
+	}
+	
+	public static function noticeDetail(Request $req, Application $app, $n_id) {
+		$notice = $app['db']->fetchAssoc('select * from notice where id = ?', array($n_id));
+		return $app['twig']->render('/admin/notice_detail.twig', array('notice' => $notice));
+	}
+	
+	public static function noticeEdit(Request $req, Application $app, $n_id) {
+		$inputs = $req->request->all();
+
+		$r = $app['db']->update('notice', $inputs, array('id' => $n_id));
+		
+		$app['session']->set('alert', array('info' => '공지사항이 수정되었습니다.'));
+		$redirect_url = $req->headers->get('referer', '/admin/notice/list');
+		return $app->redirect($redirect_url); 
+	}
+	
+	public static function noticeAdd(Application $app) {
+		$app['db']->insert('notice', array('title' => '제목이 없습니다.', 'is_visible' => 0));
+		$r = $app['db']->lastInsertId();
+		return $app->redirect('/admin/notice/' . $r);
+	}
+	
+	public static function noticeDelete(Application $app, $n_id) {
+		$r = $app['db']->delete('notice', array('id' => $n_id));
+		$app['session']->set('alert', array('warning' => '공지사항이 삭제되었습니다.'));
+		$redirect_url = $req->headers->get('referer', '/admin/notice/list');
+		return $app->redirect($redirect_url);
 	}
 }
 
