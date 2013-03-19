@@ -98,7 +98,7 @@ EOT;
 	}
 
 	public static function getCoverUrl($store_id) {
-		return 'http://misc.ridibooks.com/cover/' . $store_id . '/xlarge';
+		return 'http://misc.ridibooks.com/cover/' . $store_id . '/xxlarge';
 	}
 	
 	
