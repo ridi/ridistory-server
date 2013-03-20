@@ -12,8 +12,15 @@ class Book
 	}
 
 	public static function getWholeList() {
+		$today = date('Y-m-d');
+		$sql = <<<EOT
+select count(part.b_id) uploaded_part_count, open_part_count, b.* from book b
+ join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
+ join part on b.id = part.b_id group by b.id, part.b_id
+EOT;
+		$bind = array($today, $today);
 		global $app;
-		return $app['db']->fetchAll('select book.*, count(part.b_id) num_parts from book left join part on book.id = part.b_id group by id, part.b_id');
+		return $app['db']->fetchAll($sql, $bind);
 	}
 	
 	public static function getOpenedBookList() {

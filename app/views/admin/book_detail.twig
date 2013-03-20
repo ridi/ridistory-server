@@ -49,8 +49,25 @@
 	<tr>
 	    <th>연재분</th>
 	    <td>
-	        {% embed 'admin/part_list.twig' with {'parts': parts} only %}
-	        {% endembed %}
+	        <table class='table table-hover table-striped table-condensed'>
+                <thead>
+                    <tr>
+                        <th>파트 제목</th>
+                        <th class='span2'>시작일</th>
+                        <th class='span2'>종료일</th>
+                    </tr>
+                </thead>
+            	<tbody id='js_part_list'>
+            		{% for part in parts %}
+            		<tr data-cid='{{ part.id }}'>
+            			<td><a href='/admin/part/{{ part.id }}'>{{ part.seq }}. {{ part.title }} </a></td>
+            			<td><span class='begin_date'>{{ part.begin_date }}</span></td>
+            			<td>{{ part.end_date }}</td>
+            		</tr>
+            		{% endfor %}
+            	</tbody>
+            </table>
+            <button class='btn btn-small btn-primary pull-right' id='js_add'>파트 추가</button>
         </td>
 	</tr>
 	<tr>
@@ -150,6 +167,14 @@ $(function() {
         location.href = '/admin/part/add?b_id={{ book.id }}';
         return false;
     })
+    
+    $('#js_part_list .begin_date').each(function() {
+        var now = new Date();
+        var begin = new Date($(this).text());
+        if (begin < now) {
+            $(this).addClass('label label-info');
+    	}
+    });
 });
 </script>
 {% endblock %}

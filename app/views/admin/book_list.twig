@@ -7,9 +7,8 @@
 		<tr>
 			<th class='span1'>책 ID</th>
 			<th>제목</th>
-			<th class='span2'>Progress</th>
+			<th class='span3'>Progress</th>
 			<th class='span2'>시작일</th>
-			<th class='span2'>종료일</th>
 		</tr>
 	</thead>
 	<tbody id='js_tbody'>
@@ -20,10 +19,10 @@
 			<td>
 			    <div class='progress'>
                     <div class='bar' style='width: {{ book.progress }};'></div>
-                </div>			    
+                    <div class='bar bar-info' style='width: {{ book.progress2 }};'></div>
+                </div>
 			</td>
 			<td>{{ book.begin_date }}</td>
-			<td>{{ book.end_date }}</td>
 		</tr>
 		{% endfor %}
 	</tbody>
