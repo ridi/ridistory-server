@@ -60,12 +60,6 @@ class WebControllerProvider implements ControllerProviderInterface
 		
 		$num_comments = PartComment::getCommentCount($p_id);
 		$comments = PartComment::getList($p_id);
-		
-		/*
-		$app['twig']->addFilter(new Twig_SimpleFilter('long2ip', function ($ip) {
-		    return long2ip($ip);
-		}));
-		 */
 
 		return $app['twig']->render('/comment.twig', array(
 			'part' => $part,

@@ -185,6 +185,11 @@ EOT;
 		 
 		$comments = $app['db']->fetchAll("select * from part_comment order by id desc limit {$offset}, {$limit}");
 		$num_comments = $app['db']->fetchColumn('select count(*) from part_comment');
+		
+		$app['twig']->addFilter(new Twig_SimpleFilter('long2ip', function ($ip) {
+		    return long2ip($ip);
+		}));
+		 
 		return $app['twig']->render('/admin/comment_list.twig', array(
 			'comments' => $comments,
 			'num_comments' => $num_comments,

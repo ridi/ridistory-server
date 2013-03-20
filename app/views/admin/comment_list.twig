@@ -5,8 +5,9 @@
 	<thead>
 		<tr>
 			<th class='span1'>파트 ID</th>
+			<th class='span2'>닉네임</th>
 			<th>Comment</th>
-			<th class='span3'>Timestamp</th>
+			<th class='span2'>Timestamp</th>
 			<th class='span1'></th>
 		</tr>
 	</thead>
@@ -14,6 +15,7 @@
 		{% for comment in comments %}
 		<tr>
 			<td>{{ comment.p_id }}</td>
+			<td>{{ comment.nickname }}<br />{{ comment.ip|long2ip }}</td>
 			<td>{{ comment.comment }}</td>
 			<td>{{ comment.timestamp }}</td>
 			<td><button class='btn btn-danger btn-mini' onclick="location.href='/admin/comment/{{ comment.id }}/delete'"><i class="icon-remove icon-white"></i></button></td>
