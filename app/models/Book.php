@@ -14,8 +14,8 @@ class Book
 	public static function getWholeList() {
 		$today = date('Y-m-d');
 		$sql = <<<EOT
-select count(part.b_id) uploaded_part_count, open_part_count, b.* from book b
- join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
+select count(part.b_id) uploaded_part_count, ifnull(open_part_count, 0), b.* from book b
+ left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
  join part on b.id = part.b_id group by b.id, part.b_id
 EOT;
 		$bind = array($today, $today);
