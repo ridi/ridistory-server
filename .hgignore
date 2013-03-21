@@ -2,3 +2,4 @@ lib/vendor
 lib/composer\.lock
 \.project
 \.settings
+app/conf\.php
