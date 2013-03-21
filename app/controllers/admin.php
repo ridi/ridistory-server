@@ -124,8 +124,10 @@ EOT;
 		
 		// 연재 요일
 		$upload_days = 0;
-		foreach ($inputs['upload_days'] as $k => $v) {
-			$upload_days += intval($v);
+		if (isset($inputs['upload_days'])) {
+			foreach ($inputs['upload_days'] as $k => $v) {
+				$upload_days += intval($v);
+			}
 		}
 		$inputs['upload_days'] = $upload_days;
 		
