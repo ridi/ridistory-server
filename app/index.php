@@ -33,7 +33,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), array(
     		'pattern' => '^/admin',
     		'http' => true,
     		'users' => array(
-    			'admin' => array('ROLE_ADMIN', 'Iv8muTbXrq3KkPHI2RT2gPQDJy3u5Bs8mTLOf0mC71+CfZLXpEuUaZhJKcG4BT3d0PZrfNhBlpXd6eQc5Wzxow=='),
+    			'admin' => array('ROLE_ADMIN', 'wtGTsRVkEvRgi2r9TxHHe7/uuwX16mh3sAT2pwQZDrpdTFYXqCkN9Vvuy5vGd7ZLTNi5LKlJu2fjTZQask60fA=='),
     		),
     	),
     ),
