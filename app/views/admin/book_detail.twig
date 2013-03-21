@@ -169,10 +169,12 @@ $(function() {
     })
     
     $('#js_part_list .begin_date').each(function() {
-        var now = new Date();
+        var now = new Date('{{ today() }}');
         var begin = new Date($(this).text());
-        if (begin < now) {
-            $(this).addClass('label label-info');
+        if (begin - now < 0) {
+            $(this).addClass('label label');
+    	} else if (begin - now == 0) {
+            $(this).addClass('label label-warning');
     	}
     });
 });

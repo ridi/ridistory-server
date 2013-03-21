@@ -102,6 +102,10 @@ EOT;
 			Book::createIntro($intro);
 		}
 		
+		$app['twig']->addFunction(new Twig_SimpleFunction('today', function() {
+			return date('Y-m-d');
+		}));
+		
 		return $app['twig']->render('admin/book_detail.twig', array(
 			'book' => $book,
 			'parts' => $parts,
