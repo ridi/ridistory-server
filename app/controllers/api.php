@@ -23,6 +23,8 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/latest_version', array($this, 'latestVersion'));
 		
+		$api->get('/validate_download', array($this, 'validateDownload'));
+		
 		return $api;
 	}
 
@@ -126,5 +128,10 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		return $app->json(array('error' => 'invalid platform'));
 	}
+
+	public function validateDownload(Request $req, Application $app) {
+		$req->get('b_id');
+		return $app->json(array());
+	} 
 }
 

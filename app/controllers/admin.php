@@ -75,6 +75,8 @@ EOT;
 		$admin->post('/notice/{n_id}/edit', array($this, 'noticeEdit'));
 		$admin->post('/notice/{n_id}/delete', array($this, 'noticeDelete'));
 		
+		$admin->get('/stats', array($this, 'stats'));
+		
 		return $admin;
 	}
 
@@ -272,6 +274,22 @@ EOT;
 		$app['session']->set('alert', array('warning' => '공지사항이 삭제되었습니다.'));
 		$redirect_url = $req->headers->get('referer', '/admin/notice/list');
 		return $app->redirect($redirect_url);
+	}
+	
+	
+	public static function stats(Application $app) {
+		$num_registered = $app['db']->fetchColumn('select count(*) from push_devices');
+		
+		$sql = <<<EOT
+select b.title, seq, part_title, num_comment from book b
+ join (select p.b_id, p.seq, p.title part_title, count(*) num_comment from part_comment c join part p on p.id = c.p_id group by p_id) c on c.b_id = b.id 
+EOT;
+
+		$most_comment_parts = $app['db']->fetchAll($sql . 'order by num_comment desc limit 10');
+		$least_comment_parts = $app['db']->fetchAll($sql . 'order by num_comment limit 10');
+		
+		return $app['twig']->render('/admin/stats.twig', compact('num_registered', 'most_comment_parts', 'least_comment_parts'));
+		//return $app['twig']->render('/admin/stats.twig', array('num_registered' => $num_registered));
 	}
 }
 

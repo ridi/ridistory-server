@@ -1,0 +1,52 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<h3>기기등록</h3>
+<p>
+    {{ num_registered }}
+</p>
+<hr class='separator'>
+<h3>댓글이 많은 파트</h3>
+<div class='row' id='js_tooltip'>
+    <div class='span6'>    
+        <table class='table'>
+            <tr>
+               <th>파트</th> 
+               <th>댓글수</th> 
+            </tr>
+            {% for p in most_comment_parts %}
+            <tr>
+                <td><a href='#' data-toggle='tooltip' title='{{ p.title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
+                <td>{{ p.num_comment }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class='span6'>    
+        <table class='table'>
+            <tr>
+               <th>파트</th> 
+               <th>댓글수</th> 
+            </tr>
+            {% for p in least_comment_parts %}
+            <tr>
+                <td><a href='#' data-toggle='tooltip' title='{{ p.title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
+                <td>{{ p.num_comment }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script>
+$(function() {
+	$('#js_tooltip').tooltip({
+	    selector: "a[data-toggle=tooltip]"
+    })
+});
+</script>
+<!--script src="assets/js/bootstrap-tooltip.js"></script-->
+{% endblock %}
