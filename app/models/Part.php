@@ -4,11 +4,18 @@ class Part
 {
 	public static function get($id) {
 		global $app;
-		$b = $app['db']->fetchAssoc('select * from part where id = ?', array($id));
-		if ($b !== false) {
-			self::_fill_additional($b);
+		$p = $app['db']->fetchAssoc('select * from part where id = ?', array($id));
+		if ($p !== false) {
+			self::_fill_additional($p);
 		}
-		return $b;
+		return $p;
+	}
+	
+	public static function isOpenedPart($p_id, $store_id) {
+		global $app;
+		$today = date('Y-m-d');
+		$p = $app['db']->fetchAssoc('select * from part where id = ? and begin_date <= ? and end_date >= ?', array($p_id, $today, $today));
+		return ($p && $p['store_id'] == $store_id);
 	}
 
 	public static function getListByBid($b_id, $with_social_info = false) {
@@ -30,8 +37,8 @@ EOT;
 		}
 		
 		$ar = $app['db']->fetchAll($sql, $bind);
-		foreach ($ar as &$b) {
-			self::_fill_additional($b);
+		foreach ($ar as &$p) {
+			self::_fill_additional($p);
 		}
 
 		return $ar; 
@@ -44,13 +51,18 @@ EOT;
 		return $r;
 	}
 	
-	private static function _fill_additional(&$b) {
+	private static function _fill_additional(&$p) {
 		define('STORE_API_BASE_URL', 'http://ridibooks.com');
 		
-		$b['meta_url'] = STORE_API_BASE_URL . '/api/book/metadata.php?id=' . $b['store_id'];
+		$p['meta_url'] = STORE_API_BASE_URL . '/api/book/metadata.php?id=' . $p['store_id'];
 		
-		$query = '?token=' . $b['store_id'];
-		$b['download_url'] = STORE_API_BASE_URL . '/api/story/download_part.php' . $query;
+		// v1: token only
+		//$query = '?token=' . $p['store_id'];
+		//$p['download_url'] = STORE_API_BASE_URL . '/api/story/download_part.php' . $query;
+
+		// v2: v=2&store_id=xxx&p_id=xxx
+		$query = http_build_query(array('v' => 2, 'store_id' => $p['store_id'], 'p_id' => $p['id']));
+		$p['download_url'] = STORE_API_BASE_URL . '/api/story/download_part.php?' . $query;
 	}
 	
 	public static function create($b_id) {

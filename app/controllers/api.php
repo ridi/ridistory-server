@@ -130,8 +130,14 @@ class ApiControllerProvider implements ControllerProviderInterface
 	}
 
 	public function validateDownload(Request $req, Application $app) {
-		$req->get('b_id');
-		return $app->json(array());
+		$p_id = $req->get('p_id');
+		$store_id = $req->get('store_id');
+		
+		$valid = Part::isOpenedPart($p_id, $store_id);
+		
+		// TODO: log download request
+		
+		return $app->json(array('success' => $valid));
 	} 
 }
 
