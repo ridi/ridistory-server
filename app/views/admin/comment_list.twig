@@ -14,7 +14,7 @@
 	<tbody>
 		{% for comment in comments %}
 		<tr>
-			<td>{{ comment.p_id }}</td>
+			<td><a href="/admin/part/{{ comment.p_id }}">{{ comment.p_id }}</a></td>
 			<td>{{ comment.nickname }}<br />{{ comment.ip|long2ip }}</td>
 			<td>{{ comment.comment }}</td>
 			<td>{{ comment.timestamp }}</td>
