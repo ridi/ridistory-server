@@ -14,9 +14,15 @@
     </table>
     </div>
     <div class='span6'>
-    <h3>다운로드 많은 파트</h3>
+    <h3>다운로드 ({{ total_downloaded }})</h3>
     <table class='table'>
-        
+        {% for p in download_stat %}
+        <tr>
+        	<td>{{ p.p_id}}</td>
+            <td>{{ p.title }}</td>
+            <td>{{ p.download_count }}</td>
+        </tr>
+        {% endfor %}
     </table>
     </div>
 </section>
