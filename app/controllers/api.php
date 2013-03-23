@@ -87,13 +87,16 @@ class ApiControllerProvider implements ControllerProviderInterface
 		if ($p == false) {
 			return $app->json(array('success' => false));
 		}
-		$r = $app['db']->executeUpdate('insert ignore user_part_like (device_id, p_id) values (?, ?)', array($device_id, $p_id));
-		return $app->json(array('success' => ($r === 1)));
+		
+		$r = UserPartLike::like($device_id, $p_id);
+		$like_count = UserPartLike::getLikeCount($p_id);
+		return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
 	}
 	
 	public function userPartUnlike(Application $app, $device_id, $p_id) {
-		$r = $app['db']->delete('user_part_like', compact('device_id', 'p_id'));
-		return $app->json(array('success' => ($r === 1)));
+		$r = UserPartLike::unlike($device_id, $p_id);
+		$like_count = UserPartLike::getLikeCount($p_id);
+		return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
 	}
 	
 	
