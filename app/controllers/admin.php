@@ -278,6 +278,7 @@ EOT;
 	
 	
 	public static function stats(Application $app) {
+		$total_registered = $app['db']->fetchColumn('select count(*) from push_devices');
 		$register_stat = $app['db']->fetchAll('select date(reg_date) date, count(*) num_registered from push_devices where datediff(now(), reg_date) < 10 group by date order by date desc');
 		
 		$sql = <<<EOT
@@ -288,7 +289,7 @@ EOT;
 		$most_comment_parts = $app['db']->fetchAll($sql . 'order by num_comment desc limit 10');
 		$least_comment_parts = $app['db']->fetchAll($sql . 'order by num_comment limit 10');
 		
-		return $app['twig']->render('/admin/stats.twig', compact('register_stat', 'most_comment_parts', 'least_comment_parts'));
+		return $app['twig']->render('/admin/stats.twig', compact('total_registered', 'register_stat', 'most_comment_parts', 'least_comment_parts'));
 	}
 }
 

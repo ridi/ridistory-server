@@ -2,8 +2,8 @@
 
 {% block container %}
 <section class='row'>
-    <div class='span4'>
-    <h3>기기등록</h3>
+    <div class='span6'>
+    <h3>기기등록 ({{ total_registered }})</h3>
     <table class='table'>
         {% for r in register_stat %}
         <tr>
@@ -11,6 +11,12 @@
             <td>{{ r.num_registered }}</td>
         </tr>
         {% endfor %}
+    </table>
+    </div>
+    <div class='span6'>
+    <h3>다운로드 많은 파트</h3>
+    <table class='table'>
+        
     </table>
     </div>
 </section>
