@@ -288,7 +288,9 @@ EOT;
 		$sql = <<<EOT
 select part.id p_id, part.title, download_count from part
  join (select p_id, count(p_id) download_count from stat_download
- group by p_id order by count(p_id) desc) stat on part.id = stat.p_id
+ 		group by p_id order by count(p_id) desc limit 10) stat
+ on part.id = stat.p_id
+ order by download_count desc
 EOT;
 		$download_stat = $app['db']->fetchAll($sql);
 		
