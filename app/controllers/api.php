@@ -134,8 +134,9 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$store_id = $req->get('store_id');
 		
 		$valid = Part::isOpenedPart($p_id, $store_id);
-		
-		// TODO: log download request
+
+		// log
+		$app['db']->insert('stat_download', array('p_id' => $p_id, 'is_success' => ($valid ? 1 : 0)));
 		
 		return $app->json(array('success' => $valid));
 	} 
