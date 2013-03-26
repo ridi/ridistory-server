@@ -24,11 +24,11 @@ EOT;
 	}
 	
 	public static function getOpenedBookList() {
-		// 카테고리별
 		$today = date('Y-m-d');
 		$sql = <<<EOT
-select ifnull(last_update, 0) last_update, ifnull(open_part_count, 0) open_part_count, b.* from book b
+select ifnull(last_update, 0) last_update, ifnull(open_part_count, 0) open_part_count, like_sum, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
+ join (select b_id, count(*) like_sum from user_part_like, part where p_id = part.id group by b_id) ls on b.id = ls.b_id
  left join (select b_id, 1 last_update from part where begin_date = date(now()) group by b_id) p on b.id = p.b_id
 where b.begin_date <= ? and end_date >= ?
 EOT;
