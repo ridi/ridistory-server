@@ -27,7 +27,7 @@
 	<tr>
 		<th>본문 미리보기</th>
 		<td>
-		    <div class='well' style='width: 600px;'>
+		    <div id='js_preview' class='well' style='width: 600px;'>
 		    {{ notice.message|raw|nl2br }}
 		    </blockquote>
 	    </td>
@@ -51,6 +51,12 @@ $(function() {
     $('input:radio[name="is_visible"]')
     .filter('[value="{{ notice.is_visible }}"]')
     .attr('checked', true);
+    
+    $('textarea').change(function() {
+        var text = $(this).val();
+        text = text.replace(/(\r\n|\r|\n)/g, '<br />');
+        $('#js_preview').html(text);
+    });
     
     $('.btn-cancel').click(function() {
         location.href = '/admin/notice/list';
