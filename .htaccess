@@ -8,6 +8,5 @@
 
     php_value register_globals Off
 	php_value magic_quotes_gpc Off
-	php_value register_globals Off
 	php_value register_long_arrays Off
 </IfModule>
