@@ -54,12 +54,14 @@ button.default_btn{
 }
 
 .module_book_info{
+  box-sizing: border-box;
+  padding-right: 15px;
   .info_title{ 
     margin-bottom:4px; font-size:16px; line-height:1.3em; letter-spacing:-1px; color:black; font-weight:bold; word-break:break-all;
     a{font-size:16px; line-height:1.3em; letter-spacing:-1px; color:black; font-weight:bold; word-break:break-all;}
   }
   .info_title_sub{
-    margin-bottom:4px; color:#777; word-break:break-all;
+    margin-bottom:4px; color:#777; word-break:break-all; line-height: 1.3em;
   }
   .info_author{ 
     li{
@@ -107,16 +109,19 @@ button.default_btn{
 }//.module_title1
 
 .module_title2{
-  width:100%; height:44px; background:@default_bg; border-bottom:1px solid #d9d5cd;
+  width:100%; background:@default_bg; border-bottom:1px solid #d9d5cd;
   h2.title{
-    float:left; margin-left: 10px; height:44px; line-height:44px; color:black; font-size:16px; font-weight:bold; letter-spacing:-1px;
+    margin: 10px; color:black; font-size:16px; font-weight:bold; letter-spacing:-1px; line-height: 1.5;
   } 
 }//.module_title2
 
 .module_title3{
-  width:100%; height:27px; border-bottom: 1px solid #989080; .title3_gradation();
+  width:100%; height:30px; border-bottom: 1px solid #989080; .title3_gradation();
   .title{
-    float:left; margin-left: 10px; height:27px; line-height:28px; color:white; font-size:12px; font-weight:bold;
+    float:left; margin-left: 10px; height:30px; line-height:30px; color:white; font-size:14px; font-weight:bold;
+  }
+  .date{
+    float:right; margin-right: 10px; line-height: 30px; color: white;
   }
 }
 
@@ -127,13 +132,13 @@ button.default_btn{
     padding: 0 10px;
     ul{
       li{
-        width:33%; float:left; margin-top:9px; position:relative;
+        width:50%; float:left; margin-top:9px; position:relative;
         a{ display:block; height:12px; border-left:1px solid #b6d6de; text-align:center; font-weight:bold; color:white; }
         &:first-child{
           a{ border-left:none; }
         }
         &.active{
-          width:34%; height:27px; margin-top:3px; border-bottom: 1px solid @default_bg;
+          width:50%; height:27px; margin-top:3px; border-bottom: 1px solid @default_bg;
           a{ 
             width:101%; height:22px; padding-top:5px; position:absolute; left:0; top:0;  border-left:none; color:#666;
             background:@default_bg; border:1px solid #76bacf; border-bottom:none; border-top-right-radius:3px; border-top-left-radius:3px; z-index:500;
@@ -147,12 +152,12 @@ button.default_btn{
 .module_layer_popup{
   width:100%; height:100%; position:absolute; left:0; top:0; background:rgba( 0,0,0,0.4 );
   .popup_wrap{
-    padding: 0 10px; position:absolute; left:0; top: 100px;
+    padding: 10px; position:absolute; left:0; right: 0;
     article{
      width:100%;
       .popup_contents{
         box-shadow: 0 0 3px #333;
-        p{ padding: 10px 10px 20px 10px; background:white; line-height:1.3em;}
+        p{ padding: 10px 10px 20px 10px; background:white; line-height:1.6em; font-size: 13px;}
       }
     }
   }//.popup_warp
@@ -164,12 +169,12 @@ button.default_btn{
   section.main{
     width:100%;
     article.main_recom{
-      background:url( ../images/bg_recom.png ) left top repeat; background-size: 100px 404px; position:relative;
-      height:202px; border-bottom:1px solid #ccb58e;
+      background:url( ../images/bg_recom.png) left top repeat; background-size: 100px 404px; position:relative;
+      height:186px; border-bottom:1px solid #ccb58e;
       
       h2.recom_title{
-        width:52%; height:18px; position:absolute; right:0; top:20px; text-indent:-20000px;
-        background:url( ../images/text_recom.png ) left top no-repeat; background-size: 48px 18px;
+        height:24px; text-indent:-20000px;
+        background:url( ../images/text_recom.png) left top no-repeat; background-size: 48px 18px;
       }
       
       // 겔러리 하단 원형버튼
@@ -196,16 +201,16 @@ button.default_btn{
       ul.recom_gallery{
         width:100%; position:absolute; top:18px; left:0;
         &>li{
-          width:100%; height:202px; position:absolute; top:0; left:0;
+          width:100%; height:186px; position:absolute; top:0; left:0;
           .book_list{
             .module_book_thumb{
-              width:48%; float:left; text-align:right;
+              width:40%; float:left; text-align:right;
               .thumb_wrap{
-                 margin-right:32px;
+                 margin-right:20px;
               }
             }
             .module_book_info{
-              width:52%; float:left; margin-top:24px;
+              width:55%; float:left;
               .info_title{
                 margin-bottom:9px;
               }
@@ -220,14 +225,13 @@ button.default_btn{
       .book_list{
         width:100%; border-bottom:1px solid #e1dcd4; margin-top:23px; padding-bottom:20px;
         .module_book_thumb{
-          width:48%; float:left; text-align:right;
+          width:40%; float:left; text-align:right;
           .thumb_wrap{
-            margin-right:55px;
-            img{ width: 78px;}
+            margin-right:20px;
           }
         }
         .module_book_info{
-          width:52%; float:left; margin-top:4px;
+          width:55%; float:left; margin-top:4px;
         }
       }
     }// article.main_new
@@ -255,7 +259,7 @@ button.default_btn{
       .comment_tab{
         background:#faf8f4; width:100%;
         .tab_off{
-          background:white; width:100%; height:35px; .default_gradation();
+          width:100%; height:35px; .default_gradation();
           .comment_num{
             float:left; margin:12px 0 0 10px; color:#666; 
             .num{ font-weight:bold; color:#ee8d84; } 
@@ -273,7 +277,7 @@ button.default_btn{
               border-radius:2px; -webkit-appearance:none; margin-bottom:5px;
             }
             .input_text{
-              width:100%; height:60px; background:white; box-sizing:border-box; padding:3px 10px; border: 1px solid #d6d4ce; 
+              width:93%; height:60px; background:white; box-sizing:border-box; padding:3px 10px; border: 1px solid #d6d4ce; 
               border-radius:2px; -webkit-appearance:none; margin-bottom:5px; line-height:1.3em;
             }
             .char_num{
@@ -297,15 +301,21 @@ button.default_btn{
               img{ width:32px; }
             }
             .contents_wrap{
-               width:100%; box-sizing:border-box; background:white; border: 1px solid #d7d3ca; border-radius: 10px; padding: 10px 17px; position:relative;
+              box-sizing:border-box; background:white; border: 1px solid #d7d3ca; border-radius: 10px; padding: 10px 10px 10px 15px; position:relative;
               .contents_info{
                 margin-bottom:10px;
                 .box_left_arrow{
                   display:block; position:absolute; width:20px; height:20px; left:-17px; top:20px; text-indent:-20000px;
-                  background:url( ../images/bg_comment.png ) left top no-repeat; background-size:20px 20px;
+                  background:url( ../images/bg_comment.png) left top no-repeat; background-size:20px 20px;
                 }
                 .info_id{ color:#333; font-size:14px; }
                 .info_date{ display:inline-block; padding-left: 6px; margin-left:3px; border-left: 1px solid #bbb; color:#bbb; font-size:12px; }
+                .trash{
+                  float: right;
+                  img{
+                    width: 15px;
+                  }
+                }
               }
               .contents_text{
                 line-height:1.3em; word-break:break-all;
