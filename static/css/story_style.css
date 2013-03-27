@@ -420,7 +420,6 @@ button.default_btn {
   width: 100%;
 }
 #story section.comment article.comment_wrap .comment_tab .tab_off {
-  background: white;
   width: 100%;
   height: 35px;
   background: white;
@@ -576,7 +575,7 @@ button.default_btn {
   float: right;
 }
 #story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_info .trash img {
-  width: 15px
+  width: 15px;
 }
 #story section.comment article.comment_wrap .comment_list ul.list_wrap li .contents_wrap .contents_text {
   line-height: 1.3em;
