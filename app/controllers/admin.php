@@ -57,6 +57,7 @@ class AdminControllerProvider implements ControllerProviderInterface
 		
 		$admin->get('/push/dashboard', array($this, 'pushDashboard'));
 		$admin->get('/push/notify_update', array($this, 'pushNotifyUpdate'));
+		$admin->get('/push/notify_update_id_range', array($this, 'pushNotifyUpdateUsingIdRange'));
 		$admin->get('/push/target_count.ajax', function(Request $req) use ($app) {
 			$b_id = $req->get('b_id');
 			$sql = <<<EOT
@@ -239,6 +240,33 @@ EOT;
 		//$notification = AndroidNotification::createUrlNotofication('http://naver.com', $title, $message);
 
 		$r = sendPushNotificationForAndroid($device_tokens, $notification);
+		error_log($r);
+		
+		return $r;
+	}
+	
+	public static function pushNotifyUpdateUsingIdRange(Request $req, Application $app) {
+		$range_begin  = $req->get('range_begin');
+		$range_end  = $req->get('range_end');
+		$b_id = $req->get('b_id');
+		$title = $req->get('title');
+		$message = $req->get('message');
+		
+		if (empty($b_id) || empty($range_begin) || empty($range_end)) {
+			return 'no parameteres';
+		}
+		
+		$sql = <<<EOT
+select device_token from push_devices where id >= ? and id <= ?
+EOT;
+		$params = array($range_begin, $range_end);
+		
+		$device_tokens = $app['db']->executeQuery($sql, $params)->fetchAll(PDO::FETCH_COLUMN, 0);
+		$notification = AndroidNotification::createPartUpdateNotification($b_id, $title, $message);
+
+		$r = sendPushNotificationForAndroid($device_tokens, $notification);
+		error_log($r);
+		
 		return $r;
 	}
 	
