@@ -371,7 +371,10 @@ function sendPushNotificationForAndroid($device_tokens, $notification) {
     $headers = array('Authorization: key=' . $GOOGLE_API_KEY_FOR_GCM,
     				 'Content-Type: application/json');
 	
+	// TODO: collapse_key
     $post_data = array('data' => $notification,
+                  'collapse_key' => 'temp',
+                  'delay_while_idle' => true,
                   'registration_ids' => $device_tokens);
     
     $ch = curl_init();
