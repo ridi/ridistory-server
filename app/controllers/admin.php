@@ -69,6 +69,7 @@ EOT;
 			$r = $app['db']->fetchAssoc($sql, array($b_id));
 			return $app->json($r);
 		});
+		$admin->get('/push/notify_new_book', array($this, 'pushNotifyNewBook'));
 		
 		$admin->get('/notice/list', array($this, 'noticeList'));
 		$admin->get('/notice/add', array($this, 'noticeAdd'));
@@ -219,6 +220,9 @@ EOT;
 		return $app['twig']->render('/admin/dashboard.twig');
 	}
 	
+	/**
+	 * 새로운 파트가 업데이트 되었을 때, 관심책을 등록한 사용자에게 PUSH
+	 */
 	public static function pushNotifyUpdate(Request $req, Application $app) {
 		$b_id = $req->get('b_id');
 		$title = $req->get('title');
@@ -229,20 +233,101 @@ EOT;
 		}
 		
 		$sql = <<<EOT
-select device_token from user_interest u
+select id, device_token from user_interest u
  join push_devices p on u.device_id = p.device_id
 where b_id = ? and p.is_active = 1
 EOT;
 		$params = array($b_id);
 		
-		$device_tokens = $app['db']->executeQuery($sql, $params)->fetchAll(PDO::FETCH_COLUMN, 0);
+		$devices = $app['db']->fetchAll($sql, $params);
 		$notification = AndroidNotification::createPartUpdateNotification($b_id, $title, $message);
-		//$notification = AndroidNotification::createUrlNotofication('http://naver.com', $title, $message);
-
-		$r = sendPushNotificationForAndroid($device_tokens, $notification);
-		error_log($r);
 		
-		return $r;
+		$result = self::_sendPushNotificationForAndroid($devices, $notification);
+		
+		return $app->json($result);
+	}
+	
+	/**
+	 * 신간 연재가 시작되었을 때 발송하는 전체 PUSH
+	 */
+	public static function pushNotifyNewBook(Request $req, Application $app) {
+		$b_id = $req->get('b_id');
+		$title = $req->get('title');
+		$message = $req->get('message');
+		
+		if (empty($b_id)) {
+			return 'no b_id';
+		}
+		
+		$sql = "select id, device_token from push_devices where is_active = 1";
+		$devices = $app['db']->fetchAll($sql);
+		
+		$notification = AndroidNotification::createNewBookNotification($b_id, $title, $message);
+		
+		$result = self::_sendPushNotificationForAndroid($devices, $notification);
+		
+		return $app->json($result);
+	}
+	
+	/**
+	 * GCM은 한 번에 1000대 까지만 발송할 수 있으므로, 끊어서 전송하고 결과를 취합해서 리턴
+	 */
+	private static function _sendPushNotificationForAndroid($devices, $notification) {
+		define(GCM_MULTICAST_SIZE, 1000);
+		
+		$result = array();
+		$partial_devices = array();
+		foreach ($devices as $i => $device) {
+			$partial_devices[] = $device;
+			if (count($partial_devices) == GCM_MULTICAST_SIZE || $i == count($devices) - 1) {
+				$partial_result = self::_sendPushNotificationForAndroid_partial($partial_devices, $notification);
+				$result[] = $partial_result;
+				$partial_devices = array();
+			}
+		}
+		return $result;
+	}
+	
+	/**
+	 * GCM 보내고 결과에 따른 device_token remove/update 수행.
+	 * GCM 요청/응답을 DB에 로깅
+	 */
+	private static function _sendPushNotificationForAndroid_partial($devices, $notification) {
+		$device_tokens = array();
+		foreach ($devices as $i => $device) {
+			$device_tokens[] = $device['device_token'];
+		}
+
+		list($req_json, $res_json) = AndroidNotification::sendGCM($device_tokens, $notification);
+		
+		global $app;
+		$app['db']->insert('log_push', array(
+			'request' => $req_json,
+			'response' => $res_json,
+			'platform' => 'Android',
+		));
+		
+		$r = json_decode($res_json, true);
+		$success = 0;
+		$canonical = 0;
+		$invalid = 0;
+		foreach ($r['results'] as $i => $result) {
+			if ($result['message_id'] != NULL) {
+				$success++;
+			}
+			if ($result['registration_id'] != NULL) {
+				$canonicalId = $result['registration_id']; 
+				PushDevice::update($devices[$i]['id'], $canonicalId);
+				$canonical++;
+			}
+			if ($result['error'] == 'InvalidRegistration' ||
+				$result['error'] == 'NotRegistered') {
+				PushDevice::deactivate($devices[$i]['id']);
+				$invalid++;
+			}
+		}
+		
+		return array('success' => $success, 'canonical' => $canonical, 'invalid' => $invalid);
 	}
 	
 	public static function pushNotifyUpdateUsingIdRange(Request $req, Application $app) {
@@ -264,7 +349,7 @@ EOT;
 		$device_tokens = $app['db']->executeQuery($sql, $params)->fetchAll(PDO::FETCH_COLUMN, 0);
 		$notification = AndroidNotification::createPartUpdateNotification($b_id, $title, $message);
 
-		$r = sendPushNotificationForAndroid($device_tokens, $notification);
+		$r = AndroidNotification::sendGCM($device_tokens, $notification);
 		error_log($r);
 		
 		return $r;
@@ -363,34 +448,43 @@ class AndroidNotification
 			'message' => $message,
 			'url' => $url);
 	}
-}
-
-function sendPushNotificationForAndroid($device_tokens, $notification) {
-    static $GOOGLE_API_KEY_FOR_GCM = "AIzaSyAS4rjn2l4oR4RveqUWZ2NQnWqlbBoFKic";
-				  
-    $headers = array('Authorization: key=' . $GOOGLE_API_KEY_FOR_GCM,
-    				 'Content-Type: application/json');
 	
-	// TODO: collapse_key
-    $post_data = array('data' => $notification,
-                  'collapse_key' => 'temp',
-                  'delay_while_idle' => true,
-                  'registration_ids' => $device_tokens);
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'https://android.googleapis.com/gcm/send');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
-    
-	/* 테스트 진행 위해 구글에서 주는 결과값 로그에 찍음 */
-    $result = curl_exec($ch);
+	static function createNewBookNotification($b_id, $title, $message) {
+		return array(
+			'type' => 'new_book',
+			'book_id' => $b_id,
+			'title' => $title,
+			'message' => $message,
+		);
+	}
 	
-    curl_close($ch);
-	
-	return $result;
+	static function sendGCM($device_tokens, $notification) {
+	    static $GOOGLE_API_KEY_FOR_GCM = "AIzaSyAS4rjn2l4oR4RveqUWZ2NQnWqlbBoFKic";
+					  
+	    $headers = array('Authorization: key=' . $GOOGLE_API_KEY_FOR_GCM,
+	    				 'Content-Type: application/json');
+		
+		// TODO: collapse_key
+	    $post_data = array('data' => $notification,
+	                  'collapse_key' => 'temp',
+	                  'delay_while_idle' => true,
+	                  'registration_ids' => $device_tokens);
+		$post_json = json_encode($post_data);
+	    
+	    $ch = curl_init();
+	    curl_setopt($ch, CURLOPT_URL, 'https://android.googleapis.com/gcm/send');
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	    curl_setopt($ch, CURLOPT_POST, true);
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_json);
+	    
+	    $result = curl_exec($ch);
+		
+	    curl_close($ch);
+		
+		return array($post_json, $result);
+	}
 }
 
 
