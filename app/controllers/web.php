@@ -22,7 +22,7 @@ class WebControllerProvider implements ControllerProviderInterface
 	}
 	
 	public function notice(Application $app) {
-		$notice = $app['db']->fetchAll('select * from notice where is_visible = 1');
+		$notice = $app['db']->fetchAll('select * from notice where is_visible = 1 order by reg_date desc');
 		return $app['twig']->render('/notice.twig', array('notice' => $notice));
 	}
 	
