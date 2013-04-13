@@ -249,7 +249,8 @@ EOT;
 		$result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message_ios, $notification_ios);
 		
 		// TODO: iOS 결과도 필요
-		return $app->json($result_android);
+		return $app->json(array("Android" => $result_android,
+								"iOS" => $result_ios));
 	}
 
 	public static function noticeList(Request $req, Application $app) {

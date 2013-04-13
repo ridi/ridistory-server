@@ -14,7 +14,10 @@ class IosPush {
 			$device_tokens[] = $device['device_token'];
 		}
 		
-		return self::doSendPush($device_tokens, $message, $notification);
+		list($error_code, $error_string) = self::doSendPush($device_tokens, $message, $notification);
+		
+		return array('error_code' => $error_code,
+					'error_string' => $error_string);
 	}
 	
 	/*
@@ -34,19 +37,18 @@ class IosPush {
 		stream_context_set_option($stream_context, 'ssl', 'local_cert', APNS_CERT_PATH);
 		
 		$apns = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195',
-								$error, $errorString, 2, STREAM_CLIENT_CONNECT, $stream_context);
-		
+								$error, $error_string, 2, STREAM_CLIENT_CONNECT, $stream_context);
+								
 		if($apns) {
 			foreach ($device_tokens as $device_token) {
-				$apnsMessage = chr(0).chr(0).chr(32).pack('H*', str_replace(' ', '', $device_token)).chr(0).chr(strlen($payload)).$payload;
-				fwrite($apns, $apnsMessage);
+				$apns_message = chr(0).chr(0).chr(32).pack('H*', str_replace(' ', '', $device_token)).chr(0).chr(strlen($payload)).$payload;
+				fwrite($apns, $apns_message);
 			}
 			
 			fclose($apns);
 		}
 		
-		$result = "IOS_PUSH_NOTIFICATION_RESULT_TODO";
-		return array($payload, $result);
+		return array($error, $error_string);
 	}
 }
 
