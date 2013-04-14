@@ -63,6 +63,16 @@ class AdminControllerProvider implements ControllerProviderInterface
 		$admin->get('/push/dashboard', array($this, 'pushDashboard'));
 		$admin->get('/push/notify_update', array($this, 'pushNotifyUpdate'));
 		$admin->get('/push/notify_update_id_range', array($this, 'pushNotifyUpdateUsingIdRange'));
+		$admin->get('/push/ios_payload_length.ajax', function(Request $req) use ($app) {
+			$b_id = $req->get('b_id');
+			$message = $req->get('message');
+			
+			$notification_ios = IosPush::createPartUpdateNotification($b_id);
+			$payload = IosPush::getPayloadInJson($message, $notification_ios);
+			$payload_length = strlen($payload);
+			
+			return $app->json(array("payload_length" => $payload_length));
+		});
 		$admin->get('/push/target_count.ajax', function(Request $req) use ($app) {
 			$b_id = $req->get('b_id');
 			$sql = <<<EOT
@@ -230,23 +240,21 @@ EOT;
 	 */
 	public static function pushNotifyUpdate(Request $req, Application $app) {
 		$b_id = $req->get('b_id');
-		$title = $req->get('title');
 		$message = $req->get('message');
 		
-		if (empty($b_id)) {
-			return 'no b_id';
+		if (empty($b_id) || empty($message)) {
+			return 'not all required fields are filled';
 		}
 		
 		$pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $b_id);
 		
 		// Android 전송
-		$notification_android = AndroidPush::createPartUpdateNotification($b_id, $title, $message);
+		$notification_android = AndroidPush::createPartUpdateNotification($b_id, $message);
 		$result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
 		
 		// iOS 전송
 		$notification_ios = IosPush::createPartUpdateNotification($b_id);
-		$message_ios = $title . " - " . $message;
-		$result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message_ios, $notification_ios);
+		$result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
 		
 		// TODO: iOS 결과도 필요
 		return $app->json(array("Android" => $result_android,

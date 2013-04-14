@@ -1,28 +1,30 @@
 <?php
 
 class AndroidPush {
-	public static function createPartUpdateNotification($b_id, $title, $message) {
+	const PUSH_TITLE = "스토리홀릭";
+	
+	public static function createPartUpdateNotification($b_id, $message) {
 		return array(
 			'type' => 'part_update',
 			'book_id' => $b_id,
-			'title' => $title,
+			'title' => PUSH_TITLE,
 			'message' => $message,
 		);
 	}
 	
-	public static function createUrlNotofication($url, $title, $message) {
+	public static function createUrlNotofication($url, $message) {
 		return array(
 			'type' => 'url',
-			'title' => $title,
+			'title' => PUSH_TITLE,
 			'message' => $message,
 			'url' => $url);
 	}
 	
-	public static function createNewBookNotification($b_id, $title, $message) {
+	public static function createNewBookNotification($b_id, $message) {
 		return array(
 			'type' => 'new_book',
 			'book_id' => $b_id,
-			'title' => $title,
+			'title' => PUSH_TITLE,
 			'message' => $message,
 		);
 	}
