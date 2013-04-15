@@ -6,12 +6,10 @@
 		<legend>관심 작품 PUSH 발송</legend>
 		<label>관심책 ID</label>
 		<input id='js_interest_bid' type="text" name='b_id' class='input-small'>
-		<label>제목</label>
-		<input type="text" name='title'>
-		<label>메세지</label>
-		<input type="text" name='message' class='input-xxlarge'>
+		<label>메세지 <span id='js_payload_length'>(0 / 255)</span></label>
+		<input id='js_message' type="text" name='message' class='input-xxlarge'>
 	</fieldset>
-	<button type="submit" class="btn btn-danger">PUSH 발송!</button>
+	<button type="submit" class="btn btn-danger" onclick="return confirm('발송하시겠습니까?');">PUSH 발송!</button>
 </form>
 {% endblock %}
 
@@ -22,16 +20,32 @@
         $('#js_interest_bid').focusout(function() {
             var b_id = $(this).val();
             $.getJSON('/api/book/' + b_id, function(data) {
-                var title = $(':input[name="title"]');
+                var message = $(':input[name="message"]');
                 if (data.error) {
-                    title.val(data.error);
+                    message.val(data.error);
                 } else {
-                	title.val(data.title);
+                	message.val(data.title + " - ");
             	}
             });
             
             //$.getJSON('/admin/push/target_count.ajax', function() {
             //});
+        });
+        
+        $('#js_message').keyup(function() {
+        	var b_id = $('#js_interest_bid').val();
+        	var message = $(this).val();
+        	
+        	$.getJSON('/admin/push/ios_payload_length.ajax?b_id=' + b_id + '&message=' + message, function(data) {
+        		var payload_length = data['payload_length'];
+        		$('#js_payload_length').text('(' + payload_length + ' / 255)');
+        		
+        		if (payload_length >= 256) {
+        			$('#js_message').css('color', 'red');
+        		} else {
+        			$('#js_message').css('color', 'black');
+        		}
+        	});
         });
         
         $('form').submit(function() {

@@ -91,6 +91,18 @@ class PushDevice
 		$r = $app['db']->delete('push_devices', compact('device_id'));
 		return $r === 1;
 	}
+	
+	public static function deactivate($pk) {
+		global $app;
+		$r = $app['db']->update('push_devices', array('is_active' => 0), array('id' => $pk));
+		return $r === 1;
+	}
+	
+	public static function update($pk, $device_token) {
+		global $app;
+		$r = $app['db']->update('push_devices', array('device_token' => $device_token), array('id' => $pk));
+		return $r === 1;
+	}
 }
 
 

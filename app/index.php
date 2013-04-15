@@ -1,20 +1,22 @@
 <?
 require_once '../lib/vendor/autoload.php';
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Silex\Provider\TwigServiceProvider;
+use Silex\Provider\DoctrineServiceProvider;
+use Silex\Provider\SessionServiceProvider;
+use Silex\Provider\SecurityServiceProvider;
 
 $app = new Silex\Application();
 
-$app->register(new Silex\Provider\TwigServiceProvider(), array(
+$app->register(new TwigServiceProvider(), array(
 	'twig.path' => __DIR__ . '/views',
 ));
 
 require 'conf.php';
 
-$app->register(new Silex\Provider\DoctrineServiceProvider());
-$app->register(new Silex\Provider\SessionServiceProvider());
-$app->register(new Silex\Provider\SecurityServiceProvider());
+$app->register(new DoctrineServiceProvider());
+$app->register(new SessionServiceProvider());
+$app->register(new SecurityServiceProvider());
 
 
 require_once 'models/Book.php';

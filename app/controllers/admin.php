@@ -1,4 +1,9 @@
 <?
+
+require_once dirname(__FILE__) . "/../utils/push_device_picker.php";
+require_once dirname(__FILE__) . "/../utils/push_android.php";
+require_once dirname(__FILE__) . "/../utils/push_ios.php";
+
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,6 +63,16 @@ class AdminControllerProvider implements ControllerProviderInterface
 		$admin->get('/push/dashboard', array($this, 'pushDashboard'));
 		$admin->get('/push/notify_update', array($this, 'pushNotifyUpdate'));
 		$admin->get('/push/notify_update_id_range', array($this, 'pushNotifyUpdateUsingIdRange'));
+		$admin->get('/push/ios_payload_length.ajax', function(Request $req) use ($app) {
+			$b_id = $req->get('b_id');
+			$message = $req->get('message');
+			
+			$notification_ios = IosPush::createPartUpdateNotification($b_id);
+			$payload = IosPush::getPayloadInJson($message, $notification_ios);
+			$payload_length = strlen($payload);
+			
+			return $app->json(array("payload_length" => $payload_length));
+		});
 		$admin->get('/push/target_count.ajax', function(Request $req) use ($app) {
 			$b_id = $req->get('b_id');
 			$sql = <<<EOT
@@ -69,6 +84,7 @@ EOT;
 			$r = $app['db']->fetchAssoc($sql, array($b_id));
 			return $app->json($r);
 		});
+		$admin->get('/push/notify_new_book', array($this, 'pushNotifyNewBook'));
 		
 		$admin->get('/notice/list', array($this, 'noticeList'));
 		$admin->get('/notice/add', array($this, 'noticeAdd'));
@@ -219,58 +235,32 @@ EOT;
 		return $app['twig']->render('/admin/dashboard.twig');
 	}
 	
+	/**
+	 * 새로운 파트가 업데이트 되었을 때, 관심책을 등록한 사용자에게 PUSH
+	 */
 	public static function pushNotifyUpdate(Request $req, Application $app) {
 		$b_id = $req->get('b_id');
-		$title = $req->get('title');
 		$message = $req->get('message');
 		
-		if (empty($b_id)) {
-			return 'no b_id';
+		if (empty($b_id) || empty($message)) {
+			return 'not all required fields are filled';
 		}
 		
-		$sql = <<<EOT
-select device_token from user_interest u
- join push_devices p on u.device_id = p.device_id
-where b_id = ? and p.is_active = 1
-EOT;
-		$params = array($b_id);
+		$pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $b_id);
 		
-		$device_tokens = $app['db']->executeQuery($sql, $params)->fetchAll(PDO::FETCH_COLUMN, 0);
-		$notification = AndroidNotification::createPartUpdateNotification($b_id, $title, $message);
-		//$notification = AndroidNotification::createUrlNotofication('http://naver.com', $title, $message);
-
-		$r = sendPushNotificationForAndroid($device_tokens, $notification);
-		error_log($r);
+		// Android 전송
+		$notification_android = AndroidPush::createPartUpdateNotification($b_id, $message);
+		$result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
 		
-		return $r;
+		// iOS 전송
+		$notification_ios = IosPush::createPartUpdateNotification($b_id);
+		$result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
+		
+		// TODO: iOS 결과도 필요
+		return $app->json(array("Android" => $result_android,
+								"iOS" => $result_ios));
 	}
-	
-	public static function pushNotifyUpdateUsingIdRange(Request $req, Application $app) {
-		$range_begin  = $req->get('range_begin');
-		$range_end  = $req->get('range_end');
-		$b_id = $req->get('b_id');
-		$title = $req->get('title');
-		$message = $req->get('message');
-		
-		if (empty($b_id) || empty($range_begin) || empty($range_end)) {
-			return 'no parameteres';
-		}
-		
-		$sql = <<<EOT
-select device_token from push_devices where id >= ? and id <= ?
-EOT;
-		$params = array($range_begin, $range_end);
-		
-		$device_tokens = $app['db']->executeQuery($sql, $params)->fetchAll(PDO::FETCH_COLUMN, 0);
-		$notification = AndroidNotification::createPartUpdateNotification($b_id, $title, $message);
 
-		$r = sendPushNotificationForAndroid($device_tokens, $notification);
-		error_log($r);
-		
-		return $r;
-	}
-	
-	
 	public static function noticeList(Request $req, Application $app) {
 		$notice_list = $app['db']->fetchAll('select * from notice');
 		return $app['twig']->render('/admin/notice_list.twig', array('notice_list' => $notice_list));
@@ -343,54 +333,4 @@ function array_move_keys(&$src, &$dst, array $keys) {
 		unset($src[$k1]);
 	}
 }
-
-
-class AndroidNotification
-{
-	static function createPartUpdateNotification($b_id, $title, $message) {
-		return array(
-			'type' => 'part_update',
-			'book_id' => $b_id,
-			'title' => $title,
-			'message' => $message,
-		);
-	}
-	
-	static function createUrlNotofication($url, $title, $message) {
-		return array(
-			'type' => 'url',
-			'title' => $title,
-			'message' => $message,
-			'url' => $url);
-	}
-}
-
-function sendPushNotificationForAndroid($device_tokens, $notification) {
-    static $GOOGLE_API_KEY_FOR_GCM = "AIzaSyAS4rjn2l4oR4RveqUWZ2NQnWqlbBoFKic";
-				  
-    $headers = array('Authorization: key=' . $GOOGLE_API_KEY_FOR_GCM,
-    				 'Content-Type: application/json');
-	
-	// TODO: collapse_key
-    $post_data = array('data' => $notification,
-                  'collapse_key' => 'temp',
-                  'delay_while_idle' => true,
-                  'registration_ids' => $device_tokens);
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'https://android.googleapis.com/gcm/send');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
-    
-	/* 테스트 진행 위해 구글에서 주는 결과값 로그에 찍음 */
-    $result = curl_exec($ch);
-	
-    curl_close($ch);
-	
-	return $result;
-}
-
 
