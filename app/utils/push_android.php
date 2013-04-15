@@ -7,7 +7,7 @@ class AndroidPush {
 		return array(
 			'type' => 'part_update',
 			'book_id' => $b_id,
-			'title' => PUSH_TITLE,
+			'title' => self::PUSH_TITLE,
 			'message' => $message,
 		);
 	}
@@ -15,7 +15,7 @@ class AndroidPush {
 	public static function createUrlNotofication($url, $message) {
 		return array(
 			'type' => 'url',
-			'title' => PUSH_TITLE,
+			'title' => self::PUSH_TITLE,
 			'message' => $message,
 			'url' => $url);
 	}
@@ -24,7 +24,7 @@ class AndroidPush {
 		return array(
 			'type' => 'new_book',
 			'book_id' => $b_id,
-			'title' => PUSH_TITLE,
+			'title' => self::PUSH_TITLE,
 			'message' => $message,
 		);
 	}
