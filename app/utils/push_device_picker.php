@@ -19,7 +19,7 @@ EOT;
 	
 	static function pickDevicesUsingIdRange($db, $range_begin, $range_end) {
 		$sql = <<<EOT
-select device_token from push_devices where id >= ? and id <= ?
+select id, device_token, platform from push_devices where id >= ? and id <= ?
 EOT;
 
 		$params = array($range_begin, $range_end);

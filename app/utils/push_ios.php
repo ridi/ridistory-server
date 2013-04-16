@@ -8,6 +8,21 @@ class IosPush {
 		);
 	}
 	
+	
+	public static function createUrlNotification($url) {
+		return array(
+			'type' => 'url',
+			'url' => $url
+		);
+	}
+	
+	public static function createNewBookNotification($b_id) {
+		return array(
+			'type' => 'new_book',
+			'book_id' => $b_id
+		);
+	}
+	
 	public static function sendPush($devices, $message, $notification) {
 		$device_tokens = array();
 		foreach ($devices as $i => $device) {
@@ -27,7 +42,7 @@ class IosPush {
 		$payload = array('aps' => array('alert' => $message,
 								'badge' => 0,
 								'sound' => 'default'),
-				 		'datas' => $notification);
+				 		'data' => $notification);
 		$payload = json_encode($payload);	// $payload의 길이는 256byte 미만이어야함
 		
 		return $payload;
@@ -63,6 +78,8 @@ class IosPush {
 			}
 
 			fclose($apns);
+		} else {
+			$error_string = "[storyholic] unable to connect to apn. " . $error_string;
 		}
 		
 		return array($error, $error_string, $error_response_list);

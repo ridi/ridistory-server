@@ -12,7 +12,7 @@ class AndroidPush {
 		);
 	}
 	
-	public static function createUrlNotofication($url, $message) {
+	public static function createUrlNotification($url, $message) {
 		return array(
 			'type' => 'url',
 			'title' => self::PUSH_TITLE,
