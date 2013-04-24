@@ -52,7 +52,7 @@ class IosPush {
 	 * 실제 전송
 	 */
 	private static function doSendPush($device_tokens, $message, $notification) {
-		define('APNS_CERT_FILENAME', 'apns-dev.pem');
+		define('APNS_CERT_FILENAME', 'apns-distribution2.pem');
 		define('APNS_CERT_PATH', dirname(__FILE__) . '/' . APNS_CERT_FILENAME);
 		
 	    $payload = self::getPayloadInJson($message, $notification);
