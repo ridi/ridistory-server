@@ -1,6 +1,9 @@
 <?php
 
 class IosPush {
+	const COMMAND_PUSH = 1; /* Payload command. */
+	const DEVICE_BINARY_SIZE = 32;
+	
 	public static function createPartUpdateNotification($b_id) {
 		return array(
 			'type' => 'part_update',
@@ -59,7 +62,7 @@ class IosPush {
 		
 		$stream_context = stream_context_create();
 		stream_context_set_option($stream_context, 'ssl', 'local_cert', APNS_CERT_PATH);
-		$apns = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195',
+		$apns = stream_socket_client('ssl://gateway.push.apple.com:2195',
 								$error, $error_string, 2, STREAM_CLIENT_CONNECT, $stream_context);
 		stream_set_blocking($apns, 0);	// fread가 바로 리턴하도록
 
@@ -67,8 +70,13 @@ class IosPush {
 		
 		if($apns) {
 			foreach ($device_tokens as $device_token) {
-				$apns_message = chr(0).chr(0).chr(32).pack('H*', str_replace(' ', '', $device_token)).chr(0).chr(strlen($payload)).$payload;
+				$apns_message  = pack('CNNnH*', self::COMMAND_PUSH, 0, 0, self::DEVICE_BINARY_SIZE, $device_token);
+				$apns_message .= pack('n', strlen($payload));
+				$apns_message .= $payload;
+				
 				fwrite($apns, $apns_message);
+				
+				usleep(100 * 1000);
 				
 				$error_response = self::checkError($apns);
 				if ($error_response != null) {
@@ -95,7 +103,7 @@ class IosPush {
 		 */
 		$apple_error_response = fread($apns, 6); 
 
-       if ($apple_error_response) {
+		if ($apple_error_response) {
             $error_response = unpack('Ccommand/Cstatus_code/Nidentifier', $apple_error_response);
 
             if ($error_response['status_code'] == '0') {
