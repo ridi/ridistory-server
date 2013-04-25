@@ -32,13 +32,23 @@ class SimpleApnsClient
 		$this->payload = $payload;
 	}
 	
+	private function getApnsUrl() {
+		if ($this->environment == self::ENVIRONMENT_PRODUCTION) {
+			return 'ssl://gateway.push.apple.com:2195';
+		} else if ($this->environment == self::ENVIRONMENT_SANDBOX) {
+			return 'ssl://gateway.sandbox.push.apple.com:2195';
+		}
+		
+		return null;
+	}
+	
 	public function connect() {
 		$stream_context = stream_context_create(array('ssl' =>
 								array('local_cert' => $this->certificate_path)));
 		
-		// 3번 시도
+		// 접속 실패할 경우를 대비에 반복 시도
 		for ($i = 0; $i < self::CONNECT_RETRY_TIMES; $i++) {
-			$this->apns = stream_socket_client('ssl://gateway.push.apple.com:2195',
+			$this->apns = stream_socket_client($this->getApnsUrl(),
 									$error, $error_string, 2, STREAM_CLIENT_CONNECT, $stream_context);
 			
 			if (isset($this->apns)) {
@@ -59,7 +69,7 @@ class SimpleApnsClient
 	}
 	
 	public function send() {
-		if ($this->isConnected() == false || count($this->device_tokens) == 0 || empty($this->payload)) {
+		if ($this->isConnected() == false || empty($this->payload)) {
 			throw new Exception("sending push is not prepared.", 1);
 		}
 		
