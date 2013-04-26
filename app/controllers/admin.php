@@ -63,6 +63,7 @@ class AdminControllerProvider implements ControllerProviderInterface
 		$admin->get('/push/dashboard', array($this, 'pushDashboard'));
 		$admin->get('/push/notify_update', array($this, 'pushNotifyUpdate'));
 		$admin->get('/push/notify_url', array($this, 'pushNotifyUrl'));
+		$admin->get('/push/notify_remind', array($this, 'pushNotifyRemind'));
 		$admin->get('/push/notify_update_id_range', array($this, 'pushNotifyUpdateUsingIdRange'));
 		$admin->get('/push/ios_payload_length.ajax', function(Request $req) use ($app) {
 			$b_id = $req->get('b_id');
@@ -237,7 +238,7 @@ EOT;
 	}
 	
 	/**
-	 * 새로운 파트가 업데이트 되었을 때, 관심책을 등록한 사용자에게 PUSH
+	 * PUSH NOTIFICATION
 	 */
 	public static function pushNotifyUpdate(Request $req, Application $app) {
 		$b_id = $req->get('b_id');
@@ -248,20 +249,14 @@ EOT;
 		}
 		
 		$pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $b_id);
-		
-		// Android 전송
 		$notification_android = AndroidPush::createPartUpdateNotification($b_id, $message);
-		$result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
-		
-		// iOS 전송
 		$notification_ios = IosPush::createPartUpdateNotification($b_id);
-		$result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
 		
-		// TODO: iOS 결과도 필요
-		return $app->json(array("Android" => $result_android,
-								"iOS" => $result_ios));
+		$result = self::_push($pick_result, $message, $notification_ios, $notification_android);
+		
+		return $app->json($result);
 	}
-
+	
 	public static function pushNotifyUrl(Request $req, Application $app) {
 		$b_id = $req->get('b_id');
 		$url = $req->get('url');
@@ -272,19 +267,39 @@ EOT;
 		}
 		
 		$pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $b_id);
-		
-		// Android 전송
 		$notification_android = AndroidPush::createUrlNotification($url, $message);
-		$result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
-		
-		// iOS 전송
 		$notification_ios = IosPush::createUrlNotification($url);
-		$result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
+	
+		$result = self::_push($pick_result, $message, $notification_ios, $notification_android);
 		
-		// TODO: iOS 결과도 필요
-		return $app->json(array("Android" => $result_android,
-								"iOS" => $result_ios));
+		return $app->json($result);
 	}
+	
+	public static function pushNotifyRemind(Request $req, Application $app) {
+		$date_begin = $req->get('date_begin');
+		$date_end = $req->get('date_end');
+		$message = $req->get('message');
+		if (empty($message)) {
+			return 'not all required fields are filled';
+		}
+		
+		$pick_result = PushDevicePicker::pickDevicesUsingRegDateRange($app['db'], $date_begin, $date_end);
+		$notification_android = AndroidPush::createLaunchAppNotification($message);
+		$notification_ios = IosPush::createLaunchAppNotification();
+	
+		$result = self::_push($pick_result, $message, $notification_ios, $notification_android);
+		
+		return $app->json($result);
+	}
+	
+	public static function _push($pick_result, $message, $notification_ios, $notification_android) {
+		$result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
+		$result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
+	
+		return array("Android" => $result_android,
+					 "iOS" => $result_ios);
+	}
+
 
 	public static function noticeList(Request $req, Application $app) {
 		$notice_list = $app['db']->fetchAll('select * from notice');

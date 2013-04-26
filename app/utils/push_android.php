@@ -29,6 +29,14 @@ class AndroidPush {
 		);
 	}
 	
+	public static function createLaunchAppNotification($message) {
+		return array(
+			'type' => 'launch_app',
+			'title' => self::PUSH_TITLE,
+			'message' => $message,
+		);
+	}
+	
 	/**
 	 * GCM은 한 번에 1000대 까지만 발송할 수 있으므로, 끊어서 전송하고 결과를 취합해서 리턴
 	 */

@@ -28,6 +28,12 @@ class IosPush {
 		);
 	}
 	
+	public static function createLaunchAppNotification() {
+		return array(
+			'type' => 'launch_app',
+		);
+	}
+	
 	public static function sendPush($devices, $message, $notification) {
 		$device_tokens = array();
 		foreach ($devices as $i => $device) {
