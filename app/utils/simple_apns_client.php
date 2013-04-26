@@ -81,7 +81,7 @@ class SimpleApnsClient
 			$apns_message .= $this->payload;
 			
 			fwrite($this->apns, $apns_message);
-			usleep(500 * 1000);
+			usleep(200 * 1000);
 			
 			$error_response = $this->checkError();
 			if ($error_response != null) {

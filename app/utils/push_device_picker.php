@@ -30,7 +30,7 @@ EOT;
 	
 	static function pickDevicesUsingRegDateRange($db, $date_begin, $date_end) {
 		$sql = <<<EOT
-select id, device_token, platform from push_devices where reg_date >= date(?) and reg_date <= (?)
+select id, device_token, platform from push_devices where reg_date >= ? and reg_date <= ?
 EOT;
 
 		$params = array($date_begin, $date_end);
