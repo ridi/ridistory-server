@@ -16,7 +16,9 @@ class WebControllerProvider implements ControllerProviderInterface
 		$api->post('/comment/add', array($this, 'commentAdd'));
 		$api->get('/comment/{c_id}/delete', array($this, 'commentDelete'));
 		
-		$api->get('/notice', array($this, 'notice')); 
+		$api->get('/notice', array($this, 'notice'));
+		
+		$api->get('/preview/{p_id}/{title}', array($this, 'previewPart'));
 		
 		return $api;
 	}
@@ -92,6 +94,14 @@ class WebControllerProvider implements ControllerProviderInterface
 		return $app->redirect($req->headers->get('Referer'));
 	}
 	
+	public function previewPart(Request $req, Application $app, $p_id, $title) {
+		$p = new Part($p_id);
+		if (!$p->isOpened()) {
+			return $app->abort(404);
+		}
+		
+		return $app->redirect('http://preview.hw.dev.ridibooks.kr/' . $p->store_id);
+	}
 }
 
 function alert_and_back($msg) {

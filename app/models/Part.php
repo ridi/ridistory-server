@@ -2,6 +2,24 @@
 
 class Part
 {
+	private $row;
+	
+	public function __construct($id) {
+		$this->row = self::get($id);
+		if ($this->row === false) {
+			throw new Exception('Invalid Part Id: ' . $id);
+		}
+	}
+	
+	public function isOpened() {
+		$today = date('Y-m-d');
+		return $this->row['begin_date'] <= $today && $this->row['end_date'] >= $today;
+	}
+	
+	public function __get($k) {
+		return $this->row[$k];
+	}
+	
 	public static function get($id) {
 		global $app;
 		$p = $app['db']->fetchAssoc('select * from part where id = ?', array($id));
@@ -12,10 +30,8 @@ class Part
 	}
 	
 	public static function isOpenedPart($p_id, $store_id) {
-		global $app;
-		$today = date('Y-m-d');
-		$p = $app['db']->fetchAssoc('select * from part where id = ? and begin_date <= ? and end_date >= ?', array($p_id, $today, $today));
-		return ($p && $p['store_id'] == $store_id);
+		$p = new Part($p_id);
+		return $p->isOpened() && $p->store_id == $store_id;
 	}
 
 	public static function getListByBid($b_id, $with_social_info = false) {
@@ -52,8 +68,6 @@ EOT;
 	}
 	
 	private static function _fill_additional(&$p) {
-		define('STORE_API_BASE_URL', 'http://ridibooks.com');
-		
 		$p['meta_url'] = STORE_API_BASE_URL . '/api/book/metadata.php?id=' . $p['store_id'];
 		
 		// v1: token only

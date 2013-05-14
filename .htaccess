@@ -7,6 +7,6 @@
     RewriteRule ^ app/index.php [L]
 
     php_value register_globals Off
-	php_value magic_quotes_gpc Off
-	php_value register_long_arrays Off
+    php_value magic_quotes_gpc Off
+    php_value register_long_arrays Off
 </IfModule>

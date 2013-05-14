@@ -25,6 +25,8 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/validate_download', array($this, 'validateDownload'));
 		
+		$api->get('/share_url/{p_id}', array($this, 'shareUrl'));
+		
 		return $api;
 	}
 
@@ -143,5 +145,41 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		return $app->json(array('success' => $valid));
 	} 
+	
+	public function shareUrl(Request $req, Application $app, $p_id) {
+		$p = new Part($p_id);
+		if ($p->isOpened()) {
+			$preview_url = 'http://preview.ridibooks.com/' . $p->store_id;
+			$shorten_url = $this->_getShortenUrl($preview_url);
+			return $app->json(array('url' => $shorten_url));
+		}
+		
+		return $app->json(array('error' => 'unable to get shorten url')); 
+	}
+	
+	function _getShortenUrl($target_url)
+	{
+		$url = "http://ridi.kr/yourls-api.php";
+		$attachment =  array(
+			'signature' => 'bbd2b597f6',
+			'action' => 'shorturl',
+			'format' => 'json',
+			'url' => $target_url,
+		);
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL,$url);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $attachment);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  //to suppress the curl output
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+		
+		$result = curl_exec($ch);
+		curl_close ($ch);
+		
+		$json_result = json_decode($result, true);
+		
+		return $json_result['shorturl'];
+	}
 }
 
