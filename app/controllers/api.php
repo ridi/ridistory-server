@@ -25,7 +25,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/validate_download', array($this, 'validateDownload'));
 		
-		$api->get('/share_url/{p_id}', array($this, 'shareUrl'));
+		$api->get('/shorten_url/{p_id}', array($this, 'shortenUrl'));
 		
 		return $api;
 	}
@@ -146,7 +146,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $app->json(array('success' => $valid));
 	} 
 	
-	public function shareUrl(Request $req, Application $app, $p_id) {
+	public function shortenUrl(Request $req, Application $app, $p_id) {
 		$p = new Part($p_id);
 		if ($p->isOpened()) {
 			$preview_url = 'http://preview.ridibooks.com/' . $p->store_id;
@@ -157,7 +157,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $app->json(array('error' => 'unable to get shorten url')); 
 	}
 	
-	function _getShortenUrl($target_url)
+	private function _getShortenUrl($target_url)
 	{
 		$url = "http://ridi.kr/yourls-api.php";
 		$attachment =  array(

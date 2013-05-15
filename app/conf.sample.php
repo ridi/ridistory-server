@@ -30,3 +30,5 @@ use Doctrine\DBAL\Logging\EchoSQLLogger;
 if ($app['debug'] = true) {
 	//$app['db']->getConfiguration()->setSQLLogger(new EchoSQLLogger());
 }
+
+define('STORE_API_BASE_URL', 'http://ridibooks.com');
