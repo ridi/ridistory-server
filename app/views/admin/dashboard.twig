@@ -4,7 +4,9 @@
 <form action='/admin/push/notify_update'>
 	<fieldset>
 		<legend>관심 작품 PUSH 발송</legend>
-		<label>관심책 ID</label>
+		<label>메세지 <b>수신</b> 대상 책 ID</label>
+		<input id='js_interest_recipient' type="text" name='recipient' class='input-small'>
+		<label><b>연결</b>될 책 ID</label>
 		<input id='js_interest_bid' type="text" name='b_id' class='input-small'>
 		<label>메세지 <span id='js_payload_length'>(0 / 255)</span></label>
 		<input id='js_message' type="text" name='message' class='input-xxlarge'>
@@ -16,9 +18,15 @@
 {% block script %}
 <script>
     $(function() {
-        console.log();
+        $('#js_interest_recipient').focusout(function() {
+        	var b_id = $(this).val();
+        	$('#js_interest_bid').val(b_id);
+        	$('message').val('');
+        });
+        
         $('#js_interest_bid').focusout(function() {
             var b_id = $(this).val();
+        	$('#js_interest_bid').val(b_id);
             $.getJSON('/api/book/' + b_id, function(data) {
                 var message = $(':input[name="message"]');
                 if (data.error) {
@@ -27,9 +35,6 @@
                 	message.val(data.title + " - ");
             	}
             });
-            
-            //$.getJSON('/admin/push/target_count.ajax', function() {
-            //});
         });
         
         $('#js_message').keyup(function() {
@@ -49,7 +54,6 @@
         });
         
         $('form').submit(function() {
-            
             return true;
         });
     });

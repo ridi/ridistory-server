@@ -100,7 +100,7 @@ class WebControllerProvider implements ControllerProviderInterface
 			return $app->abort(404);
 		}
 		
-		return $app->redirect('http://preview.hw.dev.ridibooks.kr/' . $p->store_id);
+		return $app->redirect('http://preview.ridibooks.com/' . $p->store_id . '?mobile');
 	}
 }
 

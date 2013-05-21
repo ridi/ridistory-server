@@ -63,6 +63,7 @@ class AdminControllerProvider implements ControllerProviderInterface
 		$admin->get('/push/dashboard', array($this, 'pushDashboard'));
 		$admin->get('/push/notify_update', array($this, 'pushNotifyUpdate'));
 		$admin->get('/push/notify_url', array($this, 'pushNotifyUrl'));
+		$admin->get('/push/notify_new_book', array($this, 'pushNotifyNewBook'));
 		$admin->get('/push/notify_remind', array($this, 'pushNotifyRemind'));
 		$admin->get('/push/notify_update_id_range', array($this, 'pushNotifyUpdateUsingIdRange'));
 		$admin->get('/push/ios_payload_length.ajax', function(Request $req) use ($app) {
@@ -75,6 +76,7 @@ class AdminControllerProvider implements ControllerProviderInterface
 			
 			return $app->json(array("payload_length" => $payload_length));
 		});
+		
 		$admin->get('/push/target_count.ajax', function(Request $req) use ($app) {
 			$b_id = $req->get('b_id');
 			$sql = <<<EOT
@@ -86,7 +88,6 @@ EOT;
 			$r = $app['db']->fetchAssoc($sql, array($b_id));
 			return $app->json($r);
 		});
-		$admin->get('/push/notify_new_book', array($this, 'pushNotifyNewBook'));
 		
 		$admin->get('/notice/list', array($this, 'noticeList'));
 		$admin->get('/notice/add', array($this, 'noticeAdd'));
@@ -241,14 +242,18 @@ EOT;
 	 * PUSH NOTIFICATION
 	 */
 	public static function pushNotifyUpdate(Request $req, Application $app) {
+		$recipient = $req->get('recipient');
 		$b_id = $req->get('b_id');
 		$message = $req->get('message');
 		
 		if (empty($b_id) || empty($message)) {
 			return 'not all required fields are filled';
 		}
+		if (empty($target_b_id)) {
+			$target_b_id = $b_id;
+		}
 		
-		$pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $b_id);
+		$pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $recipient);
 		$notification_android = AndroidPush::createPartUpdateNotification($b_id, $message);
 		$notification_ios = IosPush::createPartUpdateNotification($b_id);
 		
