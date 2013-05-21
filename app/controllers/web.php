@@ -18,6 +18,8 @@ class WebControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/notice', array($this, 'notice'));
 		
+		$api->get('/banner', array($this, 'banner'));
+		
 		$api->get('/preview/{p_id}/{title}', array($this, 'previewPart'));
 		
 		return $api;
@@ -26,6 +28,10 @@ class WebControllerProvider implements ControllerProviderInterface
 	public function notice(Application $app) {
 		$notice = $app['db']->fetchAll('select * from notice where is_visible = 1 order by reg_date desc');
 		return $app['twig']->render('/notice.twig', array('notice' => $notice));
+	}
+	
+	public function banner(Application $app) {
+		return $app['twig']->render('/banner.twig', array());
 	}
 	
 	public function home(Application $app) {
