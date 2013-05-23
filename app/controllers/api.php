@@ -149,7 +149,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 	public function shortenUrl(Request $req, Application $app, $p_id) {
 		$p = new Part($p_id);
 		if ($p->isOpened()) {
-			$preview_url = 'http://preview.ridibooks.com/' . $p->store_id;
+			$preview_url = 'http://preview.ridibooks.com/' . $p->store_id . '?mobile';
 			$shorten_url = $this->_getShortenUrl($preview_url);
 			return $app->json(array('url' => $shorten_url));
 		}
