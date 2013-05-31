@@ -12,14 +12,11 @@
     <script>
         var curBannerIndex = -1;
         var bannerBackgrounds = new Array("/static/images/banner/bg_black.png",
-        								"/static/images/banner/bg_red.png",
         								"/static/images/banner/bg_red.png");
         var bannerImages = new Array("/static/images/banner/01_ridibooks_app_link.png",
-                                    "/static/images/banner/02_sale.png",
-                                    "/static/images/banner/03_double_point.png");
+                                    "/static/images/banner/02_sale.png");
         var bannerLinks = new Array("javascript:moveToAppStore()",
-                                    "ridistory://openinbrowser/#http://bit.ly/13oqzPs",
-                                    "ridistory://openinbrowser/#http://bit.ly/ZxouU0");
+                                    "ridistory://openinbrowser/#http://bit.ly/13oqzPs");
 
         function changeBannerImage() {
         	var bannerContainer = document.getElementById('banner');
@@ -36,7 +33,7 @@
             setTimeout(function() {
                 changeBannerImage();
                 setTimerToChangeBannerImage();
-            }, 3000);
+            }, 10000);
         }
         
 		function moveToAppStore() {
