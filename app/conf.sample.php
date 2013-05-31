@@ -26,6 +26,13 @@ $app['security.firewalls'] = array(
 	),
 );
 
+// TO CREATE PASSWORD
+/*
+	$user = new Symfony\Component\Security\Core\User\User('admin', '');
+	$encoder = $app['security.encoder_factory']->getEncoder($user);
+	$password = $encoder->encodePassword('rbxTjdigu!@#', $user->getSalt());
+ */
+
 use Doctrine\DBAL\Logging\EchoSQLLogger;
 if ($app['debug'] = true) {
 	//$app['db']->getConfiguration()->setSQLLogger(new EchoSQLLogger());
