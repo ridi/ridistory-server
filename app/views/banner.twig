@@ -7,8 +7,9 @@
     <style>
     	body { margin: 0; padding: 0; }
         #banner { text-align: center; }
-    	#banner a { outline: none; }
-    	#banner img { border: none; } 
+    	#banner a {
+    		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    	} 
     </style>
     
     <script>
@@ -42,7 +43,7 @@
 			{% if platform == 'android' %}
 				var link = 'ridistory://openinbrowser/#http://bit.ly/11bmRH1';
 			{% else %}
-				var link = 'ridistory://openinbrowser/#http://bit.ly/16uJWwa';
+				var link = 'ridistory://openinbrowser/#http://bit.ly/13oU6bN';
 			{% endif %}
 
 			location.href = link;
