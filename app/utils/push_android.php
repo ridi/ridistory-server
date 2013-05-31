@@ -1,7 +1,7 @@
 <?php
 
 class AndroidPush {
-	const PUSH_TITLE = "스토리홀릭";
+	const PUSH_TITLE = "리디스토리";
 	
 	public static function createPartUpdateNotification($b_id, $message) {
 		return array(

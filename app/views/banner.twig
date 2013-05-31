@@ -1,27 +1,67 @@
 <html>
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>RIDISTORY BANNER PAGE</title>
-	<style>
-		body { margin: 0; padding: 0; background-color: #16283E; }
-	</style>
-	
-	<script>
-		function resizeMe(element) {
-			element.width = window.innerWidth;
-			element.height = window.innerHeight;
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RIDISTORY BANNER PAGE</title>
+    <style>
+    	body { margin: 0; padding: 0; }
+        #banner { text-align: center; }
+    </style>
+    
+    <script>
+        var curBannerIndex = -1;
+        var bannerBackgrounds = new Array("/static/images/banner/bg_black.png",
+        								"/static/images/banner/bg_red.png",
+        								"/static/images/banner/bg_red.png");
+        var bannerImages = new Array("/static/images/banner/01_ridibooks_app_link.png",
+                                    "/static/images/banner/02_sale.png",
+                                    "/static/images/banner/03_double_point.png");
+        var bannerLinks = new Array("javascript:moveToAppStore()",
+                                    "ridistory://openinbrowser/#http://bit.ly/13oqzPs",
+                                    "ridistory://openinbrowser/#http://bit.ly/ZxouU0");
+
+        function changeBannerImage() {
+        	var bannerContainer = document.getElementById('banner');
+            var bannerImageElement = document.getElementById('banner-image');
+            var bannerLinkElement = document.getElementById('banner-link');
+            var index = (++curBannerIndex) % bannerImages.length;
+            
+            bannerContainer.style.backgroundImage = "url('" + bannerBackgrounds[index] + "')";
+            bannerImageElement.src = bannerImages[index];
+            bannerLinkElement.href = bannerLinks[index];
+        }
+        
+        function setTimerToChangeBannerImage() {
+            setTimeout(function() {
+                changeBannerImage();
+                setTimerToChangeBannerImage();
+            }, 3000);
+        }
+        
+		function moveToAppStore() {
+			{% if platform == 'android' %}
+				var link = 'ridistory://openinbrowser/#http://bit.ly/19rQ0El';
+			{% else %}
+				var link = 'ridistory://openinbrowser/#http://bit.ly/16uJWwa';
+			{% endif %}
+
+			location.href = link;
 		}
 	</script>
+
 </head>
 
 <body>
-	
 <div id="banner">
-	<a href="ridistory://openinbrowser/#http://ridibooks.com/pc/event_main.php?idx=761&_pc">
-		<img src="http://ridibooks.com/images/banner/1368603857.png" onload="javascript:resizeMe(this);" />
-	</a>
+    <a id="banner-link" href="javascript:moveToAppStore()">
+        <img id="banner-image" style="width: 320px; height: 40px; border: 1px" />
+    </a>
+
+	<script>
+        changeBannerImage();
+        setTimerToChangeBannerImage();
+    </script>
 </div>
 
 </body>

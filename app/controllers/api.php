@@ -126,7 +126,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 				'version' => '0.9',
 				'force' => false,
 				'update_url' => 'http://play.google.com/store/apps/details?id=com.initialcoms.story',
-				'description' => '스토리홀릭 최신 버전으로 업데이트 하시겠습니까?'
+				'description' => '리디스토리 최신 버전으로 업데이트 하시겠습니까?'
 			);
 			return $app->json($r);
 		}

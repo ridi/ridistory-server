@@ -30,8 +30,8 @@ class WebControllerProvider implements ControllerProviderInterface
 		return $app['twig']->render('/notice.twig', array('notice' => $notice));
 	}
 	
-	public function banner(Application $app) {
-		return $app['twig']->render('/banner.twig', array());
+	public function banner(Request $req, Application $app) {
+		return $app['twig']->render('/banner.twig', array('platform' => $req->get('platform')));
 	}
 	
 	public function home(Application $app) {
