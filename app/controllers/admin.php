@@ -281,14 +281,14 @@ EOT;
 	}
 	
 	public static function pushNotifyRemind(Request $req, Application $app) {
-		$date_begin = $req->get('date_begin');
-		$date_end = $req->get('date_end');
+		$range_begin = $req->get('range_begin');
+		$range_end = $req->get('range_end');
 		$message = $req->get('message');
 		if (empty($message)) {
 			return 'not all required fields are filled';
 		}
 		
-		$pick_result = PushDevicePicker::pickDevicesUsingRegDateRange($app['db'], $date_begin, $date_end);
+		$pick_result = PushDevicePicker::pickDevicesUsingIdRange($app['db'], $range_begin, $range_end);
 		$notification_android = AndroidPush::createLaunchAppNotification($message);
 		$notification_ios = IosPush::createLaunchAppNotification();
 	
