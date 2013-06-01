@@ -31,8 +31,14 @@ class ApiControllerProvider implements ControllerProviderInterface
 	}
 
 	public function bookList(Application $app) {
-		$book = Book::getOpenedBookList();
-		return $app->json($book);
+		$app['cache'] = new \Doctrine\Common\Cache\ApcCache();
+		$result = $app['cache']->fetch('book_list3');
+		if (!$result) {
+			$book = Book::getOpenedBookList();
+			$result = $app->json($book);
+			$r = $app['cache']->save('book_list3', $result, 60 * 30);
+		}
+		return $result;
 	}
 	
 	/**
