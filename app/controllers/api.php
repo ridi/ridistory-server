@@ -31,14 +31,10 @@ class ApiControllerProvider implements ControllerProviderInterface
 	}
 
 	public function bookList(Application $app) {
-		$app['cache'] = new \Doctrine\Common\Cache\ApcCache();
-		$result = $app['cache']->fetch('book_list3');
-		if (!$result) {
-			$book = Book::getOpenedBookList();
-			$result = $app->json($book);
-			$r = $app['cache']->save('book_list3', $result, 60 * 30);
-		}
-		return $result;
+		$book = $app['cache']->fetch('book_list', function() {
+			return Book::getOpenedBookList();
+		}, 60 * 30);
+		return $app->json($book);
 	}
 	
 	/**
@@ -52,8 +48,11 @@ class ApiControllerProvider implements ControllerProviderInterface
 		if ($book == false) {
 			return $app->json(array('success' => false, 'error' => 'no such book'));
 		}
+		
+		$parts = $app['cache']->fetch('part_list_' . $b_id, function() use ($b_id) {
+			return Part::getListByBid($b_id, true);
+		}, 60 * 30);
 
-		$parts = Part::getListByBid($b_id, true);
 		foreach ($parts as &$part) {
 			$part["last_update"] = ($part["begin_date"] == date("Y-m-d")) ? 1 : 0;
 		}
@@ -85,7 +84,9 @@ class ApiControllerProvider implements ControllerProviderInterface
 	public function userInterestList(Application $app, $device_id) {
 		$b_ids = UserInterest::getList($device_id);
 		
-		$list = Book::getListByIds($b_ids, true);
+		$list = $app['cache']->fetch('interest_list_' . $device_id, function() use ($b_ids) {
+			return Book::getListByIds($b_ids, true);
+		}, 60 * 30);
 		return $app->json($list);
 	}
 	
