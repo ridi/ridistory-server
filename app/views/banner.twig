@@ -11,15 +11,26 @@
     		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     	} 
     </style>
-    
-    <script>
+</head>
+
+<body>
+<div id="banner">
+    <a id="banner-link" href="javascript:moveToAppStore()">
+        <img id="banner-image" style="width: 320px; height: 40px; border: 1px" />
+    </a>
+
+	<script>
+        var bannerBackgrounds = new Array();
+        var bannerImages = new Array();
+        var bannerLinks = new Array();
+        
+        {% for banner in banners -%}
+            bannerBackgrounds.push('{{ banner.background }}');
+            bannerImages.push('{{ banner.image }}');
+            bannerLinks.push('{{ banner.link }}');
+        {% endfor %}
+        
         var curBannerIndex = -1;
-        var bannerBackgrounds = new Array("/static/images/banner/bg_black.png",
-        								"/static/images/banner/bg_red.png");
-        var bannerImages = new Array("/static/images/banner/01_ridibooks_app_link.png",
-                                    "/static/images/banner/02_sale.png");
-        var bannerLinks = new Array("javascript:moveToAppStore()",
-                                    "ridistory://openinbrowser/#http://bit.ly/13oqzPs");
 
         function changeBannerImage() {
         	var bannerContainer = document.getElementById('banner');
@@ -27,7 +38,7 @@
             var bannerLinkElement = document.getElementById('banner-link');
             var index = (++curBannerIndex) % bannerImages.length;
             
-            bannerContainer.style.backgroundImage = "url('" + bannerBackgrounds[index] + "')";
+            bannerContainer.style.background = bannerBackgrounds[index];
             bannerImageElement.src = bannerImages[index];
             bannerLinkElement.href = bannerLinks[index];
         }
@@ -36,7 +47,7 @@
             setTimeout(function() {
                 changeBannerImage();
                 setTimerToChangeBannerImage();
-            }, 10000);
+            }, 6000);
         }
         
 		function moveToAppStore() {
@@ -48,17 +59,7 @@
 
 			location.href = link;
 		}
-	</script>
-
-</head>
-
-<body>
-<div id="banner">
-    <a id="banner-link" href="javascript:moveToAppStore()">
-        <img id="banner-image" style="width: 320px; height: 40px; border: 1px" />
-    </a>
-
-	<script>
+		
         changeBannerImage();
         setTimerToChangeBannerImage();
     </script>

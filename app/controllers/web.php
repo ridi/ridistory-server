@@ -31,7 +31,12 @@ class WebControllerProvider implements ControllerProviderInterface
 	}
 	
 	public function banner(Request $req, Application $app) {
-		return $app['twig']->render('/banner.twig', array('platform' => $req->get('platform')));
+		$platform = $req->get('platform');
+		$banners = $app['db']->fetchAll('select * from banner where is_visible = 1 order by reg_date desc');
+		return $app['twig']->render('/banner.twig', array(
+			'platform' => $platform,
+			'banners' => $banners,
+		));
 	}
 	
 	public function home(Application $app) {
