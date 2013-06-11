@@ -22,12 +22,14 @@
 	<script>
         var bannerBackgrounds = new Array();
         var bannerImages = new Array();
-        var bannerLinks = new Array();
+        var bannerLinksForAndroid = new Array();
+        var bannerLinksForIos = new Array();
         
         {% for banner in banners -%}
             bannerBackgrounds.push('{{ banner.background }}');
             bannerImages.push('{{ banner.image }}');
-            bannerLinks.push('{{ banner.link }}');
+            bannerLinksForAndroid.push('{{ banner.link_android }}');
+            bannerLinksForIos.push('{{ banner.link_ios }}');
         {% endfor %}
         
         var curBannerIndex = -1;
@@ -40,7 +42,12 @@
             
             bannerContainer.style.background = bannerBackgrounds[index];
             bannerImageElement.src = bannerImages[index];
-            bannerLinkElement.href = bannerLinks[index];
+            
+            {% if platform == 'android' %}
+            	bannerLinkElement.href = bannerLinksForAndroid[index];
+            {% else %}
+            	bannerLinkElement.href = bannerLinksForIos[index];
+            {% endif %}
         }
         
         function setTimerToChangeBannerImage() {
