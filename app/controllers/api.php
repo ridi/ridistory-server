@@ -33,7 +33,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 	public function bookList(Application $app) {
 		$book = $app['cache']->fetch('book_list', function() {
 			return Book::getOpenedBookList();
-		}, 60 * 30);
+		}, 60 * 10);
 		return $app->json($book);
 	}
 	
@@ -51,7 +51,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		$parts = $app['cache']->fetch('part_list_' . $b_id, function() use ($b_id) {
 			return Part::getListByBid($b_id, true);
-		}, 60 * 30);
+		}, 60 * 10);
 
 		foreach ($parts as &$part) {
 			$part["last_update"] = ($part["begin_date"] == date("Y-m-d")) ? 1 : 0;
@@ -65,7 +65,6 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $app->json($book); 
 	}
 	
-
 	public function userInterestSet(Application $app, $device_id, $b_id) {
 		$r = UserInterest::set($device_id, $b_id);
 		return $app->json(array('success' => $r));
@@ -83,10 +82,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 
 	public function userInterestList(Application $app, $device_id) {
 		$b_ids = UserInterest::getList($device_id);
-		
-		$list = $app['cache']->fetch('interest_list_' . $device_id, function() use ($b_ids) {
-			return Book::getListByIds($b_ids, true);
-		}, 60 * 30);
+		$list = Book::getListByIds($b_ids, true);
 		return $app->json($list);
 	}
 	
