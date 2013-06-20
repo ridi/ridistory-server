@@ -12,7 +12,7 @@ class Book
 	}
 
 	public static function getWholeList() {
-		$today = date('Y-m-d');
+		$today = date('Y-m-d H:i:s');
 		$sql = <<<EOT
 select count(part.b_id) uploaded_part_count, ifnull(open_part_count, 0) open_part_count, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
@@ -24,7 +24,7 @@ EOT;
 	}
 	
 	public static function getOpenedBookList() {
-		$today = date('Y-m-d');
+		$today = date('Y-m-d H:i:s');
 		$sql = <<<EOT
 select ifnull(last_update, 0) last_update, ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
@@ -40,6 +40,10 @@ EOT;
 
 		foreach ($ar as &$b) {
 			$b['cover_url'] = Book::getCoverUrl($b['store_id']);
+			// TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
+			// iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
+			$b['begin_date'] = substr($b['begin_date'], 0, 10);
+			$b['end_date'] = substr($b['end_date'], 0, 10);
 		}
 
 		return $ar;
@@ -60,7 +64,7 @@ select i.popularity, ifnull(last_update, 0) last_update, ifnull(open_part_count,
  left join (select b_id, 1 last_update from part where begin_date = date(now()) group by b_id) p on b.id = p.b_id
 where b.id in (?)
 EOT;
-			$today = date('Y-m-d');
+			$today = date('Y-m-d H:i:s');
 			$stmt = $app['db']->executeQuery($sql,
 				array($today, $today, $b_ids),
 				array(\PDO::PARAM_STR, \PDO::PARAM_STR, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY)

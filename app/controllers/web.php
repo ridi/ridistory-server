@@ -41,6 +41,7 @@ class WebControllerProvider implements ControllerProviderInterface
 		));
 	}
 	
+	// not used
 	public function home(Application $app) {
 		$recommended_list = BookList::getRecommendedBooks();
 		$designated_list = BookList::getDesignatedBooks();
