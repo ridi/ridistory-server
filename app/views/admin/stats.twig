@@ -37,6 +37,22 @@
 
 <hr class='separator'>
 
+<section class='row'>
+    <div class='span6'>
+    <h3>알림받기 설정수</h3>
+    <table class='table'>
+        {% for p in interest_stat %}
+        <tr>
+        	<td>{{ p.title }}</td>
+            <td>{{ p.interested }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+</section>
+
+<hr class='separator'>
+
 <section class='row' id='js_tooltip'>
     <div class='span6'>    
         <h3>댓글이 많은 파트</h3>

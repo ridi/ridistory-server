@@ -358,12 +358,21 @@ EOT;
 		$sql = <<<EOT
 select part.id p_id, part.title, download_count from part
  join (select p_id, count(p_id) download_count from stat_download
- 		group by p_id order by count(p_id) desc limit 10) stat
+ 		group by p_id order by count(p_id) desc limit 20) stat
  on part.id = stat.p_id
  order by download_count desc
 EOT;
 		$download_stat = $app['db']->fetchAll($sql);
 		
+		// 책별 알림 설정수
+		$sql = <<<EOT
+select A.title, B.interested from book A
+  join
+  (select b_id, count(b_id) interested from user_interest group by b_id) B
+  on A.id = B.b_id
+EOT;
+		$interest_stat = $app['db']->fetchAll($sql);
+			
 		// 댓글 통계
 		$sql = <<<EOT
 select b.title, seq, part_title, num_comment from book b
@@ -375,6 +384,7 @@ EOT;
 		
 		return $app['twig']->render('/admin/stats.twig', compact('total_registered', 'register_stat',
 																 'total_downloaded', 'download_stat',
+																 'interest_stat',
 																 'most_comment_parts', 'least_comment_parts'));
 	}
 }
