@@ -343,7 +343,14 @@ EOT;
 	public static function stats(Application $app) {
 		// 기기등록 통계
 		$total_registered = $app['db']->fetchColumn('select count(*) from push_devices');
-		$register_stat = $app['db']->fetchAll('select date(reg_date) date, count(*) num_registered from push_devices where datediff(now(), reg_date) < 10 group by date order by date desc');
+		$sql = <<<EOT
+select date, A.num_registered_ios ios, B.num_registered_android android, (A.num_registered_ios + B.num_registered_android) total from
+    (select date(reg_date) date, count(*) num_registered_ios from push_devices where datediff(now(), reg_date) < 20 and platform = 'iOS' group by date) A
+  natural left join
+    (select date(reg_date) date, count(*) num_registered_android from push_devices where datediff(now(), reg_date) < 20 and platform = 'android' group by date) B
+  order by date desc
+EOT;
+		$register_stat = $app['db']->fetchAll($sql);
 		
 		// 다운로드 통계
 		$total_downloaded = $app['db']->fetchColumn('select count(*) from stat_download');
