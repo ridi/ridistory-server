@@ -366,10 +366,15 @@ EOT;
 		
 		// 책별 알림 설정수
 		$sql = <<<EOT
-select A.title, B.interested from book A
-  join
-  (select b_id, count(b_id) interested from user_interest group by b_id) B
-  on A.id = B.b_id
+select A.title, interested_d6, interested_d5, interested_d4, interested_d3, interested_d2, interested_d1, interested_d0,
+  (interested_d6 + interested_d5 + interested_d4 + interested_d3 + interested_d2 + interested_d1 + interested_d0) as interested_total from book A
+  join (select b_id, count(b_id) interested_d6 from user_interest where datediff(now(), `timestamp`) = 6 group by b_id, date(`timestamp`)) D6 on A.id = D6.b_id
+  join (select b_id, count(b_id) interested_d5 from user_interest where datediff(now(), `timestamp`) = 5 group by b_id, date(`timestamp`)) D5 on A.id = D5.b_id
+  join (select b_id, count(b_id) interested_d4 from user_interest where datediff(now(), `timestamp`) = 4 group by b_id, date(`timestamp`)) D4 on A.id = D4.b_id
+  join (select b_id, count(b_id) interested_d3 from user_interest where datediff(now(), `timestamp`) = 3 group by b_id, date(`timestamp`)) D3 on A.id = D3.b_id
+  join (select b_id, count(b_id) interested_d2 from user_interest where datediff(now(), `timestamp`) = 2 group by b_id, date(`timestamp`)) D2 on A.id = D2.b_id
+  join (select b_id, count(b_id) interested_d1 from user_interest where datediff(now(), `timestamp`) = 1 group by b_id, date(`timestamp`)) D1 on A.id = D1.b_id
+  join (select b_id, count(b_id) interested_d0 from user_interest where datediff(now(), `timestamp`) = 0 group by b_id, date(`timestamp`)) D0 on A.id = D0.b_id
 EOT;
 		$interest_stat = $app['db']->fetchAll($sql);
 			

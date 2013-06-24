@@ -16,7 +16,7 @@
             <td>{{ r.date }}</td>
             <td>{{ r.ios }}</td>
             <td>{{ r.android }}</td>
-            <td>{{ r.total }}</td>
+            <td><b>{{ r.total }}</b></td>
         </tr>
         {% endfor %}
     </table>
@@ -24,9 +24,12 @@
     <div class='span6'>
     <h3>다운로드 ({{ total_downloaded }})</h3>
     <table class='table'>
+    	<tr>
+    		<td><b>TITLE</b></td>
+    		<td><b>COUNT</b></td>
+    	</tr>
         {% for p in download_stat %}
         <tr>
-        	<td>{{ p.p_id}}</td>
             <td>{{ p.title }}</td>
             <td>{{ p.download_count }}</td>
         </tr>
@@ -38,13 +41,31 @@
 <hr class='separator'>
 
 <section class='row'>
-    <div class='span6'>
+    <div class='span12'>
     <h3>알림받기 설정수</h3>
     <table class='table'>
+    	<tr>
+    		<td><b>TITLE</b></td>
+    		<td><b>D-6</b></td>
+    		<td><b>D-5</b></td>
+    		<td><b>D-4</b></td>
+    		<td><b>D-3</b></td>
+    		<td><b>D-2</b></td>
+    		<td><b>D-1</b></td>
+    		<td><b>TODAY</b></td>
+    		<td><b>TOTAL</b></td>
+    	</tr>
         {% for p in interest_stat %}
         <tr>
         	<td>{{ p.title }}</td>
-            <td>{{ p.interested }}</td>
+            <td>{{ p.interested_d6 }}</td>
+            <td>{{ p.interested_d5 }}</td>
+            <td>{{ p.interested_d4 }}</td>
+            <td>{{ p.interested_d3 }}</td>
+            <td>{{ p.interested_d2 }}</td>
+            <td>{{ p.interested_d1 }}</td>
+            <td>{{ p.interested_d0 }}</td>
+            <td><b>{{ p.interested_total }}</b></td>
         </tr>
         {% endfor %}
     </table>
