@@ -1,0 +1,22 @@
+{% extends '/base.twig' %}
+
+{% block container %}
+<section class="module_layer_popup">
+	<h2 class="popup_title hidden">팝업</h2>
+	<div class="popup_wrap">
+		<article>
+			<div class="popup_contents">
+				<div class="module_title3">
+					<h3 class="title">{{ notice_item.title }}</h3>
+					<span class="date">{{ notice_item.reg_date|date('Y-m-d') }}</span>
+				</div>
+				<p>{{ notice_item.message|raw|nl2br }}</p>
+			</div>
+		</article>
+	</div>
+</section>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

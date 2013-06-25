@@ -53,6 +53,7 @@
     		<td><b>D-2</b></td>
     		<td><b>D-1</b></td>
     		<td><b>TODAY</b></td>
+    		<td><b>SUM</b></td>
     		<td><b>TOTAL</b></td>
     	</tr>
         {% for p in interest_stat %}
@@ -65,6 +66,7 @@
             <td>{{ p.interested_d2 }}</td>
             <td>{{ p.interested_d1 }}</td>
             <td>{{ p.interested_d0 }}</td>
+            <td><b>{{ p.interested_sum }}</b></td>
             <td><b>{{ p.interested_total }}</b></td>
         </tr>
         {% endfor %}

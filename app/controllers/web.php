@@ -16,6 +16,7 @@ class WebControllerProvider implements ControllerProviderInterface
 		$api->post('/comment/add', array($this, 'commentAdd'));
 		$api->get('/comment/{c_id}/delete', array($this, 'commentDelete'));
 		
+		$api->get('/notice/{n_id}', array($this, 'noticeItem'));
 		$api->get('/notice', array($this, 'notice'));
 		
 		$api->get('/banner', array($this, 'banner'));
@@ -28,6 +29,11 @@ class WebControllerProvider implements ControllerProviderInterface
 	public function notice(Application $app) {
 		$notice = $app['db']->fetchAll('select * from notice where is_visible = 1 order by reg_date desc');
 		return $app['twig']->render('/notice.twig', array('notice' => $notice));
+	}
+	
+	public function noticeItem(Application $app, $n_id) {
+		$notice_item = $app['db']->fetchAssoc('select * from notice where id = ? and is_visible = 1', array($n_id));
+		return $app['twig']->render('/notice_item.twig', array('notice_item' => $notice_item));
 	}
 	
 	public function banner(Request $req, Application $app) {
