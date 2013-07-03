@@ -17,6 +17,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider());
 $app->register(new Ridibooks\Story\Provider\CacheServiceProvider());
 
 require_once 'models/Book.php';
+require_once 'models/StoryPlusBook.php';
 require_once 'models/Part.php';
 require_once 'models/User.php';
 require_once 'controllers/api.php';

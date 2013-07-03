@@ -38,6 +38,12 @@ class AdminControllerProvider implements ControllerProviderInterface
 		$admin->get('/part/{id}/delete', array($this, 'partDelete'));
 		$admin->post('/part/{id}/edit', array($this, 'partEdit'));
 		
+		$admin->get('/storyplusbook/list', array($this, 'storyPlusBookList'));
+		$admin->get('/storyplusbook/add', array($this, 'storyPlusBookAdd'));
+		$admin->get('/storyplusbook/{id}', array($this, 'storyPlusBookDetail'));
+		$admin->post('/storyplusbook/{id}/delete', array($this, 'storyPlusBookDelete'));
+		$admin->post('/storyplusbook/{id}/edit', array($this, 'storyPlusBookEdit'));
+		
 		// authority check
 		/*
 		$admin->before(function (Request $request) use ($app) {
@@ -99,6 +105,70 @@ EOT;
 		
 		return $admin;
 	}
+
+	/*
+	 * 스토리+
+	 */
+
+	public function storyPlusBookList(Request $req, Application $app) {
+		$books = StoryPlusBook::getWholeList();
+		return $app['twig']->render('admin/storyplusbook_list.twig', array('books' => $books));
+	}
+	
+	public function storyPlusBookDetail(Request $req, Application $app, $id) {
+		$book = StoryPlusBook::get($id);
+		$intro = StoryPlusBook::getIntro($id);
+		if ($intro === false) {
+			$intro = array('b_id' => $id, 'type' => '', 'descriptor' => '');
+			StoryPlusBook::createIntro($intro);
+		}
+		
+		$app['twig']->addFunction(new Twig_SimpleFunction('today', function() {
+			return date('Y-m-d');
+		}));
+		
+		return $app['twig']->render('admin/storyplusbook_detail.twig', array(
+			'book' => $book,
+			'intro' => $intro,
+		));
+	}
+
+	public function storyPlusBookAdd(Request $req, Application $app) {
+		$b_id = StoryPlusBook::create();
+		$app['session']->set('alert', array('success' => '책이 추가되었습니다.'));
+		return $app->redirect('/admin/storyplusbook/' . $b_id);
+	}
+
+	public function storyPlusBookEdit(Request $req, Application $app, $id) {
+		$inputs = $req->request->all();
+		
+		// 상세 정보는 별도 테이블로
+		$intros = array('b_id' => $id);
+		array_move_keys($inputs, $intros, array(
+			'intro_type' => 'type',
+			'intro_descriptor' => 'intro_descriptor'
+		));
+		
+		StoryPlusBook::update($id, $inputs);
+		
+		$app['session']->set('alert', array('info' => '책이 수정되었습니다.'));
+		return $app->redirect('/admin/storyplusbook/' . $id);
+	}
+	
+	public function storyPlusBookDelete(Request $req, Application $app, $id) {
+		// TODO
+		$intros = StoryPlusBookIntro::getListByBid($id);
+		if (count($intros)) {
+			return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
+		}
+		StoryPlusBook::delete($id);
+		$app['session']->set('alert', array('info' => '책이 삭제되었습니다.'));
+		return $app->json(array('success' => true));
+	}
+
+	/*
+	 * 연재 도서
+	 */
 
 	public function bookList(Request $req, Application $app) {
 		$books = Book::getWholeList();
