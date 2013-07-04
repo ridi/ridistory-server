@@ -44,6 +44,11 @@ class AdminControllerProvider implements ControllerProviderInterface
 		$admin->post('/storyplusbook/{id}/delete', array($this, 'storyPlusBookDelete'));
 		$admin->post('/storyplusbook/{id}/edit', array($this, 'storyPlusBookEdit'));
 		
+		$admin->get('/storyplusbook_intro/add', array($this, 'storyPlusBookIntroAdd'));
+		$admin->get('/storyplusbook_intro/{id}', array($this, 'storyPlusBookIntroDetail'));
+		$admin->get('/storyplusbook_intro/{id}/delete', array($this, 'storyPlusBookIntroDelete'));
+		$admin->post('/storyplusbook_intro/{id}/edit', array($this, 'storyPlusBookIntroEdit'));
+		
 		// authority check
 		/*
 		$admin->before(function (Request $request) use ($app) {
@@ -107,7 +112,7 @@ EOT;
 	}
 
 	/*
-	 * 스토리+
+	 * StoryPlusBook
 	 */
 
 	public function storyPlusBookList(Request $req, Application $app) {
@@ -117,11 +122,8 @@ EOT;
 	
 	public function storyPlusBookDetail(Request $req, Application $app, $id) {
 		$book = StoryPlusBook::get($id);
-		$intro = StoryPlusBook::getIntro($id);
-		if ($intro === false) {
-			$intro = array('b_id' => $id, 'type' => '', 'descriptor' => '');
-			StoryPlusBook::createIntro($intro);
-		}
+		$intros = StoryPlusBookIntro::getListByBid($id);
+		$intro_types = array('BOOK_INTRO','AUTHOR_INTRO','PHRASE','RECOMMEND','REVIEW');
 		
 		$app['twig']->addFunction(new Twig_SimpleFunction('today', function() {
 			return date('Y-m-d');
@@ -129,7 +131,8 @@ EOT;
 		
 		return $app['twig']->render('admin/storyplusbook_detail.twig', array(
 			'book' => $book,
-			'intro' => $intro,
+			'intros' => $intros,
+			'intro_types' => $intro_types
 		));
 	}
 
@@ -165,9 +168,43 @@ EOT;
 		$app['session']->set('alert', array('info' => '책이 삭제되었습니다.'));
 		return $app->json(array('success' => true));
 	}
+	
+	/*
+	 * PART
+	 */
+	
+	public function storyPlusBookIntroDetail(Request $req, Application $app, $id) {
+		$intro = StoryPlusBookIntro::get($id);
+		$intro_type_names = array('BOOK_INTRO','AUTHOR_INTRO','PHRASE','RECOMMEND','REVIEW');
+		
+		return $app['twig']->render('admin/storyplusbook_intro_detail.twig', array('intro' => $intro,
+																				'intro_type_names' => $intro_type_names));
+	}
+	
+	public function storyPlusBookIntroAdd(Request $req, Application $app) {
+		$b_id = $req->get('b_id');
+		$intro_id = StoryPlusBookIntro::create($b_id);
+		$app['session']->set('alert', array('success' => '소개가 추가되었습니다.'));
+		return $app->redirect('/admin/storyplusbook_intro/' . $intro_id);
+	}
+	
+	public function storyPlusBookIntroEdit(Request $req, Application $app, $id) {
+		$inputs = $req->request->all();
+		$intro = StoryPlusBookIntro::get($id);
+		StoryPlusBookIntro::update($id, $inputs);
+		$app['session']->set('alert', array('info' => '소개가 수정되었습니다.'));
+		return $app->redirect('/admin/storyplusbook/' . $intro['b_id']);
+	}
+	
+	public function storyPlusBookIntroDelete(Request $req, Application $app, $id) {
+		$intro = StoryPlusBookIntro::get($id);
+		StoryPlusBookIntro::delete($id);
+		$app['session']->set('alert', array('info' => '소개가 삭제되었습니다.'));
+		return $app->redirect('/admin/storyplusbook/' . $intro['b_id']);
+	}
 
 	/*
-	 * 연재 도서
+	 * Book
 	 */
 
 	public function bookList(Request $req, Application $app) {
@@ -247,6 +284,9 @@ EOT;
 		return $app->json(array('success' => true));
 	}
 	
+	/*
+	 * PART
+	 */
 	
 	public function partDetail(Request $req, Application $app, $id) {
 		$part = Part::get($id);
@@ -274,6 +314,10 @@ EOT;
 		$app['session']->set('alert', array('info' => '파트가 삭제되었습니다.'));
 		return $app->redirect('/admin/book/' . $part['b_id']);
 	}
+	
+	/*
+	 * Comment
+	 */
 	
 	public static function commentList(Request $req, Application $app) {
 		$cur_page = $req->get('page', 0);
@@ -303,6 +347,9 @@ EOT;
 		return $app->redirect($redirect_url); 
 	}
 	
+	/*
+	 * Push
+	 */
 	
 	public static function pushDashboard(Request $req, Application $app) {
 		return $app['twig']->render('/admin/dashboard.twig');
@@ -375,6 +422,9 @@ EOT;
 					 "iOS" => $result_ios);
 	}
 
+	/*
+	 * Notice
+	 */
 
 	public static function noticeList(Request $req, Application $app) {
 		$notice_list = $app['db']->fetchAll('select * from notice');

@@ -1,0 +1,71 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<form action="/admin/storyplusbook_intro/{{ intro.id }}/edit" method='POST'>
+<table class='table'>
+    <colgroup>
+        <col class="span1">
+        <col class="span7">
+    </colgroup>
+	<tr>
+		<th>책 ID</th>
+		<td><input type='text' class='input-xlarge' name='b_id' value='{{ intro.b_id }}'></input></td>
+	</tr>
+	<tr>
+		<th>TYPE</th>
+		<td>
+			<select name='type' value='{{ intro.type }}'>
+				{% for intro_type_name in intro_type_names %}
+					<option value='{{ intro_type_name }}'>{{ intro_type_name }}</option>
+				{% endfor %}
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th>Descriptor</th>
+		<td>
+			<textarea name='descriptor'>{{ intro.descriptor }}</textarea>
+		</td>
+	</tr>
+</table>
+<div class='form-actions'>
+	<button class='btn btn-success'>저장</button>
+	<button class='btn btn-cancel'>취소</button>
+	<button class='btn btn-danger pull-right'>삭제</button>
+</div>
+</form>
+
+<div class='span6'>
+<p>API result</p>
+<table class='table'>
+    <thead>
+        <tr>
+            <th class='span2'>
+            <td>
+        </tr>
+    </thead>
+    <tbody id='js_api_result'>
+    </tbody>
+</table>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+<script>
+$(function() {
+    $('.btn-cancel').click(function() {
+        history.back(-1);
+        return false;
+    });
+    
+    $('.btn-danger').click(function() {
+        if (confirm('삭제하시겠습니까?')) {
+            location.href = '/admin/storyplusbook_intro/{{ intro.id }}/delete';
+        }
+        return false;
+    });
+});
+</script>
+{% endblock %}

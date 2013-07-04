@@ -58,19 +58,38 @@ class StoryPlusBook
 	public static function getCoverUrl($store_id) {
 		return 'http://misc.ridibooks.com/cover/' . $store_id . '/xxlarge';
 	}
-	
-	public static function createIntro($values) {
+}
+
+class StoryPlusBookIntro
+{
+	public static function create($b_id) {
 		global $app;
-		return $app['db']->insert('storyplusbook_intro', $values);
+		$app['db']->insert('storyplusbook_intro', array('b_id' => $b_id));
+		return $app['db']->lastInsertId();
 	}
 	
-	public static function getIntro($b_id) {
+	public static function get($id) {
 		global $app;
-		return $app['db']->fetchAssoc('select * from storyplusbook_intro where b_id = ?', array($b_id));
+		return $app['db']->fetchAssoc('select * from storyplusbook_intro where id = ?', array($id));
 	}
 	
-	public static function updateIntro($b_id, $values) {
+	public static function delete($id) {
 		global $app;
-		return $app['db']->update('storyplusbook_intro', $values, array('b_id' => $b_id));
+		return $app['db']->delete('storyplusbook_intro', array('id' => $id));
+	}
+	
+	public static function update($id, $values) {
+		global $app;
+		return $app['db']->update('storyplusbook_intro', $values, array('id' => $id));
+	}
+	
+	public static function getListByBid($b_id) {
+		global $app;
+		
+		$sql = 'select * from storyplusbook_intro where b_id = ?';
+		$bind = array($b_id);
+		
+		$ar = $app['db']->fetchAll($sql, $bind);
+		return $ar; 
 	}
 }

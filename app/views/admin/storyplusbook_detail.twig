@@ -54,22 +54,31 @@
 		    </div>
 	    </td>
 	</tr>
+	<tr>
+	    <th>소개 섹션</th>
+	    <td>
+	        <table class='table table-hover table-striped table-condensed'>
+                <thead>
+                    <tr>
+                        <th class='span3'>종류</th>
+                        <th>내용</th>
+                    </tr>
+                </thead>
+            	<tbody id='js_part_list'>
+            		{% for intro in intros %}
+            		<tr data-cid='{{ intro.id }}'>
+            			<td><a href='/admin/storyplusbook_intro/{{ intro.id }}'>{{ intro.type }}</a></td>
+            			<td>{{ intro.descriptor }}</td>
+            		</tr>
+            		{% endfor %}
+            	</tbody>
+            </table>
+            
+            <button class='btn btn-small btn-primary pull-right' id='js_add'>소개 추가</button>
+        </td>
+	</tr>
 </table>
 
-<table class='table'>
-    <thead>
-    	<tr>
-    	    <th>작품 소개(상세)</th>
-    	    <th>저자 소개(상세)</th>
-    	</tr>
-	</thead>
-    <tbody>
-    	<tr>
-    		<td><textarea rows='10' style='width: 400px' name='intro_type'>{{ intro.type }}</textarea></td>
-    		<td><textarea rows='10' style='width: 400px' name='intro_descriptor'>{{ intro.descriptor }}</textarea></td>
-    	</tr>
-	</tbody>
-</table>
 
 <div class='form-actions'>
 	<button type='submit' class='btn btn-success'>수정 완료</button>
@@ -84,7 +93,6 @@
 <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
 <script>
 $(function() {
-    
     $('.btn-cancel').click(function() {
         location.href = '/admin/storyplusbook/list';
         return false;
@@ -102,6 +110,11 @@ $(function() {
         }
         return false;
     });
+    
+    $('#js_add').click(function() {
+        location.href = '/admin/storyplusbook_intro/add?b_id={{ book.id }}';
+        return false;
+    })
     
 });
 </script>
