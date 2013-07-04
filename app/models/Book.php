@@ -58,16 +58,16 @@ EOT;
 		
 		if ($with_part_info) {
 			$sql = <<<EOT
-select i.popularity, ifnull(last_update, 0) last_update, ifnull(open_part_count, 0) open_part_count, b.* from book b
+select ifnull(last_update, 0) last_update, ifnull(open_part_count, 0) open_part_count, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
- left join (select b_id, count(*) popularity from user_interest group by b_id) i on b.id = i.b_id
- left join (select b_id, 1 last_update from part where begin_date = date(now()) group by b_id) p on b.id = p.b_id
+ left join (select b_id, 1 last_update from part where (date(begin_date) = date(?) and ? >= begin_date) or date_add(date(begin_date), INTERVAL 1 DAY) = date(?) group by b_id) p on b.id = p.b_id
 where b.id in (?)
 EOT;
 			$today = date('Y-m-d H:i:s');
 			$stmt = $app['db']->executeQuery($sql,
-				array($today, $today, $b_ids),
-				array(\PDO::PARAM_STR, \PDO::PARAM_STR, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+				array($today, $today, $today, $today, $today, $b_ids),
+				array(\PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR,
+						\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
 			);
 		} else {
 			$sql = <<<EOT
