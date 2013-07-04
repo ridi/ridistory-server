@@ -12,7 +12,7 @@ class Part
 	}
 	
 	public function isOpened() {
-		$today = date('Y-m-d H:i:s');
+		$today = date('Y-m-d H:00:00');
 		return $this->row['begin_date'] <= $today && $this->row['end_date'] >= $today;
 	}
 	
@@ -38,7 +38,7 @@ class Part
 		global $app;
 		
 		if ($with_social_info) {
-			$today = date('Y-m-d H:i:s');
+			$today = date('Y-m-d H:00:00');
 			$sql = <<<EOT
 select p.*, ifnull(like_count, 0) like_count, ifnull(comment_count, 0) comment_count from part p
  left join (select p_id, count(*) like_count from user_part_like group by p_id) l on p.id = l.p_id
@@ -62,7 +62,7 @@ EOT;
 	
 	public static function getOpendCount($b_id) {
 		$sql = "select count(*) open_part_count from part where b_id = ? and begin_date <= ? and end_date >= ?";
-		$today = date('Y-m-d H:i:s');
+		$today = date('Y-m-d H:00:00');
 		$r = $app['db']->fetchColumn($sql, array($b_id, $today, $today));
 		return $r;
 	}
