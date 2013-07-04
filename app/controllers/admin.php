@@ -27,34 +27,10 @@ class AdminControllerProvider implements ControllerProviderInterface
 			return $response;
 		});
 		
-		$admin->get('/book/list', array($this, 'bookList'));
-		$admin->get('/book/add', array($this, 'bookAdd'));
-		$admin->get('/book/{id}', array($this, 'bookDetail'));
-		$admin->post('/book/{id}/delete', array($this, 'bookDelete'));
-		$admin->post('/book/{id}/edit', array($this, 'bookEdit'));
-		
-		$admin->get('/part/add', array($this, 'partAdd'));
-		$admin->get('/part/{id}', array($this, 'partDetail'));
-		$admin->get('/part/{id}/delete', array($this, 'partDelete'));
-		$admin->post('/part/{id}/edit', array($this, 'partEdit'));
-		
-		$admin->get('/storyplusbook/list', array($this, 'storyPlusBookList'));
-		$admin->get('/storyplusbook/add', array($this, 'storyPlusBookAdd'));
-		$admin->get('/storyplusbook/{id}', array($this, 'storyPlusBookDetail'));
-		$admin->post('/storyplusbook/{id}/delete', array($this, 'storyPlusBookDelete'));
-		$admin->post('/storyplusbook/{id}/edit', array($this, 'storyPlusBookEdit'));
-		
 		$admin->get('/storyplusbook_intro/add', array($this, 'storyPlusBookIntroAdd'));
 		$admin->get('/storyplusbook_intro/{id}', array($this, 'storyPlusBookIntroDetail'));
 		$admin->get('/storyplusbook_intro/{id}/delete', array($this, 'storyPlusBookIntroDelete'));
 		$admin->post('/storyplusbook_intro/{id}/edit', array($this, 'storyPlusBookIntroEdit'));
-		
-		// authority check
-		/*
-		$admin->before(function (Request $request) use ($app) {
-			return new RedirectResponse('/login');
-		});
-		 */
 		
 		$admin->before(function (Request $request) use ($app) {
 			$alert = $app['session']->get('alert');
@@ -111,210 +87,6 @@ EOT;
 		return $admin;
 	}
 
-	/*
-	 * StoryPlusBook
-	 */
-
-	public function storyPlusBookList(Request $req, Application $app) {
-		$books = StoryPlusBook::getWholeList();
-		return $app['twig']->render('admin/storyplusbook_list.twig', array('books' => $books));
-	}
-	
-	public function storyPlusBookDetail(Request $req, Application $app, $id) {
-		$book = StoryPlusBook::get($id);
-		$intros = StoryPlusBookIntro::getListByBid($id);
-		$intro_types = array('BOOK_INTRO','AUTHOR_INTRO','PHRASE','RECOMMEND','REVIEW');
-		
-		$app['twig']->addFunction(new Twig_SimpleFunction('today', function() {
-			return date('Y-m-d');
-		}));
-		
-		return $app['twig']->render('admin/storyplusbook_detail.twig', array(
-			'book' => $book,
-			'intros' => $intros,
-			'intro_types' => $intro_types
-		));
-	}
-
-	public function storyPlusBookAdd(Request $req, Application $app) {
-		$b_id = StoryPlusBook::create();
-		$app['session']->set('alert', array('success' => '책이 추가되었습니다.'));
-		return $app->redirect('/admin/storyplusbook/' . $b_id);
-	}
-
-	public function storyPlusBookEdit(Request $req, Application $app, $id) {
-		$inputs = $req->request->all();
-		
-		// 상세 정보는 별도 테이블로
-		$intros = array('b_id' => $id);
-		array_move_keys($inputs, $intros, array(
-			'intro_type' => 'type',
-			'intro_descriptor' => 'intro_descriptor'
-		));
-		
-		StoryPlusBook::update($id, $inputs);
-		
-		$app['session']->set('alert', array('info' => '책이 수정되었습니다.'));
-		return $app->redirect('/admin/storyplusbook/' . $id);
-	}
-	
-	public function storyPlusBookDelete(Request $req, Application $app, $id) {
-		// TODO
-		$intros = StoryPlusBookIntro::getListByBid($id);
-		if (count($intros)) {
-			return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
-		}
-		StoryPlusBook::delete($id);
-		$app['session']->set('alert', array('info' => '책이 삭제되었습니다.'));
-		return $app->json(array('success' => true));
-	}
-	
-	/*
-	 * PART
-	 */
-	
-	public function storyPlusBookIntroDetail(Request $req, Application $app, $id) {
-		$intro = StoryPlusBookIntro::get($id);
-		$intro_type_names = array('BOOK_INTRO','AUTHOR_INTRO','PHRASE','RECOMMEND','REVIEW');
-		
-		return $app['twig']->render('admin/storyplusbook_intro_detail.twig', array('intro' => $intro,
-																				'intro_type_names' => $intro_type_names));
-	}
-	
-	public function storyPlusBookIntroAdd(Request $req, Application $app) {
-		$b_id = $req->get('b_id');
-		$intro_id = StoryPlusBookIntro::create($b_id);
-		$app['session']->set('alert', array('success' => '소개가 추가되었습니다.'));
-		return $app->redirect('/admin/storyplusbook_intro/' . $intro_id);
-	}
-	
-	public function storyPlusBookIntroEdit(Request $req, Application $app, $id) {
-		$inputs = $req->request->all();
-		$intro = StoryPlusBookIntro::get($id);
-		StoryPlusBookIntro::update($id, $inputs);
-		$app['session']->set('alert', array('info' => '소개가 수정되었습니다.'));
-		return $app->redirect('/admin/storyplusbook/' . $intro['b_id']);
-	}
-	
-	public function storyPlusBookIntroDelete(Request $req, Application $app, $id) {
-		$intro = StoryPlusBookIntro::get($id);
-		StoryPlusBookIntro::delete($id);
-		$app['session']->set('alert', array('info' => '소개가 삭제되었습니다.'));
-		return $app->redirect('/admin/storyplusbook/' . $intro['b_id']);
-	}
-
-	/*
-	 * Book
-	 */
-
-	public function bookList(Request $req, Application $app) {
-		$books = Book::getWholeList();
-		foreach ($books as &$book) {
-			$progress = 0;
-			$progress2 = 0;
-			if ($book['total_part_count'] > 0) {
-				$progress = 100 * $book['open_part_count'] / $book['total_part_count'];
-				$progress2 = 100 * ($book['uploaded_part_count'] - $book['open_part_count']) / $book['total_part_count'];
-			}
-			$book['progress'] = $progress . '%';
-			$book['progress2'] = $progress2 . '%';
-		}
-		return $app['twig']->render('admin/book_list.twig', array('books' => $books));
-	}
-	
-	public function bookDetail(Request $req, Application $app, $id) {
-		$book = Book::get($id);
-		$parts = Part::getListByBid($id);
-		$intro = Book::getIntro($id);
-		if ($intro === false) {
-			$intro = array('b_id' => $id, 'description' => '', 'about_author' => '');
-			Book::createIntro($intro);
-		}
-		
-		$app['twig']->addFunction(new Twig_SimpleFunction('today', function() {
-			return date('Y-m-d');
-		}));
-		
-		return $app['twig']->render('admin/book_detail.twig', array(
-			'book' => $book,
-			'parts' => $parts,
-			'intro' => $intro,
-		));
-	}
-	
-	public function bookAdd(Request $req, Application $app) {
-		$b_id = Book::create();
-		$app['session']->set('alert', array('success' => '책이 추가되었습니다.'));
-		return $app->redirect('/admin/book/' . $b_id);
-	}
-
-	public function bookEdit(Request $req, Application $app, $id) {
-		$inputs = $req->request->all();
-		
-		// 연재 요일
-		$upload_days = 0;
-		if (isset($inputs['upload_days'])) {
-			foreach ($inputs['upload_days'] as $k => $v) {
-				$upload_days += intval($v);
-			}
-		}
-		$inputs['upload_days'] = $upload_days;
-		
-		// 상세 정보는 별도 테이블로
-		$intro = array('b_id' => $id);
-		array_move_keys($inputs, $intro, array(
-			'intro_description' => 'description',
-			'intro_about_author' => 'about_author'
-		));
-		
-		Book::update($id, $inputs);
-		Book::updateIntro($id, $intro);
-		
-		$app['session']->set('alert', array('info' => '책이 수정되었습니다.'));
-		return $app->redirect('/admin/book/' . $id);
-	}
-	
-	public function bookDelete(Request $req, Application $app, $id) {
-		$parts = Part::getListByBid($id);
-		if (count($parts)) {
-			return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
-		}
-		Book::delete($id);
-		$app['session']->set('alert', array('info' => '책이 삭제되었습니다.'));
-		return $app->json(array('success' => true));
-	}
-	
-	/*
-	 * PART
-	 */
-	
-	public function partDetail(Request $req, Application $app, $id) {
-		$part = Part::get($id);
-		return $app['twig']->render('admin/part_detail.twig', array('part' => $part));
-	}
-	
-	public function partAdd(Request $req, Application $app) {
-		$b_id = $req->get('b_id');
-		$p_id = Part::create($b_id);
-		$app['session']->set('alert', array('success' => '파트가 추가되었습니다.'));
-		return $app->redirect('/admin/part/' . $p_id);
-	}
-	
-	public function partEdit(Request $req, Application $app, $id) {
-		$inputs = $req->request->all();
-		$part = Part::get($id);
-		Part::update($id, $inputs);
-		$app['session']->set('alert', array('info' => '파트가 수정되었습니다.'));
-		return $app->redirect('/admin/book/' . $part['b_id']);
-	}
-	
-	public function partDelete(Request $req, Application $app, $id) {
-		$part = Part::get($id);
-		Part::delete($id);
-		$app['session']->set('alert', array('info' => '파트가 삭제되었습니다.'));
-		return $app->redirect('/admin/book/' . $part['b_id']);
-	}
-	
 	/*
 	 * Comment
 	 */
@@ -459,7 +231,10 @@ EOT;
 		return $app->redirect($redirect_url);
 	}
 	
-	
+	/*
+	 * Stats
+	 */
+
 	public static function stats(Application $app) {
 		// 기기등록 통계
 		$total_registered = $app['db']->fetchColumn('select count(*) from push_devices');
