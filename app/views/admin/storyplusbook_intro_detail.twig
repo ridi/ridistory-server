@@ -16,7 +16,9 @@
 		<td>
 			<select name='type' value='{{ intro.type }}'>
 				{% for intro_type_name in intro_type_names %}
-					<option value='{{ intro_type_name }}'>{{ intro_type_name }}</option>
+					<option value='{{ intro_type_name }}' {% if intro_type_name == intro.type %} selected='selected' {% endif %}>
+						{{ intro_type_name }}
+					</option>
 				{% endfor %}
 			</select>
 		</td>

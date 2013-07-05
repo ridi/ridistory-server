@@ -27,7 +27,7 @@ class AdminStoryPlusBookControllerProvider implements ControllerProviderInterfac
 	public function storyPlusBookDetail(Request $req, Application $app, $id) {
 		$book = StoryPlusBook::get($id);
 		$intros = StoryPlusBookIntro::getListByBid($id);
-		$intro_types = array('BOOK_INTRO','AUTHOR_INTRO','PHRASE','RECOMMEND','REVIEW');
+		$badge_names = array('NONE','BESTSELLER','FAMOUSAUTHOR','HOTISSUE','NEW');
 		
 		$app['twig']->addFunction(new Twig_SimpleFunction('today', function() {
 			return date('Y-m-d');
@@ -36,7 +36,7 @@ class AdminStoryPlusBookControllerProvider implements ControllerProviderInterfac
 		return $app['twig']->render('admin/storyplusbook_detail.twig', array(
 			'book' => $book,
 			'intros' => $intros,
-			'intro_types' => $intro_types
+			'badge_names' => $badge_names
 		));
 	}
 

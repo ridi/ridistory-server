@@ -12,7 +12,7 @@ class StoryPlusBook
 	}
 
 	public static function getWholeList() {
-		$today = date('Y-m-d H:i:s');
+		$today = date('Y-m-d H:00:00');
 		$sql = "select * from storyplusbook";
 
 		global $app;
@@ -20,20 +20,16 @@ class StoryPlusBook
 	}
 	
 	public static function getOpenedBookList() {
-		$today = date('Y-m-d H:i:s');
+		$today = date('Y-m-d H:00:00');
 		$sql = "select * from storyplusbook where begin_date <= ? and end_date >= ?";
 		$bind = array($today, $today);
-
+		
 		global $app;
 		$ar = $app['db']->fetchAll($sql, $bind);
 		$list = array();
 
 		foreach ($ar as &$b) {
 			$b['cover_url'] = Book::getCoverUrl($b['store_id']);
-			// TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
-			// iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
-			$b['begin_date'] = substr($b['begin_date'], 0, 10);
-			$b['end_date'] = substr($b['end_date'], 0, 10);
 		}
 
 		return $ar;

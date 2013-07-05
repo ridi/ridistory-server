@@ -43,7 +43,20 @@
 	</tr>
 	<tr>
 		<th>뱃지</th>
-		<td><input type='text' class='input' name='badge' value='{{ book.badge }}'></input></td>
+		<td>
+			<select name='badge' value='{{ book.badge }}'>
+				{% for badge_name in badge_names %}
+					<option value='{{ badge_name }}' {% if badge_name == book.badge %} selected='selected'{% endif %}>
+						{{ badge_name }}
+					</option>
+				{% endfor %}
+			</select>
+			
+		</td>
+	</tr>
+	<tr>
+		<th>배너 이미지<br />(NEW BOOK만)</th>
+		<td><input type='text' class='input-xxlarge' name='banner_image' value='{{ book.banner_image }}'></input></td>
 	</tr>
 	<tr>
 		<th>공개 기간</th>

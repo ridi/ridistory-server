@@ -11,6 +11,8 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/book/list', array($this, 'bookList'));
 		$api->get('/book/{b_id}', array($this, 'book'));
 		
+		$api->get('/storyplusbook/list', array($this, 'storyPlusBookList'));
+		
 		$api->get('/user/{device_id}/interest/list', array($this, 'userInterestList'));
 		$api->get('/user/{device_id}/interest/{b_id}/set', array($this, 'userInterestSet'));
 		$api->get('/user/{device_id}/interest/{b_id}/clear', array($this, 'userInterestClear'));
@@ -28,6 +30,13 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/shorten_url/{p_id}', array($this, 'shortenUrl'));
 		
 		return $api;
+	}
+
+	public function storyPlusBookList(Application $app) {
+		$book = $app['cache']->fetch('storyplusbook_list', function() {
+			return StoryPlusBook::getOpenedBookList();
+		}, 60 * 10);
+		return $app->json($book);
 	}
 
 	public function bookList(Application $app) {
