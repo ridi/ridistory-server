@@ -20,8 +20,7 @@ class AdminStoryPlusBookIntroControllerProvider implements ControllerProviderInt
 
 	public function storyPlusBookIntroDetail(Request $req, Application $app, $id) {
 		$intro = StoryPlusBookIntro::get($id);
-		$intro_type_names = array('BOOK_INTRO','AUTHOR_INTRO','PHRASE','RECOMMEND','REVIEW');
-		
+		$intro_type_names = array('BOOK_INTRO','AUTHOR_INTRO','PHRASE','RECOMMEND');
 		return $app['twig']->render('admin/storyplusbook_intro_detail.twig', array('intro' => $intro,
 																				'intro_type_names' => $intro_type_names));
 	}
