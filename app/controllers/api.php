@@ -26,7 +26,8 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/latest_version', array($this, 'latestVersion'));
 		
-		$api->get('/validate_download', array($this, 'validateDownload'));
+		$api->get('/validate_part_download', array($this, 'validatePartDownload'));
+		$api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
 		
 		$api->get('/shorten_url/{p_id}', array($this, 'shortenUrl'));
 		
@@ -157,7 +158,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $app->json(array('error' => 'invalid platform'));
 	}
 
-	public function validateDownload(Request $req, Application $app) {
+	public function validatePartDownload(Request $req, Application $app) {
 		$p_id = $req->get('p_id');
 		$store_id = $req->get('store_id');
 		
@@ -165,6 +166,20 @@ class ApiControllerProvider implements ControllerProviderInterface
 
 		// log
 		$app['db']->insert('stat_download', array('p_id' => $p_id, 'is_success' => ($valid ? 1 : 0)));
+		
+		return $app->json(array('success' => $valid));
+	} 
+
+	public function validateStoryPlusBookDownload(Request $req, Application $app) {
+		$storyplusbook_id = $req->get('storyplusbook_id');
+		$store_id = $req->get('store_id');
+		
+		// TODO: 더 strict하게 구현
+		$book = StoryPlusBook::get($storyplusbook_id);
+		$valid = ($book['store_id'] == $store_id);
+
+		// log
+		$app['db']->insert('stat_download_storyplusbook', array('storyplusbook_id' => $storyplusbook_id, 'is_success' => ($valid ? 1 : 0)));
 		
 		return $app->json(array('success' => $valid));
 	} 
