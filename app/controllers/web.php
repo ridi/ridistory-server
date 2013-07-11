@@ -8,8 +8,6 @@ class WebControllerProvider implements ControllerProviderInterface
 	public function connect(Application $app) {
 		$api = $app['controllers_factory'];
 		
-		//$api->get('/', array($this, 'home'));
-		
 		$api->get('/book/{b_id}/intro', array($this, 'bookIntro'));
 		
 		$api->get('/comment/list', array($this, 'commentList'));
@@ -44,24 +42,6 @@ class WebControllerProvider implements ControllerProviderInterface
 		return $app['twig']->render('/banner.twig', array(
 			'platform' => $platform,
 			'banners' => $banners,
-		));
-	}
-	
-	// not used
-	public function home(Application $app) {
-		$recommended_list = BookList::getRecommendedBooks();
-		$designated_list = BookList::getDesignatedBooks();
-		foreach ($designated_list as &$book) {
-			$begin_date = new DateTime($book['begin_date']);
-			$interval = $begin_date->diff(new DateTime());
-			$book['d_day'] = $interval->format('D%R%a');
-		}
-		$today_list = BookList::getTodayBest();
-		
-		return $app['twig']->render('/main.twig', array(
-			'recommended_list' => $recommended_list,
-			'designated_list' => $designated_list,
-			'today_list' => $today_list,
 		));
 	}
 	
