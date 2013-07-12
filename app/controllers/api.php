@@ -11,6 +11,9 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/book/list', array($this, 'bookList'));
 		$api->get('/book/{b_id}', array($this, 'book'));
 		
+		$api->get('/storyplusbook/list', array($this, 'storyPlusBookList'));
+		$api->get('/storyplusbook/{b_id}', array($this, 'storyPlusBook'));
+		
 		$api->get('/user/{device_id}/interest/list', array($this, 'userInterestList'));
 		$api->get('/user/{device_id}/interest/{b_id}/set', array($this, 'userInterestSet'));
 		$api->get('/user/{device_id}/interest/{b_id}/clear', array($this, 'userInterestClear'));
@@ -18,16 +21,55 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userPartLike'));
 		$api->get('/user/{device_id}/part/{p_id}/unlike', array($this, 'userPartUnlike'));
+
+		$api->get('/user/{device_id}/storyplusbook/{b_id}/like', array($this, 'userStoryPlusBookLike'));
+		$api->get('/user/{device_id}/storyplusbook/{b_id}/unlike', array($this, 'userStoryPlusBookUnlike'));
+
+		$api->get('/storyplusbook/{b_id}/comment/list', array($this, 'storyPlusBookCommentList'));
+		$api->get('/storyplusbook/{b_id}/comment/add', array($this, 'storyPlusBookCommentAdd'));
 		
 		$api->get('/push_device/register', array($this, 'pushDeviceRegister'));
 		
 		$api->get('/latest_version', array($this, 'latestVersion'));
 		
-		$api->get('/validate_download', array($this, 'validateDownload'));
+		$api->get('/validate_download', array($this, 'validatePartDownload'));
+		$api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
 		
 		$api->get('/shorten_url/{p_id}', array($this, 'shortenUrl'));
 		
 		return $api;
+	}
+
+	public function storyPlusBookCommentAdd(Request $req, Application $app, $b_id) {
+		$device_id = $req->get('device_id');
+		$comment = trim($req->get('comment'));
+		$ip = ip2long($_SERVER['REMOTE_ADDR']);
+		
+		StoryPlusBookComment::add($b_id, $device_id, $comment, $ip);
+		return $app->json(array('success' => 'true'));
+	}
+
+	public function storyPlusBookCommentList(Application $app, $b_id) {
+		$comments = StoryPlusBookComment::getList($b_id);
+		return $app->json($comments);
+	}
+
+	public function storyPlusBookList(Application $app) {
+		$book = $app['cache']->fetch('storyplusbook_list', function() {
+			return StoryPlusBook::getOpenedBookList();
+		}, 60 * 10);
+		return $app->json($book);
+	}
+
+	public function storyPlusBook(Request $req, Application $app, $b_id) {
+		$book = StoryPlusBook::get($b_id);
+		$intro = StoryPlusBookIntro::getListByBid($b_id);
+		$comment = StoryPlusBookComment::getList($b_id);
+		
+		$info = array('book_detail' => $book,
+					'intro' => $intro,
+					'comment' => $comment);
+		return $app->json($info);
 	}
 
 	public function bookList(Application $app) {
@@ -104,6 +146,23 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
 	}
 	
+	public function userStoryPlusBookLike(Application $app, $device_id, $b_id) {
+		$b = StoryPlusBook::get($b_id);
+		if ($b == false) {
+			return $app->json(array('success' => false));
+		}
+		
+		$r = UserStoryPlusBookLike::like($device_id, $b_id);
+		$like_count = UserStoryPlusBookLike::getLikeCount($b_id);
+		return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
+	}
+	
+	public function userStoryPlusBookUnlike(Application $app, $device_id, $b_id) {
+		$r = UserStoryPlusBookLike::unlike($device_id, $b_id);
+		$like_count = UserStoryPlusBookLike::getLikeCount($b_id);
+		return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
+	}
+	
 	
 	public function pushDeviceRegister(Application $app, Request $req) {
 		$device_id = $req->get('device_id');
@@ -137,7 +196,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $app->json(array('error' => 'invalid platform'));
 	}
 
-	public function validateDownload(Request $req, Application $app) {
+	public function validatePartDownload(Request $req, Application $app) {
 		$p_id = $req->get('p_id');
 		$store_id = $req->get('store_id');
 		
@@ -145,6 +204,20 @@ class ApiControllerProvider implements ControllerProviderInterface
 
 		// log
 		$app['db']->insert('stat_download', array('p_id' => $p_id, 'is_success' => ($valid ? 1 : 0)));
+		
+		return $app->json(array('success' => $valid));
+	} 
+
+	public function validateStoryPlusBookDownload(Request $req, Application $app) {
+		$storyplusbook_id = $req->get('storyplusbook_id');
+		$store_id = $req->get('store_id');
+		
+		// TODO: 더 strict하게 구현
+		$book = StoryPlusBook::get($storyplusbook_id);
+		$valid = ($book['store_id'] == $store_id);
+
+		// log
+		$app['db']->insert('stat_download_storyplusbook', array('storyplusbook_id' => $storyplusbook_id, 'is_success' => ($valid ? 1 : 0)));
 		
 		return $app->json(array('success' => $valid));
 	} 

@@ -1,0 +1,51 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+<table class='table table-hover'>
+	<thead>
+		<tr>
+			<th class='span1'>책 ID</th>
+			<th>제목</th>
+			<th>미리보기</th>
+			<th>속성</th>
+			<th class='span3'>시작일</th>
+		</tr>
+	</thead>
+	<tbody id='js_tbody'>
+		{% for book in books %}
+		<tr data-bid='{{ book.id }}'>
+			<td>{{ book.id }}</td>
+			<td>{{ book.title }}</td>
+			<td>{{ book.preview_percent }}%</td>
+			<td>{{ book.badge }}</td>
+			<td>{{ book.begin_date }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<button class='btn btn-primary' id='js_add'>추가</button>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(function() {
+    $('#js_add').click(function() {
+        location.href = '/admin/storyplusbook/add';
+    });
+    
+    $('#js_tbody tr').click(function() {
+        var b_id = $(this).data('bid');
+        location.href = '/admin/storyplusbook/' + b_id;
+    });
+    
+    $('#js_tbody tr').hover(function() {
+         	$(this).css('cursor', 'pointer');
+        }, function() {
+         	$(this).css('cursor', '');
+        }
+    );
+});
+</script>
+{% endblock %}

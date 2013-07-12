@@ -1,0 +1,134 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<form action="/admin/storyplusbook/{{ book.id }}/edit" method='post'>
+<table class='table'>
+    <colgroup>
+        <col class="span1">
+        <col class="span7">
+    </colgroup>
+	<tr>
+		<th>스토어ID</th>
+		<td><input type='text' class='input-small' name='store_id' value='{{ book.store_id }}'></input></td>
+	</tr>
+	<tr>
+		<th>표지</th>
+		<td>
+		    <img src='{{ book.cover_url }}'>
+		</td>
+	</tr>
+	<tr>
+		<th>제목</th>
+		<td><input type='text' class='input-xlarge' name='title' value='{{ book.title }}'></input></td>
+	</tr>
+	<tr>
+		<th>저자</th>
+		<td><input type='text' class='input' name='author' value='{{ book.author }}'></input></td>
+	</tr>
+	<tr>
+		<th>출판사</th>
+		<td><input type='text' class='input' name='publisher' value='{{ book.publisher }}'></input></td>
+	</tr>
+	<tr>
+		<th>출간일</th>
+		<td><input type='text' class='input' name='publish_date' value='{{ book.publish_date }}'></input></td>
+	</tr>
+	<tr>
+		<th>캐치프레이즈</th>
+		<td><input type='text' class='input-xxlarge' name='catchphrase' value='{{ book.catchphrase }}'></input></td>
+	</tr>
+	<tr>
+		<th>미리보기 %</th>
+		<td><input type='text' class='input' name='preview_percent' value='{{ book.preview_percent }}'></input></td>
+	</tr>
+	<tr>
+		<th>뱃지</th>
+		<td>
+			<select name='badge' value='{{ book.badge }}'>
+				{% for badge_name in badge_names %}
+					<option value='{{ badge_name }}' {% if badge_name == book.badge %} selected='selected'{% endif %}>
+						{{ badge_name }}
+					</option>
+				{% endfor %}
+			</select>
+			
+		</td>
+	</tr>
+	<tr>
+		<th>배너 이미지<br />(NEW BOOK만)</th>
+		<td><input type='text' class='input-xxlarge' name='banner_image' value='{{ book.banner_image }}'></input></td>
+	</tr>
+	<tr>
+		<th>공개 기간</th>
+		<td>
+		    <div class="form-inline">
+		    <input type='text' class='input-medium' name='begin_date' value='{{ book.begin_date }}'></input>
+        	~ <input type='text' class='input-medium' name='end_date' value='{{ book.end_date }}'></input>
+		    </div>
+	    </td>
+	</tr>
+	<tr>
+	    <th>소개 섹션</th>
+	    <td>
+	        <table class='table table-hover table-striped table-condensed'>
+                <thead>
+                    <tr>
+                        <th class='span3'>종류</th>
+                        <th>내용</th>
+                    </tr>
+                </thead>
+            	<tbody id='js_part_list'>
+            		{% for intro in intros %}
+            		<tr data-cid='{{ intro.id }}'>
+            			<td><a href='/admin/storyplusbook_intro/{{ intro.id }}'>{{ intro.type }}</a></td>
+            			<td>{{ intro.descriptor }}</td>
+            		</tr>
+            		{% endfor %}
+            	</tbody>
+            </table>
+            
+            <button class='btn btn-small btn-primary pull-right' id='js_add'>소개 추가</button>
+        </td>
+	</tr>
+</table>
+
+
+<div class='form-actions'>
+	<button type='submit' class='btn btn-success'>수정 완료</button>
+	<button class='btn btn-cancel'>목록으로</button>
+	<button class='btn btn-danger pull-right'>삭제</button>
+</div>
+</form>
+
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+<script>
+$(function() {
+    $('.btn-cancel').click(function() {
+        location.href = '/admin/storyplusbook/list';
+        return false;
+    })
+    
+    $('.btn-danger').click(function() {
+        if (confirm('삭제하시겠습니까?')) {
+            $.post('/admin/storyplusbook/{{ book.id }}/delete', function(r) {
+                if (r.error) {
+                    alert(r.error);
+                } else {
+                    location.href = '/admin/storyplusbook/list';
+                }
+            })
+        }
+        return false;
+    });
+    
+    $('#js_add').click(function() {
+        location.href = '/admin/storyplusbook_intro/add?b_id={{ book.id }}';
+        return false;
+    })
+    
+});
+</script>
+{% endblock %}
