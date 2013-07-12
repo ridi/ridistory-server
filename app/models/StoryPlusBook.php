@@ -4,7 +4,12 @@ class StoryPlusBook
 {
 	public static function get($id) {
 		global $app;
-		$b = $app['db']->fetchAssoc('select * from storyplusbook where id = ?', array($id));
+		$sql = <<<EOT
+select storyplusbook.*, ifnull(like_sum, 0) like_sum from storyplusbook
+	left join (select b_id, count(*) like_sum from user_storyplusbook_like group by b_id) L on storyplusbook.id = L.b_id
+where id = ?
+EOT;
+		$b = $app['db']->fetchAssoc($sql, array($id));
 		if ($b) {
 			$b['cover_url'] = self::getCoverUrl($b['store_id']);
 			self::_fill_additional($b);
@@ -23,6 +28,12 @@ class StoryPlusBook
 	public static function getOpenedBookList() {
 		$today = date('Y-m-d H:00:00');
 		$sql = "select * from storyplusbook where begin_date <= ? and end_date >= ?";
+				$sql = <<<EOT
+select storyplusbook.*, ifnull(like_sum, 0) like_sum from storyplusbook
+	left join (select b_id, count(*) like_sum from storyplusbook, user_storyplusbook_like where storyplusbook.id = user_storyplusbook_like.b_id group by b_id) L on storyplusbook.id = L.b_id
+where begin_date <= ? and end_date >= ?
+EOT;
+		
 		$bind = array($today, $today);
 		
 		global $app;
@@ -95,5 +106,33 @@ class StoryPlusBookIntro
 		
 		$ar = $app['db']->fetchAll($sql, $bind);
 		return $ar; 
+	}
+}
+
+
+class StoryPlusBookComment
+{
+	public static function add($b_id, $device_id, $comment, $ip) {
+		global $app;
+		$r = $app['db']->insert('storyplusbook_comment', compact('b_id', 'device_id', 'comment', 'ip'));
+		return $r;
+	}
+	
+	public static function delete($c_id) {
+		global $app;
+		$r = $app['db']->delete('storyplusbook_comment', array('id' => $c_id));
+		return $r === 1;
+	}
+	
+	public static function getList($b_id) {
+		global $app;
+		$r = $app['db']->fetchAll('select comment, `timestamp` from storyplusbook_comment where b_id = ? order by timestamp desc', array($b_id));
+		return $r;
+	}
+	
+	public static function getCommentCount($b_id) {
+		global $app;
+		$r = $app['db']->fetchColumn('select count(*) from storyplusbook_comment where b_id = ?', array($b_id));
+		return $r;
 	}
 }

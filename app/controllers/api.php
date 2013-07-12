@@ -21,6 +21,12 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userPartLike'));
 		$api->get('/user/{device_id}/part/{p_id}/unlike', array($this, 'userPartUnlike'));
+
+		$api->get('/user/{device_id}/storyplusbook/{b_id}/like', array($this, 'userStoryPlusBookLike'));
+		$api->get('/user/{device_id}/storyplusbook/{b_id}/unlike', array($this, 'userStoryPlusBookUnlike'));
+
+		$api->get('/storyplusbook/{b_id}/comment/list', array($this, 'storyPlusBookCommentList'));
+		$api->get('/storyplusbook/{b_id}/comment/add', array($this, 'storyPlusBookCommentAdd'));
 		
 		$api->get('/push_device/register', array($this, 'pushDeviceRegister'));
 		
@@ -34,6 +40,20 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $api;
 	}
 
+	public function storyPlusBookCommentAdd(Request $req, Application $app, $b_id) {
+		$device_id = $req->get('device_id');
+		$comment = trim($req->get('comment'));
+		$ip = ip2long($_SERVER['REMOTE_ADDR']);
+		
+		StoryPlusBookComment::add($b_id, $device_id, $comment, $ip);
+		return $app->json(array('success' => 'true'));
+	}
+
+	public function storyPlusBookCommentList(Application $app, $b_id) {
+		$comments = StoryPlusBookComment::getList($b_id);
+		return $app->json($comments);
+	}
+
 	public function storyPlusBookList(Application $app) {
 		$book = $app['cache']->fetch('storyplusbook_list', function() {
 			return StoryPlusBook::getOpenedBookList();
@@ -44,10 +64,11 @@ class ApiControllerProvider implements ControllerProviderInterface
 	public function storyPlusBook(Request $req, Application $app, $b_id) {
 		$book = StoryPlusBook::get($b_id);
 		$intro = StoryPlusBookIntro::getListByBid($b_id);
-		// TODO: $comment
+		$comment = StoryPlusBookComment::getList($b_id);
 		
 		$info = array('book_detail' => $book,
-					'intro' => $intro);
+					'intro' => $intro,
+					'comment' => $comment);
 		return $app->json($info);
 	}
 
@@ -122,6 +143,23 @@ class ApiControllerProvider implements ControllerProviderInterface
 	public function userPartUnlike(Application $app, $device_id, $p_id) {
 		$r = UserPartLike::unlike($device_id, $p_id);
 		$like_count = UserPartLike::getLikeCount($p_id);
+		return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
+	}
+	
+	public function userStoryPlusBookLike(Application $app, $device_id, $b_id) {
+		$b = StoryPlusBook::get($b_id);
+		if ($b == false) {
+			return $app->json(array('success' => false));
+		}
+		
+		$r = UserStoryPlusBookLike::like($device_id, $b_id);
+		$like_count = UserStoryPlusBookLike::getLikeCount($b_id);
+		return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
+	}
+	
+	public function userStoryPlusBookUnlike(Application $app, $device_id, $b_id) {
+		$r = UserStoryPlusBookLike::unlike($device_id, $b_id);
+		$like_count = UserStoryPlusBookLike::getLikeCount($b_id);
 		return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
 	}
 	
