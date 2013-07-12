@@ -32,7 +32,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		
 		$api->get('/latest_version', array($this, 'latestVersion'));
 		
-		$api->get('/validate_part_download', array($this, 'validatePartDownload'));
+		$api->get('/validate_download', array($this, 'validatePartDownload'));
 		$api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
 		
 		$api->get('/shorten_url/{p_id}', array($this, 'shortenUrl'));
