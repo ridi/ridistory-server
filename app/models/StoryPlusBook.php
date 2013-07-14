@@ -32,6 +32,7 @@ EOT;
 select storyplusbook.*, ifnull(like_sum, 0) like_sum from storyplusbook
 	left join (select b_id, count(*) like_sum from storyplusbook, user_storyplusbook_like where storyplusbook.id = user_storyplusbook_like.b_id group by b_id) L on storyplusbook.id = L.b_id
 where begin_date <= ? and end_date >= ?
+order by priority desc
 EOT;
 		
 		$bind = array($today, $today);
@@ -101,7 +102,7 @@ class StoryPlusBookIntro
 	public static function getListByBid($b_id) {
 		global $app;
 		
-		$sql = 'select * from storyplusbook_intro where b_id = ?';
+		$sql = 'select type, descriptor from storyplusbook_intro where b_id = ?';
 		$bind = array($b_id);
 		
 		$ar = $app['db']->fetchAll($sql, $bind);

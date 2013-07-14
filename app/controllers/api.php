@@ -11,6 +11,8 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/book/list', array($this, 'bookList'));
 		$api->get('/book/{b_id}', array($this, 'book'));
 		
+		$api->get('/version/storyplusbook', array($this, 'versionStoryPlusBook'));
+		
 		$api->get('/storyplusbook/list', array($this, 'storyPlusBookList'));
 		$api->get('/storyplusbook/{b_id}', array($this, 'storyPlusBook'));
 		
@@ -38,6 +40,10 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/shorten_url/{p_id}', array($this, 'shortenUrl'));
 		
 		return $api;
+	}
+
+	public function versionStoryPlusBook(Application $app) {
+		return $app->json(array('version' => '1'));
 	}
 
 	public function storyPlusBookCommentAdd(Request $req, Application $app, $b_id) {
