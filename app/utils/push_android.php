@@ -29,6 +29,15 @@ class AndroidPush {
 		);
 	}
 	
+	public static function createStoryPlusNewBookUpdateNotification($b_id, $message) {
+		return array(
+			'type' => 'storyplus_new_book_update',
+			'book_id' => $b_id,
+			'title' => self::PUSH_TITLE,
+			'message' => $message,
+		);
+	}
+	
 	public static function createLaunchAppNotification($message) {
 		return array(
 			'type' => 'launch_app',
