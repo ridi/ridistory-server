@@ -102,7 +102,7 @@ class StoryPlusBookIntro
 	public static function getListByBid($b_id) {
 		global $app;
 		
-		$sql = 'select type, descriptor from storyplusbook_intro where b_id = ?';
+		$sql = 'select * from storyplusbook_intro where b_id = ?';
 		$bind = array($b_id);
 		
 		$ar = $app['db']->fetchAll($sql, $bind);
