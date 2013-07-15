@@ -37,7 +37,7 @@ class ApiControllerProvider implements ControllerProviderInterface
 		$api->get('/validate_download', array($this, 'validatePartDownload'));
 		$api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
 		
-		$api->get('/shorten_url/{p_id}', array($this, 'shortenUrl'));
+		$api->get('/shorten_url/{id}', array($this, 'shortenUrl'));
 		
 		return $api;
 	}
@@ -228,10 +228,24 @@ class ApiControllerProvider implements ControllerProviderInterface
 		return $app->json(array('success' => $valid));
 	} 
 	
-	public function shortenUrl(Request $req, Application $app, $p_id) {
-		$p = new Part($p_id);
-		if ($p->isOpened()) {
-			$preview_url = 'http://preview.ridibooks.com/' . $p->store_id . '?mobile';
+	public function shortenUrl(Request $req, Application $app, $id) {
+		$type = $req->get('type');
+		if ($type === 'storyplusbook') {
+			$b = StoryPlusBook::get($id);
+			
+			$today = date('Y-m-d H:00:00');
+			if ($b['begin_date'] <= $today && $b['end_date'] >= $today) {
+				$store_id = $b['store_id'];
+			}
+		} else {
+			$p = new Part($id);
+			if ($p->isOpened()) {
+				$store_id = $p->store_id;
+			}
+		}
+		
+		if ($store_id) {
+			$preview_url = 'http://preview.ridibooks.com/' . $store_id . '?mobile';
 			$shorten_url = $this->_getShortenUrl($preview_url);
 			return $app->json(array('url' => $shorten_url));
 		}
