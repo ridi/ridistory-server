@@ -277,6 +277,15 @@ select A.title,
 order by title
 EOT;
 		$interest_stat = $app['db']->fetchAll($sql);
+		
+		// 스토리+ 책 다운로드 통계
+		$sql = <<<EOT
+select storyplusbook.title, ifnull(download_count, 0) download_count from storyplusbook
+	left join (select storyplusbook_id, count(storyplusbook_id) download_count from stat_download_storyplusbook group by storyplusbook_id) A
+	on storyplusbook.id = A.storyplusbook_id
+	order by download_count desc
+EOT;
+		$download_stat_storyplusbook = $app['db']->fetchAll($sql);
 			
 		// 댓글 통계
 		$sql = <<<EOT
@@ -289,7 +298,7 @@ EOT;
 		
 		return $app['twig']->render('/admin/stats.twig', compact('total_registered', 'register_stat',
 																 'total_downloaded', 'download_stat',
-																 'interest_stat',
+																 'interest_stat', 'download_stat_storyplusbook',
 																 'most_comment_parts', 'least_comment_parts'));
 	}
 }

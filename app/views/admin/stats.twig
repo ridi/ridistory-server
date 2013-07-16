@@ -74,6 +74,24 @@
     </div>
 </section>
 
+<section class='row'>
+    <div class='span12'>
+    <h3>스토리+ 다운로드 통계</h3>
+    <table class='table'>
+    	<tr>
+    		<td><b>TITLE</b></td>
+    		<td><b>COUNT</b></td>
+    	</tr>
+        {% for d in download_stat_storyplusbook %}
+        <tr>
+        	<td>{{ d.title }}</td>
+            <td>{{ d.download_count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+</section>
+
 <hr class='separator'>
 
 <section class='row' id='js_tooltip'>
