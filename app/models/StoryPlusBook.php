@@ -69,7 +69,7 @@ EOT;
 	}
 	
 	private static function _fill_additional(&$b) {
-		$b['meta_url'] = 'http://ridibooks.com/api/book/metadata.php?id=' . $b['store_id'];
+		$b['meta_url'] = 'http://ridibooks.com/api/book/metadata?b_id=' . $b['store_id'];
 
 		$query = http_build_query(array('store_id' => $b['store_id'], 'storyplusbook_id' => $b['id']));
 		$b['download_url'] = STORE_API_BASE_URL . '/api/story/download_storyplusbook.php?' . $query;

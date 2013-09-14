@@ -68,7 +68,7 @@ EOT;
 	}
 	
 	private static function _fill_additional(&$p) {
-		$p['meta_url'] = STORE_API_BASE_URL . '/api/book/metadata.php?id=' . $p['store_id'];
+		$p['meta_url'] = STORE_API_BASE_URL . '/api/book/metadata?b_id=' . $p['store_id'];
 		
 		// v1: token only
 		//$query = '?token=' . $p['store_id'];
