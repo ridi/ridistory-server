@@ -1,0 +1,47 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+<table class='table table-hover'>
+	<thead>
+		<tr>
+			<th class='span1'>ID</th>
+			<th>배너</th>
+			<th class='span1'>공개 여부</th>
+		</tr>
+	</thead>
+	<tbody id='js_tbody'>
+		{% for b in banner_list %}
+		<tr data-bid='{{ b.id }}'>
+			<td>{{ b.id }}</td>
+			<td><img src="{{ b.image }}" /></td>
+			<td>{{ b.is_visible }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<button class='btn btn-primary' id='js_add'>추가</button>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(function() {
+    $('#js_add').click(function() {
+        location.href = '/admin/banner/add';
+    });
+    
+    $('#js_tbody tr').click(function() {
+        var b_id = $(this).data('bid');
+        location.href = '/admin/banner/' + b_id;
+    });
+    
+    $('#js_tbody tr').hover(function() {
+         	$(this).css('cursor', 'pointer');
+        }, function() {
+         	$(this).css('cursor', '');
+        }
+    );
+});
+</script>
+{% endblock %}

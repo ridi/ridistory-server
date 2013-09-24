@@ -1,0 +1,72 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<form action="/admin/banner/{{ banner.id }}/edit" method='post'>
+<table class='table'>
+	<tr>
+		<th>배너</th>
+		<td><input type='text' class='input-xxlarge' name='image' value='{{ banner.image }}'></input></td>
+	</tr>
+    <tr>
+        <th>배경 이미지</th>
+        <td><input type='text' class='input-xxlarge' name='background' value='{{ banner.background }}'></input></td>
+    </tr>
+    <tr>
+        <th>Android 링크</th>
+        <td><input type='text' class='input-xxlarge' name='link_android' value='{{ banner.link_android }}'></input></td>
+    </tr>
+    <tr>
+        <th>iOS 링크</th>
+        <td><input type='text' class='input-xxlarge' name='link_ios' value='{{ banner.link_ios }}'></input></td>
+    </tr>
+	<tr>
+		<th>공개 여부</th>
+		<td>
+		    <label class="radio">
+			    <input type='radio' name='is_visible' value='1'>공개</input>
+		    </label>
+		    <label class="radio">
+			    <input type='radio' name='is_visible' value='0'>비공개</input>
+		    </label>
+	    </td>
+	</tr>
+</table>
+
+<div class='form-actions'>
+	<button type='submit' class='btn btn-success'>수정 완료</button>
+	<button class='btn btn-cancel'>목록으로</button>
+	<button class='btn btn-danger pull-right'>삭제</button>
+</div>
+</form>
+
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+<script>
+$(function() {
+    
+    $('input:radio[name="is_visible"]')
+    .filter('[value="{{ banner.is_visible }}"]')
+    .attr('checked', true);
+
+    $('.btn-cancel').click(function() {
+        location.href = '/admin/banner/list';
+        return false;
+    })
+    
+    $('.btn-danger').click(function() {
+        if (confirm('삭제하시겠습니까?')) {
+            $.post('/admin/banner/{{ banner.id }}/delete', function(r) {
+                if (r.error) {
+                    alert(r.error);
+                } else {
+                    location.href = '/admin/banner/list';
+                }
+            })
+        }
+        return false;
+    });
+});
+</script>
+{% endblock %}

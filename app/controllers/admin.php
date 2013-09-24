@@ -81,7 +81,13 @@ EOT;
 		$admin->get('/notice/{n_id}', array($this, 'noticeDetail'));
 		$admin->post('/notice/{n_id}/edit', array($this, 'noticeEdit'));
 		$admin->post('/notice/{n_id}/delete', array($this, 'noticeDelete'));
-		
+
+		$admin->get('/banner/list', array($this, 'bannerList'));
+		$admin->get('/banner/add', array($this, 'bannerAdd'));
+		$admin->get('/banner/{banner_id}', array($this, 'bannerDetail'));
+		$admin->post('/banner/{banner_id}/edit', array($this, 'bannerEdit'));
+		$admin->post('/banner/{banner_id}/delete', array($this, 'bannerDelete'));
+
 		$admin->get('/stats', array($this, 'stats'));
 		
 		return $admin;
@@ -224,11 +230,47 @@ EOT;
 		return $app->redirect('/admin/notice/' . $r);
 	}
 	
-	public static function noticeDelete(Application $app, $n_id) {
+	public static function noticeDelete(Reqeust $req, Application $app, $n_id) {
 		$r = $app['db']->delete('notice', array('id' => $n_id));
 		$app['session']->set('alert', array('warning' => '공지사항이 삭제되었습니다.'));
 		$redirect_url = $req->headers->get('referer', '/admin/notice/list');
 		return $app->redirect($redirect_url);
+	}
+
+	/*
+	 * Banner
+	 */
+
+	public static function bannerList(Request $req, Application $app) {
+		$banner_list = $app['db']->fetchAll('select * from banner');
+		return $app['twig']->render('/admin/banner_list.twig', array('banner_list' => $banner_list));
+	}
+
+	public static function bannerDetail(Request $req, Application $app, $banner_id) {
+		$banner = $app['db']->fetchAssoc('select * from banner where id = ?', array($banner_id));
+		return $app['twig']->render('/admin/banner_detail.twig', array('banner' => $banner));
+	}
+
+	public static function bannerEdit(Request $req, Application $app, $banner_id) {
+		$inputs = $req->request->all();
+
+		$r = $app['db']->update('banner', $inputs, array('id' => $banner_id));
+
+		$app['session']->set('alert', array('info' => '배너가 수정되었습니다.'));
+		$redirect_url = $req->headers->get('referer', '/admin/banner/list');
+		return $app->redirect($redirect_url);
+	}
+
+	public static function bannerAdd(Application $app) {
+		$app['db']->insert('banner', array('is_visible' => 0));
+		$r = $app['db']->lastInsertId();
+		return $app->redirect('/admin/banner/' . $r);
+	}
+
+	public static function bannerDelete(Request $req, Application $app, $banner_id) {
+		$r = $app['db']->delete('banner', array('id' => $banner_id));
+		$app['session']->set('alert', array('warning' => '배너가 삭제되었습니다.'));
+		return $app->redirect('/admin/banner/list');
 	}
 	
 	/*
