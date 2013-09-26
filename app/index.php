@@ -1,12 +1,15 @@
-<?
+<?php
 $autoloader = require_once '../lib/vendor/autoload.php';
 $autoloader->add('Ridibooks\Story', __DIR__);
 
 $app = new Silex\Application();
 
-$app->register(new Silex\Provider\TwigServiceProvider(), array(
-	'twig.path' => __DIR__ . '/views',
-));
+$app->register(
+    new Silex\Provider\TwigServiceProvider(),
+    array(
+        'twig.path' => __DIR__ . '/views',
+    )
+);
 
 require 'conf.php';
 
