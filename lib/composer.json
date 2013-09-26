@@ -3,6 +3,7 @@
         "silex/silex": "~1.0",
         "twig/twig": ">=1.8,<2.0-dev",
         "doctrine/dbal": "~2.3",
-        "symfony/security": "~2.2"
+        "symfony/security": "~2.2",
+        "moriony/silex-sentry-provider": "1.0.*"
     }
 }
