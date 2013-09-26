@@ -17,6 +17,7 @@ class Book
 select count(part.b_id) uploaded_part_count, ifnull(open_part_count, 0) open_part_count, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
  left join part on b.id = part.b_id group by b.id, part.b_id
+order by begin_date desc
 EOT;
 		$bind = array($today, $today);
 		global $app;
