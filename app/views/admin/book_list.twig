@@ -15,7 +15,11 @@
 		{% for book in books %}
 		<tr data-bid='{{ book.id }}'>
 			<td>{{ book.id }}</td>
-			<td>{{ book.title }}</td>
+			<td>{{ book.title }}
+                {% if book.adult_only %}
+                <i class='icon-heart'></i>
+                {% endif %}
+            </td>
 			<td>
 			    <div class='progress'>
                     <div class='bar' style='width: {{ book.progress }};'></div>
@@ -37,12 +41,12 @@ $(function() {
     $('#js_add').click(function() {
         location.href = '/admin/book/add';
     });
-    
+
     $('#js_tbody tr').click(function() {
         var b_id = $(this).data('bid');
         location.href = '/admin/book/' + b_id;
     });
-    
+
     $('#js_tbody tr').hover(function() {
          	$(this).css('cursor', 'pointer');
         }, function() {

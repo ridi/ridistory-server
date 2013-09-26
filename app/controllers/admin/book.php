@@ -82,6 +82,8 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         }
         $inputs['upload_days'] = $upload_days;
 
+        $inputs['adult_only'] = isset($inputs['adult_only']);
+
         // 상세 정보는 별도 테이블로
         $intro = array('b_id' => $id);
         array_move_keys(

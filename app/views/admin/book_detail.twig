@@ -14,7 +14,7 @@
 	<tr>
 		<th>표지</th>
 		<td>
-		    <img src='{{ book.cover_url }}'>
+		    <img src='{{ book.cover_url }}' style="height:200px;">
 		</td>
 	</tr>
 	<tr>
@@ -99,6 +99,14 @@
 		    </div>
 	    </td>
 	</tr>
+    <tr>
+        <th>성인</th>
+        <td>
+            <label class="checkbox">
+                <input type='checkbox' name='adult_only' {{ book.adult_only ? 'checked="checked"' }}>성인용인 경우에 체크</input>
+            </label>
+        </td>
+    </tr>
 	<tr>
 	    <th>작품 점수</th>
 	    <td>
