@@ -90,12 +90,16 @@ class ApiControllerProvider implements ControllerProviderInterface
         return $app->json($info);
     }
 
-    public function bookList(Application $app)
+    public function bookList(Request $req, Application $app)
     {
+        $v = intval($req->get('v', '1'));
+        $cache_key = 'book_list_' . $v;
+
+        $exclude_adult = ($v < 2);
         $book = $app['cache']->fetch(
-            'book_list',
-            function () {
-                return Book::getOpenedBookList();
+            $cache_key,
+            function () use ($exclude_adult) {
+                return Book::getOpenedBookList($exclude_adult);
             },
             60 * 10
         );

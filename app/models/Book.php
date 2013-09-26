@@ -26,7 +26,7 @@ EOT;
         return $app['db']->fetchAll($sql, $bind);
     }
 
-    public static function getOpenedBookList()
+    public static function getOpenedBookList($exclude_adult = true)
     {
         $today = date('Y-m-d H:00:00');
         $sql = <<<EOT
@@ -36,11 +36,14 @@ select ifnull(last_update, 0) last_update, ifnull(open_part_count, 0) open_part_
  left join (select b_id, 1 last_update from part where (date(begin_date) = date(now()) and now() >= begin_date) or date_add(date(begin_date), INTERVAL 1 DAY) = date(now()) group by b_id) p on b.id = p.b_id
 where b.begin_date <= ? and end_date >= ?
 EOT;
+        if ($exclude_adult) {
+            $sql .= " and adult_only = 0";
+        }
+
         $bind = array($today, $today, $today, $today);
 
         global $app;
         $ar = $app['db']->fetchAll($sql, $bind);
-        $list = array();
 
         foreach ($ar as &$b) {
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
