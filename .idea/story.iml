@@ -10,8 +10,10 @@
       <excludeFolder url="file://$MODULE_DIR$/lib/vendor/doctrine/dbal" />
       <excludeFolder url="file://$MODULE_DIR$/lib/vendor/doctrine/inflector" />
       <excludeFolder url="file://$MODULE_DIR$/lib/vendor/doctrine/lexer" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/vendor/moriony/silex-sentry-provider" />
       <excludeFolder url="file://$MODULE_DIR$/lib/vendor/pimple/pimple" />
       <excludeFolder url="file://$MODULE_DIR$/lib/vendor/psr/log" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/vendor/raven/raven" />
       <excludeFolder url="file://$MODULE_DIR$/lib/vendor/silex/silex" />
       <excludeFolder url="file://$MODULE_DIR$/lib/vendor/symfony/debug" />
       <excludeFolder url="file://$MODULE_DIR$/lib/vendor/symfony/event-dispatcher" />
@@ -38,8 +40,10 @@
         <CLASSES>
           <root url="file://$MODULE_DIR$/lib/vendor/psr/log" />
           <root url="file://$MODULE_DIR$/lib/vendor/twig/twig" />
+          <root url="file://$MODULE_DIR$/lib/vendor/raven/raven" />
           <root url="file://$MODULE_DIR$/lib/vendor/silex/silex" />
           <root url="file://$MODULE_DIR$/lib/vendor/pimple/pimple" />
+          <root url="file://$MODULE_DIR$/lib/vendor/moriony/silex-sentry-provider" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/debug" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/routing" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/security" />
@@ -58,8 +62,10 @@
         <SOURCES>
           <root url="file://$MODULE_DIR$/lib/vendor/psr/log" />
           <root url="file://$MODULE_DIR$/lib/vendor/twig/twig" />
+          <root url="file://$MODULE_DIR$/lib/vendor/raven/raven" />
           <root url="file://$MODULE_DIR$/lib/vendor/silex/silex" />
           <root url="file://$MODULE_DIR$/lib/vendor/pimple/pimple" />
+          <root url="file://$MODULE_DIR$/lib/vendor/moriony/silex-sentry-provider" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/debug" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/routing" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/security" />

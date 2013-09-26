@@ -3,3 +3,4 @@ lib/composer\.lock
 \.project
 \.settings
 app/conf\.php
+\.idea
