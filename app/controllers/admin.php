@@ -107,6 +107,7 @@ EOT;
         $admin->post('/banner/{banner_id}/delete', array($this, 'bannerDelete'));
 
         $admin->get('/stats', array($this, 'stats'));
+        $admin->get('/stats_like', array($this, 'statsLike'));
 
         return $admin;
     }
@@ -315,7 +316,6 @@ EOT;
     /*
      * Stats
      */
-
     public static function stats(Application $app)
     {
         // 기기등록 통계
@@ -390,6 +390,45 @@ EOT;
                 'most_comment_parts',
                 'least_comment_parts'
             )
+        );
+    }
+
+    public static function statsLike(Application $app, Request $req)
+    {
+        //$begin_date = $req->get('begin_date');
+        $end_date = $req->get('end_date');
+
+        $twig_var = array();
+
+        if ($end_date) {
+            $sql_interests = <<<EOT
+    select a.b_id, b.title, count(*) count from user_interest a
+    join book b on a.b_id = b.id
+    where a.timestamp <= ?
+    group by a.b_id
+EOT;
+
+            $sql_likes = <<<EOT
+    select part.b_id, book.title, count(distinct part.id) count, sum(M.CNT) sum, sum(M.CNT) / count(distinct part.id) avg from
+    (
+      select p_id, count(device_id) CNT from user_part_like
+      where timestamp <= ?
+      group by p_id
+    ) M join part on M.p_id = part.id
+    left outer join book on part.b_id = book.id
+    group by part.b_id;
+EOT;
+
+            $twig_var['end_date'] = $end_date;
+            $twig_var['interests_per_book'] = $app['db']->fetchAll($sql_interests, array($end_date));
+            $twig_var['likes_per_book'] = $app['db']->fetchAll($sql_likes, array($end_date));
+        }
+
+        $twig_var['end_date'] = date('Y-m-d');
+
+        return $app['twig']->render(
+            '/admin/stats_like.twig',
+            $twig_var
         );
     }
 }

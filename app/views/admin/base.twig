@@ -16,15 +16,22 @@
         <!--<link rel="stylesheet" href="/static/css/bootstrap-responsive.min.css">-->
         {% block css %}
         {% endblock %}
+        <style>
+            .header h1 {
+                font-size: 40px;
+                font-weight: 200;
+                color: white;
+                letter-spacing: -0.1ex;
+                text-shadow: 0 1px 1px #666;
+            }
+        </style>
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
     <body>
         <header class="header">
             <div class="container">
+            <h1>RIDI Story CMS</h1>
             {% block header %}
-            <div>
-                <img src='/static/img/gnb_title.png' />
-            </div>
             {% endblock %}
             </div>
         </header>
@@ -35,26 +42,21 @@
 				<div class="navbar-inner">
 					<div class="container">
 						<ul class="nav">
-							<li>
+							<li class="span2">
 								<a href="/admin/book/list"><i class='icon-book'></i> 연재물 관리</a>
-							</li>
-							<li>
 								<a href="/admin/storyplusbook/list"><i class='icon-book'></i> 스토리+ 책 관리</a>
 							</li>
-							<li>
+							<li class="span2">
 							    <a href="/admin/notice/list"><i class='icon-th-list'></i> 공지사항 관리</a>
-							</li>
-                            <li>
                                 <a href="/admin/banner/list"><i class='icon-th-list'></i> 배너 관리</a>
+							</li>
+                            <li class="span2">
+                                <a href="/admin/stats"><i class='icon-signal'></i> 통계</a>
+                                <a href="/admin/stats_like"><i class='icon-signal'></i> 좋아요 통계</a>
                             </li>
-							<li>
+							<li class="span2">
 							    <a href="/admin/comment/list"><i class='icon-comment'></i> 리뷰 관리</a>
-							</li>
-							<li>
 							    <a href="/admin/push/dashboard"><i class='icon-star'></i> 푸쉬 메세지 발송</a>
-							</li>
-							<li>
-							    <a href="/admin/stats"><i class='icon-signal'></i> 통계</a>
 							</li>
 						</ul>
 					</div>
