@@ -86,7 +86,7 @@ class AdminControllerProvider implements ControllerProviderInterface
                 $sql = <<<EOT
 select platform, count(*) count from user_interest i
  join push_devices p on p.device_id = i.device_id
-where b_id = ?
+where b_id = ? and i.cancel = 0
 group by platform
 EOT;
                 $r = $app['db']->fetchAssoc($sql, array($b_id));

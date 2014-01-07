@@ -8,7 +8,7 @@ class PushDevicePicker {
 		$sql = <<<EOT
 select p.id, p.device_token, p.platform from user_interest u
  join push_devices p on u.device_id = p.device_id
-where b_id = ? and p.is_active = 1
+where b_id = ? and p.is_active = 1 and u.cancel = 0
 EOT;
 		
 		$params = array($b_id);
