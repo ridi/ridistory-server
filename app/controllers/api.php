@@ -3,6 +3,13 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 
+use Story\Model\Book;
+use Story\Model\Part;
+use Story\Model\UserInterest;
+use Story\Model\UserPartLike;
+use Story\Model\UserStoryPlusBookLike;
+use Story\Model\PushDevice;
+
 class ApiControllerProvider implements ControllerProviderInterface
 {
     public function connect(Application $app)
@@ -273,6 +280,7 @@ class ApiControllerProvider implements ControllerProviderInterface
     public function shortenUrl(Request $req, Application $app, $id)
     {
         $type = $req->get('type');
+        $store_id = '';
         if ($type === 'storyplusbook') {
             $b = StoryPlusBook::get($id);
 
@@ -281,7 +289,7 @@ class ApiControllerProvider implements ControllerProviderInterface
                 $store_id = $b['store_id'];
             }
         } else {
-            $p = new Part($id);
+            $p = new \Story\Model\Part($id);
             if ($p->isOpened()) {
                 $store_id = $p->store_id;
             }

@@ -145,7 +145,7 @@ EOT;
 
     public static function commentDelete(Request $req, Application $app, $c_id)
     {
-        PartComment::delete($c_id);
+        \Story\Model\PartComment::delete($c_id);
         $app['session']->set('alert', array('info' => '댓글이 삭제되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/comment/list');
         return $app->redirect($redirect_url);

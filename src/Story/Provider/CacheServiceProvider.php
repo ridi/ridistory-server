@@ -1,6 +1,6 @@
 <?php
 
-namespace Ridibooks\Story\Provider;
+namespace Story\Provider;
 
 use Doctrine\Common\Cache\ApcCache;
 use Silex\Application;

@@ -3,10 +3,15 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 
+use Story\Model\PartComment;
+
 class WebControllerProvider implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
+        /**
+         * @var $api \Silex\ControllerCollection
+         */
         $api = $app['controllers_factory'];
 
         $api->get('/book/{b_id}/intro', array($this, 'bookIntro'));
@@ -114,7 +119,7 @@ class WebControllerProvider implements ControllerProviderInterface
 
     public function previewPart(Request $req, Application $app, $p_id, $title)
     {
-        $p = new Part($p_id);
+        $p = new \Story\Model\Part($p_id);
         if (!$p->isOpened()) {
             return $app->abort(404);
         }
