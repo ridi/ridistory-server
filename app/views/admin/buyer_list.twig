@@ -1,0 +1,45 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th class='span1'>유저 ID</th>
+            <th>구글 계정</th>
+            <th>구글 계정 등록일</th>
+            <th>남은 코인 수</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for buyer in buyers %}
+            <tr data-bid='{{ buyer.id }}'>
+                <td>{{ buyer.id }}</td>
+                <td>{{ buyer.google_id }}</td>
+                <td>{{ buyer.google_reg_date }}</td>
+                <td>{{ buyer.coin_balance }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+
+            $('#js_tbody tr').click(function() {
+                var b_id = $(this).data('bid');
+                location.href = '/admin/buyer/' + b_id;
+            });
+
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}

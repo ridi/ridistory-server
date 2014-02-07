@@ -1,0 +1,66 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<table class='table'>
+    <colgroup>
+        <col class="span1">
+        <col class="span7">
+    </colgroup>
+    <tr>
+        <th>유저 ID</th>
+        <td><input type='text' class='input-xlarge' value='{{ buyer.id }}' disabled></input></td>
+    </tr>
+    <tr>
+        <th>구글 계정</th>
+        <td><input type='text' class='input-xlarge' value='{{ buyer.google_id }}' disabled></input></td>
+    </tr>
+    <tr>
+        <th>구글 계정 등록일</th>
+        <td><input type='text' class='input-xlarge' value='{{ buyer.google_reg_date }}' disabled></input></td>
+    </tr>
+    <tr>
+        <th>남은 코인 수</th>
+        <td><input type='text' class='input-xlarge' value='{{ buyer.coin_balance }}' disabled></input></td>
+    </tr>
+</table>
+
+<section class='row'>
+    <div class='span4'>
+        <h3>코인 구매</h3>
+        <table class='table'>
+            <tr>
+                <td><b>구입일</b></td>
+                <td><b>갯수</b></td>
+                <td><b>구입처</b></td>
+            </tr>
+            {% for coin in coin_in %}
+                <tr>
+                    <td>{{ coin.timestamp }}</td>
+                    <td>{{ coin.amount }}</td>
+                    <td>{{ coin.source }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class='span8'>
+        <h3>코인 사용</h3>
+        <table class='table'>
+            <tr>
+                <td><b>사용일</b></td>
+                <td><b>갯수</b></td>
+                <td><b>책 ID</b></td>
+                <td><b>파트 제목</b></td>
+            </tr>
+            {% for coin in coin_out %}
+                <tr>
+                    <td>{{ coin.timestamp }}</td>
+                    <td>{{ coin.amount }}</td>
+                    <td>{{ coin.b_id }}</td>
+                    <td><a href="/admin/part/{{ coin.p_id }}">{{ coin.seq }}. {{ coin.title }}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</section>
+
+{% endblock %}

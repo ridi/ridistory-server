@@ -9,6 +9,9 @@ class ApiControllerProvider implements ControllerProviderInterface
     {
         $api = $app['controllers_factory'];
 
+        //$api->get('/buyer/add', array($this, 'buyerAdd'));
+        //$api->get('/buyer/{u_id}', array($this, 'buyer'));
+
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/{b_id}', array($this, 'book'));
 
