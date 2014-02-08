@@ -29,18 +29,19 @@ EOT;
     public static function getOpenedBookList($exclude_adult = true)
     {
         $today = date('Y-m-d H:00:00');
+        $today_date = date('Y-m-d');
         $sql = <<<EOT
 select ifnull(last_update, 0) last_update, ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
  left join (select b_id, count(*) like_sum from user_part_like, part where p_id = part.id group by b_id) ls on b.id = ls.b_id
- left join (select b_id, 1 last_update from part where (date(begin_date) = date(now()) and now() >= begin_date) or date_add(date(begin_date), INTERVAL 1 DAY) = date(now()) group by b_id) p on b.id = p.b_id
+ left join (select b_id, 1 last_update from part where (date(begin_date) = ? and ? >= begin_date) or date_add(date(begin_date), INTERVAL 1 DAY) = ? group by b_id) p on b.id = p.b_id
 where b.begin_date <= ? and end_date >= ?
 EOT;
         if ($exclude_adult) {
             $sql .= " and adult_only = 0";
         }
 
-        $bind = array($today, $today, $today, $today);
+        $bind = array($today, $today, $today_date, $today, $today_date, $today, $today);
 
         global $app;
         $ar = $app['db']->fetchAll($sql, $bind);
