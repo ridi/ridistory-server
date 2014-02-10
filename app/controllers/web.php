@@ -109,7 +109,7 @@ class WebControllerProvider implements ControllerProviderInterface
 
         // TODO: abuse detection
 
-        $r = PartComment::add($p_id, $device_id, $nickname, $comment, $ip);
+        PartComment::add($p_id, $device_id, $nickname, $comment, $ip);
         return $app->redirect($req->headers->get('Referer'));
     }
 
@@ -123,10 +123,10 @@ class WebControllerProvider implements ControllerProviderInterface
     {
         $p = new \Story\Model\Part($p_id);
         if (!$p->isOpened()) {
-            return $app->abort(404);
+            $app->abort(404);
         }
 
-        return $app->redirect('http://preview.ridibooks.com/' . $p->store_id . '?mobile');
+        return $app->redirect('http://preview.ridibooks.com/' . $p->getStoreId() . '?mobile');
     }
 }
 

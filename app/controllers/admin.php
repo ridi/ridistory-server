@@ -44,7 +44,7 @@ class AdminControllerProvider implements ControllerProviderInterface
         $admin->post('/storyplusbook_intro/{id}/edit', array($this, 'storyPlusBookIntroEdit'));
 
         $admin->before(
-            function (Request $request) use ($app) {
+            function (Request $req) use ($app) {
                 $alert = $app['session']->get('alert');
                 if ($alert) {
                     $app['twig']->addGlobal('alert', $alert);

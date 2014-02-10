@@ -1,6 +1,8 @@
 <?php
 namespace Story\Model;
 
+use Doctrine\DBAL\Connection;
+
 class Book
 {
     public static function get($id)
@@ -82,7 +84,7 @@ EOT;
                     \PDO::PARAM_STR,
                     \PDO::PARAM_STR,
                     \PDO::PARAM_STR,
-                    \Doctrine\DBAL\Connection::PARAM_INT_ARRAY
+                    Connection::PARAM_INT_ARRAY
                 )
             );
         } else {
@@ -94,11 +96,11 @@ EOT;
             $stmt = $app['db']->executeQuery(
                 $sql,
                 array($b_ids),
-                array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+                array(Connection::PARAM_INT_ARRAY)
             );
         }
 
-        $ar = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $ar = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($ar as &$b) {
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
         }

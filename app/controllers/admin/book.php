@@ -77,7 +77,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         // 연재 요일
         $upload_days = 0;
         if (isset($inputs['upload_days'])) {
-            foreach ($inputs['upload_days'] as $k => $v) {
+            foreach ($inputs['upload_days'] as $v) {
                 $upload_days += intval($v);
             }
         }

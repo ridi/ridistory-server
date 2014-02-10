@@ -297,7 +297,7 @@ class ApiControllerProvider implements ControllerProviderInterface
         } else {
             $p = new \Story\Model\Part($id);
             if ($p->isOpened()) {
-                $store_id = $p->store_id;
+                $store_id = $p->getStoreId();
             }
         }
 

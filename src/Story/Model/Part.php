@@ -9,7 +9,7 @@ class Part
     {
         $this->row = self::get($id);
         if ($this->row === false) {
-            throw new Exception('Invalid Part Id: ' . $id);
+            throw new \Exception('Invalid Part Id: ' . $id);
         }
     }
 
@@ -17,6 +17,11 @@ class Part
     {
         $today = date('Y-m-d H:00:00');
         return $this->row['begin_date'] <= $today && $this->row['end_date'] >= $today;
+    }
+
+    public function getStoreId()
+    {
+        return $this->row['store_id'];
     }
 
     public function __get($k)
@@ -37,7 +42,7 @@ class Part
     public static function isOpenedPart($p_id, $store_id)
     {
         $p = new Part($p_id);
-        return $p->isOpened() && $p->store_id == $store_id;
+        return $p->isOpened() && $p->getStoreId() == $store_id;
     }
 
     public static function getListByBid($b_id, $with_social_info = false)
@@ -69,6 +74,8 @@ EOT;
 
     public static function getOpendCount($b_id)
     {
+        global $app;
+
         $sql = "select count(*) open_part_count from part where b_id = ? and begin_date <= ? and end_date >= ?";
         $today = date('Y-m-d H:00:00');
         $r = $app['db']->fetchColumn($sql, array($b_id, $today, $today));
