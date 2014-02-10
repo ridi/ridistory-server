@@ -9,7 +9,7 @@ class ApiControllerProvider implements ControllerProviderInterface
     {
         $api = $app['controllers_factory'];
 
-        //$api->get('/buyer/add', array($this, 'buyerAdd'));
+        $api->get('/buyer/auth', array($this, 'buyerAuthGoogleAccount'));
         //$api->get('/buyer/{u_id}', array($this, 'buyer'));
 
         $api->get('/book/list', array($this, 'bookList'));
@@ -44,6 +44,27 @@ class ApiControllerProvider implements ControllerProviderInterface
         $api->get('/shorten_url/{id}', array($this, 'shortenUrl'));
 
         return $api;
+    }
+
+    public function buyerAuthGoogleAccount(Request $req, Application $app)
+    {
+        $google_id = $req->get('google_account');
+        $token = $req->get('token');
+
+        $ch =curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/oauth2/v1/userinfo?access_token=".$token);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $buyer = null;
+        if (strpos($response, "200 OK") == true) {
+            $buyer = Buyer::getByGoogleAccount($google_id);
+        }
+
+        return $app->json($buyer);
     }
 
     public function versionStoryPlusBook(Application $app)

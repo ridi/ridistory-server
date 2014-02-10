@@ -36,50 +36,50 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Composer Vendors">
+      <library name="PHP">
         <CLASSES>
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/annotations" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/lexer" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/cache" />
+          <root url="file://$MODULE_DIR$/lib/vendor/symfony/event-dispatcher" />
+          <root url="file://$MODULE_DIR$/lib/vendor/symfony/http-foundation" />
+          <root url="file://$MODULE_DIR$/lib/vendor/symfony/debug" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/common" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/inflector" />
+          <root url="file://$MODULE_DIR$/lib/vendor/pimple/pimple" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/collections" />
+          <root url="file://$MODULE_DIR$/lib/vendor/silex/silex" />
+          <root url="file://$MODULE_DIR$/lib/vendor/symfony/http-kernel" />
           <root url="file://$MODULE_DIR$/lib/vendor/psr/log" />
           <root url="file://$MODULE_DIR$/lib/vendor/twig/twig" />
           <root url="file://$MODULE_DIR$/lib/vendor/raven/raven" />
-          <root url="file://$MODULE_DIR$/lib/vendor/silex/silex" />
-          <root url="file://$MODULE_DIR$/lib/vendor/pimple/pimple" />
           <root url="file://$MODULE_DIR$/lib/vendor/moriony/silex-sentry-provider" />
-          <root url="file://$MODULE_DIR$/lib/vendor/symfony/debug" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/routing" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/security" />
-          <root url="file://$MODULE_DIR$/lib/vendor/symfony/http-kernel" />
-          <root url="file://$MODULE_DIR$/lib/vendor/symfony/http-foundation" />
-          <root url="file://$MODULE_DIR$/lib/vendor/symfony/event-dispatcher" />
-          <root url="file://$MODULE_DIR$/lib/vendor/composer" />
           <root url="file://$MODULE_DIR$/lib/vendor/doctrine/dbal" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/cache" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/lexer" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/common" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/inflector" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/annotations" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/collections" />
+          <root url="file://$MODULE_DIR$/lib/vendor/composer" />
         </CLASSES>
         <SOURCES>
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/annotations" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/lexer" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/cache" />
+          <root url="file://$MODULE_DIR$/lib/vendor/symfony/event-dispatcher" />
+          <root url="file://$MODULE_DIR$/lib/vendor/symfony/http-foundation" />
+          <root url="file://$MODULE_DIR$/lib/vendor/symfony/debug" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/common" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/inflector" />
+          <root url="file://$MODULE_DIR$/lib/vendor/pimple/pimple" />
+          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/collections" />
+          <root url="file://$MODULE_DIR$/lib/vendor/silex/silex" />
+          <root url="file://$MODULE_DIR$/lib/vendor/symfony/http-kernel" />
           <root url="file://$MODULE_DIR$/lib/vendor/psr/log" />
           <root url="file://$MODULE_DIR$/lib/vendor/twig/twig" />
           <root url="file://$MODULE_DIR$/lib/vendor/raven/raven" />
-          <root url="file://$MODULE_DIR$/lib/vendor/silex/silex" />
-          <root url="file://$MODULE_DIR$/lib/vendor/pimple/pimple" />
           <root url="file://$MODULE_DIR$/lib/vendor/moriony/silex-sentry-provider" />
-          <root url="file://$MODULE_DIR$/lib/vendor/symfony/debug" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/routing" />
           <root url="file://$MODULE_DIR$/lib/vendor/symfony/security" />
-          <root url="file://$MODULE_DIR$/lib/vendor/symfony/http-kernel" />
-          <root url="file://$MODULE_DIR$/lib/vendor/symfony/http-foundation" />
-          <root url="file://$MODULE_DIR$/lib/vendor/symfony/event-dispatcher" />
-          <root url="file://$MODULE_DIR$/lib/vendor/composer" />
           <root url="file://$MODULE_DIR$/lib/vendor/doctrine/dbal" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/cache" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/lexer" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/common" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/inflector" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/annotations" />
-          <root url="file://$MODULE_DIR$/lib/vendor/doctrine/collections" />
+          <root url="file://$MODULE_DIR$/lib/vendor/composer" />
         </SOURCES>
       </library>
     </orderEntry>
