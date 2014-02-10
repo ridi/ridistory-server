@@ -2,16 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d669b26-7752-446b-af68-810e7ca78fc7" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/controllers/admin.php" afterPath="$PROJECT_DIR$/app/controllers/admin.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/controllers/api.php" afterPath="$PROJECT_DIR$/app/controllers/api.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/controllers/admin/book.php" afterPath="$PROJECT_DIR$/app/controllers/admin/book.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/index.php" afterPath="$PROJECT_DIR$/app/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/controllers/admin/part.php" afterPath="$PROJECT_DIR$/app/controllers/admin/part.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/controllers/admin/storyplusbook.php" afterPath="$PROJECT_DIR$/app/controllers/admin/storyplusbook.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/controllers/admin/storyplusbook_intro.php" afterPath="$PROJECT_DIR$/app/controllers/admin/storyplusbook_intro.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/controllers/web.php" afterPath="$PROJECT_DIR$/app/controllers/web.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/utils/push_android.php" afterPath="$PROJECT_DIR$/app/utils/push_android.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/utils/push_device_picker.php" afterPath="$PROJECT_DIR$/app/utils/push_device_picker.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/utils/push_ios.php" afterPath="$PROJECT_DIR$/app/utils/push_ios.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/app/models/StoryPlusBook.php" afterPath="$PROJECT_DIR$/src/Story/Model/StoryPlusBook.php" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/app/utils/simple_apns_client.php" afterPath="$PROJECT_DIR$/src/Story/Util/SimpleApnsClient.php" />
     </list>
     <ignored path="story.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,7 +32,17 @@
     <favorites_list name="story" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="SimpleApnsClient.php" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Story/Util/SimpleApnsClient.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="98" column="27" selection-start="2567" selection-end="2567" vertical-scroll-proportion="-0.53061223" vertical-offset="1756" max-vertical-offset="2295">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -59,7 +64,6 @@
         <option value="$PROJECT_DIR$/src/Story/Model/Part.php" />
         <option value="$PROJECT_DIR$/src/Story/Controller/BaseController.php" />
         <option value="$PROJECT_DIR$/src/Story/Model/Book.php" />
-        <option value="$PROJECT_DIR$/app/controllers/admin.php" />
         <option value="$PROJECT_DIR$/app/controllers/admin/book.php" />
         <option value="$PROJECT_DIR$/app/controllers/admin/part.php" />
         <option value="$PROJECT_DIR$/src/Story/Model/StoryPlusBook.php" />
@@ -68,6 +72,11 @@
         <option value="$PROJECT_DIR$/app/controllers/api.php" />
         <option value="$PROJECT_DIR$/app/controllers/admin/storyplusbook_intro.php" />
         <option value="$PROJECT_DIR$/app/controllers/web.php" />
+        <option value="$PROJECT_DIR$/src/Story/Util/SimpleApnsClient.php" />
+        <option value="$PROJECT_DIR$/app/controllers/admin.php" />
+        <option value="$PROJECT_DIR$/app/utils/push_device_picker.php" />
+        <option value="$PROJECT_DIR$/app/utils/push_ios.php" />
+        <option value="$PROJECT_DIR$/app/utils/push_android.php" />
       </list>
     </option>
   </component>
@@ -266,6 +275,32 @@
               <option name="myItemId" value="Story" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Provider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -383,6 +418,7 @@
       <recent name="$PROJECT_DIR$/app/views/admin" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/Story/Util" />
       <recent name="$PROJECT_DIR$/src/Story/Model" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/app/Ridibooks/Story/Model" />
@@ -415,12 +451,12 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="55" y="22" width="1865" height="1058" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.06540698" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3894628" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3894628" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -481,11 +517,6 @@
         <state line="455" column="45" selection-start="15385" selection-end="15385" vertical-scroll-proportion="0.41074523" vertical-offset="6168" max-vertical-offset="7410" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="831" column="24" selection-start="24563" selection-end="24563" vertical-scroll-proportion="0.6499134" vertical-offset="11700" max-vertical-offset="20850" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/Connection.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="33" column="6" selection-start="1290" selection-end="1290" vertical-scroll-proportion="0.44194108" vertical-offset="0" max-vertical-offset="1500" />
@@ -522,13 +553,6 @@
     <entry file="file://$PROJECT_DIR$/lib/vendor/silex/silex/src/Silex/ControllerCollection.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="64" column="53" selection-start="1633" selection-end="1634" vertical-scroll-proportion="0.2860262" vertical-offset="578" max-vertical-offset="2325">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/utils/push_device_picker.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="22" selection-start="1091" selection-end="1107" vertical-scroll-proportion="0.40938863" vertical-offset="255" max-vertical-offset="1320">
           <folding />
         </state>
       </provider>
@@ -614,7 +638,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="47" column="26" selection-start="1507" selection-end="1507" vertical-scroll-proportion="0.6938776" vertical-offset="331" max-vertical-offset="870">
           <folding>
-            <element signature="e#7#29#0" expanded="true" />
+            <element signature="e#7#29#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -628,13 +652,6 @@
             <marker date="1392036385000" expanded="true" signature="-1:-1" placeholder="select * fro..notice..." />
             <marker date="1392036385000" expanded="true" signature="-1:-1" placeholder="select * fro..banner..." />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/admin.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="5" selection-start="447" selection-end="522" vertical-scroll-proportion="-10.815589" vertical-offset="5854" max-vertical-offset="6735">
-          <folding />
         </state>
       </provider>
     </entry>
@@ -666,13 +683,64 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/controllers/admin.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="282" column="5" selection-start="10120" selection-end="10120" vertical-scroll-proportion="0.4296578" vertical-offset="3959" max-vertical-offset="6735">
+          <folding>
+            <marker date="1392037592000" expanded="true" signature="-1:-1" placeholder="select * fro..part_comment..." />
+            <marker date="1392037592000" expanded="true" signature="-1:-1" placeholder="select count..part_comment..." />
+            <marker date="1392037592000" expanded="true" signature="-1:-1" placeholder="select * fro..notice..." />
+            <marker date="1392037592000" expanded="true" signature="-1:-1" placeholder="select * fro..notice..." />
+            <marker date="1392037592000" expanded="true" signature="-1:-1" placeholder="select * fro..banner..." />
+            <marker date="1392037592000" expanded="true" signature="-1:-1" placeholder="select * fro..banner..." />
+            <marker date="1392037592000" expanded="true" signature="-1:-1" placeholder="select count..push_devices..." />
+            <marker date="1392037592000" expanded="true" signature="-1:-1" placeholder="select count..stat_download..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Story/Model/PushDevice.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1320">
+        <state line="68" column="30" selection-start="2357" selection-end="2357" vertical-scroll-proportion="0.48794064" vertical-offset="757" max-vertical-offset="1320">
           <folding>
             <marker date="1392010040000" expanded="true" signature="-1:-1" placeholder="select * fro..push_devices..." />
             <marker date="1392010040000" expanded="true" signature="-1:-1" placeholder="select * fro..push_devices..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/utils/push_android.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="110" column="13" selection-start="2992" selection-end="2992" vertical-scroll-proportion="0.18181819" vertical-offset="1552" max-vertical-offset="2505">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/utils/push_device_picker.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="59" column="0" selection-start="1453" selection-end="1453" vertical-scroll-proportion="0.3320965" vertical-offset="706" max-vertical-offset="1470">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/utils/push_ios.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="39" selection-start="937" selection-end="937" vertical-scroll-proportion="0.3320965" vertical-offset="466" max-vertical-offset="1515">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="626" column="20" selection-start="17598" selection-end="17598" vertical-scroll-proportion="0.3469388" vertical-offset="8813" max-vertical-offset="20850">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Story/Util/SimpleApnsClient.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="98" column="27" selection-start="2567" selection-end="2567" vertical-scroll-proportion="-0.53061223" vertical-offset="1756" max-vertical-offset="2295">
+          <folding />
         </state>
       </provider>
     </entry>
