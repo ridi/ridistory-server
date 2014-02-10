@@ -12,6 +12,7 @@ class ApiControllerProvider implements ControllerProviderInterface
         $api->get('/buyer/auth', array($this, 'buyerAuthGoogleAccount'));
 
         $api->get('/book/list', array($this, 'bookList'));
+        $api->get('/book/completed_list', array($this, 'completedBookList'));
         $api->get('/book/{b_id}', array($this, 'book'));
 
         $api->get('/version/storyplusbook', array($this, 'versionStoryPlusBook'));
@@ -130,6 +131,22 @@ class ApiControllerProvider implements ControllerProviderInterface
             $cache_key,
             function () use ($exclude_adult) {
                 return Book::getOpenedBookList($exclude_adult);
+            },
+            60 * 10
+        );
+        return $app->json($book);
+    }
+
+    public function completedBookList(Request $req, Application $app)
+    {
+        $v = intval($req->get('v', '1'));
+        $cache_key = 'completed_book_list_' . $v;
+
+        $exclude_adult = ($v < 2);
+        $book = $app['cache']->fetch(
+            $cache_key,
+            function () use ($exclude_adult) {
+                return Book::getCompletedBookList($exclude_adult);
             },
             60 * 10
         );

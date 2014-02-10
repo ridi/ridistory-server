@@ -44,8 +44,11 @@ EOT;
 
     public static function getCoinInList($id)
     {
+        $sql = <<<EOT
+select * from coin_history where amount > 0 and u_id = ? order by timestamp desc
+EOT;
         global $app;
-        return $app['db']->fetchAll("select * from coin_history where amount > 0 and u_id = ? order by timestamp desc", array($id));;
+        return $app['db']->fetchAll($sql, array($id));;
     }
 
     public static function getCoinOutList($id)

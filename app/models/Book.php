@@ -56,6 +56,32 @@ EOT;
         return $ar;
     }
 
+    public static function getCompletedBookList($exclude_adult = true)
+    {
+        $sql = <<<EOT
+select ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum, b.* from book b
+ left join (select b_id, count(*) open_part_count from part group by b_id) pc on b.id = pc.b_id
+ left join (select b_id, count(*) like_sum from user_part_like, part where p_id = part.id group by b_id) ls on b.id = ls.b_id
+where b.is_completed = 1 and end_action_flag != 2
+EOT;
+         if ($exclude_adult) {
+             $sql .= " and adult_only = 0";
+         }
+
+         global $app;
+         $ar = $app['db']->fetchAll($sql);
+
+        foreach ($ar as &$b) {
+            $b['cover_url'] = Book::getCoverUrl($b['store_id']);
+            // TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
+            // iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
+            $b['begin_date'] = substr($b['begin_date'], 0, 10);
+            $b['end_date'] = substr($b['end_date'], 0, 10);
+        }
+
+        return $ar;
+    }
+
     public static function getListByIds(array $b_ids, $with_part_info = false)
     {
         if (count($b_ids) === 0) {

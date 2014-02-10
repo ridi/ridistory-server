@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d669b26-7752-446b-af68-810e7ca78fc7" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/Book.php" afterPath="$PROJECT_DIR$/app/models/Book.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/Buyer.php" afterPath="$PROJECT_DIR$/app/models/Buyer.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/controllers/api.php" afterPath="$PROJECT_DIR$/app/controllers/api.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/views/admin/base.twig" afterPath="$PROJECT_DIR$/app/views/admin/base.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/views/admin/book_detail.twig" afterPath="$PROJECT_DIR$/app/views/admin/book_detail.twig" />
     </list>
     <ignored path="story.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,7 +36,7 @@
       <file leaf-file-name="buyer.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/controllers/admin/buyer.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="0" selection-start="893" selection-end="893" vertical-scroll-proportion="-17.5" vertical-offset="0" max-vertical-offset="660">
+            <state line="22" column="89" selection-start="681" selection-end="681" vertical-scroll-proportion="-11.875" vertical-offset="0" max-vertical-offset="660">
               <folding />
             </state>
           </provider>
@@ -43,66 +45,52 @@
       <file leaf-file-name="api.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/controllers/api.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="9" selection-start="2901" selection-end="2901" vertical-scroll-proportion="-20.625" vertical-offset="525" max-vertical-offset="5370">
+            <state line="16" column="0" selection-start="550" selection-end="550" vertical-scroll-proportion="-4.2" vertical-offset="0" max-vertical-offset="5625">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Buyer.php" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/models/Buyer.php">
+      <file leaf-file-name="base.twig" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/admin/base.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="49" selection-start="579" selection-end="579" vertical-scroll-proportion="0.4768786" vertical-offset="0" max-vertical-offset="1020">
-              <folding>
-                <marker date="1392018071000" expanded="true" signature="1333:1413" placeholder="select * fro..coin_history..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="admin.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/controllers/admin.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="261" column="8" selection-start="9376" selection-end="9550" vertical-scroll-proportion="-9.125" vertical-offset="3651" max-vertical-offset="6690">
-              <folding>
-                <marker date="1391753125000" expanded="true" signature="4620:4689" placeholder="select * fro..part_comment..." />
-                <marker date="1391753125000" expanded="true" signature="4742:4775" placeholder="select count..part_comment..." />
-                <marker date="1391753125000" expanded="true" signature="8497:8517" placeholder="select * fro..notice..." />
-                <marker date="1391753125000" expanded="true" signature="8757:8790" placeholder="select * fro..notice..." />
-                <marker date="1391753125000" expanded="true" signature="10061:10081" placeholder="select * fro..banner..." />
-                <marker date="1391753125000" expanded="true" signature="10326:10359" placeholder="select * fro..banner..." />
-                <marker date="1391753125000" expanded="true" signature="11563:11596" placeholder="select count..push_devices..." />
-                <marker date="1391753125000" expanded="true" signature="12244:12278" placeholder="select count..stat_download..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/index.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="29" selection-start="139" selection-end="139" vertical-scroll-proportion="-2.5" vertical-offset="0" max-vertical-offset="750">
+            <state line="63" column="29" selection-start="2832" selection-end="2832" vertical-scroll-proportion="-39.375" vertical-offset="0" max-vertical-offset="1695">
               <folding />
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="glyphicons-halflings-white.png" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/img/glyphicons-halflings-white.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
           </provider>
         </entry>
       </file>
       <file leaf-file-name="book.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/controllers/admin/book.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="5" selection-start="2308" selection-end="2308" vertical-scroll-proportion="-8.75" vertical-offset="780" max-vertical-offset="1770">
+            <state line="25" column="36" selection-start="801" selection-end="801" vertical-scroll-proportion="31.166666" vertical-offset="1078" max-vertical-offset="1770">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Book.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/models/Book.php">
+      <file leaf-file-name="book_list.twig" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/admin/book_list.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="107" column="4" selection-start="3969" selection-end="4121" vertical-scroll-proportion="-1.4166666" vertical-offset="1571" max-vertical-offset="2340">
+            <state line="33" column="45" selection-start="861" selection-end="861" vertical-scroll-proportion="-11.083333" vertical-offset="229" max-vertical-offset="945">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="book_detail.twig" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/admin/book_detail.twig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="173" column="51" selection-start="5491" selection-end="5491" vertical-scroll-proportion="-7.5833335" vertical-offset="2413" max-vertical-offset="3255">
               <folding>
-                <marker date="1391753125000" expanded="true" signature="120:151" placeholder="select * fro..book..." />
-                <marker date="1391753125000" expanded="true" signature="4802:4841" placeholder="select * fro..book_intro..." />
+                <element signature="e#424#445#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -117,18 +105,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="User.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/models/User.php">
+      <file leaf-file-name="Book.php" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/models/Book.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="109" column="27" selection-start="2913" selection-end="2913" vertical-scroll-proportion="-1.875" vertical-offset="1590" max-vertical-offset="2880">
+            <state line="69" column="0" selection-start="2770" selection-end="2770" vertical-scroll-proportion="0.640648" vertical-offset="600" max-vertical-offset="2730">
               <folding>
-                <marker date="1391753125000" expanded="true" signature="660:736" placeholder="select id fr..user_interest..." />
-                <marker date="1391753125000" expanded="true" signature="966:1041" placeholder="select * fro..user_interest..." />
-                <marker date="1391753125000" expanded="true" signature="1239:1304" placeholder="select b_id ..user_interest..." />
-                <marker date="1391753125000" expanded="true" signature="2051:2101" placeholder="select count..user_part_like..." />
-                <marker date="1391753125000" expanded="true" signature="2762:2821" placeholder="select count..user_storyplusbook_like..." />
-                <marker date="1391753125000" expanded="true" signature="4669:4715" placeholder="select * fro..push_devices..." />
-                <marker date="1391753125000" expanded="true" signature="4887:4936" placeholder="select * fro..push_devices..." />
+                <marker date="1392025031000" expanded="true" signature="120:151" placeholder="select * fro..book..." />
+                <marker date="1392025031000" expanded="true" signature="5799:5838" placeholder="select * fro..book_intro..." />
               </folding>
             </state>
           </provider>
@@ -161,7 +144,6 @@
       <list>
         <option value="$PROJECT_DIR$/app/controllers/admin/storyplusbook_intro.php" />
         <option value="$PROJECT_DIR$/app/controllers/web.php" />
-        <option value="$PROJECT_DIR$/app/models/Book.php" />
         <option value="$PROJECT_DIR$/app/models/User.php" />
         <option value="$PROJECT_DIR$/app/models/StoryPlusBook.php" />
         <option value="$PROJECT_DIR$/app/models/Part.php" />
@@ -172,15 +154,17 @@
         <option value="$PROJECT_DIR$/app/views/admin/stats_like.twig" />
         <option value="$PROJECT_DIR$/app/controllers/admin/book.php" />
         <option value="$PROJECT_DIR$/static/css/bootstrap.css" />
-        <option value="$PROJECT_DIR$/app/views/admin/base.twig" />
         <option value="$PROJECT_DIR$/app/views/admin/buyer_list.twig" />
         <option value="$PROJECT_DIR$/app/views/admin/storyplusbook_list.twig" />
         <option value="$PROJECT_DIR$/app/controllers/admin.php" />
         <option value="$PROJECT_DIR$/app/controllers/admin/buyer.php" />
         <option value="$PROJECT_DIR$/app/views/admin/buyer_detail.twig" />
         <option value="$PROJECT_DIR$/app/index.php" />
-        <option value="$PROJECT_DIR$/app/controllers/api.php" />
         <option value="$PROJECT_DIR$/app/models/Buyer.php" />
+        <option value="$PROJECT_DIR$/app/views/admin/base.twig" />
+        <option value="$PROJECT_DIR$/app/views/admin/book_detail.twig" />
+        <option value="$PROJECT_DIR$/app/controllers/api.php" />
+        <option value="$PROJECT_DIR$/app/models/Book.php" />
       </list>
     </option>
   </component>
@@ -611,14 +595,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="389" column="37" selection-start="15757" selection-end="15757" vertical-scroll-proportion="0.0" vertical-offset="5835" max-vertical-offset="6690">
           <folding>
-            <marker date="1391753125000" expanded="true" signature="4620:4689" placeholder="select * fro..part_comment..." />
-            <marker date="1391753125000" expanded="true" signature="4742:4775" placeholder="select count..part_comment..." />
-            <marker date="1391753125000" expanded="true" signature="8497:8517" placeholder="select * fro..notice..." />
-            <marker date="1391753125000" expanded="true" signature="8757:8790" placeholder="select * fro..notice..." />
-            <marker date="1391753125000" expanded="true" signature="10061:10081" placeholder="select * fro..banner..." />
-            <marker date="1391753125000" expanded="true" signature="10326:10359" placeholder="select * fro..banner..." />
-            <marker date="1391753125000" expanded="true" signature="11563:11596" placeholder="select count..push_devices..." />
-            <marker date="1391753125000" expanded="true" signature="12244:12278" placeholder="select count..stat_download..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..part_comment..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select count..part_comment..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..notice..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..notice..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..banner..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..banner..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select count..push_devices..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select count..stat_download..." />
           </folding>
         </state>
       </provider>
@@ -626,9 +610,7 @@
     <entry file="file://$PROJECT_DIR$/app/models/Buyer.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="59" column="0" selection-start="1653" selection-end="1993" vertical-scroll-proportion="0.0" vertical-offset="885" max-vertical-offset="1110">
-          <folding>
-            <marker date="1392018071000" expanded="true" signature="1333:1413" placeholder="select * fro..coin_history..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -684,29 +666,9 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1245" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/base.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="47" selection-start="849" selection-end="849" vertical-scroll-proportion="-13.125" vertical-offset="0" max-vertical-offset="495" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/views/admin/api_list.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state line="23" column="31" selection-start="424" selection-end="424" vertical-scroll-proportion="-14.375" vertical-offset="0" max-vertical-offset="765" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/img/glyphicons-halflings.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/css/bootstrap.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2343" column="12" selection-start="42829" selection-end="42829" vertical-scroll-proportion="0.4054307" vertical-offset="34712" max-vertical-offset="92460" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/admin/book_list.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="45" selection-start="861" selection-end="861" vertical-scroll-proportion="-20.625" vertical-offset="0" max-vertical-offset="945" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/views/admin/banner_detail.twig">
@@ -722,11 +684,6 @@
     <entry file="file://$PROJECT_DIR$/app/views/admin/storyplusbook_list.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state line="25" column="8" selection-start="513" selection-end="513" vertical-scroll-proportion="-15.625" vertical-offset="0" max-vertical-offset="840" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/admin/base.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="33" selection-start="2607" selection-end="2607" vertical-scroll-proportion="-25.916666" vertical-offset="308" max-vertical-offset="1695" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/views/admin/notice_list.twig">
@@ -747,11 +704,6 @@
     <entry file="file://$PROJECT_DIR$/app/views/admin/stats.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state line="64" column="42" selection-start="1587" selection-end="1587" vertical-scroll-proportion="7.8333335" vertical-offset="1148" max-vertical-offset="2205" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/views/admin/book_detail.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="17" selection-start="376" selection-end="376" vertical-scroll-proportion="-8.75" vertical-offset="0" max-vertical-offset="2985" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/conf.php">
@@ -818,43 +770,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="109" column="27" selection-start="2913" selection-end="2913" vertical-scroll-proportion="-1.875" vertical-offset="1590" max-vertical-offset="2880">
           <folding>
-            <marker date="1391753125000" expanded="true" signature="660:736" placeholder="select id fr..user_interest..." />
-            <marker date="1391753125000" expanded="true" signature="966:1041" placeholder="select * fro..user_interest..." />
-            <marker date="1391753125000" expanded="true" signature="1239:1304" placeholder="select b_id ..user_interest..." />
-            <marker date="1391753125000" expanded="true" signature="2051:2101" placeholder="select count..user_part_like..." />
-            <marker date="1391753125000" expanded="true" signature="2762:2821" placeholder="select count..user_storyplusbook_like..." />
-            <marker date="1391753125000" expanded="true" signature="4669:4715" placeholder="select * fro..push_devices..." />
-            <marker date="1391753125000" expanded="true" signature="4887:4936" placeholder="select * fro..push_devices..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/Part.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="0" selection-start="476" selection-end="476" vertical-scroll-proportion="-15.0" vertical-offset="0" max-vertical-offset="2220">
-          <folding>
-            <marker date="1391753125000" expanded="true" signature="577:608" placeholder="select * fro..part..." />
-            <marker date="1391753125000" expanded="true" signature="1548:1594" placeholder="select * fro..part..." />
-            <marker date="1391753125000" expanded="true" signature="1870:1964" placeholder="select count..part..." />
-            <marker date="1391753125000" expanded="true" signature="3679:3754" placeholder="select * fro..part_comment..." />
-            <marker date="1391753125000" expanded="true" signature="3934:3982" placeholder="select count..part_comment..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/admin/book.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="5" selection-start="2308" selection-end="2308" vertical-scroll-proportion="-8.75" vertical-offset="780" max-vertical-offset="1770">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/Book.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="107" column="4" selection-start="3969" selection-end="4121" vertical-scroll-proportion="-1.4166666" vertical-offset="1571" max-vertical-offset="2340">
-          <folding>
-            <marker date="1391753125000" expanded="true" signature="120:151" placeholder="select * fro..book..." />
-            <marker date="1391753125000" expanded="true" signature="4802:4841" placeholder="select * fro..book_intro..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select id fr..user_interest..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..user_interest..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select b_id ..user_interest..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select count..user_part_like..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select count..user_storyplusbook_like..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..push_devices..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..push_devices..." />
           </folding>
         </state>
       </provider>
@@ -862,13 +784,6 @@
     <entry file="file://$PROJECT_DIR$/app/index.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="4" column="29" selection-start="139" selection-end="139" vertical-scroll-proportion="-2.5" vertical-offset="0" max-vertical-offset="750">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/web.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="43" selection-start="664" selection-end="664" vertical-scroll-proportion="31.583334" vertical-offset="998" max-vertical-offset="2055">
           <folding />
         </state>
       </provider>
@@ -894,41 +809,123 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/admin.php">
+    <entry file="file://$PROJECT_DIR$/app/views/base.twig">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="261" column="8" selection-start="9376" selection-end="9550" vertical-scroll-proportion="-9.125" vertical-offset="3651" max-vertical-offset="6690">
+        <state line="21" column="47" selection-start="849" selection-end="849" vertical-scroll-proportion="-13.125" vertical-offset="0" max-vertical-offset="495">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models/Part.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="0" selection-start="476" selection-end="476" vertical-scroll-proportion="-15.0" vertical-offset="0" max-vertical-offset="2220">
           <folding>
-            <marker date="1391753125000" expanded="true" signature="4620:4689" placeholder="select * fro..part_comment..." />
-            <marker date="1391753125000" expanded="true" signature="4742:4775" placeholder="select count..part_comment..." />
-            <marker date="1391753125000" expanded="true" signature="8497:8517" placeholder="select * fro..notice..." />
-            <marker date="1391753125000" expanded="true" signature="8757:8790" placeholder="select * fro..notice..." />
-            <marker date="1391753125000" expanded="true" signature="10061:10081" placeholder="select * fro..banner..." />
-            <marker date="1391753125000" expanded="true" signature="10326:10359" placeholder="select * fro..banner..." />
-            <marker date="1391753125000" expanded="true" signature="11563:11596" placeholder="select count..push_devices..." />
-            <marker date="1391753125000" expanded="true" signature="12244:12278" placeholder="select count..stat_download..." />
+            <marker date="1391753125000" expanded="true" signature="577:608" placeholder="select * fro..part..." />
+            <marker date="1391753125000" expanded="true" signature="1548:1594" placeholder="select * fro..part..." />
+            <marker date="1391753125000" expanded="true" signature="1870:1964" placeholder="select count..part..." />
+            <marker date="1391753125000" expanded="true" signature="3679:3754" placeholder="select * fro..part_comment..." />
+            <marker date="1391753125000" expanded="true" signature="3934:3982" placeholder="select count..part_comment..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models/Buyer.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="0" selection-start="1222" selection-end="1222" vertical-scroll-proportion="-11.333333" vertical-offset="373" max-vertical-offset="1065">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/css/bootstrap.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2500" column="36" selection-start="44946" selection-end="44946" vertical-scroll-proportion="-7.4446087" vertical-offset="42540" max-vertical-offset="92460">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/img/glyphicons-halflings-white.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/img/glyphicons-halflings.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/admin/base.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="29" selection-start="2832" selection-end="2832" vertical-scroll-proportion="-39.375" vertical-offset="0" max-vertical-offset="1695">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/controllers/admin/buyer.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="0" selection-start="893" selection-end="893" vertical-scroll-proportion="-17.5" vertical-offset="0" max-vertical-offset="660">
+        <state line="22" column="89" selection-start="681" selection-end="681" vertical-scroll-proportion="-11.875" vertical-offset="0" max-vertical-offset="660">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/admin/book_list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="45" selection-start="861" selection-end="861" vertical-scroll-proportion="-11.083333" vertical-offset="229" max-vertical-offset="945">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/admin/book_detail.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="173" column="51" selection-start="5491" selection-end="5491" vertical-scroll-proportion="-7.5833335" vertical-offset="2413" max-vertical-offset="3255">
+          <folding>
+            <element signature="e#424#445#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/controllers/admin.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="108" column="16" selection-start="4235" selection-end="4235" vertical-scroll-proportion="0.35787922" vertical-offset="1332" max-vertical-offset="6690">
+          <folding>
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..part_comment..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select count..part_comment..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..notice..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..notice..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..banner..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select * fro..banner..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select count..push_devices..." />
+            <marker date="1391753125000" expanded="true" signature="-1:-1" placeholder="select count..stat_download..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/controllers/web.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="43" selection-start="664" selection-end="664" vertical-scroll-proportion="31.583334" vertical-offset="998" max-vertical-offset="2055">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/controllers/api.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="9" selection-start="2901" selection-end="2901" vertical-scroll-proportion="-20.625" vertical-offset="525" max-vertical-offset="5370">
+        <state line="16" column="0" selection-start="550" selection-end="550" vertical-scroll-proportion="-4.2" vertical-offset="0" max-vertical-offset="5625">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/Buyer.php">
+    <entry file="file://$PROJECT_DIR$/app/controllers/admin/book.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="49" selection-start="579" selection-end="579" vertical-scroll-proportion="0.4768786" vertical-offset="0" max-vertical-offset="1020">
+        <state line="25" column="36" selection-start="801" selection-end="801" vertical-scroll-proportion="31.166666" vertical-offset="1078" max-vertical-offset="1770">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models/Book.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="69" column="0" selection-start="2770" selection-end="2770" vertical-scroll-proportion="0.640648" vertical-offset="600" max-vertical-offset="2730">
           <folding>
-            <marker date="1392018071000" expanded="true" signature="1333:1413" placeholder="select * fro..coin_history..." />
+            <marker date="1392025031000" expanded="true" signature="120:151" placeholder="select * fro..book..." />
+            <marker date="1392025031000" expanded="true" signature="5799:5838" placeholder="select * fro..book_intro..." />
           </folding>
         </state>
       </provider>

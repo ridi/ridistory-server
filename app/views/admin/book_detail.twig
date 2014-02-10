@@ -107,6 +107,20 @@
             </label>
         </td>
     </tr>
+    <tr>
+        <th>종료시 액션</th>
+        <td>
+            <label class="radio">
+                <input type='radio' name='end_action_flag' value='0'>모두 공개(무료)</input>
+            </label>
+            <label class="radio">
+                <input type='radio' name='end_action_flag' value='1'>모두 잠금(유료)</input>
+            </label>
+            <label class="radio">
+                <input type='radio' name='end_action_flag' value='2'>비공개(게시종료)</input>
+            </label>
+        </td>
+    </tr>
 	<tr>
 	    <th>작품 점수</th>
 	    <td>
@@ -149,6 +163,10 @@ $(function() {
     $('input:radio[name="is_completed"]')
     .filter('[value="{{ book.is_completed }}"]')
     .attr('checked', true);
+
+    $('input:radio[name="end_action_flag"]')
+            .filter('[value="{{ book.end_action_flag }}"]')
+            .attr('checked', true);
     
     // twig 에 bit 연산자가 음슴;;
     $('input:checkbox[name="upload_days[]"]')
