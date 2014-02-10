@@ -1,13 +1,14 @@
 <?php
 
-require_once __DIR__ . "/../utils/push_device_picker.php";
-require_once __DIR__ . "/../utils/push_android.php";
-require_once __DIR__ . "/../utils/push_ios.php";
-
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
+use Story\Util\IosPush;
+use Story\Util\AndroidPush;
+use Story\Util\PushDevicePicker;
+use Story\Util\PickDeviceResult;
 
 class AdminControllerProvider implements ControllerProviderInterface
 {

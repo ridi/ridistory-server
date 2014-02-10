@@ -1,6 +1,5 @@
 <?php
-
-use Story\Util\SimpleApnsClient;
+namespace Story\Util;
 
 class IosPush
 {
@@ -74,8 +73,7 @@ class IosPush
     private static function doSendPush($device_tokens, $message, $notification)
     {
         define('APNS_CERT_FILENAME', 'apns-distribution.pem');
-        define('APNS_CERT_PATH', dirname(__FILE__) . '/' . APNS_CERT_FILENAME);
-
+        define('APNS_CERT_PATH', __DIR__ . '/' . APNS_CERT_FILENAME);
 
         $push = new SimpleApnsClient(SimpleApnsClient::ENVIRONMENT_PRODUCTION, APNS_CERT_PATH);
 
