@@ -3,6 +3,8 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 
+use Story\Model\Book;
+use Story\Model\Part;
 use Story\Model\PartComment;
 
 class WebControllerProvider implements ControllerProviderInterface

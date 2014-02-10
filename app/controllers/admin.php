@@ -13,6 +13,9 @@ class AdminControllerProvider implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
+        /**
+         * @var $admin \Silex\ControllerCollection
+         */
         $admin = $app['controllers_factory'];
 
         $admin->get(
@@ -219,7 +222,7 @@ EOT;
         return $app->json($result);
     }
 
-    public static function _push($pick_result, $message, $notification_ios, $notification_android)
+    public static function _push(PickDeviceResult $pick_result, $message, $notification_ios, $notification_android)
     {
         $result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
         $result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
@@ -264,7 +267,7 @@ EOT;
         return $app->redirect('/admin/notice/' . $r);
     }
 
-    public static function noticeDelete(Reqeust $req, Application $app, $n_id)
+    public static function noticeDelete(Request $req, Application $app, $n_id)
     {
         $app['db']->delete('notice', array('id' => $n_id));
         $app['session']->set('alert', array('warning' => '공지사항이 삭제되었습니다.'));

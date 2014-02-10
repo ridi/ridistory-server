@@ -19,7 +19,6 @@ $app->register(new Silex\Provider\SecurityServiceProvider());
 
 $app->register(new Story\Provider\CacheServiceProvider());
 
-require_once 'models/StoryPlusBook.php';
 require_once 'controllers/api.php';
 require_once 'controllers/admin.php';
 require_once 'controllers/admin/book.php';

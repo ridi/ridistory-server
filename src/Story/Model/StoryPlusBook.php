@@ -1,4 +1,5 @@
 <?php
+namespace Story\Model;
 
 class StoryPlusBook
 {

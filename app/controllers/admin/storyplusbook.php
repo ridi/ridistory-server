@@ -3,7 +3,8 @@
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Story\Model\StoryPlusBook;
+use Story\Model\StoryPlusBookIntro;
 
 class AdminStoryPlusBookControllerProvider implements ControllerProviderInterface
 {

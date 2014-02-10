@@ -5,6 +5,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Story\Model\Book;
 use Story\Model\Part;
+use Story\Model\StoryPlusBook;
+use Story\Model\StoryPlusBookIntro;
+use Story\Model\StoryPlusBookComment;
 use Story\Model\UserInterest;
 use Story\Model\UserPartLike;
 use Story\Model\UserStoryPlusBookLike;
@@ -14,6 +17,9 @@ class ApiControllerProvider implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
+        /**
+         * @var $api \Silex\ControllerCollection
+         */
         $api = $app['controllers_factory'];
 
         $api->get('/book/list', array($this, 'bookList'));
