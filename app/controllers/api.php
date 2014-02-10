@@ -10,7 +10,6 @@ class ApiControllerProvider implements ControllerProviderInterface
         $api = $app['controllers_factory'];
 
         $api->get('/buyer/auth', array($this, 'buyerAuthGoogleAccount'));
-        //$api->get('/buyer/{u_id}', array($this, 'buyer'));
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/{b_id}', array($this, 'book'));
@@ -51,6 +50,7 @@ class ApiControllerProvider implements ControllerProviderInterface
         $google_id = $req->get('google_account');
         $token = $req->get('token');
 
+        // Google Services Auth
         $ch =curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/oauth2/v1/userinfo?access_token=".$token);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -60,8 +60,14 @@ class ApiControllerProvider implements ControllerProviderInterface
         curl_close($ch);
 
         $buyer = null;
-        if (strpos($response, "200 OK") == true) {
+        if (strpos($response, "200 OK") == true)
+        {
             $buyer = Buyer::getByGoogleAccount($google_id);
+            if ($buyer == null)
+            {
+                $id = Buyer::add($google_id);
+                $buyer = Buyer::get($id);
+            }
         }
 
         return $app->json($buyer);

@@ -2,17 +2,11 @@
 
 class Buyer
 {
-    public static function create()
+    public static function add($google_id)
     {
         global $app;
-        $app['db']->insert('buyer_user', array());
+        $app['db']->insert('buyer_user', compact('google_id'));;
         return $app['db']->lastInsertId();
-    }
-
-    public static function update($id, $values)
-    {
-        global $app;
-        return $app['db']->update('buyer_user', $values, array('id' => $id));
     }
 
     public static function get($id)
@@ -20,7 +14,7 @@ class Buyer
         $sql = <<<EOT
 select u.*, ifnull(coin_balance, 0) coin_balance from buyer_user u
  left join (select u_id, sum(amount) coin_balance from coin_history) ch on u.id = ch.u_id
-where u_id = ?
+where id = ?
 EOT;
         global $app;
         return $app['db']->fetchAssoc($sql, array($id));
