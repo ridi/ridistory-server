@@ -72,11 +72,8 @@ EOT;
          $ar = $app['db']->fetchAll($sql);
 
         foreach ($ar as &$b) {
+            $b['last_update'] = "0";
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
-            // TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
-            // iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
-            $b['begin_date'] = substr($b['begin_date'], 0, 10);
-            $b['end_date'] = substr($b['end_date'], 0, 10);
         }
 
         return $ar;
