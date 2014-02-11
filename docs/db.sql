@@ -11,7 +11,7 @@
  Target Server Version : 50535
  File Encoding         : utf-8
 
- Date: 02/07/2014 19:36:20 PM
+ Date: 02/11/2014 15:25:44 PM
 */
 
 SET NAMES utf8;
@@ -80,7 +80,7 @@ CREATE TABLE `buyer_user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`) USING BTREE,
   KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `coin_history`
@@ -131,6 +131,7 @@ CREATE TABLE `part` (
   `title` varchar(256) NOT NULL,
   `seq` int(11) NOT NULL,
   `price` int(11) NOT NULL COMMENT '가격 (단위: 코인)',
+  `is_manual_opened` tinyint(4) NOT NULL DEFAULT '0' COMMENT '수동 공개 여부 (0: 앱 Flow에 따름, 1: 수동 강제 공개)',
   `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),

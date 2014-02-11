@@ -68,6 +68,7 @@ EOT;
 
     public static function getOpendCount($b_id)
     {
+        global $app;
         $sql = "select count(*) open_part_count from part where b_id = ? and begin_date <= ? and end_date >= ?";
         $today = date('Y-m-d H:00:00');
         $r = $app['db']->fetchColumn($sql, array($b_id, $today, $today));

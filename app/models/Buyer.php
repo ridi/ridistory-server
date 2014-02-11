@@ -34,9 +34,11 @@ EOT;
     public static function getWholeList()
     {
         $sql = <<<EOT
-select u.*, ifnull(coin_balance, 0) coin_balance from buyer_user u
- left join (select u_id, sum(amount) coin_balance from coin_history) ch on u.id = ch.u_id
+select u.*, ifnull(total_coin_in, 0) total_coin_in, ifnull(total_coin_out, 0) total_coin_out from buyer_user u
+ left join (select u_id, sum(amount) total_coin_in from coin_history where amount > 0) ch on u.id = ch.u_id
+ left join (select u_id, abs(sum(amount)) total_coin_out from coin_history where amount < 0) ch2 on u.id = ch2.u_id
 order by google_reg_date desc
+
 EOT;
         global $app;
         return $app['db']->fetchAll($sql);
@@ -54,9 +56,10 @@ EOT;
     public static function getCoinOutList($id)
     {
         $sql = <<<EOT
-select ch.id, ch.u_id, ABS(ch.amount) amount, ch.timestamp, ph.p_id, p.b_id, p.store_id, p.title, p.seq, p.begin_date, p.end_date  from coin_history ch
+select ch.id, ch.u_id, ABS(ch.amount) amount, ch.timestamp, ph.p_id, b_title , p.b_id, p.store_id, p.title, p.seq, p.begin_date, p.end_date  from coin_history ch
  left join (select u_id, p_id from purchase_history) ph on ph.u_id = ch.u_id
  left join (select * from part) p on p.id = ph.p_id
+ left join (select id, title b_title from book) b on b.id = p.b_id
 where ch.amount < 0 and ch.u_id = ? order by timestamp desc
 EOT;
         global $app;

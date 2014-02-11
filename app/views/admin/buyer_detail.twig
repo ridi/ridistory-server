@@ -49,6 +49,7 @@
                 <td><b>사용일</b></td>
                 <td><b>갯수</b></td>
                 <td><b>책 ID</b></td>
+                <td><b>책 제목</b></td>
                 <td><b>파트 제목</b></td>
             </tr>
             {% for coin in coin_out %}
@@ -56,6 +57,7 @@
                     <td>{{ coin.timestamp }}</td>
                     <td>{{ coin.amount }}</td>
                     <td>{{ coin.b_id }}</td>
+                    <td><a href="/admin/book/{{  coin.b_id }}">{{ coin.b_title }}</a></td>
                     <td><a href="/admin/part/{{ coin.p_id }}">{{ coin.seq }}. {{ coin.title }}</a></td>
                 </tr>
             {% endfor %}

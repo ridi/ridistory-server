@@ -8,7 +8,8 @@
             <th class='span1'>유저 ID</th>
             <th>구글 계정</th>
             <th>구글 계정 등록일</th>
-            <th>남은 코인 수</th>
+            <th>구매 코인 수</th>
+            <th>사용 코인 수</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -17,7 +18,8 @@
                 <td>{{ buyer.id }}</td>
                 <td>{{ buyer.google_id }}</td>
                 <td>{{ buyer.google_reg_date }}</td>
-                <td>{{ buyer.coin_balance }}</td>
+                <td>{{ buyer.total_coin_in }}</td>
+                <td>{{ buyer.total_coin_out }}</td>
             </tr>
         {% endfor %}
         </tbody>
