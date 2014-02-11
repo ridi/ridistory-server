@@ -1,0 +1,63 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+    <!-- (리스트) 책 ID, 책 제목, 상태(연재중, 완결(모두 공개), 완결(모두 잠금), 게시 종료(비공개)), 총 무료 다운로드 수, 총 유료 다운로드 수, 누적 매출액 -->
+    <!-- (디테일) (위의 항목들 포함) + (파트별) 파트 ID, 파트 제목, 파트 상태(공개, 잠금), 총 무료 다운로드 수, 총 유료 다운로드 수, 누적 매출액 -->
+
+    <div class="well form-inline">
+        <h4>매출 확인</h4>
+        <blockquote>
+            <p>총 매출 액: {{ header.total_sales }}원</p>
+        </blockquote>
+        <blockquote>
+            <p>누적 무료 다운로드: {{ header.total_free_download }}건</p>
+            <p>누적 유료 다운로드: {{ header.total_charged_download }}건</p>
+        </blockquote>
+    </div>
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th class='span1'>책 ID</th>
+            <th>책 제목</th>
+            <th>상태</th>
+            <th>무료 다운로드 수</th>
+            <th>유료 다운로드 수</th>
+            <th>누적 매출액(원)</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for ds in download_sales_list %}
+            <tr data-bid='{{ ds.b_id }}'>
+                <td>{{ ds.b_id }}</td>
+                <td>{{ ds.title }}</td>
+                <td>{{ ds.status }}</td>
+                <td>{{ ds.free_download }}</td>
+                <td>{{ ds.charged_download }}</td>
+                <td>{{ ds.total_sales }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+
+            $('#js_tbody tr').click(function() {
+                var b_id = $(this).data('bid');
+                location.href = '/admin/download_sales/' + b_id;
+            });
+
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}

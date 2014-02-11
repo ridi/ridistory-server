@@ -11,7 +11,7 @@
  Target Server Version : 50535
  File Encoding         : utf-8
 
- Date: 02/11/2014 15:25:44 PM
+ Date: 02/11/2014 18:58:29 PM
 */
 
 SET NAMES utf8;
@@ -165,9 +165,10 @@ CREATE TABLE `purchase_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `u_id` int(11) NOT NULL,
   `p_id` int(11) NOT NULL,
+  `coin_amount` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `push_devices`

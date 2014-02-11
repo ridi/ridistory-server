@@ -106,10 +106,70 @@ EOT;
         $admin->post('/banner/{banner_id}/edit', array($this, 'bannerEdit'));
         $admin->post('/banner/{banner_id}/delete', array($this, 'bannerDelete'));
 
+        $admin->get('/download_sales/list', array($this, 'downloadSalesList'));
+
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
 
         return $admin;
+    }
+
+    /*
+     * Downloads And Sales
+     */
+    public static function downloadSalesList(Request $req, Application $app)
+    {
+        $total_sales = 0;
+        $total_free_download = 0;
+        $total_charged_download = 0;
+
+        $sql = <<<EOT
+select b.id b_id, b.title, b.begin_date, b.end_date, b.end_action_flag, sum(if(coin_amount=0, 1, 0)) free_download, sum(if(coin_amount!=0, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph
+ left join (select id, b_id, price from part) p on p.id = ph.p_id
+ left join (select * from book) b on b.id = p.b_id
+group by p_id ORDER BY (count(*) * p.price) DESC
+EOT;
+        $download_sales_list = $app['db']->fetchAll($sql);
+        foreach ($download_sales_list as &$ds) {
+            $today = new DateTime("now");
+            if ($ds['begin_date'] <= $today && $ds['end_date'] >= $today && $ds['is_completed'] == 0)
+            {
+                $status = "연재중";
+            }
+            else
+            {
+                switch ($ds['end_action_flag'])
+                {
+                    case 0:
+                        $status = "완결(모두 공개)";
+                        break;
+                    case 1:
+                        $status = "완결(모두 잠금)";
+                        break;
+                    case 2:
+                        $status = "게시종료(비공개)";
+                        break;
+                }
+            }
+            $ds['status'] = $status;
+
+            $ds['total_sales'] *= 100;  // 원(Won) 단위로 변환해서 표현현
+
+            // 헤더에 들어갈 정보 계산
+            $total_sales += $ds['total_sales'];
+            $total_free_download += $ds['free_download'];
+            $total_charged_download += $ds['charged_download'];
+        }
+
+        $header = array(
+            'total_sales' => $total_sales,
+            'total_free_download' => $total_free_download,
+            'total_charged_download' => $total_charged_download
+        );
+
+        return $app['twig']->render(
+            '/admin/download_sales_list.twig',
+            compact('header', 'download_sales_list'));
     }
 
     /*

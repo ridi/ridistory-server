@@ -38,7 +38,6 @@ select u.*, ifnull(total_coin_in, 0) total_coin_in, ifnull(total_coin_out, 0) to
  left join (select u_id, sum(amount) total_coin_in from coin_history where amount > 0) ch on u.id = ch.u_id
  left join (select u_id, abs(sum(amount)) total_coin_out from coin_history where amount < 0) ch2 on u.id = ch2.u_id
 order by google_reg_date desc
-
 EOT;
         global $app;
         return $app['db']->fetchAll($sql);
