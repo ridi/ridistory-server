@@ -2,8 +2,8 @@
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\DownloadSales;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class AdminDownloadSalesControllerProvider implements ControllerProviderInterface
 {
@@ -26,16 +26,11 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
         $download_sales = DownloadSales::getWholeList();
 
         $today = strtotime("now");
-        foreach ($download_sales as &$ds)
-        {
-            if (strtotime($ds['begin_date']) <= $today && strtotime($ds['end_date']) >= $today && $ds['is_completed'] == false)
-            {
+        foreach ($download_sales as &$ds) {
+            if (strtotime($ds['begin_date']) <= $today && strtotime($ds['end_date']) >= $today && $ds['is_completed'] == false) {
                 $status = "연재중";
-            }
-            else
-            {
-                switch ($ds['end_action_flag'])
-                {
+            } else {
+                switch ($ds['end_action_flag']) {
                     case 0:
                         $status = "완결(모두 공개)";
                         break;
@@ -49,7 +44,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
             }
             $ds['status'] = $status;
 
-            $ds['total_sales'] *= 100;  // 원(Won) 단위로 변환해서 표현현
+            $ds['total_sales'] *= 100; // 원(Won) 단위로 변환해서 표현현
 
             // 헤더에 들어갈 정보 계산
             $total_sales += $ds['total_sales'];
@@ -65,7 +60,8 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
         return $app['twig']->render(
             '/admin/download_sales_list.twig',
-            compact('header', 'download_sales'));
+            compact('header', 'download_sales')
+        );
     }
 
     public function downloadSalesDetail(Request $req, Application $app, $b_id)
@@ -76,8 +72,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
         $download_sales = DownloadSales::get($b_id);
         $download_sales_detail = DownloadSales::getDetail($b_id);
-        foreach($download_sales_detail as &$dsd)
-        {
+        foreach ($download_sales_detail as &$dsd) {
             $dsd['total_coin_amount'] *= 100;
 
             // 푸터에 들어갈 정보 계산
@@ -94,8 +89,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
         return $app['twig']->render(
             'admin/download_sales_detail.twig',
-            compact('download_sales', 'download_sales_detail', 'footer'));
+            compact('download_sales', 'download_sales_detail', 'footer')
+        );
     }
 }
-
-?>
