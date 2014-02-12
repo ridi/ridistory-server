@@ -180,7 +180,7 @@ $(function() {
     $('.btn-cancel').click(function() {
         location.href = '/admin/book/list';
         return false;
-    })
+    });
     
     $('.btn-danger').click(function() {
         if (confirm('삭제하시겠습니까?')) {
@@ -198,7 +198,7 @@ $(function() {
     $('#js_add').click(function() {
         location.href = '/admin/part/add?b_id={{ book.id }}';
         return false;
-    })
+    });
     
     $('#js_part_list .begin_date').each(function() {
         var now = new Date('{{ today() }}');

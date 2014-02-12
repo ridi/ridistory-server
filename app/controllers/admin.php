@@ -1,18 +1,22 @@
 <?php
 
-require_once __DIR__ . "/../utils/push_device_picker.php";
-require_once __DIR__ . "/../utils/push_android.php";
-require_once __DIR__ . "/../utils/push_ios.php";
-
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Story\Util\IosPush;
+use Story\Util\AndroidPush;
+use Story\Util\PushDevicePicker;
+use Story\Util\PickDeviceResult;
+
 class AdminControllerProvider implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
+        /**
+         * @var $admin \Silex\ControllerCollection
+         */
         $admin = $app['controllers_factory'];
 
         $admin->get(
@@ -40,7 +44,7 @@ class AdminControllerProvider implements ControllerProviderInterface
         $admin->post('/storyplusbook_intro/{id}/edit', array($this, 'storyPlusBookIntroEdit'));
 
         $admin->before(
-            function (Request $request) use ($app) {
+            function (Request $req) use ($app) {
                 $alert = $app['session']->get('alert');
                 if ($alert) {
                     $app['twig']->addGlobal('alert', $alert);
@@ -145,7 +149,7 @@ EOT;
 
     public static function commentDelete(Request $req, Application $app, $c_id)
     {
-        PartComment::delete($c_id);
+        \Story\Model\PartComment::delete($c_id);
         $app['session']->set('alert', array('info' => '댓글이 삭제되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/comment/list');
         return $app->redirect($redirect_url);
@@ -219,7 +223,7 @@ EOT;
         return $app->json($result);
     }
 
-    public static function _push($pick_result, $message, $notification_ios, $notification_android)
+    public static function _push(PickDeviceResult $pick_result, $message, $notification_ios, $notification_android)
     {
         $result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
         $result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
@@ -264,7 +268,7 @@ EOT;
         return $app->redirect('/admin/notice/' . $r);
     }
 
-    public static function noticeDelete(Reqeust $req, Application $app, $n_id)
+    public static function noticeDelete(Request $req, Application $app, $n_id)
     {
         $app['db']->delete('notice', array('id' => $n_id));
         $app['session']->set('alert', array('warning' => '공지사항이 삭제되었습니다.'));

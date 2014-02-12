@@ -1,6 +1,7 @@
+syntax: glob
+.bit
+.idea
+\.idea
 lib/vendor
 lib/composer\.lock
-\.project
-\.settings
 app/conf\.php
-\.idea

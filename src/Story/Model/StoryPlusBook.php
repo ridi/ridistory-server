@@ -1,4 +1,5 @@
 <?php
+namespace Story\Model;
 
 class StoryPlusBook
 {
@@ -20,7 +21,6 @@ EOT;
 
     public static function getWholeList()
     {
-        $today = date('Y-m-d H:00:00');
         $sql = "select * from storyplusbook";
 
         global $app;
@@ -30,7 +30,6 @@ EOT;
     public static function getOpenedBookList()
     {
         $today = date('Y-m-d H:00:00');
-        $sql = "select * from storyplusbook where begin_date <= ? and end_date >= ?";
         $sql = <<<EOT
 select storyplusbook.*, ifnull(like_sum, 0) like_sum from storyplusbook
 	left join (select b_id, count(*) like_sum from storyplusbook, user_storyplusbook_like where storyplusbook.id = user_storyplusbook_like.b_id group by b_id) L on storyplusbook.id = L.b_id
@@ -42,7 +41,6 @@ EOT;
 
         global $app;
         $ar = $app['db']->fetchAll($sql, $bind);
-        $list = array();
 
         foreach ($ar as &$b) {
             $b['cover_url'] = self::getCoverUrl($b['store_id']);
