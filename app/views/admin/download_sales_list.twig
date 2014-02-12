@@ -1,12 +1,8 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-
-    <!-- (리스트) 책 ID, 책 제목, 상태(연재중, 완결(모두 공개), 완결(모두 잠금), 게시 종료(비공개)), 총 무료 다운로드 수, 총 유료 다운로드 수, 누적 매출액 -->
-    <!-- (디테일) (위의 항목들 포함) + (파트별) 파트 ID, 파트 제목, 파트 상태(공개, 잠금), 총 무료 다운로드 수, 총 유료 다운로드 수, 누적 매출액 -->
-
-    <div class="well form-inline">
-        <h4>매출 확인</h4>
+    <div class="well well-sm">
+        <h3>매출 확인</h3>
         <blockquote>
             <p>총 매출 액: {{ header.total_sales }}원</p>
         </blockquote>

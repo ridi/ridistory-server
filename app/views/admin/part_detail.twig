@@ -31,6 +31,17 @@
 		<th>종료일</th>
 		<td><input type='text' class='input-medium' name='end_date' value='{{ part.end_date }}'></input></td>
 	</tr>
+    <tr>
+        <th>수동 공개 여부</th>
+        <td>
+            <label class="radio">
+                <input type='radio' name='is_manual_opened' value='0'>공개하지 않음(기본값)</input>
+            </label>
+            <label class="radio">
+                <input type='radio' name='is_manual_opened' value='1'>강제 공개(무료)</input>
+            </label>
+        </td>
+    </tr>
 </table>
 <div class='form-actions'>
 	<button class='btn btn-success'>저장</button>
@@ -59,6 +70,10 @@
 <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
 <script>
 $(function() {
+    $('input:radio[name="is_manual_opened"]')
+            .filter('[value="{{ part.is_manual_opened }}"]')
+            .attr('checked', true);
+
     $('.btn-cancel').click(function() {
         history.back(-1);
         return false;
