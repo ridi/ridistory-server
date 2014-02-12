@@ -27,22 +27,22 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
         $today = strtotime("now");
         foreach ($download_sales as &$ds) {
-            if (strtotime($ds['begin_date']) <= $today && strtotime($ds['end_date']) >= $today && $ds['is_completed'] == false) {
-                $status = "연재중";
+            $is_ongoing = strtotime($ds['begin_date']) <= $today && strtotime($ds['end_date']) >= $today;
+            if ($is_ongoing && $ds['is_completed'] == false) {
+                $ds['status'] = "연재중";
             } else {
                 switch ($ds['end_action_flag']) {
-                    case 0:
-                        $status = "완결(모두 공개)";
+                    case 'ALL_FREE':
+                        $ds['status'] = "완결(모두 공개)";
                         break;
-                    case 1:
-                        $status = "완결(모두 잠금)";
+                    case 'ALL_CHARGED':
+                        $ds['status'] = "완결(모두 잠금)";
                         break;
-                    case 2:
-                        $status = "게시종료(비공개)";
+                    case 'CLOSED':
+                        $ds['status'] = "게시종료(비공개)";
                         break;
                 }
             }
-            $ds['status'] = $status;
 
             $ds['total_sales'] *= 100; // 원(Won) 단위로 변환해서 표현현
 

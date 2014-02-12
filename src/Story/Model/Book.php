@@ -65,7 +65,7 @@ EOT;
 select ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum, b.* from book b
  left join (select b_id, count(*) open_part_count from part group by b_id) pc on b.id = pc.b_id
  left join (select b_id, count(*) like_sum from user_part_like, part where p_id = part.id group by b_id) ls on b.id = ls.b_id
-where b.is_completed = 1 and end_action_flag != 2
+where b.is_completed = 1 and end_action_flag != 'CLOSED'
 EOT;
          if ($exclude_adult) {
              $sql .= " and adult_only = 0";

@@ -44,37 +44,30 @@ class AdminBookControllerProvider implements ControllerProviderInterface
 
         $today = strtotime('now');
         foreach ($parts as &$part) {
-            if (strtotime($book['end_date']) < $today || $book['is_completed'] == true)
-            {
-                if ($book['end_action_flag']  == 0 || $part['is_manual_opened'] == true)
-                {
+            $status = "비공개";
+            if (strtotime($book['end_date']) < $today || $book['is_completed'] == true) {
+                if ($book['end_action_flag'] == 'ALL_FREE' || $part['is_manual_opened'] == true) {
                     $status = "공개";
+                } else {
+                    if ($book['end_action_flag'] == 'ALL_CHARGED') {
+                        $status = "잠김";
+                    } else {
+                        if ($book['end_action_flag'] == 'CLOSED') {
+                            $status = "비공개";
+                        }
+                    }
                 }
-                else if ($book['end_action_flag'] == 1)
-                {
-                    $status = "잠김";
-                }
-                else if ($book['end_action_flag'] == 2)
-                {
-                    $status = "비공개";
+            } else {
+                if (strtotime($part['begin_date']) <= $today || $part['is_manual_opened'] == true) {
+                    $status = "공개";
+                } else {
+                    if (strtotime($part['begin_date']) <= strtotime('now + 7 day')) {
+                        $status = "잠김";
+                    } else {
+                        $status = "비공개";
+                    }
                 }
             }
-            else
-            {
-                if (strtotime($part['begin_date']) <= $today || $part['is_manual_opened'] == true)
-                {
-                    $status = "공개";
-                }
-                else if (strtotime($part['begin_date']) <= strtotime('now + 7 day'))
-                {
-                    $status = "잠김";
-                }
-                else
-                {
-                    $status = "비공개";
-                }
-            }
-
             $part['status'] = $status;
         }
 

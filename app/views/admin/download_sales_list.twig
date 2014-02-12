@@ -16,12 +16,15 @@
         <thead>
         <tr>
             <th class='span1'>책 ID</th>
-            <th>책 제목</th>
-            <th>저자</th>
+            <th>상품명</th>
+            <th>CP</th>
+            <th>정산율</th>
             <th>상태</th>
-            <th>무료 다운로드 수</th>
-            <th>유료 다운로드 수</th>
-            <th>누적 매출액(원)</th>
+            <th>시작일</th>
+            <th>무료다운</th>
+            <th>유료다운</th>
+            <th>판매액</th>
+            <th>정산액</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -30,10 +33,13 @@
                 <td>{{ ds.b_id }}</td>
                 <td>{{ ds.title }}</td>
                 <td>{{ ds.author }}</td>
+                <td>&nbsp;</td>
                 <td>{{ ds.status }}</td>
-                <td>{{ ds.free_download }}</td>
-                <td>{{ ds.charged_download }}</td>
-                <td>{{ ds.total_sales }}</td>
+                <td>&nbsp;</td>
+                <td>{{ ds.free_download }}건</td>
+                <td>{{ ds.charged_download }}건</td>
+                <td>{{ ds.total_sales }}원</td>
+                <td>&nbsp;</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -47,7 +53,7 @@
 
             $('#js_tbody tr').click(function() {
                 var b_id = $(this).data('bid');
-                location.href = '/admin/downloadsales/' + b_id;
+                location.href = '/admin/download_sales/' + b_id;
             });
 
             $('#js_tbody tr').hover(function() {
