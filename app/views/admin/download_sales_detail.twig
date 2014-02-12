@@ -1,0 +1,54 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <table class='table'>
+        <colgroup>
+            <col class="span1">
+            <col class="span7">
+        </colgroup>
+        <tr>
+            <th>책 ID</th>
+            <td><input type='text' class='input-small' name='store_id' value='{{ download_sales.b_id }}' disabled></input></td>
+        </tr>
+        <tr>
+            <th>제목</th>
+            <td><input type='text' class='input-xlarge' name='title' value='{{ download_sales.title }}' disabled></input></td>
+        </tr>
+        <tr>
+            <th>저자</th>
+            <td><input type='text' class='input' name='author' value='{{ download_sales.author }}' disabled></input></td>
+        </tr>
+        <tr>
+            <th>연재분</th>
+            <td>
+                <table class='table table-hover table-striped table-condensed'>
+                    <thead>
+                    <tr>
+                        <th>파트 제목</th>
+                        <th class='span3'>무료 다운로드 수</th>
+                        <th class='span3'>유료 다운로드 수</th>
+                        <th class='span3'>누적 매출 액</th>
+                    </tr>
+                    </thead>
+                    <tbody id='js_part_list'>
+                    {% for dsd in download_sales_detail %}
+                        <tr data-cid='{{ part.id }}'>
+                            <td><a href='/admin/part/{{ dsd.p_id }}'>{{ dsd.seq }}. {{ dsd.title }} </a></td>
+                            <td>{{ dsd.total_free_download }}</td>
+                            <td>{{ dsd.total_charged_download }}</td>
+                            <td>{{ dsd.total_coin_amount }}원</td>
+                        </tr>
+                    {% endfor %}
+                        <tr class="info">
+                            <td><b>총</b></td>
+                            <td><b>{{ footer.total_free_download }}</b></td>
+                            <td><b>{{ footer.total_charged_download }}</b></td>
+                            <td><b>{{ footer.total_sales }}원</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+     </table>
+
+{% endblock %}

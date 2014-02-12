@@ -17,6 +17,7 @@
         <tr>
             <th class='span1'>책 ID</th>
             <th>책 제목</th>
+            <th>저자</th>
             <th>상태</th>
             <th>무료 다운로드 수</th>
             <th>유료 다운로드 수</th>
@@ -24,10 +25,11 @@
         </tr>
         </thead>
         <tbody id='js_tbody'>
-        {% for ds in download_sales_list %}
+        {% for ds in download_sales %}
             <tr data-bid='{{ ds.b_id }}'>
                 <td>{{ ds.b_id }}</td>
                 <td>{{ ds.title }}</td>
+                <td>{{ ds.author }}</td>
                 <td>{{ ds.status }}</td>
                 <td>{{ ds.free_download }}</td>
                 <td>{{ ds.charged_download }}</td>
@@ -45,7 +47,7 @@
 
             $('#js_tbody tr').click(function() {
                 var b_id = $(this).data('bid');
-                location.href = '/admin/download_sales/' + b_id;
+                location.href = '/admin/downloadsales/' + b_id;
             });
 
             $('#js_tbody tr').hover(function() {
