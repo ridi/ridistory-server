@@ -55,8 +55,8 @@ EOT;
     public static function getCoinOutList($id)
     {
         $sql = <<<EOT
-select ch.id, ch.u_id, ABS(ch.amount) amount, ch.timestamp, ph.p_id, b_title , p.b_id, p.store_id, p.title, p.seq, p.begin_date, p.end_date  from coin_history ch
- left join (select u_id, p_id from purchase_history) ph on ph.u_id = ch.u_id
+select ch.id, abs(ch.amount) amount, ch.timestamp, ph.p_id, b_title, p.b_id, p.title, p.seq from coin_history ch
+ left join (select id, p_id from purchase_history where coin_amount > 0) ph on ph.id = ch.ph_id
  left join (select * from part) p on p.id = ph.p_id
  left join (select id, title b_title from book) b on b.id = p.b_id
 where ch.amount < 0 and ch.u_id = ? order by timestamp desc

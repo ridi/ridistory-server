@@ -11,7 +11,7 @@
  Target Server Version : 50535
  File Encoding         : utf-8
 
- Date: 02/11/2014 18:58:29 PM
+ Date: 02/12/2014 12:13:40 PM
 */
 
 SET NAMES utf8;
@@ -91,10 +91,11 @@ CREATE TABLE `coin_history` (
   `u_id` int(11) NOT NULL,
   `amount` int(11) NOT NULL COMMENT 'Buy/Use amount of coin',
   `source` varchar(5) NOT NULL COMMENT 'INAPP / RIDI / USE',
+  `ph_id` int(11) DEFAULT NULL COMMENT 'Purchase History ID. (Only for USE)',
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `log_push`
@@ -168,7 +169,7 @@ CREATE TABLE `purchase_history` (
   `coin_amount` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `push_devices`
