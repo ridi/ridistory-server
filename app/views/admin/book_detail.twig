@@ -59,6 +59,7 @@
                         <th>파트 제목</th>
                         <th class='span3'>시작일</th>
                         <th class='span3'>종료일</th>
+                        <th class='span3'>상태</th>
                     </tr>
                 </thead>
             	<tbody id='js_part_list'>
@@ -67,6 +68,7 @@
             			<td><a href='/admin/part/{{ part.id }}'>{{ part.seq }}. {{ part.title }} </a></td>
             			<td><span class='begin_date'>{{ part.begin_date }}</span></td>
             			<td>{{ part.end_date }}</td>
+                        <td>{{ part.status }}</td>
             		</tr>
             		{% endfor %}
             	</tbody>

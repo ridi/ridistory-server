@@ -107,6 +107,7 @@ EOT;
         $admin->post('/banner/{banner_id}/delete', array($this, 'bannerDelete'));
 
         $admin->get('/download_sales/list', array($this, 'downloadSalesList'));
+        $admin->get('/download_sales/{b_id}', array($this, 'downloadSalesDetail'));
 
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
@@ -127,12 +128,13 @@ EOT;
 select b.id b_id, b.title, b.begin_date, b.end_date, b.end_action_flag, sum(if(coin_amount=0, 1, 0)) free_download, sum(if(coin_amount!=0, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph
  left join (select id, b_id, price from part) p on p.id = ph.p_id
  left join (select * from book) b on b.id = p.b_id
-group by p_id ORDER BY (count(*) * p.price) DESC
+group by p_id order by (count(*) * p.price) desc
 EOT;
         $download_sales_list = $app['db']->fetchAll($sql);
+
+        $today = strtotime("now");
         foreach ($download_sales_list as &$ds) {
-            $today = new DateTime("now");
-            if ($ds['begin_date'] <= $today && $ds['end_date'] >= $today && $ds['is_completed'] == 0)
+            if (strtotime($ds['begin_date']) <= $today && strtotime($ds['end_date']) >= $today && $ds['is_completed'] == false)
             {
                 $status = "연재중";
             }
@@ -170,6 +172,11 @@ EOT;
         return $app['twig']->render(
             '/admin/download_sales_list.twig',
             compact('header', 'download_sales_list'));
+    }
+
+    public static function downloadSalesDetail(Request $req, Application $app, $b_id)
+    {
+
     }
 
     /*
