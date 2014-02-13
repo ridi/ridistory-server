@@ -67,12 +67,12 @@ select ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum,
  left join (select b_id, count(*) like_sum from user_part_like, part where p_id = part.id group by b_id) ls on b.id = ls.b_id
 where b.is_completed = 1 and end_action_flag != 'CLOSED'
 EOT;
-         if ($exclude_adult) {
-             $sql .= " and adult_only = 0";
-         }
+        if ($exclude_adult) {
+            $sql .= " and adult_only = 0";
+        }
 
-         global $app;
-         $ar = $app['db']->fetchAll($sql);
+        global $app;
+        $ar = $app['db']->fetchAll($sql);
 
         foreach ($ar as &$b) {
             $b['last_update'] = "0";
@@ -129,6 +129,15 @@ EOT;
         }
 
         return $ar;
+    }
+
+    public static function getListByCpId($cp_id)
+    {
+        $sql = <<<EOT
+select * from book where cp_id = ?
+EOT;
+        global $app;
+        return $app['db']->fetchAll($sql, array($cp_id));;
     }
 
     public static function create()

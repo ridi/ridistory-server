@@ -1,0 +1,50 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<table class='table table-hover'>
+    <thead>
+    <tr>
+        <th class='span1'>CP ID</th>
+        <th>계정명</th>
+        <th>담당자</th>
+        <th>사이트 ID</th>
+        <th>형태</th>
+    </tr>
+    </thead>
+    <tbody id='js_tbody'>
+    {% for cp in cp_accounts %}
+        <tr data-bid='{{cp.id }}'>
+            <td>{{ cp.id }}</td>
+            <td>{{ cp.cp_account_name }}</td>
+            <td>{{ cp.staff1_name }}</td>
+            <td>{{ cp.cp_site_id }}</td>
+            <td>{{ cp.cp_type }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<button class='btn btn-primary' id='js_add'>추가</button>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    $(function() {
+        $('#js_add').click(function() {
+            location.href = '/admin/cp_account/add';
+        });
+
+        $('#js_tbody tr').click(function() {
+            var b_id = $(this).data('bid');
+            location.href = '/admin/cp_account/' + b_id;
+        });
+
+        $('#js_tbody tr').hover(function() {
+                    $(this).css('cursor', 'pointer');
+                }, function() {
+                    $(this).css('cursor', '');
+                }
+        );
+    });
+</script>
+{% endblock %}

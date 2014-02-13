@@ -44,7 +44,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
                 }
             }
 
-            $ds['total_sales'] *= 100; // 원(Won) 단위로 변환해서 표현현
+            $ds['total_sales'] *= 100; // 원(Won) 단위로 변환해서 표현
 
             // 헤더에 들어갈 정보 계산
             $total_sales += $ds['total_sales'];

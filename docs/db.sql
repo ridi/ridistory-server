@@ -11,7 +11,7 @@
  Target Server Version : 50535
  File Encoding         : utf-8
 
- Date: 02/12/2014 22:19:06 PM
+ Date: 02/13/2014 09:37:47 AM
 */
 
 SET NAMES utf8;
@@ -105,7 +105,7 @@ CREATE TABLE `coin_history` (
 DROP TABLE IF EXISTS `cp_account`;
 CREATE TABLE `cp_account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `cp_account_name` varchar(255) NOT NULL COMMENT 'CP 계정명',
+  `cp_account_name` varchar(255) DEFAULT NULL COMMENT 'CP 계정명',
   `staff1_name` varchar(255) DEFAULT NULL COMMENT '담당자1 성함',
   `staff1_phone` varchar(20) DEFAULT NULL COMMENT '담당자1 연락처',
   `staff1_email` varchar(255) DEFAULT NULL COMMENT '담당자1 이메일',
@@ -113,10 +113,10 @@ CREATE TABLE `cp_account` (
   `staff2_phone` varchar(20) DEFAULT NULL COMMENT '담당자2 연락처',
   `staff2_email` varchar(255) DEFAULT NULL COMMENT '담당자2 이메일',
   `cp_site_id` varchar(255) NOT NULL COMMENT 'CP 사이트 ID',
-  `cp_type` enum('Publisher','Private','AG','Closed','ETC') NOT NULL COMMENT 'CP 형태 / Publisher: 출판사, Private: 개인, AG: AG, Closed: 폐업, ETC: 기타',
-  `contract_date` varchar(8) NOT NULL DEFAULT '' COMMENT '계약일자 (yyyymmdd)',
-  `end_date` varchar(8) NOT NULL DEFAULT '' COMMENT '만료일자 (yyyymmdd)',
-  `auto_contract_renew_year` int(11) NOT NULL COMMENT '자동연장',
+  `cp_type` enum('Publisher','Private','AG','Closed','ETC') DEFAULT NULL COMMENT 'CP 형태 / Publisher: 출판사, Private: 개인, AG: AG, Closed: 폐업, ETC: 기타',
+  `contract_date` varchar(8) DEFAULT '' COMMENT '계약일자 (yyyymmdd)',
+  `end_date` varchar(8) DEFAULT '' COMMENT '만료일자 (yyyymmdd)',
+  `auto_contract_renew_year` int(11) DEFAULT NULL COMMENT '자동연장',
   `etc_note` text COMMENT '비고',
   `company_num` varchar(20) DEFAULT NULL COMMENT '사업자 등록번호',
   `company_name` varchar(255) DEFAULT NULL COMMENT '사업자명',
