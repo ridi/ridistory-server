@@ -19,8 +19,9 @@ class Book
     {
         $today = date('Y-m-d H:00:00');
         $sql = <<<EOT
-select count(part.b_id) uploaded_part_count, ifnull(open_part_count, 0) open_part_count, b.* from book b
+select count(part.b_id) uploaded_part_count, ifnull(open_part_count, 0) open_part_count, cp.cp_account_name, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
+ left join (select id, cp_account_name from cp_account) cp on cp.id = b.cp_id
  left join part on b.id = part.b_id group by b.id, part.b_id
 order by begin_date desc
 EOT;

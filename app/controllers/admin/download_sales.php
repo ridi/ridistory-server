@@ -20,6 +20,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
     public function downloadSalesList(Request $req, Application $app)
     {
         $total_sales = 0;
+        $total_royalty_sales = 0;
         $total_free_download = 0;
         $total_charged_download = 0;
 
@@ -29,7 +30,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
         foreach ($download_sales as &$ds) {
             $is_ongoing = strtotime($ds['begin_date']) <= $today && strtotime($ds['end_date']) >= $today;
             if ($is_ongoing && $ds['is_completed'] == false) {
-                $ds['status'] = "연재중";
+                $ds['status'] = "연재중(".$ds['open_part_count']."/".$ds['total_part_count'].")";
             } else {
                 switch ($ds['end_action_flag']) {
                     case 'ALL_FREE':
@@ -44,16 +45,18 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
                 }
             }
 
-            $ds['total_sales'] *= 100; // 원(Won) 단위로 변환해서 표현
+            $ds['begin_date'] = date("y.m.d", strtotime($ds['begin_date']));
 
             // 헤더에 들어갈 정보 계산
             $total_sales += $ds['total_sales'];
+            $total_royalty_sales += $ds['total_sales'] * $ds['royalty_percent'];
             $total_free_download += $ds['free_download'];
             $total_charged_download += $ds['charged_download'];
         }
 
         $header = array(
             'total_sales' => $total_sales,
+            'total_royalty_sales' => $total_royalty_sales,
             'total_free_download' => $total_free_download,
             'total_charged_download' => $total_charged_download
         );
@@ -71,7 +74,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
         $total_charged_download = 0;
 
         $download_sales = DownloadSales::get($b_id);
-        $download_sales_detail = DownloadSales::getDetail($b_id);
+        $download_sales_detail = DownloadSales::getPartSalesList($b_id);
         foreach ($download_sales_detail as &$dsd) {
             $dsd['total_coin_amount'] *= 100;
 

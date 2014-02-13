@@ -7,6 +7,7 @@
 		<tr>
 			<th class='span1'>책 ID</th>
 			<th>제목</th>
+            <th>CP명</th>
 			<th class='span3'>Progress</th>
 			<th class='span3'>시작일</th>
 		</tr>
@@ -20,6 +21,7 @@
                 <i class='icon-heart'></i>
                 {% endif %}
             </td>
+            <td>{{ book.cp_account_name }}</td>
 			<td>
 			    <div class='progress'>
                     <div class='bar' style='width: {{ book.progress }};'></div>

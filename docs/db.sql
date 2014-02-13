@@ -11,7 +11,7 @@
  Target Server Version : 50535
  File Encoding         : utf-8
 
- Date: 02/13/2014 09:37:47 AM
+ Date: 02/13/2014 15:23:55 PM
 */
 
 SET NAMES utf8;
@@ -45,7 +45,7 @@ CREATE TABLE `book` (
   `publisher` varchar(32) NOT NULL,
   `catchphrase` varchar(256) NOT NULL,
   `short_description` varchar(256) NOT NULL,
-  `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `total_part_count` int(11) NOT NULL,
   `is_completed` tinyint(4) NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE `book` (
   `royalty_percent` int(11) DEFAULT NULL COMMENT '정산율',
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=249 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=250 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `book_intro`
@@ -106,6 +106,7 @@ DROP TABLE IF EXISTS `cp_account`;
 CREATE TABLE `cp_account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cp_account_name` varchar(255) DEFAULT NULL COMMENT 'CP 계정명',
+  `password` varchar(255) DEFAULT NULL,
   `staff1_name` varchar(255) DEFAULT NULL COMMENT '담당자1 성함',
   `staff1_phone` varchar(20) DEFAULT NULL COMMENT '담당자1 연락처',
   `staff1_email` varchar(255) DEFAULT NULL COMMENT '담당자1 이메일',
@@ -132,9 +133,10 @@ CREATE TABLE `cp_account` (
   `calculate_account_num` varchar(50) DEFAULT NULL COMMENT '정산 계좌번호',
   `calculate_account_holder` varchar(255) DEFAULT NULL COMMENT '정산 예금주',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `token` (`cp_account_name`,`staff1_name`) USING BTREE,
+  UNIQUE KEY `cp_site_id` (`cp_site_id`),
+  UNIQUE KEY `cp_account_name` (`cp_account_name`) USING BTREE,
   KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `log_push`
