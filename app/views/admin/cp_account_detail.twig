@@ -8,8 +8,12 @@
                 <col class="span7">
             </colgroup>
             <tr>
+                <th>CP 로그인</th>
+                <td colspan='3'><a href='#' >[CP 로그인(클릭)]</a></td>
+            </tr>
+            <tr>
                 <th>CP ID</th>
-                <td colspan='3'><input type='text' class='input-small' name='cp_id' value='{{ cp_account.id }}' disabled /></td>
+                <td colspan='3'><input type='text' class='input-small' name='id' value='{{ cp_account.id }}' disabled /></td>
             </tr>
             <tr>
                 <th>CP 계정명</th>
@@ -67,7 +71,7 @@
             <tr>
                 <td><input type='text' class='input' name='company_ceo' placeholder='대표자' value='{{ cp_account.company_ceo }}' /></td>
                 <td><input type='text' class='input' name='company_doing' placeholder='업태' value='{{ cp_account.company_doing }}' /></td>
-                <td><input type='text' class='input' name='company_doing_detail' placeholder='종목' value='{{ cp_account.company_doing_detail }}' /></td>
+                <td><input type='text' class='input' name='company_doing_type' placeholder='종목' value='{{ cp_account.company_doing_type }}' /></td>
             </tr>
             <tr>
                 <th rowspan='2'>주소</th>

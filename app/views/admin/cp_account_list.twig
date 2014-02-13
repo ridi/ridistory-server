@@ -6,9 +6,10 @@
     <tr>
         <th class='span1'>CP ID</th>
         <th>계정명</th>
-        <th>담당자</th>
+        <th>담당자1</th>
         <th>사이트 ID</th>
         <th>형태</th>
+        <th>로그인</th>
     </tr>
     </thead>
     <tbody id='js_tbody'>
@@ -18,7 +19,20 @@
             <td>{{ cp.cp_account_name }}</td>
             <td>{{ cp.staff1_name }}</td>
             <td>{{ cp.cp_site_id }}</td>
-            <td>{{ cp.cp_type }}</td>
+            <td>
+                {% if cp.cp_type == 'Publisher' %}
+                    출판사
+                {% elseif cp.cp_type == 'Private' %}
+                    개인
+                {% elseif cp.cp_type == 'AG' %}
+                    AG
+                {% elseif cp.cp_type == 'Closed' %}
+                    폐업
+                {% elseif cp.cp_type == 'ETC' %}
+                    기타
+                {% endif %}
+            </td>
+            <td><a href='#' >[CP 로그인]</a></td>
         </tr>
     {% endfor %}
     </tbody>

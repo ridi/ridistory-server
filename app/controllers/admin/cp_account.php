@@ -41,54 +41,31 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
         );
     }
 
-    public function bookAdd(Request $req, Application $app)
+    public function cpAccountAdd(Request $req, Application $app)
     {
-        $b_id = Book::create();
-        $app['session']->set('alert', array('success' => '책이 추가되었습니다.'));
-        return $app->redirect('/admin/book/' . $b_id);
+        $cp_id = CpAccount::create();
+        $app['session']->set('alert', array('success' => 'CP 회원이 추가되었습니다.'));
+        return $app->redirect('/admin/cp_account/' . $cp_id);
     }
 
-    public function bookEdit(Request $req, Application $app, $id)
+    public function cpAccountEdit(Request $req, Application $app, $id)
     {
         $inputs = $req->request->all();
 
-        // 연재 요일
-        $upload_days = 0;
-        if (isset($inputs['upload_days'])) {
-            foreach ($inputs['upload_days'] as $v) {
-                $upload_days += intval($v);
-            }
-        }
-        $inputs['upload_days'] = $upload_days;
+        CpAccount::update($id, $inputs);
 
-        $inputs['adult_only'] = isset($inputs['adult_only']);
-
-        // 상세 정보는 별도 테이블로
-        $intro = array('b_id' => $id);
-        array_move_keys(
-            $inputs,
-            $intro,
-            array(
-                'intro_description' => 'description',
-                'intro_about_author' => 'about_author'
-            )
-        );
-
-        Book::update($id, $inputs);
-        Book::updateIntro($id, $intro);
-
-        $app['session']->set('alert', array('info' => '책이 수정되었습니다.'));
-        return $app->redirect('/admin/book/' . $id);
+        $app['session']->set('alert', array('info' => 'CP 회원이 수정되었습니다.'));
+        return $app->redirect('/admin/cp_account/' . $id);
     }
 
-    public function bookDelete(Request $req, Application $app, $id)
+    public function cpAccountDelete(Request $req, Application $app, $id)
     {
-        $parts = Part::getListByBid($id);
-        if (count($parts)) {
-            return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
+        $books = Book::getListByCpId($id);
+        if (count($books)) {
+            return $app->json(array('error' => '해당 CP 회원의 책이 있으면 CP 회원을 삭제할 수 없습니다.'));
         }
-        Book::delete($id);
-        $app['session']->set('alert', array('info' => '책이 삭제되었습니다.'));
+        CpAccount::delete($id);
+        $app['session']->set('alert', array('info' => 'CP 회원이 삭제되었습니다.'));
         return $app->json(array('success' => true));
     }
 }

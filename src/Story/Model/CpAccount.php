@@ -3,11 +3,23 @@ namespace Story\Model;
 
 class CpAccount
 {
-    public static function create($cp_site_id)
+    public static function create()
     {
         global $app;
-        $app['db']->insert('cp_account', compact('cp_site_id'));
+        $app['db']->insert('cp_account', array());
         return $app['db']->lastInsertId();
+    }
+
+    public static function update($id, $values)
+    {
+        global $app;
+        return $app['db']->update('cp_account', $values, array('id' => $id));
+    }
+
+    public static function delete($id)
+    {
+        global $app;
+        return $app['db']->delete('cp_account', array('id' => $id));
     }
 
     public static function get($id)
