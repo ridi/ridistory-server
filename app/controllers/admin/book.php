@@ -4,6 +4,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Model\Book;
+use Story\Model\CpAccount;
 use Story\Model\Part;
 
 class AdminBookControllerProvider implements ControllerProviderInterface
@@ -51,6 +52,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
     {
         $book = Book::get($id);
         $parts = Part::getListByBid($id);
+        $cp_accounts = CpAccount::getCpList();
 
         $today = strtotime('now');
         foreach ($parts as &$part) {
@@ -97,6 +99,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
             'admin/book_detail.twig',
             array(
                 'book' => $book,
+                'cp_accounts' => $cp_accounts,
                 'parts' => $parts,
                 'intro' => $intro,
             )

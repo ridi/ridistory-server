@@ -7,18 +7,24 @@
         <th class='span1'>CP ID</th>
         <th>계정명</th>
         <th>담당자1</th>
-        <th>사이트 ID</th>
+        <th>계약일</th>
+        <th>만료일</th>
+        <th>도서 수</th>
         <th>형태</th>
+        <!-- 누적 판매 액 + 누적 정산 액 -->
         <th>로그인</th>
     </tr>
+
     </thead>
     <tbody id='js_tbody'>
     {% for cp in cp_accounts %}
         <tr data-bid='{{cp.id }}'>
             <td>{{ cp.id }}</td>
             <td>{{ cp.cp_account_name }}</td>
-            <td>{{ cp.staff1_name }}</td>
-            <td>{{ cp.cp_site_id }}</td>
+            <td><a href='mailto:{{ cp.staff1_email }}' >{{ cp.staff1_name }}</a></td>
+            <td>{{ date_format(cp.contract_date) }}</td>
+            <td>{{ date_format(cp.end_date) }}</td>
+            <td>{{ cp.book_count }}</td>
             <td>
                 {% if cp.cp_type == 'Publisher' %}
                     출판사

@@ -11,7 +11,7 @@
  Target Server Version : 50535
  File Encoding         : utf-8
 
- Date: 02/13/2014 15:23:55 PM
+ Date: 02/13/2014 16:44:04 PM
 */
 
 SET NAMES utf8;
@@ -96,8 +96,9 @@ CREATE TABLE `coin_history` (
   `ph_id` int(11) DEFAULT NULL COMMENT 'Purchase History ID. (Only for USE)',
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `u_id` (`u_id`,`ph_id`) USING BTREE,
   KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `cp_account`

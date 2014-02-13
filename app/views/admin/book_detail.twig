@@ -26,8 +26,14 @@
 		<td><input type='text' class='input' name='category' value='{{ book.category }}' /></td>
 	</tr>
     <tr>
-        <th>CP ID</th>
-        <td><input type='text' class='input-mini' name='cp_id' value='{{ book.cp_id }}' /></td>
+        <th>CP</th>
+        <td>
+            <select name='cp_id'>
+                {% for cp in cp_accounts %}
+                <option value='{{ cp.id }}'>{{ cp.cp_account_name }}</option>
+                {% endfor %}
+            </select>
+        </td>
     </tr>
     <tr>
         <th>정산율</th>
@@ -169,6 +175,9 @@
 <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
 <script>
 $(function() {
+    $('select option')
+            .filter('[value="{{ book.cp_id }}"]')
+            .prop('selected', true);
     
     $('input:radio[name="is_completed"]')
     .filter('[value="{{ book.is_completed }}"]')

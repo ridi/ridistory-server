@@ -34,6 +34,13 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
     public function cpAccountList(Request $req, Application $app)
     {
         $cp_accounts = CpAccount::getWholeList();
+
+        $app['twig']->addFunction(
+            new Twig_SimpleFunction('date_format', function ($date) {
+                return date('Y-m-d', strtotime($date));
+            })
+        );
+
         return $app['twig']->render('admin/cp_account_list.twig', array('cp_accounts' => $cp_accounts));
     }
 

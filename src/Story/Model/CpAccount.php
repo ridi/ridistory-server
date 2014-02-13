@@ -34,7 +34,22 @@ EOT;
 
     public static function getWholeList()
     {
+        $sql = <<<EOT
+select ifnull(book_count, 0) book_count, cp.* from cp_account cp
+ left join (select cp_id, count(*) book_count from book group by cp_id) b on b.cp_id = cp.id
+order by cp.cp_account_name
+EOT;
         global $app;
-        return $app['db']->fetchAll('select * from cp_account');
+        return $app['db']->fetchAll($sql);
+    }
+
+    public static function getCpList()
+    {
+        $sql = <<<EOT
+select id, cp_account_name from cp_account
+order by cp_account_name
+EOT;
+        global $app;
+        return $app['db']->fetchAll($sql);
     }
 }
