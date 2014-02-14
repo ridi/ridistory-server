@@ -11,7 +11,7 @@
  Target Server Version : 50535
  File Encoding         : utf-8
 
- Date: 02/13/2014 16:44:04 PM
+ Date: 02/14/2014 12:22:44 PM
 */
 
 SET NAMES utf8;
@@ -57,7 +57,7 @@ CREATE TABLE `book` (
   `royalty_percent` int(11) DEFAULT NULL COMMENT '정산율',
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=250 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `book_intro`
@@ -98,7 +98,7 @@ CREATE TABLE `coin_history` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_id` (`u_id`,`ph_id`) USING BTREE,
   KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `cp_account`
@@ -174,14 +174,13 @@ CREATE TABLE `part` (
   `title` varchar(256) NOT NULL,
   `seq` int(11) NOT NULL,
   `price` int(11) NOT NULL COMMENT '가격 (단위: 코인)',
-  `is_manual_opened` tinyint(4) NOT NULL DEFAULT '0' COMMENT '수동 공개 여부 (0: 앱 Flow에 따름, 1: 수동 강제 공개)',
   `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   KEY `id` (`id`,`seq`) USING BTREE,
   KEY `b_id` (`b_id`),
   CONSTRAINT `part_ibfk_1` FOREIGN KEY (`b_id`) REFERENCES `book` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1843 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1845 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `part_comment`
@@ -234,6 +233,19 @@ CREATE TABLE `push_devices` (
 ) ENGINE=InnoDB AUTO_INCREMENT=426208 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
+--  Table structure for `recommend_book`
+-- ----------------------------
+DROP TABLE IF EXISTS `recommend_book`;
+CREATE TABLE `recommend_book` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `b_id` int(11) NOT NULL,
+  `store_id` varchar(32) NOT NULL,
+  `title` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `b_id` (`b_id`,`store_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 --  Table structure for `stat_download`
 -- ----------------------------
 DROP TABLE IF EXISTS `stat_download`;
@@ -245,7 +257,7 @@ CREATE TABLE `stat_download` (
   PRIMARY KEY (`id`),
   KEY `p_id` (`p_id`),
   KEY `timestamp` (`timestamp`,`p_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9306878 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9306873 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 --  Table structure for `stat_download_storyplusbook`
