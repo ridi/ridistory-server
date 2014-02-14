@@ -1,26 +1,5 @@
-/*
- Navicat MySQL Data Transfer
-
- Source Server         : Ridi Dev
- Source Server Type    : MySQL
- Source Server Version : 50535
- Source Host           : dev.ridi.kr
- Source Database       : story_test
-
- Target Server Type    : MySQL
- Target Server Version : 50535
- File Encoding         : utf-8
-
- Date: 02/14/2014 12:22:44 PM
-*/
-
-SET NAMES utf8;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
---  Table structure for `banner`
--- ----------------------------
-DROP TABLE IF EXISTS `banner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `banner` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `background` varchar(128) NOT NULL,
@@ -30,12 +9,10 @@ CREATE TABLE `banner` (
   `reg_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_visible` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `book`
--- ----------------------------
-DROP TABLE IF EXISTS `book`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `book` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `category` varchar(32) NOT NULL,
@@ -57,12 +34,10 @@ CREATE TABLE `book` (
   `royalty_percent` int(11) DEFAULT NULL COMMENT '정산율',
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `book_intro`
--- ----------------------------
-DROP TABLE IF EXISTS `book_intro`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `book_intro` (
   `b_id` int(11) NOT NULL,
   `description` text NOT NULL,
@@ -70,11 +45,9 @@ CREATE TABLE `book_intro` (
   PRIMARY KEY (`b_id`),
   CONSTRAINT `book_intro_ibfk_1` FOREIGN KEY (`b_id`) REFERENCES `book` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `buyer_user`
--- ----------------------------
-DROP TABLE IF EXISTS `buyer_user`;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `buyer_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `google_id` varchar(255) NOT NULL,
@@ -82,12 +55,10 @@ CREATE TABLE `buyer_user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`) USING BTREE,
   KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `coin_history`
--- ----------------------------
-DROP TABLE IF EXISTS `coin_history`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `coin_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `u_id` int(11) NOT NULL,
@@ -98,12 +69,10 @@ CREATE TABLE `coin_history` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `u_id` (`u_id`,`ph_id`) USING BTREE,
   KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `cp_account`
--- ----------------------------
-DROP TABLE IF EXISTS `cp_account`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cp_account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cp_account_name` varchar(255) DEFAULT NULL COMMENT 'CP 계정명',
@@ -137,23 +106,19 @@ CREATE TABLE `cp_account` (
   UNIQUE KEY `cp_site_id` (`cp_site_id`),
   UNIQUE KEY `cp_account_name` (`cp_account_name`) USING BTREE,
   KEY `id` (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `log_push`
--- ----------------------------
-DROP TABLE IF EXISTS `log_push`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log_push` (
   `request` text NOT NULL,
   `response` text NOT NULL,
   `platform` enum('Android','iOS') NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `notice`
--- ----------------------------
-DROP TABLE IF EXISTS `notice`;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(200) NOT NULL,
@@ -161,12 +126,10 @@ CREATE TABLE `notice` (
   `reg_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `is_visible` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `part`
--- ----------------------------
-DROP TABLE IF EXISTS `part`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `part` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `b_id` int(11) NOT NULL,
@@ -180,12 +143,10 @@ CREATE TABLE `part` (
   KEY `id` (`id`,`seq`) USING BTREE,
   KEY `b_id` (`b_id`),
   CONSTRAINT `part_ibfk_1` FOREIGN KEY (`b_id`) REFERENCES `book` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1845 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `part_comment`
--- ----------------------------
-DROP TABLE IF EXISTS `part_comment`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `part_comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `p_id` int(11) NOT NULL,
@@ -197,12 +158,10 @@ CREATE TABLE `part_comment` (
   PRIMARY KEY (`id`),
   KEY `p_id` (`p_id`,`timestamp`),
   KEY `device_id` (`device_id`) USING HASH
-) ENGINE=InnoDB AUTO_INCREMENT=11493 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `purchase_history`
--- ----------------------------
-DROP TABLE IF EXISTS `purchase_history`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `purchase_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `u_id` int(11) NOT NULL,
@@ -212,12 +171,10 @@ CREATE TABLE `purchase_history` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `unique_purchase` (`u_id`,`p_id`,`is_paid`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `push_devices`
--- ----------------------------
-DROP TABLE IF EXISTS `push_devices`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `push_devices` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `device_id` varchar(32) NOT NULL,
@@ -230,12 +187,10 @@ CREATE TABLE `push_devices` (
   KEY `device_id` (`device_id`),
   KEY `reg_date` (`reg_date`),
   KEY `device_token` (`device_token`(255))
-) ENGINE=InnoDB AUTO_INCREMENT=426208 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `recommend_book`
--- ----------------------------
-DROP TABLE IF EXISTS `recommend_book`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `recommend_book` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `b_id` int(11) NOT NULL,
@@ -243,12 +198,10 @@ CREATE TABLE `recommend_book` (
   `title` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `b_id` (`b_id`,`store_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `stat_download`
--- ----------------------------
-DROP TABLE IF EXISTS `stat_download`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `stat_download` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `p_id` int(11) NOT NULL,
@@ -257,12 +210,10 @@ CREATE TABLE `stat_download` (
   PRIMARY KEY (`id`),
   KEY `p_id` (`p_id`),
   KEY `timestamp` (`timestamp`,`p_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9306873 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- ----------------------------
---  Table structure for `stat_download_storyplusbook`
--- ----------------------------
-DROP TABLE IF EXISTS `stat_download_storyplusbook`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `stat_download_storyplusbook` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `storyplusbook_id` int(11) NOT NULL,
@@ -271,12 +222,10 @@ CREATE TABLE `stat_download_storyplusbook` (
   PRIMARY KEY (`id`),
   KEY `storyplusbook_id` (`storyplusbook_id`),
   KEY `timestamp` (`timestamp`,`storyplusbook_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=20969 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- ----------------------------
---  Table structure for `storyplusbook`
--- ----------------------------
-DROP TABLE IF EXISTS `storyplusbook`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `storyplusbook` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `store_id` varchar(32) NOT NULL,
@@ -295,12 +244,10 @@ CREATE TABLE `storyplusbook` (
   `comment_hint` varchar(64) NOT NULL,
   `priority` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `storyplusbook_comment`
--- ----------------------------
-DROP TABLE IF EXISTS `storyplusbook_comment`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `storyplusbook_comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `b_id` int(11) NOT NULL,
@@ -311,12 +258,10 @@ CREATE TABLE `storyplusbook_comment` (
   PRIMARY KEY (`id`),
   KEY `b_id` (`b_id`,`timestamp`),
   KEY `device_id` (`device_id`) USING HASH
-) ENGINE=InnoDB AUTO_INCREMENT=268 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `storyplusbook_intro`
--- ----------------------------
-DROP TABLE IF EXISTS `storyplusbook_intro`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `storyplusbook_intro` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `b_id` int(11) NOT NULL,
@@ -325,12 +270,10 @@ CREATE TABLE `storyplusbook_intro` (
   PRIMARY KEY (`id`),
   KEY `index_bid` (`b_id`) USING BTREE,
   CONSTRAINT `storyplusbook_intro` FOREIGN KEY (`b_id`) REFERENCES `storyplusbook` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=289 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `user_interest`
--- ----------------------------
-DROP TABLE IF EXISTS `user_interest`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_interest` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `device_id` varchar(32) NOT NULL,
@@ -340,12 +283,10 @@ CREATE TABLE `user_interest` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `device_id` (`device_id`,`b_id`) USING BTREE,
   KEY `b_id` (`b_id`,`timestamp`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=318921 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `user_part_like`
--- ----------------------------
-DROP TABLE IF EXISTS `user_part_like`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_part_like` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `device_id` varchar(32) NOT NULL,
@@ -354,12 +295,10 @@ CREATE TABLE `user_part_like` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `p_id` (`p_id`,`device_id`) USING BTREE,
   KEY `timestamp` (`timestamp`)
-) ENGINE=InnoDB AUTO_INCREMENT=458133 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Table structure for `user_storyplusbook_like`
--- ----------------------------
-DROP TABLE IF EXISTS `user_storyplusbook_like`;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_storyplusbook_like` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `device_id` varchar(32) NOT NULL,
@@ -367,6 +306,5 @@ CREATE TABLE `user_storyplusbook_like` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `b_id` (`b_id`,`device_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3513 DEFAULT CHARSET=utf8;
-
-SET FOREIGN_KEY_CHECKS = 1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
