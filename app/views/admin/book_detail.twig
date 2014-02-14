@@ -145,6 +145,33 @@
 	        </label>
 	    </td>
 	</tr>
+    <tr>
+        <th>작가의 다른 작품</th>
+        <td>
+            <table class='table table-hover table-striped table-condensed'>
+                <thead>
+                <tr>
+                    <th class='span2'>책 표지</th>
+                    <th class='span2'>스토어 ID</th>
+                    <th class='span5'>도서명</th>
+                    <th class='span2'></th>
+                </tr>
+                </thead>
+                <tbody id='js_recommend_book_list'>
+                {% for recommend_book in recommend_books %}
+                    <tr data-rbid='{{ recommend_book.id }}'>
+                        <!-- TODO: 추후에 스토어 ID에 마우스 가져다 대면, 책 표지 뜨도록 수정 -->
+                        <td><img src='{{ recommend_book.cover_url }}' style="height:100px;" /></td>
+                        <td>{{ recommend_book.store_id }}</td>
+                        <td>{{ recommend_book.title }}</td>
+                        <td><a href='http://ridibooks.com/detail.php?id={{ recommend_book.store_id }}' >[스토어에서 보기]</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button class='btn btn-small btn-primary pull-right' id='js_add_recommend_book'>다른 작품 추가</button>
+        </td>
+    </tr>
 </table>
 
 <table class='table'>
@@ -211,7 +238,24 @@ $(function() {
         }
         return false;
     });
-    
+
+    $('#js_add_recommend_book').click(function() {
+        location.href = '/admin/recommend_book/add?b_id={{ book.id }}';
+        return false;
+    });
+
+    $('#js_recommend_book_list tr').click(function() {
+        var rb_id = $(this).data('rbid');
+        location.href = '/admin/recommend_book/' + rb_id;
+    });
+
+    $('#js_recommend_book_list tr').hover(function() {
+                $(this).css('cursor', 'pointer');
+            }, function() {
+                $(this).css('cursor', '');
+            }
+    );
+
     $('#js_add').click(function() {
         location.href = '/admin/part/add?b_id={{ book.id }}';
         return false;

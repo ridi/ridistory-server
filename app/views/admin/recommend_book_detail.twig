@@ -1,0 +1,73 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <form action="/admin/recommend_book/{{ recommend_book.id }}/edit" method='POST'>
+        <table class='table'>
+            <colgroup>
+                <col class="span1">
+                <col class="span7">
+            </colgroup>
+            <tr>
+                <th>책 ID</th>
+                <td><input type='text' class='input-xlarge' name='b_id' value='{{ recommend_book.b_id }}' /></td>
+            </tr>
+            <tr>
+                <th>스토어 ID</th>
+                <td><input type='text' class='input-small' name='store_id' value='{{ recommend_book.store_id }}' /></td>
+            </tr>
+            <tr>
+                <th>표지</th>
+                <td>
+                    {% if recommend_book.store_id != '' %}
+                        <img src='{{ recommend_book.cover_url }}' style="height:200px;" />
+                    {% else %}
+                        표지 이미지가 존재하지 않습니다. (스토어 ID를 등록해주세요.)
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>도서명</th>
+                <td><input type='text' class='input' name='title' value='{{ recommend_book.title }}' /></td>
+            </tr>
+        </table>
+        <div class='form-actions'>
+            <button class='btn btn-success'>저장</button>
+            <button class='btn btn-cancel'>취소</button>
+            <button class='btn btn-danger pull-right'>삭제</button>
+        </div>
+    </form>
+
+    <div class='span6'>
+        <p>API result</p>
+        <table class='table'>
+            <thead>
+            <tr>
+                <th class='span2'>
+                    <td>
+            </tr>
+            </thead>
+            <tbody id='js_api_result'>
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+    <script>
+        $(function() {
+            $('.btn-cancel').click(function() {
+                history.back(-1);
+                return false;
+            });
+
+            $('.btn-danger').click(function() {
+                if (confirm('삭제하시겠습니까?')) {
+                    location.href = '/admin/recommend_book/{{ recommend_book.id }}/delete';
+                }
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

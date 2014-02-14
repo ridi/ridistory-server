@@ -193,6 +193,16 @@ class ApiControllerProvider implements ControllerProviderInterface
 
         $book["parts"] = $parts;
 
+        $recommend_books = $app['cache']->fetch(
+            'recommend_book_list_' . $b_id,
+            function () use ($b_id) {
+                return \Story\Model\RecommendBook::getRecommendBookListByBid($b_id);
+            },
+            60 * 10
+        );
+
+        $book['recommend_books'] = $recommend_books;
+
         $device_id = $req->get('device_id');
         $book['interest'] = ($device_id === null) ? false : UserInterest::hasInterestInBook($device_id, $b_id);
 
