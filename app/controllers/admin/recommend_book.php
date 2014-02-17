@@ -11,16 +11,6 @@ class AdminRecommendBookControllerProvider implements ControllerProviderInterfac
     {
         $admin = $app['controllers_factory'];
 
-        $admin->before(
-            function (Request $req) use ($app) {
-                $alert = $app['session']->get('alert');
-                if ($alert) {
-                    $app['twig']->addGlobal('alert', $alert);
-                    $app['session']->remove('alert');
-                }
-            }
-        );
-
         $admin->get('add', array($this, 'recommendBookAdd'));
         $admin->get('{id}', array($this, 'recommendBookDetail'));
         $admin->get('{id}/delete', array($this, 'recommendBookDelete'));

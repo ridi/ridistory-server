@@ -12,16 +12,6 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
     {
         $admin = $app['controllers_factory'];
 
-        $admin->before(
-            function (Request $req) use ($app) {
-                $alert = $app['session']->get('alert');
-                if ($alert) {
-                    $app['twig']->addGlobal('alert', $alert);
-                    $app['session']->remove('alert');
-                }
-            }
-        );
-
         $admin->get('list', array($this, 'cpAccountList'));
         $admin->get('add', array($this, 'cpAccountAdd'));
         $admin->get('{id}', array($this, 'cpAccountDetail'));

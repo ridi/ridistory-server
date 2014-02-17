@@ -1,4 +1,5 @@
 <?php
+namespace Story\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
@@ -10,7 +11,7 @@ use Story\Util\AndroidPush;
 use Story\Util\PushDevicePicker;
 use Story\Util\PickDeviceResult;
 
-class AdminControllerProvider implements ControllerProviderInterface
+class AdminController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
@@ -42,16 +43,6 @@ class AdminControllerProvider implements ControllerProviderInterface
         $admin->get('/storyplusbook_intro/{id}', array($this, 'storyPlusBookIntroDetail'));
         $admin->get('/storyplusbook_intro/{id}/delete', array($this, 'storyPlusBookIntroDelete'));
         $admin->post('/storyplusbook_intro/{id}/edit', array($this, 'storyPlusBookIntroEdit'));
-
-        $admin->before(
-            function (Request $req) use ($app) {
-                $alert = $app['session']->get('alert');
-                if ($alert) {
-                    $app['twig']->addGlobal('alert', $alert);
-                    $app['session']->remove('alert');
-                }
-            }
-        );
 
         $admin->get('/comment/list', array($this, 'commentList'));
         $admin->get('/comment/{c_id}/delete', array($this, 'commentDelete'));
