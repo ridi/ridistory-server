@@ -56,11 +56,11 @@
 		<td><textarea rows='3' class='input-xxlarge' name='short_description' maxlength='256'>{{ book.short_description }}</textarea></td>
 	</tr>
 	<tr>
-		<th>공개 기간</th>
+		<th>연재 기간</th>
 		<td>
 		    <div class="form-inline">
 		    <input type='text' class='input-medium' name='begin_date' value='{{ book.begin_date }}' />
-        	~ <input type='text' class='input-medium' name='end_date' value='{{ book.end_date }}' />
+        	~ <input type='text' class='input-medium' name='end_date' value='{{ book.end_date }}' /> (완결일)
 		    </div>
 	    </td>
 	</tr>
@@ -71,15 +71,17 @@
                 <thead>
                     <tr>
                         <th>파트 제목</th>
+                        <th class='span1'>코인</th>
                         <th class='span3'>시작일</th>
                         <th class='span3'>종료일</th>
-                        <th class='span3'>상태</th>
+                        <th class='span1'>상태</th>
                     </tr>
                 </thead>
             	<tbody id='js_part_list'>
             		{% for part in parts %}
             		<tr data-cid='{{ part.id }}'>
             			<td><a href='/admin/part/{{ part.id }}'>{{ part.seq }}. {{ part.title }} </a></td>
+                        <td>{{ part.price }}</td>
             			<td><span class='begin_date'>{{ part.begin_date }}</span></td>
             			<td>{{ part.end_date }}</td>
                         <td>{{ part.status }}</td>
@@ -124,7 +126,15 @@
         </td>
     </tr>
     <tr>
-        <th>종료시 액션</th>
+        <th>잠금 기능</th>
+        <td>
+            <label class="checkbox">
+                <input type='checkbox' name='is_active_lock' {{ book.is_active_lock ? 'checked="checked"' }}>잠금 기능을 사용할 경우에 체크</input>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <th>완결 후 상태</th>
         <td>
             <label class="radio">
                 <input type='radio' name='end_action_flag' value='ALL_FREE'>모두 공개(무료)</input>

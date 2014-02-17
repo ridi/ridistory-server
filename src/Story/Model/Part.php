@@ -45,20 +45,30 @@ class Part
         return $p->isOpened() && $p->getStoreId() == $store_id;
     }
 
-    public static function getListByBid($b_id, $with_social_info = false)
+    public static function getListByBid($b_id, $with_social_info = false, $active_lock = false, $show_all = false)
     {
         global $app;
 
+        $today = date('Y-m-d H:00:00');
         if ($with_social_info) {
-            $today = date('Y-m-d H:00:00');
             $sql = <<<EOT
 select p.*, ifnull(like_count, 0) like_count, ifnull(comment_count, 0) comment_count from part p
  left join (select p_id, count(*) like_count from user_part_like group by p_id) l on p.id = l.p_id
  left join (select p_id, count(*) comment_count from part_comment group by p_id) c on p.id = c.p_id
-where b_id = ? and begin_date <= ? and end_date >= ?
-order by seq
+where b_id = ? and begin_date <= ?
 EOT;
-            $bind = array($b_id, $today, $today);
+            if ($show_all) {
+                $bind = array($b_id, $today);
+            } else {
+                $sql .= ' and end_date >= ?';
+
+                $lock_day = $today;
+                if ($active_lock) {
+                    $lock_day = date('Y-m-d H:00:00', strtotime($today." + 14 days"));
+                }
+                $bind = array($b_id, $lock_day, $lock_day);
+            }
+            $sql .= ' order by seq';
         } else {
             $sql = 'select * from part where b_id = ? order by seq';
             $bind = array($b_id);
@@ -67,6 +77,11 @@ EOT;
         $ar = $app['db']->fetchAll($sql, $bind);
         foreach ($ar as &$p) {
             self::_fill_additional($p);
+
+            // 시간에 따라 잠금여부 추가
+            if ($active_lock) {
+                $p['is_locked'] = (strtotime($today) < strtotime($p['begin_date']) ? 1 : 0);
+            }
         }
 
         return $ar;

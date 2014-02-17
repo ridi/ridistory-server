@@ -3,6 +3,7 @@ namespace Story\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\RecommendBook;
 use Symfony\Component\HttpFoundation\Request;
 
 use Story\Model\Book;
@@ -154,14 +155,10 @@ class ApiController implements ControllerProviderInterface
 
     public function completedBookList(Request $req, Application $app)
     {
-        $v = intval($req->get('v', '1'));
-        $cache_key = 'completed_book_list_' . $v;
-
-        $exclude_adult = ($v < 2);
         $book = $app['cache']->fetch(
-            $cache_key,
-            function () use ($exclude_adult) {
-                return Book::getCompletedBookList($exclude_adult);
+            'completed_book_list',
+            function () {
+                return Book::getCompletedBookList();
             },
             60 * 10
         );
@@ -181,24 +178,43 @@ class ApiController implements ControllerProviderInterface
             return $app->json(array('success' => false, 'error' => 'no such book'));
         }
 
+        /**
+         * @var $v App Api Version (cf. v > 2 : Use Lock Func)
+         */
+        $v = intval($req->get('v', '1'));
+        $active_lock = ($v > 2) && ($book['is_active_lock'] == 0);
+
+        // 완결되었고, 종료 후 액션이 모두 공개 혹은 모두 잠금이면 파트 모두 보임
+        $show_all = false;
+        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime('now') ? 1 : 0);
+        $show_from_end = ($book['end_action_flag'] == 'ALL_FREE' || $book['end_action_flag'] == 'ALL_CHARGED' ? 1 : 0);
+        if ($is_completed && $show_from_end) {
+            $show_all = true;
+        }
+
+        $cache_key = 'part_list_' . $active_lock . '_' . $show_all . '_';
         $parts = $app['cache']->fetch(
-            'part_list_' . $b_id,
-            function () use ($b_id) {
-                return Part::getListByBid($b_id, true);
+            $cache_key . $b_id,
+            function () use ($b_id, $active_lock, $show_all) {
+                return Part::getListByBid($b_id, true, $active_lock, $show_all);
             },
             60 * 10
         );
 
         foreach ($parts as &$part) {
-            $part["last_update"] = ($part["begin_date"] == date("Y-m-d")) ? 1 : 0;
+            $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
+
+            if ($show_all && $book['end_action_flag'] == 'ALL_FREE') {
+                $part['price'] = 0;
+            }
         }
 
-        $book["parts"] = $parts;
+        $book['parts'] = $parts;
 
         $recommend_books = $app['cache']->fetch(
             'recommend_book_list_' . $b_id,
             function () use ($b_id) {
-                return \Story\Model\RecommendBook::getRecommendBookListByBid($b_id);
+                return RecommendBook::getRecommendBookListByBid($b_id);
             },
             60 * 10
         );

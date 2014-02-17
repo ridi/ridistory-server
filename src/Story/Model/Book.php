@@ -60,23 +60,20 @@ EOT;
         return $ar;
     }
 
-    public static function getCompletedBookList($exclude_adult = true)
+    public static function getCompletedBookList()
     {
         $sql = <<<EOT
 select ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum, b.* from book b
  left join (select b_id, count(*) open_part_count from part group by b_id) pc on b.id = pc.b_id
  left join (select b_id, count(*) like_sum from user_part_like, part where p_id = part.id group by b_id) ls on b.id = ls.b_id
-where b.is_completed = 1 and end_action_flag != 'ALL_CLOSED'
+where (b.is_completed = 1 or b.end_date < ?) and end_action_flag != 'ALL_CLOSED'
 EOT;
-        if ($exclude_adult) {
-            $sql .= " and adult_only = 0";
-        }
-
+        $today = date('Y-m-d H:00:00');
         global $app;
-        $ar = $app['db']->fetchAll($sql);
+        $ar = $app['db']->fetchAll($sql, array($today));
 
         foreach ($ar as &$b) {
-            $b['last_update'] = "0";
+            $b['last_update'] = 0;
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
         }
 

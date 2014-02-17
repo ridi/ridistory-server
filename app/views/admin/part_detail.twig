@@ -9,27 +9,31 @@
     </colgroup>
 	<tr>
 		<th>책 ID</th>
-		<td><input type='text' class='input-xlarge' name='b_id' value='{{ part.b_id }}'></input></td>
+		<td><input type='text' class='input-xlarge' name='b_id' value='{{ part.b_id }}' /></td>
 	</tr>
 	<tr>
 		<th>스토어ID</th>
-		<td><input type='text' class='input-small' name='store_id' value='{{ part.store_id }}'></input></td>
+		<td><input type='text' class='input-small' name='store_id' value='{{ part.store_id }}' /></td>
 	</tr>
 	<tr>
 		<th>순서</th>
-		<td><input type='text' class='input-small' name='seq' value='{{ part.seq }}'></input></td>
+		<td><input type='text' class='input-small' name='seq' value='{{ part.seq }}' /></td>
 	</tr>
+    <tr>
+        <th>가격</th>
+        <td><input type='text' class='input-mini' name='price' value='{{ part.price }}' /> 코인</td>
+    </tr>
 	<tr>
 		<th>제목</th>
-		<td><input type='text' class='input' name='title' value='{{ part.title }}'></input></td>
+		<td><input type='text' class='input' name='title' value='{{ part.title }}' /></td>
 	</tr>
 	<tr>
 		<th>시작일</th>
-		<td><input type='text' class='input-medium' name='begin_date' value='{{ part.begin_date }}'></input></td>
+		<td><input type='text' class='input-medium' name='begin_date' value='{{ part.begin_date }}' /></td>
 	</tr>
 	<tr>
 		<th>종료일</th>
-		<td><input type='text' class='input-medium' name='end_date' value='{{ part.end_date }}'></input></td>
+		<td><input type='text' class='input-medium' name='end_date' value='{{ part.end_date }}' /></td>
 	</tr>
 </table>
 <div class='form-actions'>

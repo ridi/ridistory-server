@@ -42,37 +42,21 @@ class AdminBookControllerProvider implements ControllerProviderInterface
     public function bookDetail(Request $req, Application $app, $id)
     {
         $book = Book::get($id);
-        $parts = Part::getListByBid($id);
         $cp_accounts = CpAccount::getCpList();
         $recommend_books = RecommendBook::getRecommendBookListByBid($id);
 
-        $today = strtotime('now');
+        $active_lock = $book['is_active_lock'];
+        $parts = Part::getListByBid($id, false, $active_lock, true);
+
+        $today = date('Y-m-d H:00:00');
         foreach ($parts as &$part) {
-            $status = "비공개";
-            if (strtotime($book['end_date']) < $today || $book['is_completed'] == true) {
-                if ($book['end_action_flag'] == 'ALL_FREE' || $part['is_manual_opened'] == true) {
-                    $status = "공개";
-                } else {
-                    if ($book['end_action_flag'] == 'ALL_CHARGED') {
-                        $status = "잠김";
-                    } else {
-                        if ($book['end_action_flag'] == 'ALL_CLOSED' || $book['end_action_flag'] == 'SALES_CLOSED') {
-                            $status = "비공개";
-                        }
-                    }
-                }
+            if (strtotime($part['begin_date']) <= strtotime($today)) {
+                $part['status'] = "공개";
+            } else if ($active_lock && strtotime($part['begin_date']) < strtotime($today." + 13 days")) {
+                $part['status'] = "잠금";
             } else {
-                if (strtotime($part['begin_date']) <= $today || $part['is_manual_opened'] == true) {
-                    $status = "공개";
-                } else {
-                    if (strtotime($part['begin_date']) <= strtotime('now + 7 day')) {
-                        $status = "잠김";
-                    } else {
-                        $status = "비공개";
-                    }
-                }
+                $part['status'] = "비공개";
             }
-            $part['status'] = $status;
         }
 
         $intro = Book::getIntro($id);
@@ -121,17 +105,15 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         $inputs['upload_days'] = $upload_days;
 
         $inputs['adult_only'] = isset($inputs['adult_only']);
+        $inputs['is_active_lock'] = isset($inputs['is_active_lock']);
 
         // 상세 정보는 별도 테이블로
         $intro = array('b_id' => $id);
-        array_move_keys(
-            $inputs,
-            $intro,
-            array(
-                'intro_description' => 'description',
-                'intro_about_author' => 'about_author'
-            )
-        );
+
+        $intro['description'] = $inputs['intro_description'];
+        $intro['about_author'] = $inputs['intro_about_author'];
+        unset($inputs['intro_description']);
+        unset($inputs['intro_about_author']);
 
         Book::update($id, $inputs);
         Book::updateIntro($id, $intro);
