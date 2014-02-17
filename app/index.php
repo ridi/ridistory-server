@@ -29,14 +29,14 @@ require_once 'controllers/admin/storyplusbook_intro.php';
 
 $app->mount('/', new Story\Controller\WebController());
 $app->mount('/api', new Story\Controller\ApiController());
+$app->mount('/admin', new \Story\Controller\AdminController());
 $app->mount('/admin/book', new AdminBookControllerProvider());
-$app->mount('/admin/recommend_book', new AdminRecommendBookControllerProvider());
 $app->mount('/admin/buyer', new AdminBuyerControllerProvider());
 $app->mount('/admin/cp_account', new AdminCpAccountControllerProvider());
 $app->mount('/admin/download_sales', new AdminDownloadSalesControllerProvider());
 $app->mount('/admin/part', new AdminPartControllerProvider());
+$app->mount('/admin/recommend_book', new AdminRecommendBookControllerProvider());
 $app->mount('/admin/storyplusbook', new AdminStoryPlusBookControllerProvider());
 $app->mount('/admin/storyplusbook_intro', new AdminStoryPlusBookIntroControllerProvider());
-$app->mount('/admin', new Story\Controller\AdminController());
 
 $app->run();

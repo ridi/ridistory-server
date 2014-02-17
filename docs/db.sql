@@ -29,9 +29,10 @@ CREATE TABLE `book` (
   `score` int(11) NOT NULL,
   `upload_days` int(11) NOT NULL COMMENT 'sunday is 2^0',
   `adult_only` tinyint(4) NOT NULL DEFAULT '0',
-  `end_action_flag` enum('ALL_FREE','ALL_CHARGED','CLOSED') NOT NULL DEFAULT 'CLOSED' COMMENT 'ALL_FREE: 모두 공개, ALL_CHARGED: 모두 잠금, CLOSED: 게시종료(비공개)',
+  `end_action_flag` enum('ALL_FREE','ALL_CHARGED','SALES_CLOSED','ALL_CLOSED') NOT NULL DEFAULT 'ALL_CLOSED' COMMENT 'ALL_FREE: 모두 공개, ALL_CHARGED: 모두 잠금, SALES_CLOSED: 판매 종료 (책 표지만 공개), ALL_CLOSED: 게시 종료 (비공개)',
   `cp_id` int(11) DEFAULT NULL COMMENT 'CP Id',
-  `royalty_percent` int(11) DEFAULT NULL COMMENT '정산율',
+  `royalty_percent` int(11) NOT NULL DEFAULT '0' COMMENT '정산율',
+  `is_active_lock` tinyint(4) NOT NULL DEFAULT '0' COMMENT '잠금기능 사용여부 (0: 사용하지 않음, 1: 사용함)',
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

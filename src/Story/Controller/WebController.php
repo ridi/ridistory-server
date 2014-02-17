@@ -14,24 +14,24 @@ class WebController implements ControllerProviderInterface
     public function connect(Application $app)
     {
         /**
-         * @var $api \Silex\ControllerCollection
+         * @var $web \Silex\ControllerCollection
          */
-        $api = $app['controllers_factory'];
+        $web = $app['controllers_factory'];
 
-        $api->get('/book/{b_id}/intro', array($this, 'bookIntro'));
+        $web->get('/book/{b_id}/intro', array($this, 'bookIntro'));
 
-        $api->get('/comment/list', array($this, 'commentList'));
-        $api->post('/comment/add', array($this, 'commentAdd'));
-        $api->get('/comment/{c_id}/delete', array($this, 'commentDelete'));
+        $web->get('/comment/list', array($this, 'commentList'));
+        $web->post('/comment/add', array($this, 'commentAdd'));
+        $web->get('/comment/{c_id}/delete', array($this, 'commentDelete'));
 
-        $api->get('/notice/{n_id}', array($this, 'noticeItem'));
-        $api->get('/notice', array($this, 'notice'));
+        $web->get('/notice/{n_id}', array($this, 'noticeItem'));
+        $web->get('/notice', array($this, 'notice'));
 
-        $api->get('/banner', array($this, 'banner'));
+        $web->get('/banner', array($this, 'banner'));
 
-        $api->get('/preview/{p_id}/{title}', array($this, 'previewPart'));
+        $web->get('/preview/{p_id}/{title}', array($this, 'previewPart'));
 
-        return $api;
+        return $web;
     }
 
     public function notice(Application $app)
@@ -123,7 +123,7 @@ class WebController implements ControllerProviderInterface
 
     public function previewPart(Request $req, Application $app, $p_id, $title)
     {
-        $p = new \Story\Model\Part($p_id);
+        $p = new Part($p_id);
         if (!$p->isOpened()) {
             $app->abort(404);
         }

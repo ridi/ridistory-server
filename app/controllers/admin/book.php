@@ -56,7 +56,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
                     if ($book['end_action_flag'] == 'ALL_CHARGED') {
                         $status = "잠김";
                     } else {
-                        if ($book['end_action_flag'] == 'CLOSED') {
+                        if ($book['end_action_flag'] == 'ALL_CLOSED' || $book['end_action_flag'] == 'SALES_CLOSED') {
                             $status = "비공개";
                         }
                     }

@@ -39,8 +39,11 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
                     case 'ALL_CHARGED':
                         $ds['status'] = "완결(모두 잠금)";
                         break;
-                    case 'CLOSED':
-                        $ds['status'] = "게시종료(비공개)";
+                    case 'SALES_CLOSED':
+                        $ds['status'] = "판매종료(파트 비공개";
+                        break;
+                    case 'ALL_CLOSED':
+                        $ds['status'] = "게시종료(전체 비공개)";
                         break;
                 }
             }

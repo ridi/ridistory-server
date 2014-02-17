@@ -3,6 +3,7 @@ namespace Story\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\PartComment;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -140,7 +141,7 @@ EOT;
 
     public static function commentDelete(Request $req, Application $app, $c_id)
     {
-        \Story\Model\PartComment::delete($c_id);
+        PartComment::delete($c_id);
         $app['session']->getFlashBag()->add('alert', array('info' => '댓글이 삭제되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/comment/list');
         return $app->redirect($redirect_url);
@@ -435,4 +436,3 @@ function array_move_keys(&$src, &$dst, array $keys)
         unset($src[$k1]);
     }
 }
-
