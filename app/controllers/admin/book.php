@@ -112,7 +112,8 @@ class AdminBookControllerProvider implements ControllerProviderInterface
     public function bookAdd(Request $req, Application $app)
     {
         $b_id = Book::create();
-        $app['session']->set('alert', array('success' => '책이 추가되었습니다.'));
+
+        $app['session']->getFlashBag()->add('alert', array('success' => '책이 추가되었습니다.'));
         return $app->redirect('/admin/book/' . $b_id);
     }
 
@@ -145,7 +146,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         Book::update($id, $inputs);
         Book::updateIntro($id, $intro);
 
-        $app['session']->set('alert', array('info' => '책이 수정되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '책이 수정되었습니다.'));
         return $app->redirect('/admin/book/' . $id);
     }
 
@@ -156,7 +157,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
             return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
         }
         Book::delete($id);
-        $app['session']->set('alert', array('info' => '책이 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '책이 삭제되었습니다.'));
         return $app->json(array('success' => true));
     }
 }

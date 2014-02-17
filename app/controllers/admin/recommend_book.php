@@ -39,7 +39,7 @@ class AdminRecommendBookControllerProvider implements ControllerProviderInterfac
     {
         $b_id = $req->get('b_id');
         $rb_id = RecommendBook::create($b_id);
-        $app['session']->set('alert', array('success' => '작가의 다른 작품이 추가되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('success' => '작가의 다른 작품이 추가되었습니다.'));
         return $app->redirect('/admin/recommend_book/' . $rb_id);
     }
 
@@ -48,7 +48,7 @@ class AdminRecommendBookControllerProvider implements ControllerProviderInterfac
         $inputs = $req->request->all();
         $recommend_book = RecommendBook::get($id);
         RecommendBook::update($id, $inputs);
-        $app['session']->set('alert', array('info' => '작가의 다른 작품이 수정되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '작가의 다른 작품이 수정되었습니다.'));
         return $app->redirect('/admin/book/' . $recommend_book['b_id']);
     }
 
@@ -56,7 +56,7 @@ class AdminRecommendBookControllerProvider implements ControllerProviderInterfac
     {
         $recommend_book = RecommendBook::get($id);
         RecommendBook::delete($id);
-        $app['session']->set('alert', array('info' => '작가의 다른 작품이 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '작가의 다른 작품이 삭제되었습니다.'));
         return $app->redirect('/admin/book/' . $recommend_book['b_id']);
     }
 }

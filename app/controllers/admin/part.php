@@ -39,7 +39,7 @@ class AdminPartControllerProvider implements ControllerProviderInterface
     {
         $b_id = $req->get('b_id');
         $p_id = Part::create($b_id);
-        $app['session']->set('alert', array('success' => '파트가 추가되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('success' => '파트가 추가되었습니다.'));
         return $app->redirect('/admin/part/' . $p_id);
     }
 
@@ -48,7 +48,7 @@ class AdminPartControllerProvider implements ControllerProviderInterface
         $inputs = $req->request->all();
         $part = Part::get($id);
         Part::update($id, $inputs);
-        $app['session']->set('alert', array('info' => '파트가 수정되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '파트가 수정되었습니다.'));
         return $app->redirect('/admin/book/' . $part['b_id']);
     }
 
@@ -56,7 +56,7 @@ class AdminPartControllerProvider implements ControllerProviderInterface
     {
         $part = Part::get($id);
         Part::delete($id);
-        $app['session']->set('alert', array('info' => '파트가 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '파트가 삭제되었습니다.'));
         return $app->redirect('/admin/book/' . $part['b_id']);
     }
 }

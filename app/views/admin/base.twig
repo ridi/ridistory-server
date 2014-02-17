@@ -65,14 +65,14 @@
 					</div>
 				</div>
 			</div>
-			{% if alert is defined %}
-				{% for key in alert|keys %}
-				<div class='alert alert-{{ key }}'>
-                    <button class="close" data-dismiss="alert">&times;</button>
-				    {{ alert[key] }}
-    		    </div>
-				{% endfor %}
-			{% endif %}
+            {% for alert in app.session.getFlashBag.get('alert') %}
+                {% for key in alert|keys %}
+                    <div class='alert alert-{{ key }}'>
+                        <button class="close" data-dismiss="alert">&times;</button>
+                        {{ alert[key] }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
             
             {% block container %}
             {% endblock %}

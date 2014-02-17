@@ -36,7 +36,7 @@ class AdminStoryPlusBookIntroControllerProvider implements ControllerProviderInt
     {
         $b_id = $req->get('b_id');
         $intro_id = StoryPlusBookIntro::create($b_id);
-        $app['session']->set('alert', array('success' => '소개가 추가되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('success' => '소개가 추가되었습니다.'));
         return $app->redirect('/admin/storyplusbook_intro/' . $intro_id);
     }
 
@@ -45,7 +45,7 @@ class AdminStoryPlusBookIntroControllerProvider implements ControllerProviderInt
         $inputs = $req->request->all();
         $intro = StoryPlusBookIntro::get($id);
         StoryPlusBookIntro::update($id, $inputs);
-        $app['session']->set('alert', array('info' => '소개가 수정되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '소개가 수정되었습니다.'));
         return $app->redirect('/admin/storyplusbook/' . $intro['b_id']);
     }
 
@@ -53,7 +53,7 @@ class AdminStoryPlusBookIntroControllerProvider implements ControllerProviderInt
     {
         $intro = StoryPlusBookIntro::get($id);
         StoryPlusBookIntro::delete($id);
-        $app['session']->set('alert', array('info' => '소개가 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '소개가 삭제되었습니다.'));
         return $app->redirect('/admin/storyplusbook/' . $intro['b_id']);
     }
 }

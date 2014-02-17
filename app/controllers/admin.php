@@ -150,7 +150,7 @@ EOT;
     public static function commentDelete(Request $req, Application $app, $c_id)
     {
         \Story\Model\PartComment::delete($c_id);
-        $app['session']->set('alert', array('info' => '댓글이 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '댓글이 삭제되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/comment/list');
         return $app->redirect($redirect_url);
     }
@@ -256,7 +256,7 @@ EOT;
 
         $app['db']->update('notice', $inputs, array('id' => $n_id));
 
-        $app['session']->set('alert', array('info' => '공지사항이 수정되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '공지사항이 수정되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/notice/list');
         return $app->redirect($redirect_url);
     }
@@ -271,7 +271,7 @@ EOT;
     public static function noticeDelete(Request $req, Application $app, $n_id)
     {
         $app['db']->delete('notice', array('id' => $n_id));
-        $app['session']->set('alert', array('warning' => '공지사항이 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('warning' => '공지사항이 삭제되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/notice/list');
         return $app->redirect($redirect_url);
     }
@@ -298,7 +298,7 @@ EOT;
 
         $app['db']->update('banner', $inputs, array('id' => $banner_id));
 
-        $app['session']->set('alert', array('info' => '배너가 수정되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '배너가 수정되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/banner/list');
         return $app->redirect($redirect_url);
     }
@@ -313,7 +313,7 @@ EOT;
     public static function bannerDelete(Request $req, Application $app, $banner_id)
     {
         $app['db']->delete('banner', array('id' => $banner_id));
-        $app['session']->set('alert', array('warning' => '배너가 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('warning' => '배너가 삭제되었습니다.'));
         return $app->redirect('/admin/banner/list');
     }
 

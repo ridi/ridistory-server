@@ -61,7 +61,7 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
     public function cpAccountAdd(Request $req, Application $app)
     {
         $cp_id = CpAccount::create();
-        $app['session']->set('alert', array('success' => 'CP 회원이 추가되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('success' => 'CP 회원이 추가되었습니다.'));
         return $app->redirect('/admin/cp_account/' . $cp_id);
     }
 
@@ -71,7 +71,7 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
 
         CpAccount::update($id, $inputs);
 
-        $app['session']->set('alert', array('info' => 'CP 회원이 수정되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => 'CP 회원 정보가 수정되었습니다.'));
         return $app->redirect('/admin/cp_account/' . $id);
     }
 
@@ -82,7 +82,7 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
             return $app->json(array('error' => '해당 CP 회원의 책이 있으면 CP 회원을 삭제할 수 없습니다.'));
         }
         CpAccount::delete($id);
-        $app['session']->set('alert', array('info' => 'CP 회원이 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => 'CP 회원이 삭제되었습니다.'));
         return $app->json(array('success' => true));
     }
 }
