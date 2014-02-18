@@ -29,7 +29,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
         $today = strtotime("now");
         foreach ($download_sales as &$ds) {
             $is_ongoing = strtotime($ds['begin_date']) <= $today && strtotime($ds['end_date']) >= $today;
-            if ($is_ongoing && $ds['is_completed'] == false) {
+            if ($is_ongoing) {
                 $ds['status'] = "연재중(".$ds['open_part_count']."/".$ds['total_part_count'].")";
             } else {
                 switch ($ds['end_action_flag']) {

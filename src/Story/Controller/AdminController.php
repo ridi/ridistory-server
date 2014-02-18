@@ -123,7 +123,7 @@ EOT;
         $num_comments = $app['db']->fetchColumn('select count(*) from part_comment');
 
         $app['twig']->addFilter(
-            new Twig_SimpleFilter('long2ip', function ($ip) {
+            new \Twig_SimpleFilter('long2ip', function($ip) {
                 return long2ip($ip);
             })
         );
