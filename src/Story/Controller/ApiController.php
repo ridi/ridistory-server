@@ -211,7 +211,9 @@ class ApiController implements ControllerProviderInterface
             $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
 
             if ($show_all && $book['end_action_flag'] == 'ALL_FREE') {
-                $part['price'] = 0;
+                $part['is_locked'] = 0;
+            } else if ($show_all && $book['end_action_flag'] == 'ALL_CHARGED') {
+                $part['is_locked'] = 1;
             }
 
             $part['is_purchased'] = 0;
