@@ -81,6 +81,8 @@ EOT;
             // 시간에 따라 잠금여부 추가
             if ($active_lock) {
                 $p['is_locked'] = (strtotime($today) < strtotime($p['begin_date']) ? 1 : 0);
+            } else {
+                $p['is_locked'] = 0;
             }
         }
 

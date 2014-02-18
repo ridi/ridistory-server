@@ -3,6 +3,7 @@ namespace Story\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\Buyer;
 use Story\Model\RecommendBook;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -182,7 +183,7 @@ class ApiController implements ControllerProviderInterface
          * @var $v App Api Version (cf. v > 2 : Use Lock Func)
          */
         $v = intval($req->get('v', '1'));
-        $active_lock = ($v > 2) && ($book['is_active_lock'] == 0);
+        $active_lock = ($v > 2) && ($book['is_active_lock'] == 1);
 
         // 완결되었고, 종료 후 액션이 모두 공개 혹은 모두 잠금이면 파트 모두 보임
         $show_all = false;
@@ -201,11 +202,25 @@ class ApiController implements ControllerProviderInterface
             60 * 10
         );
 
+        $purchased_flags = null;
+        $u_id = intval($req->get('u_id', '0'));
+        if (Buyer::validateUid($u_id) > 0) {
+            $purchased_flags = Buyer::getPurchasedListByParts($u_id, $parts);
+        }
         foreach ($parts as &$part) {
             $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
 
             if ($show_all && $book['end_action_flag'] == 'ALL_FREE') {
                 $part['price'] = 0;
+            }
+
+            $part['is_purchased'] = 0;
+            foreach ($purchased_flags as $pf) {
+                if ($pf['p_id'] == $part['id']) {
+                    $part['is_purchased'] = 1;
+                    unset($pf);
+                    break;
+                }
             }
         }
 
@@ -370,7 +385,7 @@ class ApiController implements ControllerProviderInterface
                 $store_id = $b['store_id'];
             }
         } else {
-            $p = new \Story\Model\Part($id);
+            $p = new Part($id);
             if ($p->isOpened()) {
                 $store_id = $p->getStoreId();
             }
