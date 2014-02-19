@@ -77,7 +77,7 @@ class WebController implements ControllerProviderInterface
         $p_id = $req->get('p_id');
         $part = Part::get($p_id);
         if ($part === false) {
-            return '있지도 않은 스토리다.';
+            return '오류가 발생하였습니다. 다시 시도해주세요.';
         }
 
         $device_id = $req->get('device_id');
