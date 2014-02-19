@@ -138,7 +138,7 @@ CREATE TABLE `part` (
   `title` varchar(256) NOT NULL,
   `seq` int(11) NOT NULL,
   `price` int(11) NOT NULL COMMENT '가격 (단위: 코인)',
-  `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   KEY `id` (`id`,`seq`) USING BTREE,
@@ -171,7 +171,7 @@ CREATE TABLE `purchase_history` (
   `coin_amount` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `unique_purchase` (`u_id`,`p_id`,`is_paid`)
+  UNIQUE KEY `unique_purchase` (`u_id`,`p_id`,`is_paid`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
