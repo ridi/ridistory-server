@@ -64,7 +64,7 @@ CREATE TABLE `coin_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `u_id` int(11) NOT NULL,
   `amount` int(11) NOT NULL COMMENT 'Buy/Use amount of coin',
-  `source` enum('INAPP','RIDI','EVENT','USE','REFUND') NOT NULL COMMENT 'INAPP: 인앱결제, RIDI: 리디캐시 결제, EVENT: 이벤트용 코인, USE: 코인사용(책 구매), REFUND: 환불',
+  `source` enum('INAPP','RIDI','EVENT','USE','REFUND','WITHDRAW') NOT NULL COMMENT 'INAPP: 인앱결제, RIDI: 리디캐시 결제, EVENT: 이벤트용 코인, USE: 코인사용(책 구매), REFUND: 환불, WITHDRAW: 회수(취소)',
   `ph_id` int(11) DEFAULT NULL COMMENT 'Purchase History ID. (Only for USE)',
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
