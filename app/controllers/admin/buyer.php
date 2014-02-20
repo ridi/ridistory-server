@@ -13,6 +13,8 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
 
         $admin->get('list', array($this, 'buyerList'));
         $admin->get('{id}', array($this, 'buyerDetail'));
+        $admin->post('{id}/coin/add', array($this, 'buyerCoinAdd'));
+        $admin->post('{id}/coin/reduce', array($this, 'buyerCoinReduce'));
 
         return $admin;
     }
@@ -48,5 +50,52 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
                 'total_coin_count' => (array('in' => $total_coin_in, 'out' => $total_coin_out))
             )
         );
+    }
+
+    public function buyerCoinAdd(Request $req, Application $app, $id)
+    {
+        $source = $req->get('source');
+        $coin_amount = $req->get('coin_amount');
+
+        if ($source == '' || $coin_amount == 0) {
+            $app['session']->getFlashBag()->add('alert', array('error' => '코인을 추가하지 못했습니다. (코인 추가 이유가 없거나, 추가하려는 코인이 0개 입니다.)'));
+        }  else {
+            $r = Buyer::addCoin($id, $coin_amount, $source);
+            if ($r === 1) {
+                $app['session']->getFlashBag()->add('alert', array('success' => $coin_amount.'코인이 추가되었습니다.'));
+            } else {
+                $app['session']->getFlashBag()->add('alert', array('error' => '코인을 추가하지 못했습니다. (DB 오류)'));
+            }
+        }
+
+        return $app->json(array('success' => true));
+    }
+
+    public function buyerCoinReduce(Request $req, Application $app, $id)
+    {
+        $source = $req->get('source');
+        $coin_amount = $req->get('coin_amount');
+        if ($coin_amount > 0) {
+            $coin_amount *= -1;
+        }
+
+        if ($source == '' || $coin_amount == 0) {
+            $app['session']->getFlashBag()->add('alert', array('error' => '코인을 감소시키지지 못했습니다. (코인 감소 이유가 없거나, 감소시키려는 코인이 0개 입니다.)'));
+        }  else {
+            $today = date('Y-m-d H:i:s');
+            $r = $app['db']->insert('coin_history', array(
+                    'u_id' => $id,
+                    'amount' => $coin_amount,
+                    'source' => $source,
+                    'timestamp' => $today
+                ));
+            if ($r) {
+                $app['session']->getFlashBag()->add('alert', array('success' => abs($coin_amount).'코인을 감소하였습니다.'));
+            } else {
+                $app['session']->getFlashBag()->add('alert', array('error' => '코인을 감소하지 못했습니다. (DB 오류)'));
+            }
+        }
+
+        return $app->json(array('success' => true));
     }
 }

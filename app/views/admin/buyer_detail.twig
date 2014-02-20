@@ -8,19 +8,38 @@
     </colgroup>
     <tr>
         <th>유저 ID</th>
-        <td><input type='text' class='input-xlarge' value='{{ buyer.id }}' disabled></input></td>
+        <td><input type='text' class='input-xlarge' value='{{ buyer.id }}' disabled /></td>
     </tr>
     <tr>
         <th>구글 계정</th>
-        <td><input type='text' class='input-xlarge' value='{{ buyer.google_id }}' disabled></input></td>
+        <td><input type='text' class='input-xlarge' value='{{ buyer.google_id }}' disabled /></td>
     </tr>
     <tr>
         <th>구글 계정 등록일</th>
-        <td><input type='text' class='input-xlarge' value='{{ buyer.google_reg_date }}' disabled></input></td>
+        <td><input type='text' class='input-xlarge' value='{{ buyer.google_reg_date }}' disabled /></td>
     </tr>
     <tr>
         <th>남은 코인 수</th>
-        <td><input type='text' class='input-xlarge' value='{{ buyer.coin_balance }}' disabled></input></td>
+        <td><input type='text' class='input-xlarge' value='{{ buyer.coin_balance }}' disabled /></td>
+    </tr>
+    <tr>
+        <th>코인 추가</th>
+        <td>
+            <select id='coin_add_source'>
+                <option value='EVENT' selected>이벤트</option>
+            </select>
+            <input type='text' class='input' id='coin_add_amount' placeholder='추가할 코인 갯수를 입력해주세요.' /> <button class='btn btn-success' style='margin-top:-11px;'>추가</button>
+        </td>
+    </tr>
+    <tr>
+        <th>코인 감소</th>
+        <td>
+            <select id='coin_reduce_source'>
+                <option value='WITHDRAW' selected>회수</option>
+                <option value='REFUND'>환불</option>
+            </select>
+            <input type='text' class='input' id='coin_reduce_amount' placeholder='감소시킬 코인 갯수를 입력해주세요.' /> <button class='btn btn-danger' style='margin-top:-11px;'>감소</button>
+        </td>
     </tr>
 </table>
 
@@ -37,7 +56,17 @@
                 <tr>
                     <td>{{ coin.timestamp }}</td>
                     <td>{{ coin.amount }}</td>
-                    <td>{{ coin.source }}</td>
+                    <td>
+                        {% if coin.source == 'INAPP'  %}
+                            인앱결제
+                        {% elseif coin.source == 'RIDI' %}
+                            리디캐시
+                        {% elseif coin.source == 'EVENT' %}
+                            이벤트
+                        {% else %}
+                            기타
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </table>
@@ -51,18 +80,77 @@
                 <td><b>책 ID</b></td>
                 <td><b>책 제목</b></td>
                 <td><b>파트 제목</b></td>
+                <td><b>사용처</b></td>
             </tr>
             {% for coin in coin_out %}
                 <tr>
                     <td>{{ coin.timestamp }}</td>
                     <td>{{ coin.amount }}</td>
                     <td>{{ coin.b_id }}</td>
-                    <td><a href="/admin/book/{{  coin.b_id }}">{{ coin.b_title }}</a></td>
-                    <td><a href="/admin/part/{{ coin.p_id }}">{{ coin.seq }}. {{ coin.title }}</a></td>
+                    <td><a href="/admin/book/{{ coin.b_id }}">{{ coin.b_title }}</a></td>
+                    <td>
+                        {% if coin.p_id != '' %}
+                            <a href="/admin/part/{{ coin.p_id }}">{{ coin.seq }}. {{ coin.title }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if coin.source == 'USE'  %}
+                            책구매
+                        {% elseif coin.source == 'REFUND' %}
+                            환불
+                        {% elseif coin.source == 'WITHDRAW' %}
+                            회수
+                        {% else %}
+                            기타
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </table>
     </div>
 </section>
 
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+    <script>
+        $(function() {
+
+            $('.btn-success').click(function() {
+                var coin_source = $('#coin_add_source').val();
+                var coin_amount = $('#coin_add_amount').val();
+                if (confirm('코인을 추가하시겠습니까?')) {
+                    $.post('/admin/buyer/{{ buyer.id }}/coin/add', {'source': coin_source, 'coin_amount': coin_amount}, function(r) {
+                        if (r.error) {
+                            alert(r.error);
+                        } else {
+                            location.href = '/admin/buyer/{{ buyer.id }}';
+                        }
+                    })
+                }
+                return false;
+            });
+
+            $('.btn-danger').click(function() {
+                var coin_source = $('#coin_reduce_source').val();
+                var coin_amount = $('#coin_reduce_amount').val();
+
+                if (coin_amount > {{ buyer.coin_balance }}) {
+                    alert('감소시키려는 코인이, 현재 보유하고 있는 코인보다 많습니다.');
+                } else {
+                    if (confirm('코인을 감소시키겠습니까?')) {
+                        $.post('/admin/buyer/{{ buyer.id }}/coin/reduce', {'source': coin_source, 'coin_amount': coin_amount}, function(r) {
+                            if (r.error) {
+                                alert(r.error);
+                            } else {
+                                location.href = '/admin/buyer/{{ buyer.id }}';
+                            }
+                        })
+                    }
+                    return false;
+                }
+            });
+        });
+    </script>
 {% endblock %}

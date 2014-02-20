@@ -27,7 +27,8 @@ class ApiController implements ControllerProviderInterface
         $api = $app['controllers_factory'];
 
         $api->get('/buyer/auth', array($this, 'buyerAuthGoogleAccount'));
-        $api->get('/buyer/coin', array($this, 'buyerCoinBalance'));
+        $api->get('/buyer/{u_id}/coin', array($this, 'buyerCoinBalance'));
+        $api->get('/buyer/{u_id}/coin/add', array($this, 'buyerCoinAdd'));
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
@@ -93,11 +94,16 @@ class ApiController implements ControllerProviderInterface
         return $app->json($buyer);
     }
 
-    public function buyerCoinBalance(Request $req, Application $app)
+    public function buyerCoinBalance(Request $req, Application $app, $u_id)
     {
-        $u_id = $req->get('u_id');
         $coin_balance = Buyer::getCoinBalance($u_id);
         return $app->json(array('coin_balance' => $coin_balance));
+    }
+
+    public function buyerCoinAdd(Request $req, Application $app, $u_id)
+    {
+        //TODO: 인앱 검증 + 코인 증가
+        return $app->json(array('success' => 'true'));
     }
 
     public function versionStoryPlusBook(Application $app)
@@ -250,6 +256,10 @@ class ApiController implements ControllerProviderInterface
         $show_from_end = ($book['end_action_flag'] == 'ALL_FREE' || $book['end_action_flag'] == 'ALL_CHARGED' ? 1 : 0);
         if ($is_completed && $show_from_end) {
             $show_all = true;
+        }
+
+        if ($is_completed) {
+            $book['is_completed'] = 1;
         }
 
         $cache_key = 'part_list_' . $active_lock . '_' . $show_all . '_';

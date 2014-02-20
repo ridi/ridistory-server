@@ -75,6 +75,7 @@ EOT;
         foreach ($ar as &$b) {
             $b['last_update'] = 0;
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
+            $b['is_completed'] = 1;
         }
 
         return $ar;
