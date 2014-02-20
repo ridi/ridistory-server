@@ -329,10 +329,10 @@ EOT;
         $total_downloaded = $app['db']->fetchColumn('select count(*) from stat_download');
 
         $sql = <<<EOT
-select part.id p_id, part.title, download_count from part
+select part.id p_id, b.title b_title, part.title p_title, download_count from part
  join (select p_id, count(p_id) download_count from stat_download
- 		group by p_id order by count(p_id) desc limit 20) stat
- on part.id = stat.p_id
+ 		group by p_id order by count(p_id) desc limit 20) stat on part.id = stat.p_id
+ left join (select id, title from book) b on b.id = part.b_id
  order by download_count desc
 EOT;
         $download_stat = $app['db']->fetchAll($sql);
@@ -367,7 +367,7 @@ EOT;
 
         // 댓글 통계
         $sql = <<<EOT
-select b.title, seq, part_title, num_comment from book b
+select b.title book_title, seq, part_title, num_comment from book b
  join (select p.b_id, p.seq, p.title part_title, count(*) num_comment from part_comment c join part p on p.id = c.p_id group by p_id) c on c.b_id = b.id 
 EOT;
 
