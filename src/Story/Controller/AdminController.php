@@ -119,8 +119,13 @@ EOT;
         $limit = 50;
         $offset = $cur_page * $limit;
 
-        $comments = $app['db']->fetchAll("select * from part_comment order by id desc limit {$offset}, {$limit}");
-        $num_comments = $app['db']->fetchColumn('select count(*) from part_comment');
+        $sql = <<<EOT
+select pc.*, p.seq, b.title from part_comment pc
+ left join (select id, b_id, seq from part) p on p.id = pc.p_id
+ left join (select id, title from book) b on b.id = p.b_id
+order by id desc limit {$offset}, {$limit}
+EOT;
+        $comments = $app['db']->fetchAll($sql);
 
         $app['twig']->addFilter(
             new \Twig_SimpleFilter('long2ip', function($ip) {
@@ -132,9 +137,7 @@ EOT;
             '/admin/comment_list.twig',
             array(
                 'comments' => $comments,
-                'num_comments' => $num_comments,
-                'cur_page' => $cur_page,
-                'num_pages' => $num_comments / $limit,
+                'cur_page' => $cur_page
             )
         );
     }
