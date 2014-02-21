@@ -4,7 +4,7 @@ namespace Story\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
-use Story\Model\RecommendBook;
+use Story\Model\RecommendedBook;
 use Symfony\Component\HttpFoundation\Request;
 
 use Story\Model\Book;
@@ -206,15 +206,15 @@ class ApiController implements ControllerProviderInterface
 
         $book['parts'] = $parts;
 
-        $recommend_books = $app['cache']->fetch(
-            'recommend_book_list_' . $b_id,
+        $recommended_books = $app['cache']->fetch(
+            'recommended_book_list_' . $b_id,
             function () use ($b_id) {
-                return RecommendBook::getRecommendBookListByBid($b_id);
+                return RecommendedBook::getRecommendedBookListByBid($b_id);
             },
             60 * 10
         );
 
-        $book['recommend_books'] = $recommend_books;
+        $book['recommended_books'] = $recommended_books;
 
         $device_id = $req->get('device_id');
         $book['interest'] = ($device_id === null) ? false : UserInterest::hasInterestInBook($device_id, $b_id);

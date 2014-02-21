@@ -19,7 +19,7 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Story\Provider\CacheServiceProvider());
 
 require_once 'controllers/admin/book.php';
-require_once 'controllers/admin/recommend_book.php';
+require_once 'controllers/admin/recommended_book.php';
 require_once 'controllers/admin/buyer.php';
 require_once 'controllers/admin/cp_account.php';
 require_once 'controllers/admin/download_sales.php';
@@ -35,7 +35,7 @@ $app->mount('/admin/buyer', new AdminBuyerControllerProvider());
 $app->mount('/admin/cp_account', new AdminCpAccountControllerProvider());
 $app->mount('/admin/download_sales', new AdminDownloadSalesControllerProvider());
 $app->mount('/admin/part', new AdminPartControllerProvider());
-$app->mount('/admin/recommend_book', new AdminRecommendBookControllerProvider());
+$app->mount('/admin/recommended_book', new AdminRecommendedBookControllerProvider());
 $app->mount('/admin/storyplusbook', new AdminStoryPlusBookControllerProvider());
 $app->mount('/admin/storyplusbook_intro', new AdminStoryPlusBookIntroControllerProvider());
 

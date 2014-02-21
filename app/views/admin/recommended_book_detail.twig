@@ -1,7 +1,7 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-    <form action="/admin/recommend_book/{{ recommend_book.id }}/edit" method='POST'>
+    <form action="/admin/recommended_book/{{ recommended_book.id }}/edit" method='POST'>
         <table class='table'>
             <colgroup>
                 <col class="span1">
@@ -9,17 +9,17 @@
             </colgroup>
             <tr>
                 <th>책 ID</th>
-                <td>{{ recommend_book.b_id }}</td>
+                <td>{{ recommended_book.b_id }}</td>
             </tr>
             <tr>
                 <th>스토어 ID</th>
-                <td><input type='text' class='input-small' name='store_id' value='{{ recommend_book.store_id }}' /></td>
+                <td><input type='text' class='input-small' name='store_id' value='{{ recommended_book.store_id }}' /></td>
             </tr>
             <tr>
                 <th>표지</th>
                 <td>
-                    {% if recommend_book.store_id != '' %}
-                        <img src='{{ recommend_book.cover_url }}' style="height:200px;" />
+                    {% if recommended_book.store_id != '' %}
+                        <img src='{{ recommended_book.cover_url }}' style="height:200px;" />
                     {% else %}
                         표지 이미지가 존재하지 않습니다. (스토어 ID를 등록해주세요.)
                     {% endif %}
@@ -27,7 +27,7 @@
             </tr>
             <tr>
                 <th>도서명</th>
-                <td><input type='text' class='input-xlarge' name='title' value='{{ recommend_book.title }}' /></td>
+                <td><input type='text' class='input-xlarge' name='title' value='{{ recommended_book.title }}' /></td>
             </tr>
         </table>
         <div class='form-actions'>
@@ -64,7 +64,7 @@
 
             $('.btn-danger').click(function() {
                 if (confirm('삭제하시겠습니까?')) {
-                    location.href = '/admin/recommend_book/{{ recommend_book.id }}/delete';
+                    location.href = '/admin/recommended_book/{{ recommended_book.id }}/delete';
                 }
                 return false;
             });

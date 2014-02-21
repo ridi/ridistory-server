@@ -5,7 +5,7 @@ use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Model\Book;
 use Story\Model\CpAccount;
-use Story\Model\RecommendBook;
+use Story\Model\RecommendedBook;
 use Story\Model\Part;
 
 class AdminBookControllerProvider implements ControllerProviderInterface
@@ -51,7 +51,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
     {
         $book = Book::get($id);
         $cp_accounts = CpAccount::getCpList();
-        $recommend_books = RecommendBook::getRecommendBookListByBid($id);
+        $recommended_books = RecommendedBook::getRecommendedBookListByBid($id);
 
         $active_lock = $book['is_active_lock'];
         $parts = Part::getListByBid($id, false, $active_lock, true);
@@ -85,7 +85,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
                 'book' => $book,
                 'cp_accounts' => $cp_accounts,
                 'parts' => $parts,
-                'recommend_books' => $recommend_books,
+                'recommended_books' => $recommended_books,
                 'intro' => $intro,
             )
         );
