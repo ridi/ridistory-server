@@ -5,7 +5,7 @@
         <h3>매출 확인</h3>
         <blockquote>
             <p>총 판매액: {{ header.total_sales * 100 }}원</p>
-            <p>총 정산액: {{ header.total_royalty_sales }}원</p>
+            <p>총 정산액: {{ header.total_sales_royalty }}원</p>
         </blockquote>
         <blockquote>
             <p>누적 무료 다운로드: {{ header.total_free_download }}건</p>
@@ -35,8 +35,8 @@
                 <td>{{ ds.title }}</td>
                 <td>{{ ds.cp_name }}</td>
                 <td>{{ ds.royalty_percent }}</td>
-                <td>{{ ds.status }}</td>
-                <td>{{ ds.begin_date }}</td>
+                <td>{{ get_status(ds.begin_date, ds.end_date, ds.end_action_flag, ds.open_part_count, ds.total_part_count) }}</td>
+                <td>{{ ds.begin_date|simple_date_format }}</td>
                 <td>{{ ds.free_download }}</td>
                 <td>{{ ds.charged_download }}</td>
                 <td>{{ ds.total_sales * 100 }}</td>

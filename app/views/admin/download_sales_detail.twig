@@ -54,14 +54,14 @@
                             <td>{{ dsd.price * 100 }}</td>
                             <td>{{ dsd.free_download }}</td>
                             <td>{{ dsd.charged_download }}</td>
-                            <td>{{ dsd.total_coin_amount }}</td>
+                            <td>{{ dsd.total_coin_amount * 100 }}</td>
                         </tr>
                     {% endfor %}
                         <tr class="info">
                             <td colspan='2'><b>총</b></td>
                             <td><b>{{ footer.total_free_download }}</b></td>
                             <td><b>{{ footer.total_charged_download }}</b></td>
-                            <td><b>{{ footer.total_sales }}원</b></td>
+                            <td><b>{{ footer.total_sales * 100 }}원</b></td>
                         </tr>
                     </tbody>
                 </table>
