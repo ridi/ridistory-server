@@ -39,7 +39,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
             $progress2 = 0;
             if ($book['total_part_count'] > 0) {
                 $progress = 100 * $book['open_part_count'] / $book['total_part_count'];
-                $progress2 = 100 * ($book['uploaded_part_count'] - $book['open_part_count']) / $book['total_part_count'];
+                $progress2 = 100 * $book['uploaded_part_count'] / $book['total_part_count'];
             }
             $book['progress'] = $progress . '%';
             $book['progress2'] = $progress2 . '%';
