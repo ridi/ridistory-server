@@ -11,12 +11,20 @@ class AdminRecommendBookControllerProvider implements ControllerProviderInterfac
     {
         $admin = $app['controllers_factory'];
 
-        $admin->get('add', array($this, 'recommendBookAdd'));
+        $admin->get('add', array($this, 'addRecommendBook'));
         $admin->get('{id}', array($this, 'recommendBookDetail'));
-        $admin->get('{id}/delete', array($this, 'recommendBookDelete'));
-        $admin->post('{id}/edit', array($this, 'recommendBookEdit'));
+        $admin->get('{id}/delete', array($this, 'deleteRecommendBook'));
+        $admin->post('{id}/edit', array($this, 'editRecommendBook'));
 
         return $admin;
+    }
+
+    public function addRecommendBook(Request $req, Application $app)
+    {
+        $b_id = $req->get('b_id');
+        $rb_id = RecommendBook::create($b_id);
+        $app['session']->getFlashBag()->add('alert', array('success' => '작가의 다른 작품이 추가되었습니다.'));
+        return $app->redirect('/admin/recommend_book/' . $rb_id);
     }
 
     public function recommendBookDetail(Request $req, Application $app, $id)
@@ -25,28 +33,20 @@ class AdminRecommendBookControllerProvider implements ControllerProviderInterfac
         return $app['twig']->render('admin/recommend_book_detail.twig', array('recommend_book' => $recommend_book));
     }
 
-    public function recommendBookAdd(Request $req, Application $app)
+    public function deleteRecommendBook(Request $req, Application $app, $id)
     {
-        $b_id = $req->get('b_id');
-        $rb_id = RecommendBook::create($b_id);
-        $app['session']->getFlashBag()->add('alert', array('success' => '작가의 다른 작품이 추가되었습니다.'));
-        return $app->redirect('/admin/recommend_book/' . $rb_id);
+        $recommend_book = RecommendBook::get($id);
+        RecommendBook::delete($id);
+        $app['session']->getFlashBag()->add('alert', array('info' => '작가의 다른 작품이 삭제되었습니다.'));
+        return $app->redirect('/admin/book/' . $recommend_book['b_id']);
     }
 
-    public function recommendBookEdit(Request $req, Application $app, $id)
+    public function editRecommendBook(Request $req, Application $app, $id)
     {
         $inputs = $req->request->all();
         $recommend_book = RecommendBook::get($id);
         RecommendBook::update($id, $inputs);
         $app['session']->getFlashBag()->add('alert', array('info' => '작가의 다른 작품이 수정되었습니다.'));
-        return $app->redirect('/admin/book/' . $recommend_book['b_id']);
-    }
-
-    public function recommendBookDelete(Request $req, Application $app, $id)
-    {
-        $recommend_book = RecommendBook::get($id);
-        RecommendBook::delete($id);
-        $app['session']->getFlashBag()->add('alert', array('info' => '작가의 다른 작품이 삭제되었습니다.'));
         return $app->redirect('/admin/book/' . $recommend_book['b_id']);
     }
 }

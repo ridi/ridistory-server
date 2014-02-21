@@ -26,37 +26,37 @@ class ApiController implements ControllerProviderInterface
          */
         $api = $app['controllers_factory'];
 
-        $api->get('/buyer/auth', array($this, 'buyerAuthGoogleAccount'));
-        $api->get('/buyer/{u_id}/coin', array($this, 'buyerCoinBalance'));
-        $api->get('/buyer/{u_id}/coin/add', array($this, 'buyerCoinAdd'));
+        $api->get('/buyer/auth', array($this, 'authBuyerGoogleAccount'));
+        $api->get('/buyer/{u_id}/coin', array($this, 'getBuyerCoinBalance'));
+        $api->get('/buyer/{u_id}/coin/add', array($this, 'addBuyerCoin'));
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
-        $api->get('/book/{b_id}', array($this, 'book'));
-        $api->get('/book/{b_id}/buy', array($this, 'bookBuy'));
+        $api->get('/book/{b_id}', array($this, 'bookDetail'));
+        $api->get('/book/{b_id}/buy', array($this, 'buyBookPart'));
 
-        $api->get('/version/storyplusbook', array($this, 'versionStoryPlusBook'));
-
-        $api->get('/storyplusbook/list', array($this, 'storyPlusBookList'));
-        $api->get('/storyplusbook/{b_id}', array($this, 'storyPlusBook'));
+        $api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userLikePart'));
+        $api->get('/user/{device_id}/part/{p_id}/unlike', array($this, 'userUnlikePart'));
 
         $api->get('/user/{device_id}/interest/list', array($this, 'userInterestList'));
-        $api->get('/user/{device_id}/interest/{b_id}/set', array($this, 'userInterestSet'));
-        $api->get('/user/{device_id}/interest/{b_id}/clear', array($this, 'userInterestClear'));
-        $api->get('/user/{device_id}/interest/{b_id}', array($this, 'userInterestGet'));
+        $api->get('/user/{device_id}/interest/{b_id}', array($this, 'getUserInterest'));
+        $api->get('/user/{device_id}/interest/{b_id}/set', array($this, 'setUserInterest'));
+        $api->get('/user/{device_id}/interest/{b_id}/clear', array($this, 'clearUserInterest'));
 
-        $api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userPartLike'));
-        $api->get('/user/{device_id}/part/{p_id}/unlike', array($this, 'userPartUnlike'));
+        $api->get('/storyplusbook/list', array($this, 'storyPlusBookList'));
+        $api->get('/storyplusbook/{b_id}', array($this, 'storyPlusBookDetail'));
 
-        $api->get('/user/{device_id}/storyplusbook/{b_id}/like', array($this, 'userStoryPlusBookLike'));
-        $api->get('/user/{device_id}/storyplusbook/{b_id}/unlike', array($this, 'userStoryPlusBookUnlike'));
+        $api->get('/user/{device_id}/storyplusbook/{b_id}/like', array($this, 'userLikeStoryPlusBook'));
+        $api->get('/user/{device_id}/storyplusbook/{b_id}/unlike', array($this, 'userUnlikeStoryPlusBook'));
 
+        $api->get('/storyplusbook/{b_id}/comment/add', array($this, 'addStoryPlusBookComment'));
         $api->get('/storyplusbook/{b_id}/comment/list', array($this, 'storyPlusBookCommentList'));
-        $api->get('/storyplusbook/{b_id}/comment/add', array($this, 'storyPlusBookCommentAdd'));
 
-        $api->get('/push_device/register', array($this, 'pushDeviceRegister'));
+        $api->get('/version/storyplusbook', array($this, 'getStoryPlusBookVersion'));
 
-        $api->get('/latest_version', array($this, 'latestVersion'));
+        $api->get('/latest_version', array($this, 'getLatestVersion'));
+
+        $api->get('/push_device/register', array($this, 'registerPushDevice'));
 
         $api->get('/validate_download', array($this, 'validatePartDownload'));
         $api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
@@ -66,7 +66,10 @@ class ApiController implements ControllerProviderInterface
         return $api;
     }
 
-    public function buyerAuthGoogleAccount(Request $req, Application $app)
+    /*
+     * Buyer & Coin
+     */
+    public function authBuyerGoogleAccount(Request $req, Application $app)
     {
         $google_id = $req->get('google_account');
         $token = $req->get('token');
@@ -94,115 +97,21 @@ class ApiController implements ControllerProviderInterface
         return $app->json($buyer);
     }
 
-    public function buyerCoinBalance(Request $req, Application $app, $u_id)
+    public function getBuyerCoinBalance(Request $req, Application $app, $u_id)
     {
         $coin_balance = Buyer::getCoinBalance($u_id);
         return $app->json(array('coin_balance' => $coin_balance));
     }
 
-    public function buyerCoinAdd(Request $req, Application $app, $u_id)
+    public function addBuyerCoin(Request $req, Application $app, $u_id)
     {
         //TODO: 인앱 검증 + 코인 증가
         return $app->json(array('success' => 'true'));
     }
 
-    public function versionStoryPlusBook(Application $app)
-    {
-        return $app->json(array('version' => '1'));
-    }
-
-    public function storyPlusBookCommentAdd(Request $req, Application $app, $b_id)
-    {
-        $device_id = $req->get('device_id');
-        $comment = trim($req->get('comment'));
-        $ip = ip2long($_SERVER['REMOTE_ADDR']);
-
-        StoryPlusBookComment::add($b_id, $device_id, $comment, $ip);
-        return $app->json(array('success' => 'true'));
-    }
-
-    public function storyPlusBookCommentList(Application $app, $b_id)
-    {
-        $comments = StoryPlusBookComment::getList($b_id);
-        return $app->json($comments);
-    }
-
-    public function storyPlusBookList(Application $app)
-    {
-        $book = $app['cache']->fetch(
-            'storyplusbook_list',
-            function () {
-                return StoryPlusBook::getOpenedBookList();
-            },
-            60 * 10
-        );
-        return $app->json($book);
-    }
-
-    public function storyPlusBook(Request $req, Application $app, $b_id)
-    {
-        $book = StoryPlusBook::get($b_id);
-        $intro = StoryPlusBookIntro::getListByBid($b_id);
-        $comment = StoryPlusBookComment::getList($b_id);
-
-        $info = array(
-            'book_detail' => $book,
-            'intro' => $intro,
-            'comment' => $comment
-        );
-        return $app->json($info);
-    }
-
-    public function bookBuy(Request $req, Application $app)
-    {
-        $u_id = $req->get('u_id');
-        if (!Buyer::validateUid($u_id)) {
-            return $app->json(array('success' => 'false', 'message' => 'Wrong UID'));
-        }
-        $p_id = $req->get('p_id');
-        $part = Part::get($p_id);
-        $book = Book::get($part['b_id']);
-
-        $today = date("Y-m-d H:i:s");
-
-        $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
-
-        $is_free = (!$is_completed && strtotime($part['begin_date']) <= strtotime($today)) || ($is_completed && (($book['end_action_flag'] == 'ALL_CHARGED' && $part['price'] == 0) || $book['end_action_flag'] == 'ALL_FREE'));
-        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . " + 14 days"))) || ($is_completed && ($book['end_action_flag'] == 'ALL_CHARGED' && $part['price'] > 0));
-
-
-        // 무료일 경우, 구매내역에 있으면 무시하고 다운로드
-        // 무료일 경우, 구매내역에 없으면, 구매내역 등록하고 다운로드
-
-        // 유료일 경우, 구매내역에 있으면 무시하고 다운로드
-        // 유료일 경우, 구매내역에 없으면, 구매 가능한지 여부 구하기
-        //                          구매 불가능하면 -> 오류 (코인 부족 등)
-        //                          구매 가능하면 -> 구매내역 등록하고 다운로드
-
-        // 비공개일 경우, 오류
-
-        if ($is_free && !$is_charged) { // 무료
-            Buyer::buyPart($u_id, $p_id, 0);
-            return $app->json(array('success' => 'true', 'message' => 'free'));
-        } else if (!$is_free && $is_charged) {  // 유료
-            $user_coin_balance = Buyer::getCoinBalance($u_id);
-            if ($user_coin_balance >= $part['price']) {
-                $ph_id = Buyer::buyPart($u_id, $p_id, $part['price']);
-                if ($ph_id) {
-                    $r = Buyer::useCoin($u_id, $part['price'], 'USE', $ph_id);
-                } else {
-                    $r = true;
-                }
-                $user_coin_balance = Buyer::getCoinBalance($u_id);
-                return $app->json(array('success' => ($r === true), 'message' => 'charged', 'coin_balance' => $user_coin_balance));
-            } else {    // 코인 부족
-                return $app->json(array('success' => 'false', 'message' => 'no coin'));
-            }
-        } else {    // 비공개, 잘못된 접근
-            return $app->json(array('success' => 'false', 'message' => 'access denied'));
-        }
-    }
-
+    /*
+     * Book
+     */
     public function bookList(Request $req, Application $app)
     {
         $v = intval($req->get('v', '1'));
@@ -237,7 +146,7 @@ class ApiController implements ControllerProviderInterface
      *  - 파트 정보 리스트 (각 파트별 좋아요, 댓글 갯수 포함)
      *  - 관심책 지정 여부
      */
-    public function book(Request $req, Application $app, $b_id)
+    public function bookDetail(Request $req, Application $app, $b_id)
     {
         $book = Book::get($b_id);
         if ($book == false) {
@@ -313,33 +222,60 @@ class ApiController implements ControllerProviderInterface
         return $app->json($book);
     }
 
-    public function userInterestSet(Application $app, $device_id, $b_id)
+    public function buyBookPart(Request $req, Application $app)
     {
-        $r = UserInterest::set($device_id, $b_id);
-        return $app->json(array('success' => $r));
+        $u_id = $req->get('u_id');
+        if (!Buyer::validateUid($u_id)) {
+            return $app->json(array('success' => 'false', 'message' => 'Wrong UID'));
+        }
+        $p_id = $req->get('p_id');
+        $part = Part::get($p_id);
+        $book = Book::get($part['b_id']);
+
+        $today = date("Y-m-d H:i:s");
+
+        $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
+
+        $is_free = (!$is_completed && strtotime($part['begin_date']) <= strtotime($today)) || ($is_completed && (($book['end_action_flag'] == 'ALL_CHARGED' && $part['price'] == 0) || $book['end_action_flag'] == 'ALL_FREE'));
+        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . " + 14 days"))) || ($is_completed && ($book['end_action_flag'] == 'ALL_CHARGED' && $part['price'] > 0));
+
+
+        // 무료일 경우, 구매내역에 있으면 무시하고 다운로드
+        // 무료일 경우, 구매내역에 없으면, 구매내역 등록하고 다운로드
+
+        // 유료일 경우, 구매내역에 있으면 무시하고 다운로드
+        // 유료일 경우, 구매내역에 없으면, 구매 가능한지 여부 구하기
+        //                          구매 불가능하면 -> 오류 (코인 부족 등)
+        //                          구매 가능하면 -> 구매내역 등록하고 다운로드
+
+        // 비공개일 경우, 오류
+
+        if ($is_free && !$is_charged) { // 무료
+            Buyer::buyPart($u_id, $p_id, 0);
+            return $app->json(array('success' => 'true', 'message' => 'free'));
+        } else if (!$is_free && $is_charged) {  // 유료
+            $user_coin_balance = Buyer::getCoinBalance($u_id);
+            if ($user_coin_balance >= $part['price']) {
+                $ph_id = Buyer::buyPart($u_id, $p_id, $part['price']);
+                if ($ph_id) {
+                    $r = Buyer::useCoin($u_id, $part['price'], 'USE', $ph_id);
+                } else {
+                    $r = true;
+                }
+                $user_coin_balance = Buyer::getCoinBalance($u_id);
+                return $app->json(array('success' => ($r === true), 'message' => 'charged', 'coin_balance' => $user_coin_balance));
+            } else {    // 코인 부족
+                return $app->json(array('success' => 'false', 'message' => 'no coin'));
+            }
+        } else {    // 비공개, 잘못된 접근
+            return $app->json(array('success' => 'false', 'message' => 'access denied'));
+        }
     }
 
-    public function userInterestClear(Application $app, $device_id, $b_id)
-    {
-        $r = UserInterest::clear($device_id, $b_id);
-        return $app->json(array('success' => $r));
-    }
-
-    public function userInterestGet(Application $app, $device_id, $b_id)
-    {
-        $r = UserInterest::get($device_id, $b_id);
-        return $app->json(array('success' => $r));
-    }
-
-    public function userInterestList(Application $app, $device_id)
-    {
-        $b_ids = UserInterest::getList($device_id);
-        $list = Book::getListByIds($b_ids, true);
-        return $app->json($list);
-    }
-
-
-    public function userPartLike(Application $app, $device_id, $p_id)
+    /*
+     * Part Like / Unlike
+     */
+    public function userLikePart(Application $app, $device_id, $p_id)
     {
         $p = Part::get($p_id);
         if ($p == false) {
@@ -351,14 +287,74 @@ class ApiController implements ControllerProviderInterface
         return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
     }
 
-    public function userPartUnlike(Application $app, $device_id, $p_id)
+    public function userUnlikePart(Application $app, $device_id, $p_id)
     {
         $r = UserPartLike::unlike($device_id, $p_id);
         $like_count = UserPartLike::getLikeCount($p_id);
         return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
     }
 
-    public function userStoryPlusBookLike(Application $app, $device_id, $b_id)
+    /*
+     * User Interest
+     */
+    public function userInterestList(Application $app, $device_id)
+    {
+        $b_ids = UserInterest::getList($device_id);
+        $list = Book::getListByIds($b_ids, true);
+        return $app->json($list);
+    }
+
+    public function getUserInterest(Application $app, $device_id, $b_id)
+    {
+        $r = UserInterest::get($device_id, $b_id);
+        return $app->json(array('success' => $r));
+    }
+
+    public function setUserInterest(Application $app, $device_id, $b_id)
+    {
+        $r = UserInterest::set($device_id, $b_id);
+        return $app->json(array('success' => $r));
+    }
+
+    public function cleatUserInterest(Application $app, $device_id, $b_id)
+    {
+        $r = UserInterest::clear($device_id, $b_id);
+        return $app->json(array('success' => $r));
+    }
+
+    /*
+     * StoryPlusBook
+     */
+    public function storyPlusBookList(Application $app)
+    {
+        $book = $app['cache']->fetch(
+            'storyplusbook_list',
+            function () {
+                return StoryPlusBook::getOpenedBookList();
+            },
+            60 * 10
+        );
+        return $app->json($book);
+    }
+
+    public function storyPlusBookDetail(Request $req, Application $app, $b_id)
+    {
+        $book = StoryPlusBook::get($b_id);
+        $intro = StoryPlusBookIntro::getListByBid($b_id);
+        $comment = StoryPlusBookComment::getList($b_id);
+
+        $info = array(
+            'book_detail' => $book,
+            'intro' => $intro,
+            'comment' => $comment
+        );
+        return $app->json($info);
+    }
+
+    /*
+     * StoryPlusBook Like / UnLike
+     */
+    public function userLikeStoryPlusBook(Application $app, $device_id, $b_id)
     {
         $b = StoryPlusBook::get($b_id);
         if ($b == false) {
@@ -370,15 +366,63 @@ class ApiController implements ControllerProviderInterface
         return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
     }
 
-    public function userStoryPlusBookUnlike(Application $app, $device_id, $b_id)
+    public function userUnlikeStoryPlusBook(Application $app, $device_id, $b_id)
     {
         $r = UserStoryPlusBookLike::unlike($device_id, $b_id);
         $like_count = UserStoryPlusBookLike::getLikeCount($b_id);
         return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
     }
 
+    /*
+     * StoryPlusBook Comment
+     */
+    public function addStoryPlusBookComment(Request $req, Application $app, $b_id)
+    {
+        $device_id = $req->get('device_id');
+        $comment = trim($req->get('comment'));
+        $ip = ip2long($_SERVER['REMOTE_ADDR']);
 
-    public function pushDeviceRegister(Application $app, Request $req)
+        StoryPlusBookComment::add($b_id, $device_id, $comment, $ip);
+        return $app->json(array('success' => 'true'));
+    }
+
+    public function storyPlusBookCommentList(Application $app, $b_id)
+    {
+        $comments = StoryPlusBookComment::getList($b_id);
+        return $app->json($comments);
+    }
+
+    /*
+     * StoryPlusBook Version
+     */
+    public function getStoryPlusBookVersion(Application $app)
+    {
+        return $app->json(array('version' => '1'));
+    }
+
+    /*
+     * RidiStory Latest Version
+     */
+    public function getLatestVersion(Request $req, Application $app)
+    {
+        $platform = $req->get('platform');
+        if (strcasecmp($platform, 'android') === 0) {
+            $r = array(
+                'version' => '0.9',
+                'force' => false,
+                'update_url' => 'http://play.google.com/store/apps/details?id=com.initialcoms.story',
+                'description' => '리디스토리 최신 버전으로 업데이트 하시겠습니까?'
+            );
+            return $app->json($r);
+        }
+
+        return $app->json(array('error' => 'invalid platform'));
+    }
+
+    /*
+     * Push Device
+     */
+    public function registerPushDevice(Application $app, Request $req)
     {
         $device_id = $req->get('device_id');
         $platform = $req->get('platform');
@@ -397,22 +441,9 @@ class ApiController implements ControllerProviderInterface
         }
     }
 
-    public function latestVersion(Request $req, Application $app)
-    {
-        $platform = $req->get('platform');
-        if (strcasecmp($platform, 'android') === 0) {
-            $r = array(
-                'version' => '0.9',
-                'force' => false,
-                'update_url' => 'http://play.google.com/store/apps/details?id=com.initialcoms.story',
-                'description' => '리디스토리 최신 버전으로 업데이트 하시겠습니까?'
-            );
-            return $app->json($r);
-        }
-
-        return $app->json(array('error' => 'invalid platform'));
-    }
-
+    /*
+     * Validate Download
+     */
     public function validatePartDownload(Request $req, Application $app)
     {
         $p_id = $req->get('p_id');
@@ -444,6 +475,9 @@ class ApiController implements ControllerProviderInterface
         return $app->json(array('success' => $valid));
     }
 
+    /*
+     * Shorten Url
+     */
     public function shortenUrl(Request $req, Application $app, $id)
     {
         $type = $req->get('type');

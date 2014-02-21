@@ -40,20 +40,15 @@ class AdminController implements ControllerProviderInterface
             }
         );
 
-        $admin->get('/storyplusbook_intro/add', array($this, 'storyPlusBookIntroAdd'));
-        $admin->get('/storyplusbook_intro/{id}', array($this, 'storyPlusBookIntroDetail'));
-        $admin->get('/storyplusbook_intro/{id}/delete', array($this, 'storyPlusBookIntroDelete'));
-        $admin->post('/storyplusbook_intro/{id}/edit', array($this, 'storyPlusBookIntroEdit'));
-
-        $admin->get('/comment/list', array($this, 'commentList'));
-        $admin->get('/comment/{c_id}/delete', array($this, 'commentDelete'));
-
         $admin->get(
             '/api_list',
             function () use ($app) {
                 return $app['twig']->render('/admin/api_list.twig');
             }
         );
+
+        $admin->get('/comment/list', array($this, 'commentList'));
+        $admin->get('/comment/{c_id}/delete', array($this, 'deleteComment'));
 
         $admin->get('/push/dashboard', array($this, 'pushDashboard'));
         $admin->get('/push/notify_update', array($this, 'pushNotifyUpdate'));
@@ -74,7 +69,6 @@ class AdminController implements ControllerProviderInterface
                 return $app->json(array("payload_length" => $payload_length));
             }
         );
-
         $admin->get(
             '/push/target_count.ajax',
             function (Request $req) use ($app) {
@@ -90,17 +84,17 @@ EOT;
             }
         );
 
+        $admin->get('/notice/add', array($this, 'addNotice'));
         $admin->get('/notice/list', array($this, 'noticeList'));
-        $admin->get('/notice/add', array($this, 'noticeAdd'));
         $admin->get('/notice/{n_id}', array($this, 'noticeDetail'));
-        $admin->post('/notice/{n_id}/edit', array($this, 'noticeEdit'));
-        $admin->post('/notice/{n_id}/delete', array($this, 'noticeDelete'));
+        $admin->post('/notice/{n_id}/delete', array($this, 'deleteNotice'));
+        $admin->post('/notice/{n_id}/edit', array($this, 'editNotice'));
 
+        $admin->get('/banner/add', array($this, 'addBanner'));
         $admin->get('/banner/list', array($this, 'bannerList'));
-        $admin->get('/banner/add', array($this, 'bannerAdd'));
         $admin->get('/banner/{banner_id}', array($this, 'bannerDetail'));
-        $admin->post('/banner/{banner_id}/edit', array($this, 'bannerEdit'));
-        $admin->post('/banner/{banner_id}/delete', array($this, 'bannerDelete'));
+        $admin->post('/banner/{banner_id}/delete', array($this, 'deleteBanner'));
+        $admin->post('/banner/{banner_id}/edit', array($this, 'editBanner'));
 
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
@@ -111,7 +105,6 @@ EOT;
     /*
      * Comment
      */
-
     public static function commentList(Request $req, Application $app)
     {
         $cur_page = $req->get('page', 0);
@@ -142,7 +135,7 @@ EOT;
         );
     }
 
-    public static function commentDelete(Request $req, Application $app, $c_id)
+    public static function deleteComment(Request $req, Application $app, $c_id)
     {
         PartComment::delete($c_id);
         $app['session']->getFlashBag()->add('alert', array('info' => '댓글이 삭제되었습니다.'));
@@ -153,7 +146,6 @@ EOT;
     /*
      * Push
      */
-
     public static function pushDashboard(Request $req, Application $app)
     {
         return $app['twig']->render('/admin/dashboard.twig');
@@ -232,6 +224,12 @@ EOT;
     /*
      * Notice
      */
+    public static function addNotice(Application $app)
+    {
+        $app['db']->insert('notice', array('title' => '제목이 없습니다.', 'is_visible' => 0));
+        $r = $app['db']->lastInsertId();
+        return $app->redirect('/admin/notice/' . $r);
+    }
 
     public static function noticeList(Request $req, Application $app)
     {
@@ -245,7 +243,15 @@ EOT;
         return $app['twig']->render('/admin/notice_detail.twig', array('notice' => $notice));
     }
 
-    public static function noticeEdit(Request $req, Application $app, $n_id)
+    public static function deleteNotice(Request $req, Application $app, $n_id)
+    {
+        $app['db']->delete('notice', array('id' => $n_id));
+        $app['session']->getFlashBag()->add('alert', array('warning' => '공지사항이 삭제되었습니다.'));
+        $redirect_url = $req->headers->get('referer', '/admin/notice/list');
+        return $app->redirect($redirect_url);
+    }
+
+    public static function editNotice(Request $req, Application $app, $n_id)
     {
         $inputs = $req->request->all();
 
@@ -256,24 +262,15 @@ EOT;
         return $app->redirect($redirect_url);
     }
 
-    public static function noticeAdd(Application $app)
-    {
-        $app['db']->insert('notice', array('title' => '제목이 없습니다.', 'is_visible' => 0));
-        $r = $app['db']->lastInsertId();
-        return $app->redirect('/admin/notice/' . $r);
-    }
-
-    public static function noticeDelete(Request $req, Application $app, $n_id)
-    {
-        $app['db']->delete('notice', array('id' => $n_id));
-        $app['session']->getFlashBag()->add('alert', array('warning' => '공지사항이 삭제되었습니다.'));
-        $redirect_url = $req->headers->get('referer', '/admin/notice/list');
-        return $app->redirect($redirect_url);
-    }
-
     /*
      * Banner
      */
+    public static function addBanner(Application $app)
+    {
+        $app['db']->insert('banner', array('is_visible' => 0));
+        $r = $app['db']->lastInsertId();
+        return $app->redirect('/admin/banner/' . $r);
+    }
 
     public static function bannerList(Request $req, Application $app)
     {
@@ -287,7 +284,14 @@ EOT;
         return $app['twig']->render('/admin/banner_detail.twig', array('banner' => $banner));
     }
 
-    public static function bannerEdit(Request $req, Application $app, $banner_id)
+    public static function deleteBanner(Request $req, Application $app, $banner_id)
+    {
+        $app['db']->delete('banner', array('id' => $banner_id));
+        $app['session']->getFlashBag()->add('alert', array('warning' => '배너가 삭제되었습니다.'));
+        return $app->redirect('/admin/banner/list');
+    }
+
+    public static function editBanner(Request $req, Application $app, $banner_id)
     {
         $inputs = $req->request->all();
 
@@ -296,20 +300,6 @@ EOT;
         $app['session']->getFlashBag()->add('alert', array('info' => '배너가 수정되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/banner/list');
         return $app->redirect($redirect_url);
-    }
-
-    public static function bannerAdd(Application $app)
-    {
-        $app['db']->insert('banner', array('is_visible' => 0));
-        $r = $app['db']->lastInsertId();
-        return $app->redirect('/admin/banner/' . $r);
-    }
-
-    public static function bannerDelete(Request $req, Application $app, $banner_id)
-    {
-        $app['db']->delete('banner', array('id' => $banner_id));
-        $app['session']->getFlashBag()->add('alert', array('warning' => '배너가 삭제되었습니다.'));
-        return $app->redirect('/admin/banner/list');
     }
 
     /*

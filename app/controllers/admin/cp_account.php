@@ -12,13 +12,20 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
     {
         $admin = $app['controllers_factory'];
 
+        $admin->get('add', array($this, 'addCpAccount'));
         $admin->get('list', array($this, 'cpAccountList'));
-        $admin->get('add', array($this, 'cpAccountAdd'));
         $admin->get('{id}', array($this, 'cpAccountDetail'));
-        $admin->post('{id}/delete', array($this, 'cpAccountDelete'));
-        $admin->post('{id}/edit', array($this, 'cpAccountEdit'));
+        $admin->post('{id}/delete', array($this, 'deleteCpAccount'));
+        $admin->post('{id}/edit', array($this, 'editCpAccount'));
 
         return $admin;
+    }
+
+    public function addCpAccount(Request $req, Application $app)
+    {
+        $cp_id = CpAccount::create();
+        $app['session']->getFlashBag()->add('alert', array('success' => 'CP 회원이 추가되었습니다.'));
+        return $app->redirect('/admin/cp_account/' . $cp_id);
     }
 
     public function cpAccountList(Request $req, Application $app)
@@ -48,25 +55,7 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
         );
     }
 
-    public function cpAccountAdd(Request $req, Application $app)
-    {
-        $cp_id = CpAccount::create();
-        $app['session']->getFlashBag()->add('alert', array('success' => 'CP 회원이 추가되었습니다.'));
-        return $app->redirect('/admin/cp_account/' . $cp_id);
-    }
-
-    public function cpAccountEdit(Request $req, Application $app, $id)
-    {
-        $inputs = $req->request->all();
-        $inputs['is_ridibooks_cp'] = isset($inputs['is_ridibooks_cp']);
-
-        CpAccount::update($id, $inputs);
-
-        $app['session']->getFlashBag()->add('alert', array('info' => 'CP 회원 정보가 수정되었습니다.'));
-        return $app->redirect('/admin/cp_account/' . $id);
-    }
-
-    public function cpAccountDelete(Request $req, Application $app, $id)
+    public function deleteCpAccount(Request $req, Application $app, $id)
     {
         $books = Book::getListByCpId($id);
         if (count($books)) {
@@ -75,5 +64,16 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
         CpAccount::delete($id);
         $app['session']->getFlashBag()->add('alert', array('info' => 'CP 회원이 삭제되었습니다.'));
         return $app->json(array('success' => true));
+    }
+
+    public function editCpAccount(Request $req, Application $app, $id)
+    {
+        $inputs = $req->request->all();
+        $inputs['is_ridibooks_cp'] = isset($inputs['is_ridibooks_cp']);
+
+        CpAccount::update($id, $inputs);
+
+        $app['session']->getFlashBag()->add('alert', array('info' => 'CP 회원 정보가 수정되었습니다.'));
+        return $app->redirect('/admin/cp_account/' . $id);
     }
 }

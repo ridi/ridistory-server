@@ -29,7 +29,7 @@ require_once 'controllers/admin/storyplusbook_intro.php';
 
 $app->mount('/', new Story\Controller\WebController());
 $app->mount('/api', new Story\Controller\ApiController());
-$app->mount('/admin', new \Story\Controller\AdminController());
+$app->mount('/admin', new Story\Controller\AdminController());
 $app->mount('/admin/book', new AdminBookControllerProvider());
 $app->mount('/admin/buyer', new AdminBuyerControllerProvider());
 $app->mount('/admin/cp_account', new AdminCpAccountControllerProvider());

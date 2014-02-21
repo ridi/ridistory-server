@@ -14,13 +14,21 @@ class AdminBookControllerProvider implements ControllerProviderInterface
     {
         $admin = $app['controllers_factory'];
 
+        $admin->get('add', array($this, 'addBook'));
         $admin->get('list', array($this, 'bookList'));
-        $admin->get('add', array($this, 'bookAdd'));
         $admin->get('{id}', array($this, 'bookDetail'));
-        $admin->post('{id}/delete', array($this, 'bookDelete'));
-        $admin->post('{id}/edit', array($this, 'bookEdit'));
+        $admin->post('{id}/delete', array($this, 'deleteBook'));
+        $admin->post('{id}/edit', array($this, 'editBook'));
 
         return $admin;
+    }
+
+    public function addBook(Request $req, Application $app)
+    {
+        $b_id = Book::create();
+
+        $app['session']->getFlashBag()->add('alert', array('success' => '책이 추가되었습니다.'));
+        return $app->redirect('/admin/book/' . $b_id);
     }
 
     public function bookList(Request $req, Application $app)
@@ -83,15 +91,18 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         );
     }
 
-    public function bookAdd(Request $req, Application $app)
+    public function deleteBook(Request $req, Application $app, $id)
     {
-        $b_id = Book::create();
-
-        $app['session']->getFlashBag()->add('alert', array('success' => '책이 추가되었습니다.'));
-        return $app->redirect('/admin/book/' . $b_id);
+        $parts = Part::getListByBid($id);
+        if (count($parts)) {
+            return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
+        }
+        Book::delete($id);
+        $app['session']->getFlashBag()->add('alert', array('info' => '책이 삭제되었습니다.'));
+        return $app->json(array('success' => true));
     }
 
-    public function bookEdit(Request $req, Application $app, $id)
+    public function editBook(Request $req, Application $app, $id)
     {
         $inputs = $req->request->all();
 
@@ -120,16 +131,5 @@ class AdminBookControllerProvider implements ControllerProviderInterface
 
         $app['session']->getFlashBag()->add('alert', array('info' => '책이 수정되었습니다.'));
         return $app->redirect('/admin/book/' . $id);
-    }
-
-    public function bookDelete(Request $req, Application $app, $id)
-    {
-        $parts = Part::getListByBid($id);
-        if (count($parts)) {
-            return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
-        }
-        Book::delete($id);
-        $app['session']->getFlashBag()->add('alert', array('info' => '책이 삭제되었습니다.'));
-        return $app->json(array('success' => true));
     }
 }

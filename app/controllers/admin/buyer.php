@@ -13,8 +13,8 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
 
         $admin->get('list', array($this, 'buyerList'));
         $admin->get('{id}', array($this, 'buyerDetail'));
-        $admin->post('{id}/coin/add', array($this, 'buyerCoinAdd'));
-        $admin->post('{id}/coin/reduce', array($this, 'buyerCoinReduce'));
+        $admin->post('{id}/coin/add', array($this, 'addBuyerCoin'));
+        $admin->post('{id}/coin/reduce', array($this, 'reduceBuyerCoin'));
 
         return $admin;
     }
@@ -52,7 +52,7 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
         );
     }
 
-    public function buyerCoinAdd(Request $req, Application $app, $id)
+    public function addBuyerCoin(Request $req, Application $app, $id)
     {
         $source = $req->get('source');
         $coin_amount = $req->get('coin_amount');
@@ -71,7 +71,7 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
         return $app->json(array('success' => true));
     }
 
-    public function buyerCoinReduce(Request $req, Application $app, $id)
+    public function reduceBuyerCoin(Request $req, Application $app, $id)
     {
         $source = $req->get('source');
         $coin_amount = $req->get('coin_amount');

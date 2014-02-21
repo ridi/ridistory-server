@@ -34,7 +34,8 @@ CREATE TABLE `book` (
   `royalty_percent` int(11) NOT NULL DEFAULT '0' COMMENT '정산율',
   `is_active_lock` tinyint(4) NOT NULL DEFAULT '0' COMMENT '잠금기능 사용여부 (0: 사용하지 않음, 1: 사용함)',
   PRIMARY KEY (`id`),
-  KEY `id` (`id`)
+  KEY `id` (`id`),
+  KEY `cp_id` (`cp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

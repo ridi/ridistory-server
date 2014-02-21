@@ -20,12 +20,12 @@ class WebController implements ControllerProviderInterface
 
         $web->get('/book/{b_id}/intro', array($this, 'bookIntro'));
 
+        $web->post('/comment/add', array($this, 'addComment'));
         $web->get('/comment/list', array($this, 'commentList'));
-        $web->post('/comment/add', array($this, 'commentAdd'));
-        $web->get('/comment/{c_id}/delete', array($this, 'commentDelete'));
+        $web->get('/comment/{c_id}/delete', array($this, 'deleteComment'));
 
-        $web->get('/notice/{n_id}', array($this, 'noticeItem'));
-        $web->get('/notice', array($this, 'notice'));
+        $web->get('/notice', array($this, 'noticeList'));
+        $web->get('/notice/{n_id}', array($this, 'noticeDetail'));
 
         $web->get('/banner', array($this, 'banner'));
 
@@ -34,42 +34,36 @@ class WebController implements ControllerProviderInterface
         return $web;
     }
 
-    public function notice(Application $app)
-    {
-        $notice = $app['db']->fetchAll('select * from notice where is_visible = 1 order by reg_date desc');
-        return $app['twig']->render('/notice.twig', array('notice' => $notice));
-    }
-
-    public function noticeItem(Application $app, $n_id)
-    {
-        $notice_item = $app['db']->fetchAssoc('select * from notice where id = ? and is_visible = 1', array($n_id));
-        return $app['twig']->render('/notice_item.twig', array('notice_item' => $notice_item));
-    }
-
-    public function banner(Request $req, Application $app)
-    {
-        $platform = $req->get('platform');
-        $banners = $app['cache']->fetch(
-            'banners',
-            function () use ($app) {
-                return $app['db']->fetchAll('select * from banner where is_visible = 1 order by reg_date desc');
-            },
-            60 * 30
-        );
-        return $app['twig']->render(
-            '/banner.twig',
-            array(
-                'platform' => $platform,
-                'banners' => $banners,
-            )
-        );
-    }
-
+    /*
+     * Book Intro
+     */
     public function bookIntro(Application $app, $b_id)
     {
         $book = Book::get($b_id);
         $book['intro'] = Book::getIntro($b_id);
         return $app['twig']->render('/book_intro.twig', array('book' => $book));
+    }
+
+    /*
+     * Comment
+     */
+    public function addComment(Request $req, Application $app)
+    {
+        $p_id = $req->get('p_id');
+        $device_id = $req->get('device_id');
+        $nickname = trim($req->get('nickname'));
+        $comment = trim($req->get('comment'));
+
+        if (empty($nickname) || empty($comment)) {
+            return alert_and_back('닉네임이나 댓글이 없다.');
+        }
+
+        $ip = ip2long($_SERVER['REMOTE_ADDR']);
+
+        // TODO: abuse detection
+
+        PartComment::add($p_id, $device_id, $nickname, $comment, $ip);
+        return $app->redirect($req->headers->get('Referer'));
     }
 
     public function commentList(Request $req, Application $app)
@@ -96,31 +90,52 @@ class WebController implements ControllerProviderInterface
         );
     }
 
-    public function commentAdd(Request $req, Application $app)
-    {
-        $p_id = $req->get('p_id');
-        $device_id = $req->get('device_id');
-        $nickname = trim($req->get('nickname'));
-        $comment = trim($req->get('comment'));
-
-        if (empty($nickname) || empty($comment)) {
-            return alert_and_back('닉네임이나 댓글이 없다.');
-        }
-
-        $ip = ip2long($_SERVER['REMOTE_ADDR']);
-
-        // TODO: abuse detection
-
-        PartComment::add($p_id, $device_id, $nickname, $comment, $ip);
-        return $app->redirect($req->headers->get('Referer'));
-    }
-
-    public function commentDelete(Request $req, Application $app, $c_id)
+    public function deleteComment(Request $req, Application $app, $c_id)
     {
         PartComment::delete($c_id);
         return $app->redirect($req->headers->get('Referer'));
     }
 
+    /*
+     * Notice
+     */
+    public function noticeList(Application $app)
+    {
+        $notice = $app['db']->fetchAll('select * from notice where is_visible = 1 order by reg_date desc');
+        return $app['twig']->render('/notice.twig', array('notice' => $notice));
+    }
+
+    public function noticeDetail(Application $app, $n_id)
+    {
+        $notice_item = $app['db']->fetchAssoc('select * from notice where id = ? and is_visible = 1', array($n_id));
+        return $app['twig']->render('/notice_item.twig', array('notice_item' => $notice_item));
+    }
+
+    /*
+     * Banner
+     */
+    public function banner(Request $req, Application $app)
+    {
+        $platform = $req->get('platform');
+        $banners = $app['cache']->fetch(
+            'banners',
+            function () use ($app) {
+                return $app['db']->fetchAll('select * from banner where is_visible = 1 order by reg_date desc');
+            },
+            60 * 30
+        );
+        return $app['twig']->render(
+            '/banner.twig',
+            array(
+                'platform' => $platform,
+                'banners' => $banners,
+            )
+        );
+    }
+
+    /*
+     * Preview
+     */
     public function previewPart(Request $req, Application $app, $p_id, $title)
     {
         $p = new Part($p_id);
