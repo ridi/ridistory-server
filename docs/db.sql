@@ -76,7 +76,7 @@ CREATE TABLE `coin_history` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cp_account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `cp_account_name` varchar(255) DEFAULT NULL COMMENT 'CP 계정명',
+  `name` varchar(255) DEFAULT NULL COMMENT 'CP 계정명',
   `password` varchar(255) DEFAULT NULL,
   `staff1_name` varchar(255) DEFAULT NULL COMMENT '담당자1 성함',
   `staff1_phone` varchar(20) DEFAULT NULL COMMENT '담당자1 연락처',
@@ -103,10 +103,10 @@ CREATE TABLE `cp_account` (
   `calculate_bank` varchar(20) DEFAULT NULL COMMENT '정산 은행',
   `calculate_account_num` varchar(50) DEFAULT NULL COMMENT '정산 계좌번호',
   `calculate_account_holder` varchar(255) DEFAULT NULL COMMENT '정산 예금주',
+  `is_ridibooks_cp` tinyint(4) DEFAULT '0' COMMENT '리디북스 CP 여부 (0: 리디스토리 CP, 1: 리디북스+리디스토리 CP)',
   PRIMARY KEY (`id`),
   UNIQUE KEY `cp_site_id` (`cp_site_id`),
-  UNIQUE KEY `cp_account_name` (`cp_account_name`) USING BTREE,
-  KEY `id` (`id`) USING BTREE
+  UNIQUE KEY `name` (`name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

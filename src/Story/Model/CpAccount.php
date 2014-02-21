@@ -37,7 +37,7 @@ EOT;
         $sql = <<<EOT
 select ifnull(book_count, 0) book_count, cp.* from cp_account cp
  left join (select cp_id, count(*) book_count from book group by cp_id) b on b.cp_id = cp.id
-order by cp.cp_account_name
+order by cp.name
 EOT;
         global $app;
         return $app['db']->fetchAll($sql);
@@ -46,8 +46,8 @@ EOT;
     public static function getCpList()
     {
         $sql = <<<EOT
-select id, cp_account_name from cp_account
-order by cp_account_name
+select id, name from cp_account
+order by name
 EOT;
         global $app;
         return $app['db']->fetchAll($sql);

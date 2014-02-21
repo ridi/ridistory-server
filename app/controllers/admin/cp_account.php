@@ -58,6 +58,7 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
     public function cpAccountEdit(Request $req, Application $app, $id)
     {
         $inputs = $req->request->all();
+        $inputs['is_ridibooks_cp'] = isset($inputs['is_ridibooks_cp']);
 
         CpAccount::update($id, $inputs);
 
