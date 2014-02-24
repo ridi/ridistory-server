@@ -162,7 +162,7 @@ class ApiController implements ControllerProviderInterface
         // 완결되었고, 종료 후 액션이 모두 공개 혹은 모두 잠금이면 파트 모두 보임
         $show_all = false;
         $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime('now') ? 1 : 0);
-        $show_from_end = ($book['end_action_flag'] == 'ALL_FREE' || $book['end_action_flag'] == 'ALL_CHARGED' ? 1 : 0);
+        $show_from_end = ($book['end_action_flag'] == Book::ALL_FREE || $book['end_action_flag'] == Book::ALL_CHARGED ? 1 : 0);
         if ($is_completed && $show_from_end) {
             $show_all = true;
         }
@@ -188,9 +188,9 @@ class ApiController implements ControllerProviderInterface
         foreach ($parts as &$part) {
             $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
 
-            if ($show_all && $book['end_action_flag'] == 'ALL_FREE') {
+            if ($show_all && $book['end_action_flag'] == Book::ALL_FREE) {
                 $part['is_locked'] = 0;
-            } else if ($show_all && $book['end_action_flag'] == 'ALL_CHARGED') {
+            } else if ($show_all && $book['end_action_flag'] == Book::ALL_CHARGED) {
                 $part['is_locked'] = 1;
             }
 
@@ -236,8 +236,8 @@ class ApiController implements ControllerProviderInterface
 
         $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
 
-        $is_free = (!$is_completed && strtotime($part['begin_date']) <= strtotime($today)) || ($is_completed && (($book['end_action_flag'] == 'ALL_CHARGED' && $part['price'] == 0) || $book['end_action_flag'] == 'ALL_FREE'));
-        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . " + 14 days"))) || ($is_completed && ($book['end_action_flag'] == 'ALL_CHARGED' && $part['price'] > 0));
+        $is_free = (!$is_completed && strtotime($part['begin_date']) <= strtotime($today)) || ($is_completed && (($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] == 0) || $book['end_action_flag'] == Book::ALL_FREE));
+        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . " + 14 days"))) || ($is_completed && ($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] > 0));
 
 
         // 무료일 경우, 구매내역에 있으면 무시하고 다운로드
@@ -408,7 +408,7 @@ class ApiController implements ControllerProviderInterface
         $platform = $req->get('platform');
         if (strcasecmp($platform, 'android') === 0) {
             $r = array(
-                'version' => '0.9',
+                'version' => '3.22',
                 'force' => false,
                 'update_url' => 'http://play.google.com/store/apps/details?id=com.initialcoms.story',
                 'description' => '리디스토리 최신 버전으로 업데이트 하시겠습니까?'

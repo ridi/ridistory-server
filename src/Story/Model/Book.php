@@ -5,6 +5,11 @@ use Doctrine\DBAL\Connection;
 
 class Book
 {
+    const ALL_FREE = 'ALL_FREE';
+    const ALL_CHARGED = 'ALL_CHARGED';
+    const SALES_CLOSED = 'SALES_CLOSED';
+    const ALL_CLOSED = 'ALL_CLOSED';
+
     public static function get($id)
     {
         global $app;

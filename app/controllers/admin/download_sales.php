@@ -2,6 +2,7 @@
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\Book;
 use Story\Model\DownloadSales;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -48,16 +49,16 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
                     $status = "연재중(" . $open_part_count . "/" . $total_part_count . ")";
                 } else {
                     switch ($end_action_flag) {
-                        case 'ALL_FREE':
+                        case Book::ALL_FREE:
                             $status = "완결(모두 공개)";
                             break;
-                        case 'ALL_CHARGED':
+                        case Book::ALL_CHARGED:
                             $status = "완결(모두 잠금)";
                             break;
-                        case 'SALES_CLOSED':
+                        case Book::SALES_CLOSED:
                             $status = "판매종료(파트 비공개";
                             break;
-                        case 'ALL_CLOSED':
+                        case Book::ALL_CLOSED:
                             $status = "게시종료(전체 비공개)";
                             break;
                         default:
