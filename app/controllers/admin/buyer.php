@@ -82,12 +82,10 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
         if ($source == '' || $coin_amount == 0) {
             $app['session']->getFlashBag()->add('alert', array('error' => '코인을 감소시키지지 못했습니다. (코인 감소 이유가 없거나, 감소시키려는 코인이 0개 입니다.)'));
         }  else {
-            $today = date('Y-m-d H:i:s');
             $r = $app['db']->insert('coin_history', array(
                     'u_id' => $id,
                     'amount' => $coin_amount,
-                    'source' => $source,
-                    'timestamp' => $today
+                    'source' => $source
                 ));
             if ($r) {
                 $app['session']->getFlashBag()->add('alert', array('success' => abs($coin_amount).'코인을 감소하였습니다.'));

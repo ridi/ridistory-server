@@ -114,6 +114,13 @@ class ApiController implements ControllerProviderInterface
      */
     public function bookList(Request $req, Application $app)
     {
+        /**
+         * @var $v Api Version
+         *
+         * v1 : Exclude Adult
+         * v2 : Include Adult
+         * v3 : Use Lock Function
+         */
         $v = intval($req->get('v', '1'));
         $cache_key = 'book_list_' . $v;
 
@@ -154,7 +161,11 @@ class ApiController implements ControllerProviderInterface
         }
 
         /**
-         * @var $v App Api Version (cf. v > 2 : Use Lock Func)
+         * @var $v Api Version
+         *
+         * v1 : Exclude Adult
+         * v2 : Include Adult
+         * v3 : Use Lock Function
          */
         $v = intval($req->get('v', '1'));
         $active_lock = ($v > 2) && ($book['is_active_lock'] == 1);
