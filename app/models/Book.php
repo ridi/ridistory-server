@@ -7,6 +7,16 @@ class Book
         global $app;
         $b = $app['db']->fetchAssoc('select * from book where id = ?', array($id));
         if ($b) {
+            /*
+             * iOS 사용자들의 책 소개 상단에만 서비스 종료 공지가 표시되도록 소스 추가.
+             */
+            $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+            $is_iphone = (strpos($user_agent, 'iPhone') !== false);
+            if ($is_iphone) {
+                $ios_description_header = "**[공지] iOS 서비스 종료안내(종료일: 2014.03.14)**\n🔹기존 사용자는 정상적으로 이용이 가능합니다.\n🔹자세한 사항은 더보기>공지사항을 확인해주세요.";
+                $b['short_description'] = $ios_description_header . "\n\n" . $b['short_description'];
+            }
+
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
         }
         return $b;
