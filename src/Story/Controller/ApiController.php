@@ -265,14 +265,14 @@ class ApiController implements ControllerProviderInterface
 
         // 비공개일 경우, 오류
 
+        $user_coin_balance = Buyer::getCoinBalance($u_id);
         if ($is_free && !$is_charged) { // 무료
             Buyer::buyPart($u_id, $p_id, 0);
-            return $app->json(array('success' => 'true', 'message' => 'free'));
+            return $app->json(array('success' => 'true', 'message' => '무료', 'coin_balance' => $user_coin_balance));
         } else if (!$is_free && $is_charged) {  // 유료
             // 트랜잭션 시작
             $app['db']->beginTransaction();
             try {
-                $user_coin_balance = Buyer::getCoinBalance($u_id);
                 $ph_id = Buyer::buyPart($u_id, $p_id, $part['price']);
                 if ($ph_id) {
                     // 구매내역에 없을 경우, 구매해야함. 잔여 코인 체크.
@@ -286,7 +286,7 @@ class ApiController implements ControllerProviderInterface
                         }
                     } else {
                         $app['db']->rollback();
-                        return $app->json(array('success' => 'false', 'message' => 'no coin'));
+                        return $app->json(array('success' => 'false', 'message' => '코인이 부족합니다.', 'coin_balance' => $user_coin_balance));
                     }
                 } else {
                     $r = true;  // 이미 구매함.
@@ -296,9 +296,9 @@ class ApiController implements ControllerProviderInterface
                 $app['db']->rollback();
                 $r = false;
             }
-            return $app->json(array('success' => ($r === true), 'message' => 'charged', 'coin_balance' => $user_coin_balance));
+            return $app->json(array('success' => ($r === true), 'message' => '유료', 'coin_balance' => $user_coin_balance));
         } else {    // 비공개, 잘못된 접근
-            return $app->json(array('success' => 'false', 'message' => 'access denied'));
+            return $app->json(array('success' => 'false', 'message' => 'Access Denied'));
         }
     }
 
