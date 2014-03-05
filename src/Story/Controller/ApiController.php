@@ -16,6 +16,7 @@ use Story\Model\UserInterest;
 use Story\Model\UserPartLike;
 use Story\Model\UserStoryPlusBookLike;
 use Story\Model\PushDevice;
+use Symfony\Component\Security\Acl\Exception\Exception;
 
 class ApiController implements ControllerProviderInterface
 {
@@ -247,8 +248,11 @@ class ApiController implements ControllerProviderInterface
 
         $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
 
-        $is_free = (!$is_completed && strtotime($part['begin_date']) <= strtotime($today)) || ($is_completed && (($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] == 0) || $book['end_action_flag'] == Book::ALL_FREE));
-        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . " + 14 days"))) || ($is_completed && ($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] > 0));
+        $is_free = (!$is_completed && strtotime($part['begin_date']) <= strtotime($today))
+            || ($is_completed && (($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] == 0) || $book['end_action_flag'] == Book::ALL_FREE));
+
+        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . " + 14 days")))
+            || ($is_completed && ($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] > 0));
 
 
         // 무료일 경우, 구매내역에 있으면 무시하고 다운로드
@@ -265,19 +269,34 @@ class ApiController implements ControllerProviderInterface
             Buyer::buyPart($u_id, $p_id, 0);
             return $app->json(array('success' => 'true', 'message' => 'free'));
         } else if (!$is_free && $is_charged) {  // 유료
-            $user_coin_balance = Buyer::getCoinBalance($u_id);
-            if ($user_coin_balance >= $part['price']) {
+            // 트랜잭션 시작
+            $app['db']->beginTransaction();
+            try {
+                $user_coin_balance = Buyer::getCoinBalance($u_id);
                 $ph_id = Buyer::buyPart($u_id, $p_id, $part['price']);
                 if ($ph_id) {
-                    $r = Buyer::useCoin($u_id, $part['price'], 'USE', $ph_id);
+                    // 구매내역에 없을 경우, 구매해야함. 잔여 코인 체크.
+                    if ($user_coin_balance >= $part['price']) {
+                        $r = Buyer::useCoin($u_id, $part['price'], 'USE', $ph_id);
+                        if ($r === true) {
+                            $user_coin_balance -= $part['price'];
+                            $app['db']->commit();
+                        } else {
+                            $app['db']->rollback();
+                        }
+                    } else {
+                        $app['db']->rollback();
+                        return $app->json(array('success' => 'false', 'message' => 'no coin'));
+                    }
                 } else {
-                    $r = true;
+                    $r = true;  // 이미 구매함.
+                    $app['db']->commit();
                 }
-                $user_coin_balance = Buyer::getCoinBalance($u_id);
-                return $app->json(array('success' => ($r === true), 'message' => 'charged', 'coin_balance' => $user_coin_balance));
-            } else {    // 코인 부족
-                return $app->json(array('success' => 'false', 'message' => 'no coin'));
+            } catch (Exception $e) {
+                $app['db']->rollback();
+                $r = false;
             }
+            return $app->json(array('success' => ($r === true), 'message' => 'charged', 'coin_balance' => $user_coin_balance));
         } else {    // 비공개, 잘못된 접근
             return $app->json(array('success' => 'false', 'message' => 'access denied'));
         }
