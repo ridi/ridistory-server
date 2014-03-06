@@ -27,14 +27,14 @@ class ApiController implements ControllerProviderInterface
          */
         $api = $app['controllers_factory'];
 
-        $api->get('/buyer/auth', array($this, 'authBuyerGoogleAccount'));
+        $api->post('/buyer/auth', array($this, 'authBuyerGoogleAccount'));
         $api->get('/buyer/{u_id}/coin', array($this, 'getBuyerCoinBalance'));
         $api->get('/buyer/{u_id}/coin/add', array($this, 'addBuyerCoin'));
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
         $api->get('/book/{b_id}', array($this, 'bookDetail'));
-        $api->get('/book/{b_id}/buy', array($this, 'buyBookPart'));
+        $api->post('/book/{b_id}/buy', array($this, 'buyBookPart'));
 
         $api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userLikePart'));
         $api->get('/user/{device_id}/part/{p_id}/unlike', array($this, 'userUnlikePart'));
@@ -85,11 +85,9 @@ class ApiController implements ControllerProviderInterface
         curl_close($ch);
 
         $buyer = null;
-        if (strpos($response, "200 OK") == true)
-        {
+        if (strpos($response, "200 OK") == true) {
             $buyer = Buyer::getByGoogleAccount($google_id);
-            if ($buyer == null)
-            {
+            if ($buyer == null) {
                 $id = Buyer::add($google_id);
                 $buyer = Buyer::get($id);
             }
@@ -101,7 +99,7 @@ class ApiController implements ControllerProviderInterface
     public function getBuyerCoinBalance(Request $req, Application $app, $u_id)
     {
         $coin_balance = Buyer::getCoinBalance($u_id);
-        return $app->json(array('coin_balance' => $coin_balance));
+        return $app->json(compact("coin_balance"));
     }
 
     public function addBuyerCoin(Request $req, Application $app, $u_id)
