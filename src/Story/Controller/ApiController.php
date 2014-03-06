@@ -513,8 +513,13 @@ class ApiController implements ControllerProviderInterface
     public function inAppList(Request $req, Application $app)
     {
         //TODO: 인앱상품 DB에 넣고 CMS에서 관리 가능하도록 제작.
-        $sku_ids = array('coin_20', 'coin_30', 'coin_50', 'coin_100'); // SKU ID
-        return $app->json(compact("sku_ids"));
+        $sku_ids = array(
+            array('sku_id' => 'coin_20'),
+            array('sku_id' => 'coin_30'),
+            array('sku_id' => 'coin_50'),
+            array('sku_id' => 'coin_100'),
+        );
+        return $app->json($sku_ids);
     }
 
     /*
