@@ -79,13 +79,15 @@ class ApiController implements ControllerProviderInterface
         $ch =curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" . $token);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
 
         $response = curl_exec($ch);
+        $response = json_decode($response, true);
         curl_close($ch);
 
-        $buyer = null;
-        if (strpos($response, "200 OK") == true) {
+        $server_google_id = $response["email"];
+        $is_verified_email = $response["verified_email"];
+        if ($server_google_id == $google_id && $is_verified_email) {
             $buyer = Buyer::getByGoogleAccount($google_id);
             if ($buyer == null) {
                 $id = Buyer::add($google_id);
