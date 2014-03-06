@@ -62,6 +62,8 @@ class ApiController implements ControllerProviderInterface
         $api->get('/validate_download', array($this, 'validatePartDownload'));
         $api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
 
+        $api->get('/inapp/list', array($this, 'inAppList'));
+
         $api->get('/shorten_url/{id}', array($this, 'shortenUrl'));
 
         return $api;
@@ -503,6 +505,16 @@ class ApiController implements ControllerProviderInterface
         );
 
         return $app->json(array('success' => $valid));
+    }
+
+    /*
+     * In App Billing
+     */
+    public function inAppList(Request $req, Application $app)
+    {
+        //TODO: 인앱상품 DB에 넣고 CMS에서 관리 가능하도록 제작.
+        $sku_ids = array('coin_20', 'coin_30', 'coin_50', 'coin_100'); // SKU ID
+        return $app->json(compact("sku_ids"));
     }
 
     /*
