@@ -112,6 +112,33 @@ CREATE TABLE `cp_account` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `inapp_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` varchar(100) NOT NULL,
+  `u_id` int(11) NOT NULL,
+  `sku` varchar(50) NOT NULL,
+  `purchase_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `payload` varchar(50) NOT NULL,
+  `purchase_token` varchar(200) NOT NULL,
+  `signature` varchar(1024) NOT NULL,
+  `is_succeeded` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `order_id` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `inapp_products` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sku` varchar(50) DEFAULT NULL,
+  `coin_amount` int(11) NOT NULL DEFAULT '0',
+  `bonus_coin_amount` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `sku` (`sku`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log_push` (
   `request` text NOT NULL,
   `response` text NOT NULL,
