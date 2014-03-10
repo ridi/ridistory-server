@@ -4,6 +4,7 @@ namespace Story\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
+use Story\Model\InAppBilling;
 use Story\Model\RecommendedBook;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -29,7 +30,7 @@ class ApiController implements ControllerProviderInterface
 
         $api->post('/buyer/auth', array($this, 'authBuyerGoogleAccount'));
         $api->get('/buyer/{u_id}/coin', array($this, 'getBuyerCoinBalance'));
-        $api->get('/buyer/{u_id}/coin/add', array($this, 'addBuyerCoin'));
+        $api->post('/buyer/{u_id}/coin/add', array($this, 'addBuyerCoin'));
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
@@ -62,7 +63,7 @@ class ApiController implements ControllerProviderInterface
         $api->get('/validate_download', array($this, 'validatePartDownload'));
         $api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
 
-        $api->get('/inapp/list', array($this, 'inAppList'));
+        $api->get('/inapp/list', array($this, 'inAppProductList'));
 
         $api->get('/shorten_url/{id}', array($this, 'shortenUrl'));
 
@@ -79,7 +80,7 @@ class ApiController implements ControllerProviderInterface
 
         // Google Services Auth
         $ch =curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" . $token);
+        curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' . $token);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
 
@@ -87,8 +88,9 @@ class ApiController implements ControllerProviderInterface
         $response = json_decode($response, true);
         curl_close($ch);
 
-        $server_google_id = $response["email"];
-        $is_verified_email = $response["verified_email"];
+        $buyer = null;
+        $server_google_id = $response['email'];
+        $is_verified_email = $response['verified_email'];
         if ($server_google_id == $google_id && $is_verified_email) {
             $buyer = Buyer::getByGoogleAccount($google_id);
             if ($buyer == null) {
@@ -108,8 +110,26 @@ class ApiController implements ControllerProviderInterface
 
     public function addBuyerCoin(Request $req, Application $app, $u_id)
     {
-        //TODO: 인앱 검증 + 코인 증가
-        return $app->json(array('success' => 'true'));
+        if ($u_id == null) {
+            return $app->json(array('success' => false, 'message' => '인앱 결제 검증 오류'));
+        }
+
+        $inputs = $req->request->all();
+        $inputs['u_id'] = $u_id;
+
+        $r = InAppBilling::verifyInAppBilling($inputs);
+        if ($r) {
+            $inapp_info = InAppBilling::getInAppProductBySku($inputs['sku']);
+            $r = Buyer::addCoin($u_id, ($inapp_info['coin_amount'] + $inapp_info['bonus_coin_amount']), Buyer::COIN_SOURCE_IN_INAPP);
+            if ($r) {
+                $coin_amount = Buyer::getCoinBalance($u_id);
+                return $app->json(array('success' => true, 'message' => '성공', 'coin_balance' => $coin_amount));
+            } else {
+                return $app->json(array('success' => false, 'message' => '코인 증가 오류'));
+            }
+        } else {
+            return $app->json(array('success' => false, 'message' => '인앱 결제 검증 오류'));
+        }
     }
 
     /*
@@ -279,7 +299,7 @@ class ApiController implements ControllerProviderInterface
                 if ($ph_id) {
                     // 구매내역에 없을 경우, 구매해야함. 잔여 코인 체크.
                     if ($user_coin_balance >= $part['price']) {
-                        $r = Buyer::useCoin($u_id, $part['price'], 'USE', $ph_id);
+                        $r = Buyer::useCoin($u_id, $part['price'], Buyer::COIN_SOURCE_OUT_USE, $ph_id);
                         if ($r === true) {
                             $user_coin_balance -= $part['price'];
                             $app['db']->commit();
@@ -510,16 +530,10 @@ class ApiController implements ControllerProviderInterface
     /*
      * In App Billing
      */
-    public function inAppList(Request $req, Application $app)
+    public function inAppProductList(Request $req, Application $app)
     {
-        //TODO: 인앱상품 DB에 넣고 CMS에서 관리 가능하도록 제작.
-        $sku_ids = array(
-            array('sku_id' => 'coin_20'),
-            array('sku_id' => 'coin_30'),
-            array('sku_id' => 'coin_50'),
-            array('sku_id' => 'coin_100'),
-        );
-        return $app->json($sku_ids);
+        $sku_list = InAppBilling::getInAppProductList();
+        return $app->json($sku_list);
     }
 
     /*

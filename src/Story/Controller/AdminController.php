@@ -3,6 +3,7 @@ namespace Story\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\InAppBilling;
 use Story\Model\PartComment;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -95,6 +96,12 @@ EOT;
         $admin->get('/banner/{banner_id}', array($this, 'bannerDetail'));
         $admin->post('/banner/{banner_id}/delete', array($this, 'deleteBanner'));
         $admin->post('/banner/{banner_id}/edit', array($this, 'editBanner'));
+
+        $admin->get('/inapp_product/add', array($this, 'addInAppProduct'));
+        $admin->get('/inapp_product/list', array($this, 'inAppProductList'));
+        $admin->get('/inapp_product/{iab_id}', array($this, 'inAppProductDetail'));
+        $admin->post('/inapp_product/{iab_id}/delete', array($this, 'deleteInAppProduct'));
+        $admin->post('/inapp_product/{iab_id}/edit', array($this, 'editInAppProduct'));
 
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
@@ -269,6 +276,8 @@ EOT;
     {
         $app['db']->insert('banner', array('is_visible' => 0));
         $r = $app['db']->lastInsertId();
+
+        $app['session']->getFlashBag()->add('alert', array('success' => '배너가 추가되었습니다.'));
         return $app->redirect('/admin/banner/' . $r);
     }
 
@@ -300,6 +309,45 @@ EOT;
         $app['session']->getFlashBag()->add('alert', array('info' => '배너가 수정되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/banner/list');
         return $app->redirect($redirect_url);
+    }
+
+    /*
+     * In App Billing Product
+     */
+    public static function addInAppProduct(Application $app)
+    {
+        $iab_id = InAppBilling::createInAppProduct();
+
+        $app['session']->getFlashBag()->add('alert', array('success' => '인앱 상품이 추가되었습니다.'));
+        return $app->redirect('/admin/inapp_product/' . $iab_id);
+    }
+
+    public static function inAppProductList(Application $app)
+    {
+        $inapp_list = InAppBilling::getInAppProductListWithTotalSales();
+        return $app['twig']->render('/admin/inapp_product_list.twig', array('inapp_list' => $inapp_list));
+    }
+
+    public static function inAppProductDetail(Request $req, Application $app, $iab_id)
+    {
+        $inapp_product = InAppBilling::getInAppProduct($iab_id);
+        return $app['twig']->render('/admin/inapp_product_detail.twig', array('inapp_product' => $inapp_product));
+    }
+
+    public static function deleteInAppProduct(Request $req, Application $app, $iab_id)
+    {
+        InAppBilling::deleteInAppProduct($iab_id);
+        $app['session']->getFlashBag()->add('alert', array('warning' => '인앱 상품이 삭제되었습니다.'));
+        return $app->json(array('success' => true));
+    }
+
+    public static function editInAppProduct(Request $req, Application $app, $iab_id)
+    {
+        $inputs = $req->request->all();
+
+        InAppBilling::updateInAppProduct($iab_id, $inputs);
+        $app['session']->getFlashBag()->add('alert', array('info' => '인앱 상품 정보가 수정되었습니다.'));
+        return $app->redirect('/admin/inapp_product/' . $iab_id);
     }
 
     /*
