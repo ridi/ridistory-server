@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1 target-densitydpi=device-dpi">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/static/js/vendor/jquery.mousewheel.js"><\/script>')</script>
+    <script>
+        function moveToStore(store_id) {
+            location.href = 'ridistory://openinbrowser/#http://ridibooks.com/detail.php?id=' + store_id;
+        }
+    </script>
+
+    <title>RIDISTORY RECOMMENDED BOOK PAGE</title>
+
+    <style>
+        * { margin: 0; padding: 0; }
+        body { overflow-x: scroll; overflow-y: hidden; }
+        #recommeded_books {
+            width: {{ books|length * 230 + 30 }}px;
+        }
+        .book-cover-image {
+            width: 200px;
+            height: auto;
+            padding-right: 30px;
+        }
+        .book-title {
+            margin-top: 10px;
+            padding-right: 5px;
+            color: #000000;
+            font-size: 28px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<div id="recommeded_books">
+    <table cellpadding="0" cellspacing="0" style="padding-left: 30px;">
+        <tr valign="bottom">
+            {% for book in books %}
+                <td onclick="moveToStore({{ book.store_id }})"><img class="book-cover-image" src="{{ book.cover_url }}"></td>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for book in books %}
+                <td onclick="moveToStore({{ book.store_id }})"><div class="book-title">{{ book.title }}</div></td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+</body>
+
+</html>

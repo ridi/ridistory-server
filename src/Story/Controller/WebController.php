@@ -3,6 +3,7 @@ namespace Story\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\RecommendedBook;
 use Symfony\Component\HttpFoundation\Request;
 
 use Story\Model\Book;
@@ -30,6 +31,8 @@ class WebController implements ControllerProviderInterface
         $web->get('/banner', array($this, 'banner'));
 
         $web->get('/preview/{p_id}/{title}', array($this, 'previewPart'));
+
+        $web->get('/recommended_book/{b_id}', array($this, 'recommendedBook'));
 
         return $web;
     }
@@ -144,6 +147,22 @@ class WebController implements ControllerProviderInterface
         }
 
         return $app->redirect('http://preview.ridibooks.com/' . $p->getStoreId() . '?mobile');
+    }
+
+    /*
+     * Recommended Book
+     */
+    public function recommendedBook(Request $req, Application $app, $b_id)
+    {
+        $recommended_books = $app['cache']->fetch(
+            'recommended_book_list_' . $b_id,
+            function () use ($b_id) {
+                return RecommendedBook::getRecommendedBookListByBid($b_id);
+            },
+            60 * 10
+        );
+
+        return $app['twig']->render('/recommended_book.twig', array('books' => $recommended_books));
     }
 }
 

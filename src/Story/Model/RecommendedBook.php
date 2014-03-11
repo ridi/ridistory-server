@@ -28,6 +28,15 @@ class RecommendedBook
         return $rb;
     }
 
+    public static function hasRecommendedBooks($b_id)
+    {
+        $sql = <<<EOT
+select ifnull(count(*), 0) from recommended_book where b_id = ?
+EOT;
+        global $app;
+        return $app['db']->fetchColumn($sql, array($b_id));
+    }
+
     public static function getRecommendedBookListByBid($b_id)
     {
         $sql = <<<EOT
