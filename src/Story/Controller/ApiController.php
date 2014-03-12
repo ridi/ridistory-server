@@ -175,6 +175,8 @@ class ApiController implements ControllerProviderInterface
      *  - 책 정보
      *  - 파트 정보 리스트 (각 파트별 좋아요, 댓글 갯수 포함)
      *  - 관심책 지정 여부
+     *  - 잠금 여부 (v3 이상)
+     *  - 구매 여부 (v3 이상)
      */
     public function bookDetail(Request $req, Application $app, $b_id)
     {
@@ -214,11 +216,17 @@ class ApiController implements ControllerProviderInterface
             60 * 10
         );
 
+        $is_valid_uid = false;
         $purchased_flags = null;
-        $u_id = intval($req->get('u_id', '0'));
-        if (Buyer::validateUid($u_id) > 0) {
-            $purchased_flags = Buyer::getPurchasedListByParts($u_id, $parts);
+        // 유료화 버전(v3)이고, Uid가 유효할 경우 구매내역 받아옴.
+        if ($v > 2) {
+            $u_id = intval($req->get('u_id', '0'));
+            $is_valid_uid = Buyer::isValidUid($u_id);
+            if ($is_valid_uid) {
+                $purchased_flags = Buyer::getPurchasedListByParts($u_id, $parts);
+            }
         }
+
         foreach ($parts as &$part) {
             $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
 
@@ -229,11 +237,13 @@ class ApiController implements ControllerProviderInterface
             }
 
             $part['is_purchased'] = 0;
-            foreach ($purchased_flags as $pf) {
-                if ($pf['p_id'] == $part['id']) {
-                    $part['is_purchased'] = 1;
-                    unset($pf);
-                    break;
+            if ($is_valid_uid) {
+                foreach ($purchased_flags as $pf) {
+                    if ($pf['p_id'] == $part['id']) {
+                        $part['is_purchased'] = 1;
+                        unset($pf);
+                        break;
+                    }
                 }
             }
         }
@@ -250,8 +260,8 @@ class ApiController implements ControllerProviderInterface
     public function buyBookPart(Request $req, Application $app)
     {
         $u_id = $req->get('u_id');
-        if (!Buyer::validateUid($u_id)) {
-            return $app->json(array('success' => 'false', 'message' => 'Wrong UID'));
+        if (!Buyer::isValidUid($u_id)) {
+            return $app->json(array('success' => 'false', 'message' => 'Invalid User'));
         }
         $p_id = $req->get('p_id');
         $part = Part::get($p_id);
