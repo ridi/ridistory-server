@@ -281,37 +281,37 @@ class ApiController implements ControllerProviderInterface
         $user_coin_balance = Buyer::getCoinBalance($u_id);
         if ($is_free && !$is_charged) { // 무료
             Buyer::buyPart($u_id, $p_id, 0);
-            return $app->json(array('success' => 'true', 'message' => '무료', 'coin_balance' => $user_coin_balance));
+            return $app->json(array('success' => true, 'message' => '무료(성공)', 'coin_balance' => $user_coin_balance));
         } else if (!$is_free && $is_charged) {  // 유료
             // 트랜잭션 시작
             $app['db']->beginTransaction();
             try {
-                $ph_id = Buyer::buyPart($u_id, $p_id, $part['price']);
-                if ($ph_id) {
-                    // 구매내역에 없을 경우, 구매해야함. 잔여 코인 체크.
-                    if ($user_coin_balance >= $part['price']) {
+                if (Buyer::hasPurchasedPart($u_id, $p_id)) {
+                    $message = '구매내역 존재(성공)';
+                    $r = true;
+                } else {
+                    $ph_id = Buyer::buyPart($u_id, $p_id, $part['price']);
+                    if ($ph_id && $user_coin_balance >= $part['price']) {
                         $r = Buyer::useCoin($u_id, $part['price'], Buyer::COIN_SOURCE_OUT_USE, $ph_id);
                         if ($r === true) {
+                            $message = '유료(성공)';
                             $user_coin_balance -= $part['price'];
-                            $app['db']->commit();
                         } else {
-                            $app['db']->rollback();
+                            throw new Exception('코인 결제 도중 오류가 발생하였습니다.');
                         }
                     } else {
-                        $app['db']->rollback();
-                        return $app->json(array('success' => 'false', 'message' => '코인이 부족합니다.', 'coin_balance' => $user_coin_balance));
+                        throw new Exception(($ph_id > 0) ? '코인이 부족합니다.' : '구매 처리 도중 오류가 발생하였습니다.');
                     }
-                } else {
-                    $r = true;  // 이미 구매함.
-                    $app['db']->commit();
                 }
+                $app['db']->commit();
             } catch (Exception $e) {
+                $message = $e->getMessage();
                 $app['db']->rollback();
                 $r = false;
             }
-            return $app->json(array('success' => ($r === true), 'message' => '유료', 'coin_balance' => $user_coin_balance));
+            return $app->json(array('success' => ($r === true), 'message' => $message, 'coin_balance' => $user_coin_balance));
         } else {    // 비공개, 잘못된 접근
-            return $app->json(array('success' => 'false', 'message' => 'Access Denied'));
+            return $app->json(array('success' => false, 'message' => 'Access Denied'));
         }
     }
 
