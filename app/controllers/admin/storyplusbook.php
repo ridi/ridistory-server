@@ -58,10 +58,9 @@ class AdminStoryPlusBookControllerProvider implements ControllerProviderInterfac
 
     public function deleteStoryPlusBook(Request $req, Application $app, $id)
     {
-        // TODO
         $intros = StoryPlusBookIntro::getListByBid($id);
         if (count($intros)) {
-            return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
+            return $app->json(array('error' => '소개 섹션이 있으면 책을 삭제할 수 없습니다.'));
         }
         StoryPlusBook::delete($id);
         $app['session']->getFlashBag()->add('alert', array('info' => '책이 삭제되었습니다.'));
@@ -71,17 +70,6 @@ class AdminStoryPlusBookControllerProvider implements ControllerProviderInterfac
     public function editStoryPlusBook(Request $req, Application $app, $id)
     {
         $inputs = $req->request->all();
-
-        // 상세 정보는 별도 테이블로
-        $intros = array('b_id' => $id);
-        array_move_keys(
-            $inputs,
-            $intros,
-            array(
-                'intro_type' => 'type',
-                'intro_descriptor' => 'intro_descriptor'
-            )
-        );
 
         StoryPlusBook::update($id, $inputs);
 

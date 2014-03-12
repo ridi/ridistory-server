@@ -98,6 +98,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
             return $app->json(array('error' => 'Part가 있으면 책을 삭제할 수 없습니다.'));
         }
         Book::delete($id);
+        Book::deleteIntro($id);
         $app['session']->getFlashBag()->add('alert', array('info' => '책이 삭제되었습니다.'));
         return $app->json(array('success' => true));
     }

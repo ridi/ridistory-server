@@ -186,4 +186,10 @@ EOT;
         global $app;
         return $app['db']->update('book_intro', $values, array('b_id' => $b_id));
     }
+
+    public static function deleteIntro($b_id)
+    {
+        global $app;
+        return $app['db']->delete('book_intro', array('b_id' => $b_id));
+    }
 }

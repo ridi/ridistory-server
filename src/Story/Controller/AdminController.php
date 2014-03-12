@@ -235,6 +235,7 @@ EOT;
     {
         $app['db']->insert('notice', array('title' => '제목이 없습니다.', 'is_visible' => 0));
         $r = $app['db']->lastInsertId();
+        $app['session']->getFlashBag()->add('alert', array('success' => '공지사항이 추가되었습니다.'));
         return $app->redirect('/admin/notice/' . $r);
     }
 
@@ -253,7 +254,7 @@ EOT;
     public static function deleteNotice(Request $req, Application $app, $n_id)
     {
         $app['db']->delete('notice', array('id' => $n_id));
-        $app['session']->getFlashBag()->add('alert', array('warning' => '공지사항이 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '공지사항이 삭제되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/notice/list');
         return $app->redirect($redirect_url);
     }
@@ -296,7 +297,7 @@ EOT;
     public static function deleteBanner(Request $req, Application $app, $banner_id)
     {
         $app['db']->delete('banner', array('id' => $banner_id));
-        $app['session']->getFlashBag()->add('alert', array('warning' => '배너가 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '배너가 삭제되었습니다.'));
         return $app->redirect('/admin/banner/list');
     }
 
@@ -337,7 +338,7 @@ EOT;
     public static function deleteInAppProduct(Request $req, Application $app, $iab_id)
     {
         InAppBilling::deleteInAppProduct($iab_id);
-        $app['session']->getFlashBag()->add('alert', array('warning' => '인앱 상품이 삭제되었습니다.'));
+        $app['session']->getFlashBag()->add('alert', array('info' => '인앱 상품이 삭제되었습니다.'));
         return $app->json(array('success' => true));
     }
 
