@@ -359,7 +359,7 @@ class ApiController implements ControllerProviderInterface
         return $app->json(array('success' => $r));
     }
 
-    public function cleatUserInterest(Application $app, $device_id, $b_id)
+    public function clearUserInterest(Application $app, $device_id, $b_id)
     {
         $r = UserInterest::clear($device_id, $b_id);
         return $app->json(array('success' => $r));
