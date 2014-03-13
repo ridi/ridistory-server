@@ -76,10 +76,23 @@ EOT;
         $purchase_token = $values['purchase_token'];
         $signature = $values['signature'];
 
-        if ($order_id == null || $sku == null || $payload == null || $purchase_time == null || $purchase_token == null || $signature == null) {
+        if ($u_id == null || $order_id == null || $sku == null || $payload == null || $purchase_time == null || $purchase_token == null || $signature == null) {
             return false;
         }
 
+        // 인앱 결제 내역에 등록
+        $bind = array(
+            'order_id' => $order_id,
+            'u_id' => $u_id,
+            'sku' => $sku,
+            'purchase_time' => date("Y-m-d H:i:s", ($purchase_time / 1000)),
+            'payload' => $payload,
+            'purchase_token' => $purchase_token,
+            'signature' => $signature
+        );
+        $iab_id = InAppBilling::saveInAppBillingHistory($bind);
+
+        // Google oAuth 2.0 Reresh Token API Param
         $refresh_token_params = array(
             'refresh_token' => urlencode(InAppBilling::REFRESH_TOKEN),
             'grant_type' => urlencode('refresh_token'),
@@ -92,7 +105,7 @@ EOT;
         }
         rtrim($refresh_token_params_string, '&');
 
-        // Google oAuth 2.0 Refresh Token
+        // Google oAuth 2.0 Refresh Token API
         $refresh_token_url = 'https://accounts.google.com/o/oauth2/token';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $refresh_token_url);
@@ -125,30 +138,19 @@ EOT;
         curl_close($ch);
         $response = json_decode($response, true);
 
-        $bind = array(
-            'order_id' => $order_id,
-            'u_id' => $u_id,
-            'sku' => $sku,
-            'purchase_time' => date("Y-m-d H:i:s", ($purchase_time / 1000)),
-            'payload' => $payload,
-            'purchase_token' => $purchase_token,
-            'signature' => $signature
-        );
-        $iab_id = InAppBilling::saveInAppBillingHistory($bind);
-
-        if ($response['developerPayload'] == $payload
-            && $response['purchaseTime'] == $purchase_time
-            && $response['purchaseState'] == InAppBilling::PURCHASE_STATE_PURCHASED) {
-            if ($response['consumptionState'] == InAppBilling::CONSUMPTION_STATE_CONSUMED) {
-                $r = InAppBilling::setInAppBillingSucceeded($iab_id);
-                if ($r === 1) {
-                    return $iab_id;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+        //TODO: Purchase Status API 버그 수정 시, 이 부분 수정.
+        /*
+         * 구글 Purchase Status API 버그로, payload가 오지 않고 purchase_time이 인앱결제에서 보내주는 time과 다르게 온다.
+         * 조금 더 지켜보고 수정할 예정.
+         */
+//        if ($response['developerPayload'] == $payload
+//            && $response['purchaseTime'] == $purchase_time
+//            && $response['purchaseState'] == InAppBilling::PURCHASE_STATE_PURCHASED
+//            && $response['consumptionState'] == InAppBilling::CONSUMPTION_STATE_CONSUMED) {
+        if ($response['purchaseState'] == InAppBilling::PURCHASE_STATE_PURCHASED
+            && $response['consumptionState'] == InAppBilling::CONSUMPTION_STATE_CONSUMED) {
+            $r = InAppBilling::setInAppBillingSucceeded($iab_id);
+            return ($r === 1);
         } else {
             return false;
         }

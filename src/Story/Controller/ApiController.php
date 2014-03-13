@@ -29,8 +29,8 @@ class ApiController implements ControllerProviderInterface
         $api = $app['controllers_factory'];
 
         $api->post('/buyer/auth', array($this, 'authBuyerGoogleAccount'));
-        $api->get('/buyer/{u_id}/coin', array($this, 'getBuyerCoinBalance'));
-        $api->post('/buyer/{u_id}/coin/add', array($this, 'addBuyerCoin'));
+        $api->get('/buyer/coin', array($this, 'getBuyerCoinBalance'));
+        $api->post('/buyer/coin/add', array($this, 'addBuyerCoin'));
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
@@ -97,38 +97,46 @@ class ApiController implements ControllerProviderInterface
                 $id = Buyer::add($google_id);
                 $buyer = Buyer::get($id);
             }
+            $buyer['id'] = Buyer::encryptUserId($buyer['id']);
         }
 
         return $app->json($buyer);
     }
 
-    public function getBuyerCoinBalance(Request $req, Application $app, $u_id)
+    public function getBuyerCoinBalance(Request $req, Application $app)
     {
-        $coin_balance = Buyer::getCoinBalance($u_id);
+        $u_id = $req->get('u_id', '0');
+        $u_id = Buyer::decryptUserId($u_id);
+
+        $coin_balance = 0;
+        if (Buyer::isValidUid($u_id)) {
+            $coin_balance = Buyer::getCoinBalance($u_id);
+        }
+
         return $app->json(compact("coin_balance"));
     }
 
-    public function addBuyerCoin(Request $req, Application $app, $u_id)
+    public function addBuyerCoin(Request $req, Application $app)
     {
-        if ($u_id == null) {
-            return $app->json(array('success' => false, 'message' => '인앱 결제 검증 오류'));
-        }
-
         $inputs = $req->request->all();
-        $inputs['u_id'] = $u_id;
+        if ($inputs['u_id']) {
+            $inputs['u_id'] = Buyer::decryptUserId($inputs['u_id']);
+        } else {
+            return $app->json(array('success' => false, 'message' => 'Access Denied1'));
+        }
 
         $r = InAppBilling::verifyInAppBilling($inputs);
         if ($r) {
             $inapp_info = InAppBilling::getInAppProductBySku($inputs['sku']);
-            $r = Buyer::addCoin($u_id, ($inapp_info['coin_amount'] + $inapp_info['bonus_coin_amount']), Buyer::COIN_SOURCE_IN_INAPP);
+            $r = Buyer::addCoin($inputs['u_id'], ($inapp_info['coin_amount'] + $inapp_info['bonus_coin_amount']), Buyer::COIN_SOURCE_IN_INAPP);
             if ($r) {
-                $coin_amount = Buyer::getCoinBalance($u_id);
+                $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
                 return $app->json(array('success' => true, 'message' => '성공', 'coin_balance' => $coin_amount));
             } else {
                 return $app->json(array('success' => false, 'message' => '코인 증가 오류'));
             }
         } else {
-            return $app->json(array('success' => false, 'message' => '인앱 결제 검증 오류'));
+            return $app->json(array('success' => false, 'message' => 'Access Denied2'));
         }
     }
 
@@ -198,8 +206,8 @@ class ApiController implements ControllerProviderInterface
         // 완결되었고, 종료 후 액션이 모두 공개 혹은 모두 잠금이면 파트 모두 보임
         $show_all = false;
         $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime('now') ? 1 : 0);
-        $show_from_end = ($book['end_action_flag'] == Book::ALL_FREE || $book['end_action_flag'] == Book::ALL_CHARGED ? 1 : 0);
-        if ($is_completed && $show_from_end) {
+        $show_after_completed = ($book['end_action_flag'] == Book::ALL_FREE || $book['end_action_flag'] == Book::ALL_CHARGED ? 1 : 0);
+        if ($is_completed && $show_after_completed) {
             $show_all = true;
         }
 
@@ -220,7 +228,8 @@ class ApiController implements ControllerProviderInterface
         $purchased_flags = null;
         // 유료화 버전(v3)이고, Uid가 유효할 경우 구매내역 받아옴.
         if ($v > 2) {
-            $u_id = intval($req->get('u_id', '0'));
+            $u_id = $req->get('u_id', '0');
+            $u_id = Buyer::decryptUserId($u_id);
             $is_valid_uid = Buyer::isValidUid($u_id);
             if ($is_valid_uid) {
                 $purchased_flags = Buyer::getPurchasedListByParts($u_id, $parts);
@@ -259,7 +268,8 @@ class ApiController implements ControllerProviderInterface
 
     public function buyBookPart(Request $req, Application $app)
     {
-        $u_id = $req->get('u_id');
+        $u_id = $req->get('u_id', '0');
+        $u_id = Buyer::decryptUserId($u_id);
         if (!Buyer::isValidUid($u_id)) {
             return $app->json(array('success' => 'false', 'message' => 'Invalid User'));
         }
@@ -499,10 +509,52 @@ class ApiController implements ControllerProviderInterface
      */
     public function validatePartDownload(Request $req, Application $app)
     {
+        /*
+         * 유료화 버전(v3)부터는 u_id를 추가적으로 받아서,
+         * 닫혀 있는 책에 대해서 구매내역을 체크한다.
+         */
+        $u_id = $req->get('u_id', '0');
+        $u_id = Buyer::decryptUserId($u_id);
+
         $p_id = $req->get('p_id');
         $store_id = $req->get('store_id');
 
-        $valid = Part::isOpenedPart($p_id, $store_id);
+        $part = Part::get($p_id);
+        $book = Book::get($part['b_id']);
+
+        $today = date('Y-m-d H:00:00');
+        $is_ongoing = strtotime($today) >= strtotime($part['begin_date']) && strtotime($today) <= strtotime($part['end_date']);
+
+        // 연재 진행 중 여부에 따라 분기
+        if ($is_ongoing) {
+            // 연재 중인 경우 (이전 버전 및 유료화 버전의 무료 연재중)
+            $valid = Part::isOpenedPart($p_id, $store_id);
+        } else {
+            $is_locked = $book['is_active_lock'] && (strtotime($today) <= strtotime($part['begin_date']) && strtotime($today . ' + 14 days') >= $part['begin_date']);
+            $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
+
+            // Uid가 유효한 경우
+            if (Buyer::isValidUid($u_id)) {
+                if ($is_locked) {
+                    // 잠겨져 있는 경우 -> 구매내역 확인
+                    $valid = Buyer::hasPurchasedPart($u_id, $p_id);
+                } else if ($is_completed) {
+                    // 완결된 경우 -> ALL_FREE    : true
+                    //          -> ALL_CHARGED : 구매내역 확인
+                    if ($book['end_action_flag'] == Book::ALL_FREE) {
+                        $valid = true;
+                    } else if ($book['end_action_flag'] == Book::ALL_CHARGED) {
+                        $valid = Buyer::hasPurchasedPart($u_id, $p_id);
+                    } else {    // ALL_CLOSED, SALED_CLOSED : 비공개
+                        $valid = false;
+                    }
+                } else {        // 잠겨져 있지도 않고, 완결도 아닌 경우 -> 비공개/잘못된 접근
+                    $valid = false;
+                }
+            } else {            // Uid가 유효하지 않은 경우 -> 잘못된 접근
+                $valid = false;
+            }
+        }
 
         // log
         $app['db']->insert('stat_download', array('p_id' => $p_id, 'is_success' => ($valid ? 1 : 0)));

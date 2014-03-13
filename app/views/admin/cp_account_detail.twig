@@ -43,8 +43,8 @@
                 <th>CP 형태</th>
                 <td>
                     <select class='form-control' name='cp_type'>
-                        <option value='Publisher'>출판사</option>
                         <option value='Private'>개인</option>
+                        <option value='Publisher'>출판사</option>
                         <option value='AG'>AG</option>
                         <option value='Closed'>폐업</option>
                         <option value='ETC'>기타</option>
@@ -114,8 +114,9 @@
                     <table class='table table-hover table-striped table-condensed'>
                         <thead>
                         <tr>
-                            <th>책 ID</th>
+                            <th class='span2'>책 ID</th>
                             <th class='span3'>제목</th>
+                            <th class='span2'>정산율</th>
                             <th class='span3'>시작일</th>
                             <th class='span3'>종료일</th>
                         </tr>
@@ -125,6 +126,7 @@
                             <tr data-cid='{{ book.id }}'>
                                 <td>{{ book.id }}</td>
                                 <td><a href='/admin/book/{{ book.id }}' >{{ book.title }} </a></td>
+                                <td>{{ book.royalty_percent }}</td>
                                 <td>{{ book.begin_date }}</td>
                                 <td>{{ book.end_date }}</td>
                             </tr>

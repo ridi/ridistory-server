@@ -64,9 +64,9 @@ EOT;
 
                 $lock_day = $today;
                 if ($active_lock) {
-                    $lock_day = date('Y-m-d H:00:00', strtotime($today." + 14 days"));
+                    $lock_day = date('Y-m-d H:00:00', strtotime($today .  ' + 14 days'));
                 }
-                $bind = array($b_id, $lock_day, $lock_day);
+                $bind = array($b_id, $lock_day, $today);
             }
             $sql .= ' order by seq';
         } else {
