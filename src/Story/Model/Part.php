@@ -80,7 +80,12 @@ EOT;
 
             // 시간에 따라 잠금여부 추가
             if ($active_lock) {
-                $p['is_locked'] = (strtotime($today) < strtotime($p['begin_date']) ? 1 : 0);
+                // 무료인 책의 경우, 잠금이 아님.
+                if ($p['price'] > 0) {
+                    $p['is_locked'] = (strtotime($today) < strtotime($p['begin_date']) ? 1 : 0);
+                } else {
+                    $p['is_locked'] = 0;
+                }
             } else {
                 $p['is_locked'] = 0;
             }

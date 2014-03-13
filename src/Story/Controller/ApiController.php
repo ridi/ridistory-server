@@ -105,12 +105,14 @@ class ApiController implements ControllerProviderInterface
 
     public function getBuyerCoinBalance(Request $req, Application $app)
     {
-        $u_id = $req->get('u_id', '0');
-        $u_id = Buyer::decryptUserId($u_id);
-
         $coin_balance = 0;
-        if (Buyer::isValidUid($u_id)) {
-            $coin_balance = Buyer::getCoinBalance($u_id);
+
+        $u_id = $req->get('u_id', '0');
+        if ($u_id) {
+            $u_id = Buyer::decryptUserId($u_id);
+            if (Buyer::isValidUid($u_id)) {
+                $coin_balance = Buyer::getCoinBalance($u_id);
+            }
         }
 
         return $app->json(compact("coin_balance"));
@@ -229,10 +231,12 @@ class ApiController implements ControllerProviderInterface
         // 유료화 버전(v3)이고, Uid가 유효할 경우 구매내역 받아옴.
         if ($v > 2) {
             $u_id = $req->get('u_id', '0');
-            $u_id = Buyer::decryptUserId($u_id);
-            $is_valid_uid = Buyer::isValidUid($u_id);
-            if ($is_valid_uid) {
-                $purchased_flags = Buyer::getPurchasedListByParts($u_id, $parts);
+            if ($u_id) {
+                $u_id = Buyer::decryptUserId($u_id);
+                $is_valid_uid = Buyer::isValidUid($u_id);
+                if ($is_valid_uid) {
+                    $purchased_flags = Buyer::getPurchasedListByParts($u_id, $parts);
+                }
             }
         }
 
@@ -242,7 +246,11 @@ class ApiController implements ControllerProviderInterface
             if ($show_all && $book['end_action_flag'] == Book::ALL_FREE) {
                 $part['is_locked'] = 0;
             } else if ($show_all && $book['end_action_flag'] == Book::ALL_CHARGED) {
-                $part['is_locked'] = 1;
+                if ($part['price'] > 0) {
+                    $part['is_locked'] = 1;
+                } else {
+                    $part['is_locked'] = 0;
+                }
             }
 
             $part['is_purchased'] = 0;
@@ -269,10 +277,15 @@ class ApiController implements ControllerProviderInterface
     public function buyBookPart(Request $req, Application $app)
     {
         $u_id = $req->get('u_id', '0');
-        $u_id = Buyer::decryptUserId($u_id);
-        if (!Buyer::isValidUid($u_id)) {
+        if ($u_id) {
+            $u_id = Buyer::decryptUserId($u_id);
+            if (!Buyer::isValidUid($u_id)) {
+                return $app->json(array('success' => 'false', 'message' => 'Invalid User'));
+            }
+        } else {
             return $app->json(array('success' => 'false', 'message' => 'Invalid User'));
         }
+
         $p_id = $req->get('p_id');
         $part = Part::get($p_id);
         $book = Book::get($part['b_id']);

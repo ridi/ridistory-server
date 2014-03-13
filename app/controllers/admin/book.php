@@ -57,13 +57,37 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         $parts = Part::getListByBid($id, false, $active_lock, true);
 
         $today = date('Y-m-d H:00:00');
+        $is_completed = strtotime($today) > strtotime($book['end_date']);
+
         foreach ($parts as &$part) {
-            if (strtotime($part['begin_date']) <= strtotime($today)) {
-                $part['status'] = "공개";
-            } else if ($active_lock && strtotime($part['begin_date']) < strtotime($today." + 14 days")) {
-                $part['status'] = "잠금";
+            if ($active_lock) {
+                if ($is_completed) {
+                    if ($book['end_action_flag'] == Book::ALL_FREE) {
+                        $part['status'] = '공개';
+                    } else if ($book['end_action_flag'] == Book::ALL_CHARGED) {
+                        if ($part['price'] > 0) {
+                            $part['status'] = '잠금';
+                        } else {
+                            $part['status'] = '공개';
+                        }
+                    } else {
+                        $part['status'] = '비공개';
+                    }
+                } else {
+                    if (strtotime($part['begin_date']) <= strtotime($today)) {
+                        $part['status'] = '공개';
+                    } else if (strtotime($part['begin_date']) <= strtotime($today . ' + 14 days')) {
+                        $part['status'] = '잠금';
+                    } else {
+                        $part['status'] = '비공개';
+                    }
+                }
             } else {
-                $part['status'] = "비공개";
+                if (strtotime($today) >= strtotime($part['begin_date']) && strtotime($today) <= strtotime($part['end_date'])) {
+                    $part['status'] = '공개';
+                } else {
+                    $part['status'] = '비공개';
+                }
             }
         }
 
