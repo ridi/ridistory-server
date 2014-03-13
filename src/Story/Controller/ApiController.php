@@ -514,7 +514,9 @@ class ApiController implements ControllerProviderInterface
          * 닫혀 있는 책에 대해서 구매내역을 체크한다.
          */
         $u_id = $req->get('u_id', '0');
-        $u_id = Buyer::decryptUserId($u_id);
+        if ($u_id) {
+            $u_id = Buyer::decryptUserId(urldecode($u_id));
+        }
 
         $p_id = $req->get('p_id');
         $store_id = $req->get('store_id');
