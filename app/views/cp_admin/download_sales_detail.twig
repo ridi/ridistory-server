@@ -1,22 +1,18 @@
-{% extends '/admin/base.twig' %}
+{% extends '/cp_admin/base.twig' %}
 
 {% block container %}
+    <style>
+        .total_calculates {display: none;}
+    </style>
+
     <table class='table'>
         <colgroup>
             <col class="span1">
             <col class="span7">
         </colgroup>
         <tr>
-            <th>책 ID</th>
-            <td>{{ download_sales.b_id }}</td>
-        </tr>
-        <tr>
-            <th>상품명</th>
-            <td><a href='/admin/book/{{ download_sales.b_id }}' >{{ download_sales.title }}</a></td>
-        </tr>
-        <tr>
-            <th>CP명</th>
-            <td><a href='/admin/cp_account/{{ download_sales.cp_id }}' >{{ download_sales.cp_name }}</a></td>
+            <th>책제목</th>
+            <td>{{ download_sales.title }}</a></td>
         </tr>
         <tr>
             <th>정산율</th>
@@ -24,7 +20,7 @@
         </tr>
         <tr>
             <th>다운로드</th>
-            <td>무료: {{ footer.total_free_download }}건 / 유료: {{ footer.total_charged_download }}건</td>
+            <td>{{ footer.total_download }}건</td>
         </tr>
         <tr>
             <th>정산액</th>
@@ -52,31 +48,46 @@
                     <tr>
                         <th>파트 제목</th>
                         <th>판매가격</th>
-                        <th>무료 다운 수</th>
-                        <th>유료 다운 수</th>
+                        <th>다운로드 수</th>
                         <th>누적 판매 액</th>
                     </tr>
                     </thead>
+
                     <tbody id='js_part_list'>
                     {% for dsd in download_sales_detail %}
                         <tr data-cid='{{ part.id }}'>
-                            <td><a href='/admin/part/{{ dsd.p_id }}'>{{ dsd.seq }}. {{ dsd.title }} </a></td>
+                            <td>{{ dsd.seq }}. {{ dsd.title }}</td>
                             <td>{{ (dsd.price * 100)|number_format(0, '', ',') }}</td>
-                            <td>{{ dsd.free_download }}</td>
                             <td>{{ dsd.charged_download }}</td>
                             <td>{{ (dsd.total_coin_amount * 100)|number_format(0, '', ',') }}</td>
                         </tr>
                     {% endfor %}
                         <tr class="info">
-                            <td colspan='2'><b>총</b></td>
-                            <td><b>{{ footer.total_free_download }}</b></td>
-                            <td><b>{{ footer.total_charged_download }}</b></td>
+                            <td colspan='2' ><b>총</b></td>
+                            <td><b>{{ footer.total_download }}</b></td>
                             <td><b>{{ (footer.total_sales * 100)|number_format(0, '', ',') }}원</b></td>
                         </tr>
                     </tbody>
                 </table>
             </td>
         </tr>
-     </table>
+    </table>
 
+    <div class='form-actions'>
+        <button class='btn btn-cancel'>목록으로</button>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+    <script>
+        $(function() {
+
+            $('.btn-cancel').click(function() {
+                history.back();
+                return false;
+            });
+        });
+    </script>
 {% endblock %}

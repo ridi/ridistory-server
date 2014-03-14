@@ -2,25 +2,8 @@
 
 {% block container %}
 
-    <div class="well">
-        <div style="float: left;">
-            <h3>{{ cp.name }}</h3>
-            <blockquote>
-                <p>{{ cp.cp_site_id }}</p>
-            </blockquote>
-        </div>
-        <div style="float: right; margin-top: 15px;">
-            <blockquote>
-            <p>총 다운로드: <b>{{ header.total_download }}건</b></p>
-            <p>총 판매액: <b>{{ (header.total_sales * 100)|number_format(0, '', ',') }}원</b></p>
-            <p>총 정산액: <b>{{ header.total_sales_royalty|number_format(0, '', ',') }}원</b></p>
-            </blockquote>
-        </div>
-
-        <div style="clear: both;"></div>
-    </div>
-
     <form>
+        <input type="hidden" name="cp_id" value="{{ cp.id }}" />
         <div class="well form-inline">
             <h4>기간별 조회</h4>
             <input type='text' class='input-medium' name='begin_date' value='{{ search_date.begin_date }}' placeholder='0000-00-00' />
@@ -37,7 +20,7 @@
         </div>
     </form>
 
-    <table class='table table-hover'>
+    <table class='table table-hover table-striped'>
         <thead>
         <tr>
             <th>책제목</th>
@@ -82,7 +65,10 @@
 
             $('#js_tbody tr').click(function() {
                 var b_id = $(this).data('bid');
-                location.href = '/cp_admin/download_sales/' + b_id;
+                var url = '/cp_admin/download_sales/' + b_id;
+                url += '?cp_id={{ cp.id }}';
+                url += '&begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}';
+                location.href = url;
             });
 
             $('#js_tbody tr').hover(function() {
@@ -91,6 +77,10 @@
                         $(this).css('cursor', '');
                     }
             );
+
+            $('#begin_date_picker').datetimepicker({
+                pickTime: false
+            });
         });
     </script>
 {% endblock %}

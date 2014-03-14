@@ -55,20 +55,41 @@
         {% endfor %}
     {% endfor %}
 
+    <div class="well">
+        <div class='cp_info' style="float: left;">
+            <h3>{{ cp.name }}</h3>
+            <blockquote>
+                <p>{{ cp.cp_site_id }}</p>
+            </blockquote>
+        </div>
+        <div class='total_calculates' style="float: right; margin-top: 15px;">
+            <blockquote>
+                <p>총 다운로드: <b>{{ header.total_download }}건</b></p>
+                <p>총 판매액: <b>{{ (header.total_sales * 100)|number_format(0, '', ',') }}원</b></p>
+                <p>총 정산액: <b>{{ header.total_sales_royalty|number_format(0, '', ',') }}원</b></p>
+            </blockquote>
+        </div>
+
+        <div style="clear: both;"></div>
+    </div>
+
     {% block container %}
     {% endblock %}
 </div> <!-- /container -->
 
 <footer class="footer">
     <div class="container">
-        <p>
-            Copyright © 2013 RIDI Corporation.
-        </p>
         <ul class="footer-links">
             <li>
                 이용 문의: 한은미(<a href="mailto:sherlock@ridicorp.com">sherlock@ridicorp.com</a>)
             </li>
         </ul>
+        <p>
+            <br />RIDIStory | 리디(주)<br />
+            서울시 강남구 대치동 891-46 V&S빌딩 14층 / 대표이사 배기식<br />
+            통신판매업신고 제2009-서울강남-02139호<br />
+            Copyright © RIDI Corp. All Rights Reserved.
+        </p>
     </div>
 </footer>
 

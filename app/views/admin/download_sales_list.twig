@@ -78,7 +78,9 @@
 
             $('#js_tbody tr').click(function() {
                 var b_id = $(this).data('bid');
-                location.href = '/admin/download_sales/' + b_id;
+                var url = '/admin/download_sales/' + b_id;
+                url += '?begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}';
+                location.href = url;
             });
 
             $('#js_tbody tr').hover(function() {
