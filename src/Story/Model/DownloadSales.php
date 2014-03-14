@@ -16,7 +16,7 @@ EOT;
         return $app['db']->fetchAssoc($sql, array($b_id));
     }
 
-    public static function getWholeList()
+    public static function getWholeList($begin_date, $end_date)
     {
         $today = date('Y-m-d H:00:00');
 
@@ -26,9 +26,25 @@ select b.id b_id, b.title, cp.id, cp_id, cp.name cp_name, b.royalty_percent, ifn
  left join (select * from book) b on b.id = p.b_id
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on pc.b_id = b.id
  left join (select id, name from cp_account) cp on cp.id = b.cp_id
-group by b_id order by (count(*) * p.price) desc
 EOT;
-        $bind = array($today, $today);
+        if ($begin_date && $end_date) {
+            $begin_date = date('Y-m-d 00:00:00', strtotime($begin_date));
+            $end_date = date('Y-m-d 23:59:59', strtotime($end_date));
+            $sql .= ' where ph.timestamp >= ? and ph.timestamp <= ?';
+            $bind = array($today, $today, $begin_date, $end_date);
+        } else if ($begin_date && !$end_date) {
+            $begin_date = date('Y-m-d 00:00:00', strtotime($begin_date));
+            $sql .= ' where ph.timestamp >= ?';
+            $bind = array($today, $today, $begin_date);
+        } else if (!$begin_date && $end_date) {
+            $end_date = date('Y-m-d 23:59:59', strtotime($end_date));
+            $sql .= ' where ph.timestamp <= ?';
+            $bind = array($today, $today, $end_date);
+        } else {
+            $bind = array($today, $today);
+        }
+        $sql .= ' group by b_id order by (count(*) * p.price) desc';
+
         global $app;
         return $app['db']->fetchAll($sql, $bind);
     }

@@ -20,12 +20,19 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
     public function downloadSalesList(Request $req, Application $app)
     {
+        $begin_date = $req->get('begin_date');
+        $end_date = $req->get('end_date');
+        $search_date = array(
+            'begin_date' => $begin_date,
+            'end_date' => $end_date
+        );
+
         $total_sales = 0;
         $total_sales_royalty = 0;
         $total_free_download = 0;
         $total_charged_download = 0;
 
-        $download_sales = DownloadSales::getWholeList();
+        $download_sales = DownloadSales::getWholeList($begin_date, $end_date);
 
         foreach ($download_sales as $ds) {
             // 헤더에 들어갈 정보 계산
@@ -79,7 +86,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
         return $app['twig']->render(
             '/admin/download_sales_list.twig',
-            compact('header', 'download_sales')
+            compact('search_date', 'header', 'download_sales')
         );
     }
 
