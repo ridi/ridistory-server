@@ -38,5 +38,6 @@ $app->mount('/admin/part', new AdminPartControllerProvider());
 $app->mount('/admin/recommended_book', new AdminRecommendedBookControllerProvider());
 $app->mount('/admin/storyplusbook', new AdminStoryPlusBookControllerProvider());
 $app->mount('/admin/storyplusbook_intro', new AdminStoryPlusBookIntroControllerProvider());
+$app->mount('/cp_admin', new Story\Controller\CpAdmin\CpAdminController());
 
 $app->run();

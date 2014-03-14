@@ -9,6 +9,7 @@
 			<th>제목</th>
             <th>CP명</th>
 			<th class='span3'>Progress</th>
+            <th>상태</th>
 			<th class='span3'>시작일</th>
 		</tr>
 	</thead>
@@ -28,6 +29,7 @@
                     <div class='bar bar-warning' style='width: {{ book.progress2 }}; position: absolute; top: 0; left: 0; z-index: 1;'></div>
                 </div>
 			</td>
+            <td>{{ book.status }}</td>
 			<td>{{ book.begin_date }}</td>
 		</tr>
 		{% endfor %}

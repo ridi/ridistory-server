@@ -470,11 +470,3 @@ EOT;
         );
     }
 }
-
-function array_move_keys(&$src, &$dst, array $keys)
-{
-    foreach ($keys as $k1 => $k2) {
-        $dst[$k2] = $src[$k1];
-        unset($src[$k1]);
-    }
-}

@@ -34,6 +34,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
     public function bookList(Request $req, Application $app)
     {
         $books = Book::getWholeList();
+        $today = date('Y-m-d H:i:s');
         foreach ($books as &$book) {
             $progress = 0;
             $progress2 = 0;
@@ -43,6 +44,27 @@ class AdminBookControllerProvider implements ControllerProviderInterface
             }
             $book['progress'] = $progress . '%';
             $book['progress2'] = $progress2 . '%';
+
+            if (strtotime($book['end_date']) < strtotime($today)) {
+                // 완결
+                switch($book['end_action_flag']) {
+                    case Book::ALL_FREE:
+                        $book['status'] = '모두 공개';
+                        break;
+                    case Book::ALL_CHARGED:
+                        $book['status'] = '모두 잠금';
+                        break;
+                    case Book::SALES_CLOSED:
+                        $book['status'] = '판매 종료';
+                        break;
+                    case Book::ALL_CLOSED:
+                        $book['status'] = '게시 종료';
+                        break;
+                }
+            } else {
+                // 연재중
+                $book['status'] = '연재중';
+            }
         }
         return $app['twig']->render('admin/book_list.twig', array('books' => $books));
     }
