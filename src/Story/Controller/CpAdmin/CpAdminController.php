@@ -42,7 +42,18 @@ class CpAdminController implements ControllerProviderInterface
             'end_date' => $end_date
         );
 
-        $download_sales = DownloadSales::getListByCpId($cp_id, null, null);
+        $total_sales = 0;
+        $total_sales_royalty = 0;
+        $total_charged_download = 0;
+
+        $download_sales = DownloadSales::getListByCpId($cp_id, $begin_date, $end_date);
+
+        foreach ($download_sales as $ds) {
+            // 헤더에 들어갈 정보 계산
+            $total_sales += $ds['total_sales'];
+            $total_sales_royalty += $ds['total_sales'] * $ds['royalty_percent'];
+            $total_charged_download += $ds['charged_download'];
+        }
 
         $app['twig']->addFilter(
             new \Twig_SimpleFilter('simple_date_format', function($date) {
@@ -79,9 +90,15 @@ class CpAdminController implements ControllerProviderInterface
             })
         );
 
+        $header = array(
+            'total_sales' => $total_sales,
+            'total_sales_royalty' => $total_sales_royalty,
+            'total_download' => $total_charged_download
+        );
+
         return $app['twig']->render(
             '/cp_admin/download_sales_list.twig',
-            compact('cp', 'search_date', 'download_sales')
+            compact('cp', 'header', 'search_date', 'download_sales')
         );
     }
 }

@@ -28,11 +28,11 @@
         </tr>
         <tr>
             <th>판매액</th>
-            <td>{{ download_sales.total_sales * 100 }}원</td>
+            <td>{{ (download_sales.total_sales * 100)|number_format(0, '', ',') }}원</td>
         </tr>
         <tr>
             <th>정산액</th>
-            <td>{{ download_sales.total_sales * download_sales.royalty_percent }}원</td>
+            <td>{{ (download_sales.total_sales * download_sales.royalty_percent)|number_format(0, '', ',') }}원</td>
         </tr>
         <tr>
             <th>연재별 판매</th>
@@ -51,17 +51,17 @@
                     {% for dsd in download_sales_detail %}
                         <tr data-cid='{{ part.id }}'>
                             <td><a href='/admin/part/{{ dsd.p_id }}'>{{ dsd.seq }}. {{ dsd.title }} </a></td>
-                            <td>{{ dsd.price * 100 }}</td>
+                            <td>{{ (dsd.price * 100)|number_format(0, '', ',') }}</td>
                             <td>{{ dsd.free_download }}</td>
                             <td>{{ dsd.charged_download }}</td>
-                            <td>{{ dsd.total_coin_amount * 100 }}</td>
+                            <td>{{ (dsd.total_coin_amount * 100)|number_format(0, '', ',') }}</td>
                         </tr>
                     {% endfor %}
                         <tr class="info">
                             <td colspan='2'><b>총</b></td>
                             <td><b>{{ footer.total_free_download }}</b></td>
                             <td><b>{{ footer.total_charged_download }}</b></td>
-                            <td><b>{{ footer.total_sales * 100 }}원</b></td>
+                            <td><b>{{ (footer.total_sales * 100)|number_format(0, '', ',') }}원</b></td>
                         </tr>
                     </tbody>
                 </table>
