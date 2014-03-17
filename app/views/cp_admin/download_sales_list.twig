@@ -50,8 +50,8 @@
                 <td>{{ ds.begin_date|simple_date_format }}</td>
                 <td>{{ ds.royalty_percent }}</td>
                 <td>{{ ds.charged_download }}</td>
-                <td>{{ (ds.total_sales * 100)|number_format(0, '', ',') }}</td>
-                <td>{{ (ds.total_sales * ds.royalty_percent)|number_format(0, '', ',') }}</td>
+                <td>{{ (ds.total_sales * 90)|number_format(0, '', ',') }}</td>
+                <td>{{ (ds.total_sales * (ds.royalty_percent/100) * 90)|number_format(0, '', ',') }}</td>
             </tr>
         {% endfor %}
         </tbody>
