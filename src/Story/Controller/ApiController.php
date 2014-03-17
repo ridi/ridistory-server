@@ -63,7 +63,7 @@ class ApiController implements ControllerProviderInterface
         $api->get('/validate_download', array($this, 'validatePartDownload'));
         $api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
 
-        $api->get('/inapp/list', array($this, 'inAppProductList'));
+        $api->get('/inapp_product/list', array($this, 'inAppProductList'));
 
         $api->get('/shorten_url/{id}', array($this, 'shortenUrl'));
 
