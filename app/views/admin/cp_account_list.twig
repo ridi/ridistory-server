@@ -38,7 +38,7 @@
                     기타
                 {% endif %}
             </td>
-            <td><a href='#' >[CP 로그인]</a></td>
+            <td><a class="cp_login" data-site_id='{{ cp.cp_site_id }}' data-pw='{{ cp.password }}'>[CP 로그인]</a></td>
         </tr>
     {% endfor %}
     </tbody>
@@ -50,6 +50,20 @@
 {% block script %}
 <script>
     $(function() {
+        $('.cp_login').click(function() {
+            var site_id = $(this).data('site_id');
+            var pw = $(this).data('pw');
+
+            $.post('/cp_admin/login/check', {id: site_id, pw: pw}, function(r) {
+                if (r.error) {
+                    alert(r.error);
+                } else {
+                    location.href = '/cp_admin';
+                }
+            })
+            return false;
+        });
+
         $('#js_add').click(function() {
             location.href = '/admin/cp_account/add';
         });

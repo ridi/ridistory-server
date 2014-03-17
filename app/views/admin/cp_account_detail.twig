@@ -9,7 +9,7 @@
             </colgroup>
             <tr>
                 <th>CP 로그인</th>
-                <td colspan='3'><a href='#' >[CP 로그인(클릭)]</a></td>
+                <td colspan='3'><a class='cp_login'>[CP 로그인(클릭)]</a></td>
             </tr>
             <tr>
                 <th>CP ID</th>
@@ -171,6 +171,27 @@
                 }
                 return false;
             });
+
+            $('.cp_login').click(function() {
+                var site_id = '{{ cp_account.cp_site_id }}';
+                var pw = '{{ cp_account.password }}';
+
+                $.post('/cp_admin/login/check', {id: site_id, pw: pw}, function(r) {
+                    if (r.error) {
+                        alert(r.error);
+                    } else {
+                        location.href = '/cp_admin';
+                    }
+                })
+                return false;
+            });
+
+            $('.cp_login').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
         });
     </script>
 {% endblock %}
