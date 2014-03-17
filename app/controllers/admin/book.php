@@ -75,39 +75,33 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         $cp_accounts = CpAccount::getCpList();
         $recommended_books = RecommendedBook::getRecommendedBookListByBid($id);
 
-        $active_lock = $book['is_active_lock'];
-        $parts = Part::getListByBid($id, false, $active_lock, true);
-
         $today = date('Y-m-d H:00:00');
+
+        $active_lock = $book['is_active_lock'];
+        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime($today) ? 1 : 0);
+        $parts = Part::getListByBid($id, false, $active_lock, $is_completed, $book['end_action_flag']);
+
         $is_completed = strtotime($today) > strtotime($book['end_date']);
 
         foreach ($parts as &$part) {
+            if ($part['is_locked'] == 0) {
+                $part['status'] = '공개';
+            } else {
+                $part['status'] = '잠금';
+            }
+
             if ($active_lock) {
                 if ($is_completed) {
-                    if ($book['end_action_flag'] == Book::ALL_FREE) {
-                        $part['status'] = '공개';
-                    } else if ($book['end_action_flag'] == Book::ALL_CHARGED) {
-                        if ($part['price'] > 0) {
-                            $part['status'] = '잠금';
-                        } else {
-                            $part['status'] = '공개';
-                        }
-                    } else {
+                    if ($book['end_action_flag'] == Book::SALES_CLOSED || $book['end_action_flag'] == Book::ALL_CLOSED) {
                         $part['status'] = '비공개';
                     }
                 } else {
-                    if (strtotime($part['begin_date']) <= strtotime($today)) {
-                        $part['status'] = '공개';
-                    } else if (strtotime($part['begin_date']) <= strtotime($today . ' + 14 days')) {
-                        $part['status'] = '잠금';
-                    } else {
+                    if (strtotime($part['begin_date']) > strtotime($today . ' + 14 days')) {
                         $part['status'] = '비공개';
                     }
                 }
             } else {
-                if (strtotime($today) >= strtotime($part['begin_date']) && strtotime($today) <= strtotime($part['end_date'])) {
-                    $part['status'] = '공개';
-                } else {
+                if (strtotime($today) < strtotime($part['begin_date']) || strtotime($today) > strtotime($part['end_date'])) {
                     $part['status'] = '비공개';
                 }
             }

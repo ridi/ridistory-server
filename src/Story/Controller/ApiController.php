@@ -6,6 +6,7 @@ use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
 use Story\Model\InAppBilling;
 use Story\Model\RecommendedBook;
+use Story\Util\AES128;
 use Symfony\Component\HttpFoundation\Request;
 
 use Story\Model\Book;
@@ -97,7 +98,7 @@ class ApiController implements ControllerProviderInterface
                 $id = Buyer::add($google_id);
                 $buyer = Buyer::get($id);
             }
-            $buyer['id'] = Buyer::encryptUserId($buyer['id']);
+            $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
         }
 
         return $app->json($buyer);
@@ -109,7 +110,7 @@ class ApiController implements ControllerProviderInterface
 
         $u_id = $req->get('u_id', '0');
         if ($u_id) {
-            $u_id = Buyer::decryptUserId($u_id);
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             if (Buyer::isValidUid($u_id)) {
                 $coin_balance = Buyer::getCoinBalance($u_id);
             }
@@ -122,7 +123,7 @@ class ApiController implements ControllerProviderInterface
     {
         $inputs = $req->request->all();
         if ($inputs['u_id']) {
-            $inputs['u_id'] = Buyer::decryptUserId($inputs['u_id']);
+            $inputs['u_id'] = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $inputs['u_id']);
         } else {
             return $app->json(array('success' => false, 'message' => 'Access Denied1'));
         }
@@ -208,10 +209,7 @@ class ApiController implements ControllerProviderInterface
         // 완결되었고, 종료 후 액션이 모두 공개 혹은 모두 잠금이면 파트 모두 보임
         $show_all = false;
         $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime('now') ? 1 : 0);
-        $show_after_completed = ($book['end_action_flag'] == Book::ALL_FREE || $book['end_action_flag'] == Book::ALL_CHARGED ? 1 : 0);
-        if ($is_completed && $show_after_completed) {
-            $show_all = true;
-        }
+        $end_action_flag = $book['end_action_flag'];
 
         if ($is_completed) {
             $book['is_completed'] = 1;
@@ -220,8 +218,8 @@ class ApiController implements ControllerProviderInterface
         $cache_key = 'part_list_' . $active_lock . '_' . $show_all . '_';
         $parts = $app['cache']->fetch(
             $cache_key . $b_id,
-            function () use ($b_id, $active_lock, $show_all) {
-                return Part::getListByBid($b_id, true, $active_lock, $show_all);
+            function () use ($b_id, $active_lock, $is_completed, $end_action_flag) {
+                return Part::getListByBid($b_id, true, $active_lock, $is_completed, $end_action_flag);
             },
             60 * 10
         );
@@ -232,7 +230,7 @@ class ApiController implements ControllerProviderInterface
         if ($v > 2) {
             $u_id = $req->get('u_id', '0');
             if ($u_id) {
-                $u_id = Buyer::decryptUserId($u_id);
+                $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
                 $is_valid_uid = Buyer::isValidUid($u_id);
                 if ($is_valid_uid) {
                     $purchased_flags = Buyer::getPurchasedListByParts($u_id, $parts);
@@ -242,16 +240,6 @@ class ApiController implements ControllerProviderInterface
 
         foreach ($parts as &$part) {
             $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
-
-            if ($show_all && $book['end_action_flag'] == Book::ALL_FREE) {
-                $part['is_locked'] = 0;
-            } else if ($show_all && $book['end_action_flag'] == Book::ALL_CHARGED) {
-                if ($part['price'] > 0) {
-                    $part['is_locked'] = 1;
-                } else {
-                    $part['is_locked'] = 0;
-                }
-            }
 
             $part['is_purchased'] = 0;
             if ($is_valid_uid) {
@@ -278,7 +266,7 @@ class ApiController implements ControllerProviderInterface
     {
         $u_id = $req->get('u_id', '0');
         if ($u_id) {
-            $u_id = Buyer::decryptUserId($u_id);
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             if (!Buyer::isValidUid($u_id)) {
                 return $app->json(array('success' => 'false', 'message' => 'Invalid User'));
             }
@@ -528,7 +516,7 @@ class ApiController implements ControllerProviderInterface
          */
         $u_id = $req->get('u_id', '0');
         if ($u_id) {
-            $u_id = Buyer::decryptUserId($u_id);
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
         }
 
         $p_id = $req->get('p_id');

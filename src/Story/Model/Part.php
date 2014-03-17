@@ -45,7 +45,7 @@ class Part
         return $p->isOpened() && $p->getStoreId() == $store_id;
     }
 
-    public static function getListByBid($b_id, $with_social_info = false, $active_lock = false, $show_all = false)
+    public static function getListByBid($b_id, $with_social_info = false, $active_lock = false, $is_completed = false, $end_action_flag = Book::SALES_CLOSED)
     {
         global $app;
 
@@ -57,7 +57,7 @@ select p.*, ifnull(like_count, 0) like_count, ifnull(comment_count, 0) comment_c
  left join (select p_id, count(*) comment_count from part_comment group by p_id) c on p.id = c.p_id
 where b_id = ? and begin_date <= ?
 EOT;
-            if ($show_all) {
+            if ($is_completed && ($end_action_flag == Book::ALL_FREE || $end_action_flag == Book::ALL_CHARGED)) {
                 $bind = array($b_id, $today);
             } else {
                 $sql .= ' and end_date >= ?';
@@ -78,16 +78,31 @@ EOT;
         foreach ($ar as &$p) {
             self::_fill_additional($p);
 
-            // 시간에 따라 잠금여부 추가
-            if ($active_lock) {
-                // 무료인 책의 경우, 잠금이 아님.
-                if ($p['price'] > 0) {
-                    $p['is_locked'] = (strtotime($today) < strtotime($p['begin_date']) ? 1 : 0);
+            // 완결인 경우, end_action_flag에 따라 잠금여부 추가
+            if ($is_completed) {
+                if ($end_action_flag == Book::ALL_FREE) {
+                    $p['is_locked'] = 0;
+                } else if ($end_action_flag == Book::ALL_CHARGED) {
+                    if ($p['price'] > 0) {
+                        $p['is_locked'] = 1;
+                    } else {
+                        $p['is_locked'] = 0;
+                    }
                 } else {
                     $p['is_locked'] = 0;
                 }
             } else {
-                $p['is_locked'] = 0;
+                // 시간에 따라 잠금여부 추가
+                if ($active_lock) {
+                    // 무료인 책의 경우, 잠금이 아님.
+                    if ($p['price'] > 0) {
+                        $p['is_locked'] = (strtotime($today) < strtotime($p['begin_date']) ? 1 : 0);
+                    } else {
+                        $p['is_locked'] = 0;
+                    }
+                } else {
+                    $p['is_locked'] = 0;
+                }
             }
         }
 
