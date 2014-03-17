@@ -528,7 +528,7 @@ class ApiController implements ControllerProviderInterface
          */
         $u_id = $req->get('u_id', '0');
         if ($u_id) {
-            $u_id = Buyer::decryptUserId(urldecode($u_id));
+            $u_id = Buyer::decryptUserId($u_id);
         }
 
         $p_id = $req->get('p_id');
