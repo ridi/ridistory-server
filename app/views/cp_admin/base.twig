@@ -31,14 +31,28 @@
         }
     </style>
     <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <script type="text/javascript">
+
+        function move_home_page() {
+            location.href='/cp_admin/';
+        }
+
+        function move_my_info_page() {
+            location.href='/cp_admin/my_info';
+        }
+
+        function move_logout_page() {
+            location.href='/cp_admin/logout';
+        }
+    </script>
 </head>
 <body>
 <header class="header">
     <div class="container">
-        <h1>RIDI Story CP Manager</h1>
-        <div class="info">
-            <button class="btn" style="margin-right: 5px;">내 정보</button>
-            <button class="btn">로그아웃</button>
+        <h1 onclick="move_home_page()">RIDI Story CP Manager</h1>
+        <div class="info" id="cp_btn_area">
+            <button class="btn" style="margin-right: 5px;" onclick="move_my_info_page()">내 정보</button>
+            <button class="btn" onclick="move_logout_page()">로그아웃</button>
         </div>
         {% block header %}
         {% endblock %}
@@ -55,7 +69,7 @@
         {% endfor %}
     {% endfor %}
 
-    <div class="well">
+    <div class="well" id="cp_info_area">
         <div class='cp_info' style="float: left;">
             <h3>{{ cp.name }}</h3>
             <blockquote>

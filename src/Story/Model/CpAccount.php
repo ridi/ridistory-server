@@ -52,4 +52,39 @@ EOT;
         global $app;
         return $app['db']->fetchAll($sql);
     }
+
+    public static function getCpFromSiteId($cp_site_id)
+    {
+        global $app;
+        return $app['db']->fetchAssoc('select * from cp_account where cp_site_id = ?', array($cp_site_id));
+    }
+
+    public static function checkCpLoginSession()
+    {
+        global $app;
+        $cp_site_id = $app['session']->get('cp_user');
+        if ($cp_site_id) {
+            $r = CpAccount::isValidCp($cp_site_id);
+            if ($r === true) {
+                return true;
+            }
+        }
+
+        $app['session']->clear();
+        return false;
+    }
+
+    public static function isValidCp($cp_site_id)
+    {
+        global $app;
+        $r = $app['db']->fetchColumn('select count(*) from cp_account where cp_site_id = ?', array($cp_site_id));
+        return ($r > 0) ? true : false;
+    }
+
+    public static function cpLogin($cp_site_id, $pw)
+    {
+        global $app;
+        $r = $app['db']->fetchColumn('select count(*) from cp_account where cp_site_id = ? and password = ?', array($cp_site_id, $pw));
+        return ($r > 0) ? true : false;
+    }
 }

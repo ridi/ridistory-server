@@ -66,8 +66,7 @@
             $('#js_tbody tr').click(function() {
                 var b_id = $(this).data('bid');
                 var url = '/cp_admin/download_sales/' + b_id;
-                url += '?cp_id={{ cp.id }}';
-                url += '&begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}';
+                url += '?begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}';
                 location.href = url;
             });
 
@@ -77,10 +76,6 @@
                         $(this).css('cursor', '');
                     }
             );
-
-            $('#begin_date_picker').datetimepicker({
-                pickTime: false
-            });
         });
     </script>
 {% endblock %}

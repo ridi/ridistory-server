@@ -25,16 +25,98 @@ class CpAdminController implements ControllerProviderInterface
             }
         );
 
+        $cp_admin->get('/login', array($this, 'login'));
+        $cp_admin->post('/login/check', array($this, 'checkLogin'));
+        $cp_admin->get('/logout', array($this, 'logout'));
+
+        $cp_admin->get('/my_info', array($this, 'myInfo'));
+        $cp_admin->post('/my_info/edit', array($this, 'editMyPassword'));
+
         $cp_admin->get('/download_sales/list', array($this, 'downloadSalesList'));
         $cp_admin->get('/download_sales/{b_id}', array($this, 'downloadSalesDetail'));
 
         return $cp_admin;
     }
 
+    public static function login(Request $req, Application $app)
+    {
+        if (CpAccount::checkCpLoginSession()) {
+            return $app->redirect('/cp_admin');
+        }
+
+        return $app['twig']->render('/cp_admin/login.twig');
+    }
+
+    public static function checkLogin(Request $req, Application $app)
+    {
+        $cp_site_id = $req->get('id', false);
+        $password = $req->get('pw');
+
+        if (CpAccount::cpLogin($cp_site_id, $password)) {
+            $app['session']->set('cp_user', $cp_site_id);
+            return $app->redirect('/cp_admin');
+        }
+
+        $app['session']->getFlashBag()->add('alert', array('danger' => '아이디와 비밀번호를 확인해주세요.'));
+        return $app->redirect('/cp_admin/login');
+    }
+
+    public static function logout(Request $req, Application $app)
+    {
+        $app['session']->clear();
+        return $app->redirect('/cp_admin/login');
+    }
+
+    public static function myInfo(Request $req, Application $app)
+    {
+        if (!CpAccount::checkCpLoginSession()) {
+            return $app->redirect('/cp_admin/login');
+        }
+
+        $cp_site_id = $app['session']->get('cp_user');
+        $cp = CpAccount::getCpFromSiteId($cp_site_id);
+
+        return $app['twig']->render(
+            '/cp_admin/my_info.twig',
+            compact('cp')
+        );
+    }
+
+    public static function editMyPassword(Request $req, Application $app)
+    {
+        if (!CpAccount::checkCpLoginSession()) {
+            return $app->redirect('/cp_admin/login');
+        }
+
+        $cp_site_id = $app['session']->get('cp_user');
+        $cp = CpAccount::getCpFromSiteId($cp_site_id);
+
+        $old_pw = $req->get('old_pw');
+        $new_pw = $req->get('new_pw');
+        $new_pw2 = $req->get('new_pw2');
+
+        if ($new_pw != $new_pw2) {
+            $app['session']->getFlashBag()->add('alert', array('warning' => '새로 입력하신 비밀번호가 서로 다릅니다.'));
+        } else {
+            if ($cp['password'] == $old_pw) {
+                CpAccount::update($cp['id'], array('password' => $new_pw));
+                $app['session']->getFlashBag()->add('alert', array('info' => '비밀번호가 수정되었습니다.'));
+            } else {
+                $app['session']->getFlashBag()->add('alert', array('warning' => '기존 비밀번호를 잘못 입력하셨습니다.'));
+            }
+        }
+
+        return true;
+    }
+
     public static function downloadSalesList(Request $req, Application $app)
     {
-        $cp_id = $req->get('cp_id');
-        $cp = CpAccount::get($cp_id);
+        if (!CpAccount::checkCpLoginSession()) {
+            return $app->redirect('/cp_admin/login');
+        }
+
+        $cp_site_id = $app['session']->get('cp_user');
+        $cp = CpAccount::getCpFromSiteId($cp_site_id);
 
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
@@ -47,7 +129,7 @@ class CpAdminController implements ControllerProviderInterface
         $total_sales_royalty = 0;
         $total_charged_download = 0;
 
-        $download_sales = DownloadSales::getListByCpId($cp_id, $begin_date, $end_date);
+        $download_sales = DownloadSales::getListByCpId($cp['id'], $begin_date, $end_date);
 
         foreach ($download_sales as $ds) {
             // 헤더에 들어갈 정보 계산
@@ -103,10 +185,14 @@ class CpAdminController implements ControllerProviderInterface
         );
     }
 
-    public function downloadSalesDetail(Request $req, Application $app, $b_id)
+    public static function downloadSalesDetail(Request $req, Application $app, $b_id)
     {
-        $cp_id = $req->get('cp_id');
-        $cp = CpAccount::get($cp_id);
+        if (!CpAccount::checkCpLoginSession()) {
+            return $app->redirect('/cp_admin/login');
+        }
+
+        $cp_site_id = $app['session']->get('cp_user');
+        $cp = CpAccount::getCpFromSiteId($cp_site_id);
 
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');

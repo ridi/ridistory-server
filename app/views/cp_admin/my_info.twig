@@ -1,0 +1,120 @@
+{% extends '/cp_admin/base.twig' %}
+
+{% block container %}
+    <style>
+        .total_calculates {display: none;}
+        .change_password_area {display: none;}
+    </style>
+        <table class='table'>
+            <colgroup>
+                <col class="span1">
+                <col class="span7">
+            </colgroup>
+            <tr style='background-color: #ccddff;'>
+                <th colspan='4' class=''>01 기본정보</th>
+            </tr>
+            <tr>
+                <th>아이디</th>
+                <td colspan='3'>{{ cp.cp_site_id }}</td>
+            </tr>
+            <tr>
+                <th>비밀번호</th>
+                <td colspan='3'>
+                    <button class="btn btn-change_password">비밀번호 변경하기</button>
+                    <div class="change_password_area">
+                        <input type="password" class="input old_pw" name="old_pw" placeholder="기존 비밀번호" /><br />
+                        <input type="password" class="input new_pw" name="new_pw" placeholder="신규 비밀번호" /><br />
+                        <input type="password" class="input new_pw2" name="new_pw2" placeholder="신규 비밀번호 확인" /><br />
+                        <button class="btn btn-password_submit">수정하기</button>
+                        <button class="btn btn-password_cancel">취소</button>
+                    </div>
+                </td>
+            </tr>
+            <tr style='background-color: #ccddff;'>
+                <th colspan='4' class=''>02 CP정보</th>
+            </tr>
+            <tr>
+                <th>상호명</th>
+                <td colspan='3'>{{ cp.name }}</td>
+            </tr>
+            <tr>
+                <th>사업자등록번호</th>
+                <td colspan='3'>{{ cp.company_num }}</td>
+            </tr>
+            <tr>
+                <th>담당자</th>
+                <td><input type='text' class='input' name='staff1_name' placeholder='성함' value='{{ cp.staff1_name }}' disabled/></td>
+                <td><input type='text' class='input' name='staff1_phone' placeholder='연락처' value='{{ cp.staff1_phone }}' disabled/></td>
+                <td><input type='text' class='input' name='staff1_email' placeholder='E-mail' value='{{ cp.staff1_email }}' disabled/></td>
+            </tr>
+            <tr>
+                <th>정산담당자</th>
+                <td colspan='3'>{{ cp.calculate_staff_name }}</td>
+            </tr>
+            <tr style='background-color: #ccddff;'>
+                <th colspan='4' class=''>03 정산정보</th>
+            </tr>
+            <tr>
+                <th>은행</th>
+                <td colspan='3'>{{ cp.calculate_bank }}</td>
+            </tr>
+            <tr>
+                <th>계좌번호</th>
+                <td colspan='3'>{{ cp.calculate_account_num }}</td>
+            </tr>
+            <tr>
+                <th>예금주</th>
+                <td colspan='3'>{{ cp.calculate_account_holder }}</td>
+            </tr>
+        </table>
+
+    <div class='form-actions'>
+        <button class='btn btn-cancel'>정산 페이지로 돌아가기</button>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+    <script>
+        $(function() {
+            $('.btn-change_password').click(function() {
+                $('.btn-change_password').css('display', 'none');
+                $('.change_password_area').css('display', 'block');
+            });
+
+            $('.btn-password_submit').click(function() {
+                var old_pw = $('.old_pw').val();
+                var new_pw = $('.new_pw').val();
+                var new_pw2 = $('.new_pw2').val();
+
+                if (new_pw != new_pw2) {
+                    alert('신규로 입력하신 비밀번호 두 개가 서로 다릅니다.');
+                    $('.new_pw2').focus();
+                    return;
+                }
+
+                if (confirm('비밀번호를 수정하시겠습니까?')) {
+                    $.post('/cp_admin/my_info/edit', { old_pw: old_pw, new_pw: new_pw, new_pw2: new_pw2}, function(r) {
+                        if (r.error) {
+                            alert(r.error);
+                        } else {
+                            location.href = '/cp_admin/my_info';
+                        }
+                    })
+                }
+                return false;
+            });
+
+            $('.btn-password_cancel').click(function() {
+                $('.btn-change_password').css('display', 'inline');
+                $('.change_password_area').css('display', 'none');
+            });
+
+            $('.btn-cancel').click(function() {
+                location.href='/cp_admin/';
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

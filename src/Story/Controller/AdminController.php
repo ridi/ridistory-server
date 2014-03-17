@@ -103,6 +103,9 @@ EOT;
         $admin->post('/inapp_product/{iab_id}/delete', array($this, 'deleteInAppProduct'));
         $admin->post('/inapp_product/{iab_id}/edit', array($this, 'editInAppProduct'));
 
+        $admin->get('/coin_sales/list', array($this, 'coinSalesList'));
+        $admin->get('/coin_sales/{coin_sale_id}', array($this, 'coinSalesDetail'));
+
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
 
@@ -349,6 +352,21 @@ EOT;
         InAppBilling::updateInAppProduct($iab_id, $inputs);
         $app['session']->getFlashBag()->add('alert', array('info' => '인앱 상품 정보가 수정되었습니다.'));
         return $app->redirect('/admin/inapp_product/' . $iab_id);
+    }
+
+    /*
+     * Coin Sales
+     */
+    public static function coinSalesList(Request $req, Application $app)
+    {
+        $coin_sales = InAppBilling::getInAppBillingSalesList();
+        return $app['twig']->render('/admin/coin_sales_list.twig', array('coin_sales' => $coin_sales));
+    }
+
+    public static function coinSalesDetail(Request $req, Application $app, $coin_sale_id)
+    {
+        $coin_sale = InAppBilling::getInAppBillingSalesDetail($coin_sale_id);
+        return $app['twig']->render('/admin/coin_sales_detail.twig', array('coin_sale' => $coin_sale));
     }
 
     /*

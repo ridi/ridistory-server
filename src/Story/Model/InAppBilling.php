@@ -136,7 +136,11 @@ EOT;
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: ' . $access_token));
         $response = curl_exec($ch);
         curl_close($ch);
+
         $response = json_decode($response, true);
+
+        error_log("Purchase Status API", 0);
+        error_log(print_r($response, true), 0);
 
         //TODO: Purchase Status API 버그 수정 시, 이 부분 수정.
         /*
@@ -167,5 +171,24 @@ EOT;
     {
         global $app;
         return $app['db']->update('inapp_history', array('is_succeeded' => 1), array('id' => $iab_id));
+    }
+
+    public static function getInAppBillingSalesList()
+    {
+        global $app;
+        return $app['db']->fetchAll('select * from inapp_history order by purchase_time desc');
+    }
+
+    public static function getInAppBillingSalesDetail($coin_sale_id)
+    {
+        $sql = <<<EOT
+select bu.google_id, ih.* from inapp_history ih
+ left join (select * from buyer_user) bu on bu.id = ih.u_id
+where ih.id = ?
+EOT;
+        $bind = array($coin_sale_id);
+
+        global $app;
+        return $app['db']->fetchAssoc($sql, $bind);
     }
 }

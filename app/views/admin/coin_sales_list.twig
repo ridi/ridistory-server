@@ -1,0 +1,51 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th>유저 ID</th>
+            <th>구글 주문번호</th>
+            <th>SKU</th>
+            <th>결제 시간</th>
+            <th>비고</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for coin_sale in coin_sales %}
+            <tr data-salesid='{{ coin_sale.id }}'>
+                <td>{{ coin_sale.u_id }}</td>
+                <td>{{ coin_sale.order_id }}</td>
+                <td>{{ coin_sale.sku }}</td>
+                <td>{{ coin_sale.purchase_time }}</td>
+                <td>
+                    {% if coin_sale.is_succeeded == 0 %}
+                        <span style="color: #ff0000">오류</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+
+            $('#js_tbody tr').click(function() {
+                var coin_sales_id = $(this).data('salesid');
+                location.href = '/admin/coin_sales/' + coin_sales_id;
+            });
+
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}
