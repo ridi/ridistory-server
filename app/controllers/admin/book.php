@@ -49,21 +49,31 @@ class AdminBookControllerProvider implements ControllerProviderInterface
                 // 완결
                 switch($book['end_action_flag']) {
                     case Book::ALL_FREE:
-                        $book['status'] = '모두 공개';
+                        $book['status'] = '모두공개';
                         break;
                     case Book::ALL_CHARGED:
-                        $book['status'] = '모두 잠금';
+                        $book['status'] = '모두잠금';
                         break;
                     case Book::SALES_CLOSED:
-                        $book['status'] = '판매 종료';
+                        $book['status'] = '판매종료';
                         break;
                     case Book::ALL_CLOSED:
-                        $book['status'] = '게시 종료';
+                        $book['status'] = '게시종료';
                         break;
                 }
             } else {
-                // 연재중
-                $book['status'] = '연재중';
+                if ($book['open_part_count'] <= 0) {
+                    if (strtotime($book['begin_date']) > strtotime('now')) {
+                        // Coming Soon 예고 시작 전.
+                        $book['status'] = '';
+                    } else {
+                        // Coming Soon 예고중
+                        $book['status'] = '예고중';
+                    }
+                } else {
+                    // 연재중
+                    $book['status'] = '연재중';
+                }
             }
         }
         return $app['twig']->render('admin/book_list.twig', array('books' => $books));
