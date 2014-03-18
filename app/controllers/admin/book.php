@@ -90,19 +90,19 @@ class AdminBookControllerProvider implements ControllerProviderInterface
                 $part['status'] = '잠금';
             }
 
-            if ($active_lock) {
-                if ($is_completed) {
-                    if ($book['end_action_flag'] == Book::SALES_CLOSED || $book['end_action_flag'] == Book::ALL_CLOSED) {
-                        $part['status'] = '비공개';
-                    }
-                } else {
+            if ($is_completed) {
+                if ($book['end_action_flag'] == Book::SALES_CLOSED || $book['end_action_flag'] == Book::ALL_CLOSED) {
+                    $part['status'] = '비공개';
+                }
+            } else {
+                if ($active_lock) {
                     if (strtotime($part['begin_date']) > strtotime($today . ' + 14 days')) {
                         $part['status'] = '비공개';
                     }
-                }
-            } else {
-                if (strtotime($today) < strtotime($part['begin_date']) || strtotime($today) > strtotime($part['end_date'])) {
-                    $part['status'] = '비공개';
+                } else {
+                    if (strtotime($today) < strtotime($part['begin_date']) || strtotime($today) > strtotime($part['end_date'])) {
+                        $part['status'] = '비공개';
+                    }
                 }
             }
         }
