@@ -240,6 +240,12 @@ class ApiController implements ControllerProviderInterface
         }
 
         foreach ($parts as &$part) {
+            // 1화가 아직 시작하지 않은 경우에는, '잠금' 도서 무시하고, 앱 내에서 Coming Soon 처리
+            if ($part['seq'] <= 1 && strtotime($part['begin_date']) > strtotime('now')) {
+                $parts = array();
+                break;
+            }
+
             $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
 
             $part['is_purchased'] = 0;

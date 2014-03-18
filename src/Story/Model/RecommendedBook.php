@@ -40,7 +40,7 @@ EOT;
     public static function getRecommendedBookListByBid($b_id)
     {
         $sql = <<<EOT
-select * from recommended_book where b_id = ?
+select * from recommended_book where b_id = ? order by id
 EOT;
         global $app;
         $recommended_books = $app['db']->fetchAll($sql, array($b_id));
@@ -69,5 +69,11 @@ EOT;
     {
         global $app;
         return $app['db']->delete('recommended_book', array('id' => $id));
+    }
+
+    public static function deleteByBid($b_id)
+    {
+        global $app;
+        return $app['db']->delte('recommended_book', array('b_id' => $b_id));
     }
 }

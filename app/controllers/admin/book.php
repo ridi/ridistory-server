@@ -84,6 +84,14 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         $is_completed = strtotime($today) > strtotime($book['end_date']);
 
         foreach ($parts as &$part) {
+            // 1화가 아직 시작하지 않은 경우에는, 모두 '비공개'로 변경
+            if ($part['seq'] <= 1 && strtotime($part['begin_date']) > strtotime($today)) {
+                foreach ($parts as &$temp_part) {
+                    $temp_part['status'] = '비공개';
+                }
+                break;
+            }
+
             if ($part['is_locked'] == 0) {
                 $part['status'] = '공개';
             } else {
@@ -139,6 +147,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         }
         Book::delete($id);
         Book::deleteIntro($id);
+        RecommendedBook::deleteByBid($id);
         $app['session']->getFlashBag()->add('alert', array('info' => '책이 삭제되었습니다.'));
         return $app->json(array('success' => true));
     }

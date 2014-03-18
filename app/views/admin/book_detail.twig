@@ -129,7 +129,7 @@
         <th>잠금 기능</th>
         <td>
             <label class="checkbox">
-                <input type='checkbox' name='is_active_lock' {{ book.is_active_lock ? 'checked="checked"' }}>잠금 기능을 사용할 경우에 체크</input>
+                <input type='checkbox' name='is_active_lock' {{ book.is_active_lock ? 'checked="checked"' }}>연재중 잠금 기능을 사용할 경우에 체크 (완결 시에는 영향을 받지 않음)</input>
             </label>
         </td>
     </tr>
@@ -140,7 +140,7 @@
                 <input type='radio' name='end_action_flag' value='ALL_FREE'>모두 공개(무료)</input>
             </label>
             <label class="radio">
-                <input type='radio' name='end_action_flag' value='ALL_CHARGED'>모두 잠금(유료)</input>
+                <input type='radio' name='end_action_flag' value='ALL_CHARGED'>모두 잠금(유료)</input> * 각 파트별로 가격이 0보다 커야함. (0일 경우 무료)
             </label>
             <label class="radio">
                 <input type='radio' name='end_action_flag' value='SALES_CLOSED'>판매종료(파트 비공개)</input>
