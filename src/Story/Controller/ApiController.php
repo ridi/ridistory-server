@@ -129,7 +129,6 @@ class ApiController implements ControllerProviderInterface
         }
 
         $r = InAppBilling::verifyInAppBilling($inputs);
-        error_log("Verfying IAB: " . $r, 0);
         if ($r) {
             $inapp_info = InAppBilling::getInAppProductBySku($inputs['sku']);
             $r = Buyer::addCoin($inputs['u_id'], ($inapp_info['coin_amount'] + $inapp_info['bonus_coin_amount']), Buyer::COIN_SOURCE_IN_INAPP);

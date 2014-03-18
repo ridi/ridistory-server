@@ -139,23 +139,15 @@ EOT;
 
         $response = json_decode($response, true);
 
-        error_log("Purchase Status API", 0);
-        error_log(print_r($response, true), 0);
-
-        //TODO: Purchase Status API 버그 수정 시, 이 부분 수정.
-        /*
-         * 구글 Purchase Status API 버그로, payload가 오지 않고 purchase_time이 인앱결제에서 보내주는 time과 다르게 온다.
-         * 조금 더 지켜보고 수정할 예정.
-         */
-//        if ($response['developerPayload'] == $payload
-//            && $response['purchaseTime'] == $purchase_time
-//            && $response['purchaseState'] == InAppBilling::PURCHASE_STATE_PURCHASED
-//            && $response['consumptionState'] == InAppBilling::CONSUMPTION_STATE_CONSUMED) {
-        if ($response['purchaseState'] == InAppBilling::PURCHASE_STATE_PURCHASED
+        if ($response['developerPayload'] == $payload
+            && $response['purchaseTime'] == $purchase_time
+            && $response['purchaseState'] == InAppBilling::PURCHASE_STATE_PURCHASED
             && $response['consumptionState'] == InAppBilling::CONSUMPTION_STATE_CONSUMED) {
             $r = InAppBilling::setInAppBillingSucceeded($iab_id);
             return ($r === 1);
         } else {
+            error_log("Purchase Status API Error", 0);
+            error_log(print_r($response, true), 0);
             return false;
         }
     }
