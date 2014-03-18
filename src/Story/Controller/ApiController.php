@@ -209,6 +209,7 @@ class ApiController implements ControllerProviderInterface
         // 완결되었고, 종료 후 액션이 모두 공개 혹은 모두 잠금이면 파트 모두 보임
         $show_all = false;
         $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime('now') ? 1 : 0);
+        $book['is_completed'] = $is_completed;
         $end_action_flag = $book['end_action_flag'];
 
         if ($is_completed) {
