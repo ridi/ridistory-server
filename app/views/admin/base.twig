@@ -23,6 +23,12 @@
                 color: white;
                 letter-spacing: -0.1ex;
                 text-shadow: 0 1px 1px #666;
+                float: left;
+            }
+            .header .info {
+                margin-top: 20px;
+                float: right;
+                display: none;
             }
         </style>
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
@@ -30,7 +36,10 @@
     <body>
         <header class="header">
             <div class="container">
-            <h1>RIDI Story CMS</h1>
+            <h1 onclick="location.href='/admin'">RIDI Story CMS</h1>
+            <div class="info" id="gnb_btn_area">
+                <button class="btn" onclick="location.href='/admin/logout'">로그아웃</button>
+            </div>
             {% block header %}
             {% endblock %}
             </div>

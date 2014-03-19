@@ -117,17 +117,29 @@ EOT;
      */
     public static function commentList(Request $req, Application $app)
     {
+        $search_keyword = $req->get('search', null);
         $cur_page = $req->get('page', 0);
 
         $limit = 50;
         $offset = $cur_page * $limit;
 
-        $sql = <<<EOT
+        if ($search_keyword) {
+            $sql = <<<EOT
+select pc.*, p.seq, b.title from part_comment pc
+ left join (select id, b_id, seq from part) p on p.id = pc.p_id
+ left join (select id, title from book) b on b.id = p.b_id
+where b.title like '%{$search_keyword}%'
+order by id desc limit {$offset}, {$limit}
+EOT;
+        } else {
+            $sql = <<<EOT
 select pc.*, p.seq, b.title from part_comment pc
  left join (select id, b_id, seq from part) p on p.id = pc.p_id
  left join (select id, title from book) b on b.id = p.b_id
 order by id desc limit {$offset}, {$limit}
 EOT;
+        }
+
         $comments = $app['db']->fetchAll($sql);
 
         $app['twig']->addFilter(
@@ -139,6 +151,7 @@ EOT;
         return $app['twig']->render(
             '/admin/comment_list.twig',
             array(
+                'search_keyword' => $search_keyword,
                 'comments' => $comments,
                 'cur_page' => $cur_page
             )

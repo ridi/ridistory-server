@@ -1,6 +1,14 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
+<form>
+    <div class="well form-inline">
+        <h4>책 제목 검색</h4>
+        <input type='text' class='input-xlarge' name='search' value='{{ search_keyword }}' placeholder='검색하실 책 제목을 입력해주세요.' />
+        <button class="btn">검색</button>
+    </div>
+</form>
+
 <table class='table'>
 	<thead>
 		<tr>
@@ -27,7 +35,7 @@
 </table>
 <ul class="pager">
   <li class="next">
-    <a href="/admin/comment/list?page={{ cur_page + 1 }}">Older &rarr;</a>
+    <a href="/admin/comment/list?page={{ cur_page + 1 }}&search={{ search_keyword }}">Older &rarr;</a>
   </li>
 </ul>
 {% endblock %}
