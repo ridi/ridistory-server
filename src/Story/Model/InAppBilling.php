@@ -165,10 +165,34 @@ EOT;
         return $app['db']->update('inapp_history', array('is_succeeded' => 1), array('id' => $iab_id));
     }
 
-    public static function getInAppBillingSalesList()
+    public static function getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date)
     {
+        $first_timestamp = date('1970-01-01 00:00:01');
+        $today = date('Y-m-d H:i:s');
+
+        $sql = <<<EOT
+select * from inapp_history
+where purchase_time >= ? and purchase_time <= ?
+order by purchase_time desc limit {$offset}, {$limit}
+EOT;
+
+        if ($begin_date && $end_date) {
+            $begin_date = date('Y-m-d 00:00:00', strtotime($begin_date));
+            $end_date = date('Y-m-d 23:59:59', strtotime($end_date));
+        } else if ($begin_date && !$end_date) {
+            $begin_date = date('Y-m-d 00:00:00', strtotime($begin_date));
+            $end_date = $today;
+        } else if (!$begin_date && $end_date) {
+            $begin_date = $first_timestamp;
+            $end_date = date('Y-m-d 23:59:59', strtotime($end_date));
+        } else {
+            $begin_date = $first_timestamp;
+            $end_date = $today;
+        }
+        $bind = array($begin_date, $end_date);
+
         global $app;
-        return $app['db']->fetchAll('select * from inapp_history order by purchase_time desc');
+        return $app['db']->fetchAll($sql, $bind);
     }
 
     public static function getInAppBillingSalesDetail($coin_sale_id)

@@ -21,8 +21,19 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
 
     public function buyerList(Request $req, Application $app)
     {
-        $buyers = Buyer::getWholeList();
-        return $app['twig']->render('admin/buyer_list.twig', array('buyers' => $buyers));
+        $cur_page = $req->get('page', 0);
+
+        $limit = 50;
+        $offset = $cur_page * $limit;
+
+        $buyers = Buyer::getListByOffsetAndSize($offset, $limit);
+        return $app['twig']->render(
+            'admin/buyer_list.twig',
+            array(
+                'buyers' => $buyers,
+                'cur_page' => $cur_page
+            )
+        );
     }
 
     public function buyerDetail(Request $req, Application $app, $id)

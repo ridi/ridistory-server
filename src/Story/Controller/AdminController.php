@@ -359,8 +359,27 @@ EOT;
      */
     public static function coinSalesList(Request $req, Application $app)
     {
-        $coin_sales = InAppBilling::getInAppBillingSalesList();
-        return $app['twig']->render('/admin/coin_sales_list.twig', array('coin_sales' => $coin_sales));
+        $cur_page = $req->get('page', 0);
+
+        $limit = 50;
+        $offset = $cur_page * $limit;
+
+        $begin_date = $req->get('begin_date');
+        $end_date = $req->get('end_date');
+        $search_date = array(
+            'begin_date' => $begin_date,
+            'end_date' => $end_date
+        );
+
+        $coin_sales = InAppBilling::getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date);
+        return $app['twig']->render(
+            '/admin/coin_sales_list.twig',
+            array(
+                'search_date' => $search_date,
+                'coin_sales' => $coin_sales,
+                'cur_page' => $cur_page
+            )
+        );
     }
 
     public static function coinSalesDetail(Request $req, Application $app, $coin_sale_id)

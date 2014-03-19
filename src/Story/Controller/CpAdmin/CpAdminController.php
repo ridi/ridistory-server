@@ -93,13 +93,13 @@ class CpAdminController implements ControllerProviderInterface
         $new_pw2 = $req->get('new_pw2');
 
         if ($new_pw != $new_pw2) {
-            $app['session']->getFlashBag()->add('alert', array('warning' => '새로 입력하신 비밀번호가 서로 다릅니다.'));
+            $app['session']->getFlashBag()->add('alert', array('danger' => '새로 입력하신 비밀번호가 서로 다릅니다.'));
         } else {
             if ($cp['password'] == $old_pw) {
                 CpAccount::update($cp['id'], array('password' => $new_pw));
                 $app['session']->getFlashBag()->add('alert', array('info' => '비밀번호가 수정되었습니다.'));
             } else {
-                $app['session']->getFlashBag()->add('alert', array('warning' => '기존 비밀번호를 잘못 입력하셨습니다.'));
+                $app['session']->getFlashBag()->add('alert', array('danger' => '기존 비밀번호를 잘못 입력하셨습니다.'));
             }
         }
 
