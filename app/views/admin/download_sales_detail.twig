@@ -59,7 +59,7 @@
                     </thead>
                     <tbody id='js_part_list'>
                     {% for dsd in download_sales_detail %}
-                        <tr data-cid='{{ part.id }}'>
+                        <tr>
                             <td><a href='/admin/part/{{ dsd.p_id }}'>{{ dsd.seq }}. {{ dsd.title }} </a></td>
                             <td>{{ (dsd.price * 90)|number_format(0, '', ',') }}</td>
                             <td>{{ dsd.free_download }}</td>

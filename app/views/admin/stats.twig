@@ -108,7 +108,7 @@
             {% for p in most_comment_parts %}
             <tr>
                 <td>{{ p.book_title }}</td>
-                <td><a href='#' data-toggle='tooltip' title='{{ p.title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
+                <td><a href='#' data-toggle='tooltip' title='{{ p.book_title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
                 <td>{{ p.num_comment }}</td>
             </tr>
             {% endfor %}
@@ -125,7 +125,7 @@
             {% for p in least_comment_parts %}
             <tr>
                 <td>{{ p.book_title }}</td>
-                <td><a href='#' data-toggle='tooltip' title='{{ p.title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
+                <td><a href='#' data-toggle='tooltip' title='{{ p.book_title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
                 <td>{{ p.num_comment }}</td>
             </tr>
             {% endfor %}

@@ -451,10 +451,11 @@ EOT;
 
     public static function statsLike(Application $app, Request $req)
     {
-        //$begin_date = $req->get('begin_date');
+        $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
 
         $twig_var = array();
+        $twig_var['begin_date'] = $begin_date;
 
         if ($end_date) {
             $sql_interests = <<<EOT
@@ -478,9 +479,11 @@ EOT;
             $twig_var['end_date'] = $end_date;
             $twig_var['interests_per_book'] = $app['db']->fetchAll($sql_interests, array($end_date));
             $twig_var['likes_per_book'] = $app['db']->fetchAll($sql_likes, array($end_date));
+        } else {
+            $twig_var['end_date'] = date('Y-m-d');
+            $twig_var['interests_per_book'] = null;
+            $twig_var['likes_per_book'] = null;
         }
-
-        $twig_var['end_date'] = date('Y-m-d');
 
         return $app['twig']->render(
             '/admin/stats_like.twig',

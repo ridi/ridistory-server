@@ -76,10 +76,7 @@ class CpAdminController implements ControllerProviderInterface
         $cp_site_id = $app['session']->get('cp_user');
         $cp = CpAccount::getCpFromSiteId($cp_site_id);
 
-        return $app['twig']->render(
-            '/cp_admin/my_info.twig',
-            compact('cp')
-        );
+        return $app['twig']->render('/cp_admin/my_info.twig', array('cp' => $cp));
     }
 
     public static function editMyPassword(Request $req, Application $app)
@@ -120,10 +117,6 @@ class CpAdminController implements ControllerProviderInterface
 
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
-        $search_date = array(
-            'begin_date' => $begin_date,
-            'end_date' => $end_date
-        );
 
         $total_sales = 0;
         $total_sales_royalty = 0;
@@ -173,16 +166,14 @@ class CpAdminController implements ControllerProviderInterface
             })
         );
 
-        $header = array(
-            'total_sales' => $total_sales,
-            'total_sales_royalty' => $total_sales_royalty,
-            'total_download' => $total_charged_download
+        $bind = array(
+            'cp' => $cp,
+            'header' => array('total_sales' => $total_sales, 'total_sales_royalty' => $total_sales_royalty, 'total_download' => $total_charged_download),
+            'search_date' => array('begin_date' => $begin_date, 'end_date' => $end_date),
+            'download_sales' => $download_sales
         );
 
-        return $app['twig']->render(
-            '/cp_admin/download_sales_list.twig',
-            compact('cp', 'header', 'search_date', 'download_sales')
-        );
+        return $app['twig']->render('/cp_admin/download_sales_list.twig', $bind);
     }
 
     public static function downloadSalesDetail(Request $req, Application $app, $b_id)
@@ -196,10 +187,6 @@ class CpAdminController implements ControllerProviderInterface
 
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
-        $search_date = array(
-            'begin_date' => $begin_date,
-            'end_date' => $end_date
-        );
 
         $total_sales = 0;
         $total_charged_download = 0;
@@ -212,14 +199,14 @@ class CpAdminController implements ControllerProviderInterface
             $total_charged_download += $dsd['charged_download'];
         }
 
-        $footer = array(
-            'total_sales' => $total_sales,
-            'total_download' => $total_charged_download
+        $bind = array(
+            'cp' => $cp,
+            'search_date' => array('begin_date' => $begin_date, 'end_date' => $end_date),
+            'download_sales' => $download_sales,
+            'download_sales_detail' => $download_sales_detail,
+            'footer' => array('total_sales' => $total_sales, 'total_download' => $total_charged_download)
         );
 
-        return $app['twig']->render(
-            'cp_admin/download_sales_detail.twig',
-            compact('cp', 'search_date', 'download_sales', 'download_sales_detail', 'footer')
-        );
+        return $app['twig']->render('cp_admin/download_sales_detail.twig', $bind);
     }
 }

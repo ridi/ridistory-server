@@ -55,7 +55,7 @@
 
                     <tbody id='js_part_list'>
                     {% for dsd in download_sales_detail %}
-                        <tr data-cid='{{ part.id }}'>
+                        <tr>
                             <td>{{ dsd.seq }}. {{ dsd.title }}</td>
                             <td>{{ (dsd.price * 90)|number_format(0, '', ',') }}</td>
                             <td>{{ dsd.charged_download }}</td>
