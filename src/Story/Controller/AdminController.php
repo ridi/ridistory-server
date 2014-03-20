@@ -117,20 +117,31 @@ EOT;
      */
     public static function commentList(Request $req, Application $app)
     {
-        $search_keyword = $req->get('search', null);
+        $search_type = $req->get('search_type', null);
+        $search_keyword = $req->get('search_keyword', null);
         $cur_page = $req->get('page', 0);
 
         $limit = 50;
         $offset = $cur_page * $limit;
 
-        if ($search_keyword) {
-            $sql = <<<EOT
+        if ($search_type && $search_keyword) {
+            if ($search_type == 'book_title') {
+                $sql = <<<EOT
 select pc.*, p.seq, b.title from part_comment pc
  left join (select id, b_id, seq from part) p on p.id = pc.p_id
  left join (select id, title from book) b on b.id = p.b_id
 where b.title like '%{$search_keyword}%'
 order by id desc limit {$offset}, {$limit}
 EOT;
+            } else if ($search_type == 'nickname') {
+                $sql = <<<EOT
+select pc.*, p.seq, b.title from part_comment pc
+ left join (select id, b_id, seq from part) p on p.id = pc.p_id
+ left join (select id, title from book) b on b.id = p.b_id
+where pc.nickname like '%{$search_keyword}%'
+order by id desc limit {$offset}, {$limit}
+EOT;
+            }
         } else {
             $sql = <<<EOT
 select pc.*, p.seq, b.title from part_comment pc
@@ -151,6 +162,7 @@ EOT;
         return $app['twig']->render(
             '/admin/comment_list.twig',
             array(
+                'search_type' => $search_type,
                 'search_keyword' => $search_keyword,
                 'comments' => $comments,
                 'cur_page' => $cur_page
