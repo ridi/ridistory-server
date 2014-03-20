@@ -133,6 +133,7 @@ CREATE TABLE `inapp_products` (
   `sku` varchar(50) DEFAULT NULL,
   `coin_amount` int(11) NOT NULL DEFAULT '0',
   `bonus_coin_amount` int(11) NOT NULL DEFAULT '0',
+  `price` int(11) NOT NULL DEFAULT '0' COMMENT '가격',
   PRIMARY KEY (`id`),
   UNIQUE KEY `sku` (`sku`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -165,7 +166,7 @@ CREATE TABLE `part` (
   `store_id` varchar(32) NOT NULL,
   `title` varchar(256) NOT NULL,
   `seq` int(11) NOT NULL,
-  `price` int(11) NOT NULL COMMENT '가격 (단위: 코인)',
+  `price` int(11) NOT NULL DEFAULT '2' COMMENT '가격 (단위: 코인)',
   `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
