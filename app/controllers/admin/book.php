@@ -89,7 +89,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
 
         $active_lock = $book['is_active_lock'];
         $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime($today) ? 1 : 0);
-        $parts = Part::getListByBid($id, false, $active_lock, $is_completed, $book['end_action_flag']);
+        $parts = Part::getListByBid($id, false, $active_lock, $is_completed, $book['end_action_flag'], $book['lock_day_term']);
 
         $is_completed = strtotime($today) > strtotime($book['end_date']);
 
@@ -114,7 +114,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
                 }
             } else {
                 if ($active_lock) {
-                    if (strtotime($part['begin_date']) > strtotime($today . ' + 14 days')) {
+                    if (strtotime($part['begin_date']) > strtotime($today . ' + ' . $book['lock_day_term'] . ' days')) {
                         $part['status'] = '비공개';
                     }
                 } else {

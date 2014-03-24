@@ -211,6 +211,7 @@ class ApiController implements ControllerProviderInterface
         $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime('now') ? 1 : 0);
         $book['is_completed'] = $is_completed;
         $end_action_flag = $book['end_action_flag'];
+        $lock_day_term = $book['lock_day_term'];
 
         if ($is_completed) {
             $book['is_completed'] = 1;
@@ -219,8 +220,8 @@ class ApiController implements ControllerProviderInterface
         $cache_key = 'part_list_' . $active_lock . '_' . intval($show_all) . '_' . $b_id;
         $parts = $app['cache']->fetch(
             $cache_key,
-            function () use ($b_id, $active_lock, $is_completed, $end_action_flag) {
-                return Part::getListByBid($b_id, true, $active_lock, $is_completed, $end_action_flag);
+            function () use ($b_id, $active_lock, $is_completed, $end_action_flag, $lock_day_term) {
+                return Part::getListByBid($b_id, true, $active_lock, $is_completed, $end_action_flag, $lock_day_term);
             },
             60 * 10
         );
@@ -292,7 +293,7 @@ class ApiController implements ControllerProviderInterface
         $is_free = (!$is_completed && strtotime($part['begin_date']) <= strtotime($today))
             || ($is_completed && (($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] == 0) || $book['end_action_flag'] == Book::ALL_FREE));
 
-        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . " + 14 days")))
+        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . ' + ' . $book['lock_day_term'] . ' days')))
             || ($is_completed && ($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] > 0));
 
 
@@ -541,7 +542,7 @@ class ApiController implements ControllerProviderInterface
             // 연재 중인 경우 (이전 버전 및 유료화 버전의 무료 연재중)
             $valid = Part::isOpenedPart($p_id, $store_id);
         } else {
-            $is_locked = $book['is_active_lock'] && (strtotime($today) <= strtotime($part['begin_date']) && strtotime($today . ' + 14 days') >= $part['begin_date']);
+            $is_locked = $book['is_active_lock'] && (strtotime($today) <= strtotime($part['begin_date']) && strtotime($today . ' + ' . $book['lock_day_term'] . ' days') >= $part['begin_date']);
             $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
 
             // Uid가 유효한 경우

@@ -33,6 +33,7 @@ CREATE TABLE `book` (
   `cp_id` int(11) DEFAULT NULL COMMENT 'CP Id',
   `royalty_percent` int(11) NOT NULL DEFAULT '0' COMMENT '정산율',
   `is_active_lock` tinyint(4) NOT NULL DEFAULT '0' COMMENT '잠금기능 사용여부 (0: 사용하지 않음, 1: 사용함)',
+  `lock_day_term` int(11) NOT NULL DEFAULT '14' COMMENT '잠금일 기간 (기본: 2주)',
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `cp_id` (`cp_id`)

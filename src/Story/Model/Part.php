@@ -45,7 +45,7 @@ class Part
         return $p->isOpened() && $p->getStoreId() == $store_id;
     }
 
-    public static function getListByBid($b_id, $with_social_info = false, $active_lock = false, $is_completed = false, $end_action_flag = Book::SALES_CLOSED)
+    public static function getListByBid($b_id, $with_social_info = false, $active_lock = false, $is_completed = false, $end_action_flag = Book::SALES_CLOSED, $lock_day_term = 14)
     {
         global $app;
 
@@ -64,7 +64,7 @@ EOT;
 
                 $lock_day = $today;
                 if ($active_lock) {
-                    $lock_day = date('Y-m-d H:00:00', strtotime($today .  ' + 14 days'));
+                    $lock_day = date('Y-m-d H:00:00', strtotime($today .  ' + ' . $lock_day_term . ' days'));
                 }
                 $bind = array($b_id, $lock_day, $today);
             }
