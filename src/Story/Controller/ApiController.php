@@ -536,6 +536,7 @@ class ApiController implements ControllerProviderInterface
         $is_ongoing = strtotime($today) >= strtotime($part['begin_date']) && strtotime($today) <= strtotime($part['end_date']);
 
         // 연재 진행 중 여부에 따라 분기
+        $valid = false;
         if ($is_ongoing) {
             // 연재 중인 경우 (이전 버전 및 유료화 버전의 무료 연재중)
             $valid = Part::isOpenedPart($p_id, $store_id);
@@ -545,24 +546,26 @@ class ApiController implements ControllerProviderInterface
 
             // Uid가 유효한 경우
             if (Buyer::isValidUid($u_id)) {
-                if ($is_locked) {
-                    // 잠겨져 있는 경우 -> 구매내역 확인
-                    $valid = Buyer::hasPurchasedPart($u_id, $p_id);
-                } else if ($is_completed) {
+                if ($is_completed) {
                     // 완결된 경우 -> ALL_FREE    : true
                     //          -> ALL_CHARGED : 구매내역 확인
                     if ($book['end_action_flag'] == Book::ALL_FREE) {
                         $valid = true;
                     } else if ($book['end_action_flag'] == Book::ALL_CHARGED) {
-                        $valid = Buyer::hasPurchasedPart($u_id, $p_id);
-                    } else {    // ALL_CLOSED, SALED_CLOSED : 비공개
-                        $valid = false;
+                        if ($part['price'] > 0) {
+                            // 구매내역 확인
+                            $valid = Buyer::hasPurchasedPart($u_id, $p_id);
+                        } else {
+                            // 모두 잠금이지만, 가격이 공짜인 경우 다운로드 허가.
+                            $valid = true;
+                        }
                     }
-                } else {        // 잠겨져 있지도 않고, 완결도 아닌 경우 -> 비공개/잘못된 접근
-                    $valid = false;
+                } else {
+                    // 잠겨져 있는 경우 -> 구매내역 확인
+                    if ($is_locked) {
+                        $valid = Buyer::hasPurchasedPart($u_id, $p_id);
+                    }
                 }
-            } else {            // Uid가 유효하지 않은 경우 -> 잘못된 접근
-                $valid = false;
             }
         }
 
