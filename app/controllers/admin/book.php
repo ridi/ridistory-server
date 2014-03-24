@@ -159,6 +159,17 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         Book::deleteIntro($id);
         RecommendedBook::deleteByBid($id);
         $app['session']->getFlashBag()->add('alert', array('info' => '책이 삭제되었습니다.'));
+
+        // 캐시 삭제
+        $app['cache']->delete('book_list_1');
+        $app['cache']->delete('book_list_2');
+        $app['cache']->delete('book_list_3');
+        $app['cache']->delete('completed_book_list');
+        $app['cache']->delete('part_list_0_0_' . $id);
+        $app['cache']->delete('part_list_0_1_' . $id);
+        $app['cache']->delete('part_list_1_0_' . $id);
+        $app['cache']->delete('part_list_1_1_' . $id);
+
         return $app->json(array('success' => true));
     }
 
@@ -190,6 +201,17 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         Book::updateIntro($id, $intro);
 
         $app['session']->getFlashBag()->add('alert', array('info' => '책이 수정되었습니다.'));
+
+        // 캐시 삭제
+        $app['cache']->delete('book_list_1');
+        $app['cache']->delete('book_list_2');
+        $app['cache']->delete('book_list_3');
+        $app['cache']->delete('completed_book_list');
+        $app['cache']->delete('part_list_0_0_' . $id);
+        $app['cache']->delete('part_list_0_1_' . $id);
+        $app['cache']->delete('part_list_1_0_' . $id);
+        $app['cache']->delete('part_list_1_1_' . $id);
+
         return $app->redirect('/admin/book/' . $id);
     }
 }

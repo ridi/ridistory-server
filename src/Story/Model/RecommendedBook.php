@@ -74,6 +74,6 @@ EOT;
     public static function deleteByBid($b_id)
     {
         global $app;
-        return $app['db']->delte('recommended_book', array('b_id' => $b_id));
+        return $app['db']->delete('recommended_book', array('b_id' => $b_id));
     }
 }

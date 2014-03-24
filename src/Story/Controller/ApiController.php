@@ -216,9 +216,9 @@ class ApiController implements ControllerProviderInterface
             $book['is_completed'] = 1;
         }
 
-        $cache_key = 'part_list_' . $active_lock . '_' . $show_all . '_';
+        $cache_key = 'part_list_' . $active_lock . '_' . intval($show_all) . '_' . $b_id;
         $parts = $app['cache']->fetch(
-            $cache_key . $b_id,
+            $cache_key,
             function () use ($b_id, $active_lock, $is_completed, $end_action_flag) {
                 return Part::getListByBid($b_id, true, $active_lock, $is_completed, $end_action_flag);
             },

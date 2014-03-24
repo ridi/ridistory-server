@@ -38,6 +38,12 @@ class ApcCacheWrapper
             $result = $fetcher();
             $this->cache->save($key, $result, $ttl);
         }
+
         return $result;
+    }
+
+    public function delete($key)
+    {
+        return $this->cache->delete($key);
     }
 }

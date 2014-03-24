@@ -38,6 +38,16 @@ class AdminPartControllerProvider implements ControllerProviderInterface
         $part = Part::get($id);
         Part::delete($id);
         $app['session']->getFlashBag()->add('alert', array('info' => '파트가 삭제되었습니다.'));
+
+        // 캐시 삭제
+        $app['cache']->delete('book_list_1');
+        $app['cache']->delete('book_list_2');
+        $app['cache']->delete('book_list_3');
+        $app['cache']->delete('part_list_0_0_' . $part['b_id']);
+        $app['cache']->delete('part_list_0_1_' . $part['b_id']);
+        $app['cache']->delete('part_list_1_0_' . $part['b_id']);
+        $app['cache']->delete('part_list_1_1_' . $part['b_id']);
+
         return $app->redirect('/admin/book/' . $part['b_id']);
     }
 
@@ -47,6 +57,16 @@ class AdminPartControllerProvider implements ControllerProviderInterface
         $part = Part::get($id);
         Part::update($id, $inputs);
         $app['session']->getFlashBag()->add('alert', array('info' => '파트가 수정되었습니다.'));
+
+        // 캐시 삭제
+        $app['cache']->delete('book_list_1');
+        $app['cache']->delete('book_list_2');
+        $app['cache']->delete('book_list_3');
+        $app['cache']->delete('part_list_0_0_' . $part['b_id']);
+        $app['cache']->delete('part_list_0_1_' . $part['b_id']);
+        $app['cache']->delete('part_list_1_0_' . $part['b_id']);
+        $app['cache']->delete('part_list_1_1_' . $part['b_id']);
+
         return $app->redirect('/admin/book/' . $part['b_id']);
     }
 }
