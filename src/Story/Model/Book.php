@@ -127,9 +127,14 @@ EOT;
             );
         }
 
+        $today = date('Y-m-d H:i:s');
         $ar = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($ar as &$b) {
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
+
+            if (strtotime($b['end_date']) < strtotime($today)) {
+                $b['is_completed'] = 1;
+            }
         }
 
         return $ar;
