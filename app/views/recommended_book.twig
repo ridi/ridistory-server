@@ -69,7 +69,7 @@
             {% for book in books %}
                 <td onclick="moveToStore({{ book.store_id }})">
                     <div class="book-cover-wrapper">
-                        <img class="book-cover-image" src="{{ book.cover_url }}">
+                        <img class="book-cover-image" src="{{ book.cover_url }}" alt="{{ book.title }}" title="{{ book.title }}">
                     </div>
                 </td>
             {% endfor %}
