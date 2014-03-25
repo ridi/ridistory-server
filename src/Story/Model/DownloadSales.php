@@ -35,7 +35,7 @@ EOT;
 
     public static function getWholeList($begin_date, $end_date)
     {
-        $today = date('Y-m-d H:00:00');
+        $today = date('Y-m-d H:i:s');
 
         $sql = <<<EOT
 select b.id b_id, b.title, cp.id, cp_id, cp.name cp_name, b.royalty_percent, ifnull(open_part_count, 0) open_part_count, b.total_part_count, b.begin_date, b.end_date, b.end_action_flag, sum(if(coin_amount=0, 1, 0)) free_download, sum(if(coin_amount!=0, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph
@@ -68,7 +68,7 @@ EOT;
 
     public static function getListByCpId($cp_id, $begin_date, $end_date)
     {
-        $today = date('Y-m-d H:00:00');
+        $today = date('Y-m-d H:i:s');
 
         $sql = <<<EOT
 select b.id b_id, b.title, b.royalty_percent, b.author, b.publisher, b.adult_only, ifnull(open_part_count, 0) open_part_count, b.total_part_count, b.begin_date, b.end_date, b.end_action_flag, sum(if(coin_amount=0, 1, 0)) free_download, sum(if(coin_amount!=0, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph

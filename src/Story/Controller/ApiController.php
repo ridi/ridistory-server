@@ -373,6 +373,22 @@ class ApiController implements ControllerProviderInterface
     {
         $b_ids = UserInterest::getList($device_id);
         $list = Book::getListByIds($b_ids, true);
+
+        $today = date('Y-m-d H:i:s');
+        foreach ($list as $key => &$book) {
+            $is_active_lock = $book['is_active_lock'];
+
+            // 연재 시작일 이전의 책 제외.
+            if (!$is_active_lock && strtotime($book['begin_date']) > strtotime($today)) {
+                unset($list[$key]);
+            }
+
+            // 완결 후, 게시종료된 책 제외.
+            if (strtotime($book['end_date']) < strtotime($today) && $book['end_action_flag'] == Book::ALL_CLOSED) {
+                unset($list[$key]);
+            }
+        }
+
         return $app->json($list);
     }
 
@@ -533,7 +549,7 @@ class ApiController implements ControllerProviderInterface
         $part = Part::get($p_id);
         $book = Book::get($part['b_id']);
 
-        $today = date('Y-m-d H:00:00');
+        $today = date('Y-m-d H:i:s');
         $is_ongoing = strtotime($today) >= strtotime($part['begin_date']) && strtotime($today) <= strtotime($part['end_date']);
 
         // 연재 진행 중 여부에 따라 분기
@@ -613,7 +629,7 @@ class ApiController implements ControllerProviderInterface
         if ($type === 'storyplusbook') {
             $b = StoryPlusBook::get($id);
 
-            $today = date('Y-m-d H:00:00');
+            $today = date('Y-m-d H:i:s');
             if ($b['begin_date'] <= $today && $b['end_date'] >= $today) {
                 $store_id = $b['store_id'];
             }

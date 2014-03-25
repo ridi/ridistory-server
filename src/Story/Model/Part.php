@@ -15,7 +15,7 @@ class Part
 
     public function isOpened()
     {
-        $today = date('Y-m-d H:00:00');
+        $today = date('Y-m-d H:i:s');
         return $this->row['begin_date'] <= $today && $this->row['end_date'] >= $today;
     }
 
@@ -49,7 +49,7 @@ class Part
     {
         global $app;
 
-        $today = date('Y-m-d H:00:00');
+        $today = date('Y-m-d H:i:s');
         if ($with_social_info) {
             $sql = <<<EOT
 select p.*, ifnull(like_count, 0) like_count, ifnull(comment_count, 0) comment_count from part p
@@ -64,7 +64,7 @@ EOT;
 
                 $lock_day = $today;
                 if ($active_lock) {
-                    $lock_day = date('Y-m-d H:00:00', strtotime($today .  ' + ' . $lock_day_term . ' days'));
+                    $lock_day = date('Y-m-d H:i:s', strtotime($today .  ' + ' . $lock_day_term . ' days'));
                 }
                 $bind = array($b_id, $lock_day, $today);
             }
@@ -114,7 +114,7 @@ EOT;
         global $app;
 
         $sql = "select count(*) open_part_count from part where b_id = ? and begin_date <= ? and end_date >= ?";
-        $today = date('Y-m-d H:00:00');
+        $today = date('Y-m-d H:i:s');
         $r = $app['db']->fetchColumn($sql, array($b_id, $today, $today));
         return $r;
     }

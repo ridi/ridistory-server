@@ -85,7 +85,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
         $cp_accounts = CpAccount::getCpList();
         $recommended_books = RecommendedBook::getRecommendedBookListByBid($id, true);
 
-        $today = date('Y-m-d H:00:00');
+        $today = date('Y-m-d H:i:s');
 
         $active_lock = $book['is_active_lock'];
         $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime($today) ? 1 : 0);
