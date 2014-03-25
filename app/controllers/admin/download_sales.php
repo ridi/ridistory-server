@@ -50,7 +50,8 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
         $app['twig']->addFunction(
             new Twig_SimpleFunction('get_status', function ($begin_date, $end_date, $end_action_flag, $open_part_count = 0, $total_part_count = 0) {
-                $today = strtotime('now');
+                $today = date('Y-m-d H:i:s');
+                $today = strtotime($today);
                 $is_ongoing = strtotime($begin_date) <= $today && strtotime($end_date) >= $today;
                 if ($is_ongoing) {
                     $status = "연재중(" . $open_part_count . "/" . $total_part_count . ")";

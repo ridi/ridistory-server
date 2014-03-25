@@ -63,7 +63,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
                 }
             } else {
                 if ($book['open_part_count'] <= 0) {
-                    if (strtotime($book['begin_date']) > strtotime('now')) {
+                    if (strtotime($book['begin_date']) > strtotime($today)) {
                         // Coming Soon 예고 시작 전.
                         $book['status'] = '';
                     } else {

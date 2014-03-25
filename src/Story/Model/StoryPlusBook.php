@@ -29,7 +29,7 @@ EOT;
 
     public static function getOpenedBookList()
     {
-        $today = date('Y-m-d H:i:s');
+        $today = date('Y-m-d H:00:00');
         $sql = <<<EOT
 select storyplusbook.*, ifnull(like_sum, 0) like_sum from storyplusbook
 	left join (select b_id, count(*) like_sum from storyplusbook, user_storyplusbook_like where storyplusbook.id = user_storyplusbook_like.b_id group by b_id) L on storyplusbook.id = L.b_id

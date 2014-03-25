@@ -22,7 +22,7 @@ class Book
 
     public static function getWholeList()
     {
-        $today = date('Y-m-d H:i:s');
+        $today = date('Y-m-d H:00:00');
         $sql = <<<EOT
 select count(part.b_id) uploaded_part_count, ifnull(open_part_count, 0) open_part_count, cp.name cp_name, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
@@ -37,7 +37,7 @@ EOT;
 
     public static function getOpenedBookList($exclude_adult = true)
     {
-        $today = date('Y-m-d H:i:s');
+        $today = date('Y-m-d H:00:00');
         $sql = <<<EOT
 select ifnull(last_update, 0) last_update, ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
@@ -73,7 +73,7 @@ select ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum,
  left join (select b_id, count(*) like_sum from user_part_like, part where p_id = part.id group by b_id) ls on b.id = ls.b_id
 where (b.is_completed = 1 or b.end_date < ?) and end_action_flag != 'ALL_CLOSED'
 EOT;
-        $today = date('Y-m-d H:i:s');
+        $today = date('Y-m-d H:00:00');
         global $app;
         $ar = $app['db']->fetchAll($sql, array($today));
 
@@ -101,7 +101,7 @@ select ifnull(last_update, 0) last_update, ifnull(open_part_count, 0) open_part_
  left join (select b_id, 1 last_update from part where (date(begin_date) = date(?) and ? >= begin_date) or date_add(date(begin_date), INTERVAL 1 DAY) = date(?) group by b_id) p on b.id = p.b_id
 where b.id in (?)
 EOT;
-            $today = date('Y-m-d H:i:s');
+            $today = date('Y-m-d H:00:00');
             $stmt = $app['db']->executeQuery(
                 $sql,
                 array($today, $today, $today, $today, $today, $b_ids),

@@ -208,7 +208,7 @@ class ApiController implements ControllerProviderInterface
 
         // 완결되었고, 종료 후 액션이 모두 공개 혹은 모두 잠금이면 파트 모두 보임
         $show_all = false;
-        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime('now') ? 1 : 0);
+        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime(date('Y-m-d H:i:s')) ? 1 : 0);
         $book['is_completed'] = $is_completed;
         $end_action_flag = $book['end_action_flag'];
         $lock_day_term = $book['lock_day_term'];
@@ -242,7 +242,7 @@ class ApiController implements ControllerProviderInterface
 
         foreach ($parts as &$part) {
             // 1화가 아직 시작하지 않은 경우에는, '잠금' 도서 무시하고, 앱 내에서 Coming Soon 처리
-            if ($part['seq'] <= 1 && strtotime($part['begin_date']) > strtotime('now')) {
+            if ($part['seq'] <= 1 && strtotime($part['begin_date']) > strtotime(date('Y-m-d H:i:s'))) {
                 $parts = array();
                 break;
             }
@@ -629,7 +629,7 @@ class ApiController implements ControllerProviderInterface
         if ($type === 'storyplusbook') {
             $b = StoryPlusBook::get($id);
 
-            $today = date('Y-m-d H:i:s');
+            $today = date('Y-m-d H:00:00');
             if ($b['begin_date'] <= $today && $b['end_date'] >= $today) {
                 $store_id = $b['store_id'];
             }
