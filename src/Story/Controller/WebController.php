@@ -157,7 +157,7 @@ class WebController implements ControllerProviderInterface
         $recommended_books = $app['cache']->fetch(
             'recommended_book_list_' . $b_id,
             function () use ($b_id) {
-                return RecommendedBook::getRecommendedBookListByBid($b_id);
+                return RecommendedBook::getRecommendedBookListByBid($b_id, false);
             },
             60 * 10
         );

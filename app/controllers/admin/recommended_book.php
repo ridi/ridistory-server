@@ -40,7 +40,7 @@ class AdminRecommendedBookControllerProvider implements ControllerProviderInterf
         $app['session']->getFlashBag()->add('alert', array('info' => '작가의 다른 작품이 삭제되었습니다.'));
 
         // 캐시 삭제
-        $app['cache']->delete('recommended_book_list_' . $id);
+        $app['cache']->delete('recommended_book_list_' . $recommended_book['b_id']);
 
         return $app->redirect('/admin/book/' . $recommended_book['b_id']);
     }
@@ -53,7 +53,7 @@ class AdminRecommendedBookControllerProvider implements ControllerProviderInterf
         $app['session']->getFlashBag()->add('alert', array('info' => '작가의 다른 작품이 수정되었습니다.'));
 
         // 캐시 삭제
-        $app['cache']->delete('recommended_book_list_' . $id);
+        $app['cache']->delete('recommended_book_list_' . $recommended_book['b_id']);
 
         return $app->redirect('/admin/book/' . $recommended_book['b_id']);
     }

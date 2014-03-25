@@ -37,18 +37,23 @@ EOT;
         return $app['db']->fetchColumn($sql, array($b_id));
     }
 
-    public static function getRecommendedBookListByBid($b_id)
+    public static function getRecommendedBookListByBid($b_id, $show_all = false)
     {
         $sql = <<<EOT
 select * from recommended_book where b_id = ? order by id
 EOT;
         global $app;
         $recommended_books = $app['db']->fetchAll($sql, array($b_id));
-        foreach ($recommended_books as &$rb) {
+        foreach ($recommended_books as $key => &$rb) {
             if ($rb) {
                 $rb['cover_url'] = Book::getCoverUrl($rb['store_id']);
+
+                if (($rb['store_id'] == '' || $rb['title'] == '') && !$show_all) {
+                    unset($recommended_books[$key]);
+                }
             }
         }
+
         return $recommended_books;
     }
 

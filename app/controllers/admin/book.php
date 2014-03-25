@@ -83,7 +83,7 @@ class AdminBookControllerProvider implements ControllerProviderInterface
     {
         $book = Book::get($id);
         $cp_accounts = CpAccount::getCpList();
-        $recommended_books = RecommendedBook::getRecommendedBookListByBid($id);
+        $recommended_books = RecommendedBook::getRecommendedBookListByBid($id, true);
 
         $today = date('Y-m-d H:00:00');
 
