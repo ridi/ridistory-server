@@ -22,7 +22,7 @@ CREATE TABLE `book` (
   `publisher` varchar(32) NOT NULL,
   `catchphrase` varchar(256) NOT NULL,
   `short_description` varchar(256) NOT NULL,
-  `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `begin_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `total_part_count` int(11) NOT NULL,
   `is_completed` tinyint(4) NOT NULL,
