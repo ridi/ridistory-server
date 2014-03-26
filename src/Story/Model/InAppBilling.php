@@ -85,7 +85,7 @@ EOT;
             'order_id' => $order_id,
             'u_id' => $u_id,
             'sku' => $sku,
-            'purchase_time' => date("Y-m-d H:i:s", ($purchase_time / 1000)),
+            'purchase_time' => date('Y-m-d H:i:s', ($purchase_time / 1000)),
             'payload' => $payload,
             'purchase_token' => $purchase_token,
             'signature' => $signature
@@ -139,6 +139,8 @@ EOT;
 
         $response = json_decode($response, true);
 
+        InAppBilling::setInAppBillingVerifyInfo($iab_id, $response);
+
         if ($response['developerPayload'] == $payload
             && $response['purchaseTime'] == $purchase_time
             && $response['purchaseState'] == InAppBilling::PURCHASE_STATE_PURCHASED
@@ -157,6 +159,42 @@ EOT;
         global $app;
         $app['db']->insert('inapp_history', $values);
         return $app['db']->lastInsertId();
+    }
+
+    public static function setInAppBillingVerifyInfo($iab_id, $verify_info)
+    {
+        switch($verify_info['purchaseState']) {
+            case InAppBilling::PURCHASE_STATE_PURCHASED:
+                $purchase_state = 'PURCHASED';
+                break;
+            case InAppBilling::PURCHASE_STATE_CANCELLED:
+                $purchase_state = 'CANCELLED';
+                break;
+            default:
+                $purchase_state = 'NONE';
+        }
+
+        switch($verify_info['consumptionState']) {
+            case InAppBilling::CONSUMPTION_STATE_CONSUMED:
+                $consumption_state = 'CONSUMED';
+                break;
+            case InAppBilling::CONSUMPTION_STATE_NOT_CONSUMED:
+                $consumption_state = 'NOT_CONSUMED';
+                break;
+            default:
+                $consumption_state = 'NONE';
+        }
+
+        global $app;
+        return $app['db']->update('inapp_history',
+            array(
+                'verify_purchase_time' => date('Y-m-d H:i:s', ($verify_info['purchaseTime'] / 1000)),
+                'verify_purchase_state' => $purchase_state,
+                'verify_consumption_state' => $consumption_state,
+                'verify_payload' => $verify_info['developerPayload']
+            ),
+            array('id' => $iab_id)
+        );
     }
 
     public static function setInAppBillingSucceeded($iab_id)

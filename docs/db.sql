@@ -123,6 +123,10 @@ CREATE TABLE `inapp_history` (
   `purchase_token` varchar(200) NOT NULL,
   `signature` varchar(1024) NOT NULL,
   `is_succeeded` tinyint(4) NOT NULL DEFAULT '0',
+  `verify_purchase_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Purchase Status API에서 보내준 구매 시간',
+  `verify_purchase_state` enum('NONE','PURCHASED','CANCELLED') NOT NULL DEFAULT 'NONE' COMMENT 'Purchase Status API에서 보내준 구매 상태 (NONE: 기본, PURCHASED: 구매됨, CANCELLED: 취소됨)',
+  `verify_consumption_state` enum('NONE','CONSUMED','NOT_CONSUMED') NOT NULL DEFAULT 'NONE' COMMENT 'Purchase Status API에서 보내준 소비 상태 (NONE: 기본, CONSUMED: 소비됨, NOT_CONSUMED: 소비되지 않음)',
+  `verify_payload` varchar(50) NOT NULL COMMENT 'Purchase Status API에서 보내준 Payload',
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_id` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
