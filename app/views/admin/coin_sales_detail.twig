@@ -27,9 +27,6 @@
             <th>결제 시간</th>
             <td>
                 {{ coin_sale.purchase_time }}
-                {% if coin_sale.purchase_time != coin_sale.verify_purchase_time %}
-                    / <span style="color: #ff0000">{{ coin_sale.verify_purchase_time }}</span>
-                {% endif %}
             </td>
         </tr>
         <tr>
@@ -43,32 +40,9 @@
             </td>
         </tr>
         <tr>
-            <th>구매/소비 상태</th>
-            <td>
-                {% if coin_sale.verify_purchase_state == 'PURCHASED' %}
-                    구매함
-                {% elseif coin_sale.verify_purchase_state == 'CANCELLED' %}
-                    <span style="color: #ff0000">취소됨</span>
-                {% else %}
-                    <span style="color: #ff0000">인앱 결제 검증 API 오류</span>
-                {% endif %}
-                /
-                {% if coin_sale.verify_consumption_state == 'CONSUMED' %}
-                    소비됨
-                {% elseif coin_sale.verify_consumption_state == 'NOT_CONSUMED' %}
-                    <span style="color: #ff0000">소비되지 않음</span>
-                {% else %}
-                    <span style="color: #ff0000">인앱 결제 검증 API 오류</span>
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
             <th>Payload</th>
             <td>
                 {{ coin_sale.payload }}
-                {% if coin_sale.payload != coin_sale.verify_payload %}
-                    / <span style="color: #ff0000">{{ coin_sale.verify_payload }}</span>
-                {% endif %}
             </td>
         </tr>
     </table>
@@ -77,13 +51,15 @@
         <thead>
         <tr>
             <th>Purchase Token</th>
+            <th>Purchase Data</th>
             <th>Signature</th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td><textarea rows='10' style='width: 400px' disabled>{{ coin_sale.purchase_token }}</textarea></td>
-            <td><textarea rows='10' style='width: 400px' disabled>{{ coin_sale.signature }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.purchase_token }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.purchase_data }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.signature }}</textarea></td>
         </tr>
         </tbody>
     </table>

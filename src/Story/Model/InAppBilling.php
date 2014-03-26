@@ -3,6 +3,9 @@ namespace Story\Model;
 
 class InAppBilling
 {
+    // In App Billing Public Key
+    const IAB_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0Gjc4tCCAk4YKbIu5w9SwSkXDJQzUJNC9181Bh3HDd8PlSkRHRGpQDS7jIl2P3Pt7VorWOSmlCnDzbBsAT+mPSxUK4JG3kapHE53hBCMEhJ9nKZ+yDS94FDBiKNyKpVwQ1qA+ILFHo3NoU/vav+1qIOk1hPZAU0SKATikyQI0vzYoudePrCX3O3ue4olAepTT/Q71n7jXEu2yIbovYq9Jy4JZyhU4CVPvAwUA484q+jgm4yhl+d2ASor4bxmSmxfjwuVj45Cylb3NZ4iOUo+VSHwUAV1d3SAJYAMcUZdZbO127gK+uu8PchU/g/3yWY8csZuJINQvDWUFo7rY3dVgQIDAQAB";
+
     // Purchase Status API, Purchase state
     const PURCHASE_STATE_PURCHASED = 0;
     const PURCHASE_STATE_CANCELLED = 1;
@@ -10,11 +13,6 @@ class InAppBilling
     // Consumption Status API, Consumption state
     const CONSUMPTION_STATE_CONSUMED = 1;
     const CONSUMPTION_STATE_NOT_CONSUMED = 0;
-
-    // Ridistory API oAuth 2.0 Info
-    const CLIENT_ID = '78321583520.apps.googleusercontent.com';
-    const CLIENT_SECRET = 'EmIXOkQqsIhuXSLV1aIt9TvB';
-    const REFRESH_TOKEN = '1/PRMtp_Jo6-TZ8eATWPK20SO-0V_UwGfg9PGJdn3FQ5Y';
 
     public static function createInAppProduct()
     {
@@ -67,13 +65,16 @@ EOT;
 
     public static function verifyInAppBilling($values)
     {
+        // Purchase Data (JSON data of Paramters)
+        $purchase_data = json_decode($values['purchase_data'], true);
+
         // Parameters
-        $order_id = $values['order_id'];
         $u_id = $values['u_id'];
-        $sku = $values['sku'];
-        $payload = $values['payload'];
-        $purchase_time = $values['purchase_time'];
-        $purchase_token = $values['purchase_token'];
+        $order_id = $purchase_data['orderId'];
+        $sku = $purchase_data['productId'];
+        $payload = $purchase_data['developerPayload'];
+        $purchase_time = $purchase_data['purchaseTime'];
+        $purchase_token = $purchase_data['purchaseToken'];
         $signature = $values['signature'];
 
         if ($u_id == null || $order_id == null || $sku == null || $payload == null || $purchase_time == null || $purchase_token == null || $signature == null) {
@@ -88,68 +89,24 @@ EOT;
             'purchase_time' => date('Y-m-d H:i:s', ($purchase_time / 1000)),
             'payload' => $payload,
             'purchase_token' => $purchase_token,
+            'purchase_data' => $values['purchase_data'],
             'signature' => $signature
         );
         $iab_id = InAppBilling::saveInAppBillingHistory($bind);
 
-        // Google oAuth 2.0 Reresh Token API Param
-        $refresh_token_params = array(
-            'refresh_token' => urlencode(InAppBilling::REFRESH_TOKEN),
-            'grant_type' => urlencode('refresh_token'),
-            'client_id' => urlencode(InAppBilling::CLIENT_ID),
-            'client_secret' => urlencode(InAppBilling::CLIENT_SECRET)
-        );
-        $refresh_token_params_string = '';
-        foreach($refresh_token_params as $key=>$value) {
-            $refresh_token_params_string .= $key . '=' . $value . '&';
-        }
-        rtrim($refresh_token_params_string, '&');
+        //TODO: 추후에 Purchase Status API가 안정화되면, Purchase Status API로 교체
+        // Signature 검증
+        $iab_public_key =  "-----BEGIN PUBLIC KEY-----\n".chunk_split(InAppBilling::IAB_PUBLIC_KEY, 64,"\n").'-----END PUBLIC KEY-----';
+        $iab_public_key = openssl_get_publickey($iab_public_key);
+        $signature = base64_decode($signature);
+        $is_valid_iab = openssl_verify($values['purchase_data'], $signature, $iab_public_key);
+        openssl_free_key($iab_public_key);
 
-        // Google oAuth 2.0 Refresh Token API
-        $refresh_token_url = 'https://accounts.google.com/o/oauth2/token';
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $refresh_token_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_POST, count($refresh_token_params));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $refresh_token_params_string);
-        $response = curl_exec($ch);
-        curl_close($ch);
-        $response = json_decode($response, true);
-
-        // Refresh Token Null Check
-        if ($response['token_type'] == null || $response['access_token'] == null) {
-            return false;
-        }
-
-        // Generate oAuth 2.0 Access Token
-        $access_token = $response['token_type'] . ' ' . $response['access_token'];
-
-        // Google Purchase Status API
-        $purchase_status_url = 'https://www.googleapis.com/androidpublisher/v1.1/applications/com.initialcoms.story/inapp/' . $sku . '/purchases/' . $purchase_token;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $purchase_status_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: ' . $access_token));
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        $response = json_decode($response, true);
-
-        InAppBilling::setInAppBillingVerifyInfo($iab_id, $response);
-
-        if ($response['developerPayload'] == $payload
-            //&& $response['purchaseTime'] == $purchase_time
-            && $response['purchaseState'] == InAppBilling::PURCHASE_STATE_PURCHASED
-            && $response['consumptionState'] == InAppBilling::CONSUMPTION_STATE_CONSUMED) {
+        if ($is_valid_iab == 1) {
             $r = InAppBilling::setInAppBillingSucceeded($iab_id);
             return ($r === 1);
         } else {
-            error_log("Purchase Status API Error", 0);
-            error_log(print_r($response, true), 0);
+            error_log('Failed Verify Signature: ' . $is_valid_iab, 0);
             return false;
         }
     }
@@ -159,42 +116,6 @@ EOT;
         global $app;
         $app['db']->insert('inapp_history', $values);
         return $app['db']->lastInsertId();
-    }
-
-    public static function setInAppBillingVerifyInfo($iab_id, $verify_info)
-    {
-        switch($verify_info['purchaseState']) {
-            case InAppBilling::PURCHASE_STATE_PURCHASED:
-                $purchase_state = 'PURCHASED';
-                break;
-            case InAppBilling::PURCHASE_STATE_CANCELLED:
-                $purchase_state = 'CANCELLED';
-                break;
-            default:
-                $purchase_state = 'NONE';
-        }
-
-        switch($verify_info['consumptionState']) {
-            case InAppBilling::CONSUMPTION_STATE_CONSUMED:
-                $consumption_state = 'CONSUMED';
-                break;
-            case InAppBilling::CONSUMPTION_STATE_NOT_CONSUMED:
-                $consumption_state = 'NOT_CONSUMED';
-                break;
-            default:
-                $consumption_state = 'NONE';
-        }
-
-        global $app;
-        return $app['db']->update('inapp_history',
-            array(
-                'verify_purchase_time' => date('Y-m-d H:i:s', ($verify_info['purchaseTime'] / 1000)),
-                'verify_purchase_state' => $purchase_state,
-                'verify_consumption_state' => $consumption_state,
-                'verify_payload' => $verify_info['developerPayload']
-            ),
-            array('id' => $iab_id)
-        );
     }
 
     public static function setInAppBillingSucceeded($iab_id)

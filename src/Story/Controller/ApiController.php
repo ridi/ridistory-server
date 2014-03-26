@@ -130,7 +130,8 @@ class ApiController implements ControllerProviderInterface
 
         $r = InAppBilling::verifyInAppBilling($inputs);
         if ($r) {
-            $inapp_info = InAppBilling::getInAppProductBySku($inputs['sku']);
+            $purchase_data = json_decode($inputs['purchase_data'], true);
+            $inapp_info = InAppBilling::getInAppProductBySku($purchase_data['productId']);
             $r = Buyer::addCoin($inputs['u_id'], ($inapp_info['coin_amount'] + $inapp_info['bonus_coin_amount']), Buyer::COIN_SOURCE_IN_INAPP);
             if ($r) {
                 $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
