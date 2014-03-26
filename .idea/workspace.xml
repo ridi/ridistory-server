@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d669b26-7752-446b-af68-810e7ca78fc7" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/Book.php" afterPath="$PROJECT_DIR$/app/models/Book.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Ridibooks/Story/Provider/CacheServiceProvider.php" afterPath="$PROJECT_DIR$/app/Ridibooks/Story/Provider/CacheServiceProvider.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/story.iml" afterPath="$PROJECT_DIR$/.idea/story.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Story/Model/InAppBilling.php" afterPath="$PROJECT_DIR$/src/Story/Model/InAppBilling.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="story.iws" />
@@ -32,41 +30,90 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Book.php" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/models/Book.php">
+      <file leaf-file-name="WebController.php" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Story/Controller/WebController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="72" selection-start="1798" selection-end="1798" vertical-scroll-proportion="0.643038" vertical-offset="391" max-vertical-offset="2355">
+            <state line="110" column="63" selection-start="3113" selection-end="3113" vertical-scroll-proportion="-16.875" vertical-offset="1140" max-vertical-offset="2685">
               <folding>
-                <marker date="1391864196000" expanded="true" signature="120:151" placeholder="select * fro..book..." />
-                <marker date="1391864196000" expanded="true" signature="2495:2508" placeholder="..." />
-                <marker date="1391864196000" expanded="true" signature="4849:4888" placeholder="select * fro..book_intro..." />
+                <marker date="1395796592000" expanded="true" signature="3090:3154" placeholder="select * fro..notice..." />
+                <marker date="1395796592000" expanded="true" signature="3357:3409" placeholder="select * fro..notice..." />
+                <marker date="1395796592000" expanded="true" signature="3813:3877" placeholder="select * fro..banner..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="date_c.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/com/jetbrains/php/lang/psi/stubs/data/date_c.php">
+      <file leaf-file-name="Book.php" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Story/Model/Book.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="307" column="20" selection-start="11619" selection-end="11619" vertical-scroll-proportion="-5.7916665" vertical-offset="4466" max-vertical-offset="9660">
+            <state line="95" column="0" selection-start="3355" selection-end="3355" vertical-scroll-proportion="9.375" vertical-offset="1650" max-vertical-offset="4170">
+              <folding>
+                <marker date="1395796144000" expanded="true" signature="325:356" placeholder="select * fro..book..." />
+                <marker date="1395796144000" expanded="true" signature="1767:1831" placeholder="SELECT * FRO..book..." />
+                <marker date="1395796144000" expanded="true" signature="3372:3468" placeholder="SELECT b_id ..part..." />
+                <marker date="1395796144000" expanded="true" signature="3931:4041" placeholder="SELECT b_id,..part..." />
+                <marker date="1395796144000" expanded="true" signature="4437:4557" placeholder="SELECT b_id,..part..." />
+                <marker date="1395796144000" expanded="true" signature="8688:8727" placeholder="select * fro..book_intro..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InAppBilling.php" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Story/Model/InAppBilling.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="136" column="35" selection-start="5052" selection-end="5052" vertical-scroll-proportion="0.36372453" vertical-offset="1665" max-vertical-offset="3795">
+              <folding>
+                <marker date="1395821531000" expanded="true" signature="1171:1212" placeholder="select * fro..inapp_products..." />
+                <marker date="1395821531000" expanded="true" signature="1355:1397" placeholder="select * fro..inapp_products..." />
+                <marker date="1395821531000" expanded="true" signature="1534:1589" placeholder="select sku f..inapp_products..." />
+                <marker date="1395821531000" expanded="true" signature="7687:7693" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="coin_sales_list.twig" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/admin/coin_sales_list.twig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="1140">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="api.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/controllers/api.php">
+      <file leaf-file-name="coin_sales_detail.twig" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/admin/coin_sales_detail.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="98" column="31" selection-start="3624" selection-end="3624" vertical-scroll-proportion="-10.125" vertical-offset="1197" max-vertical-offset="4920">
+            <state line="50" column="59" selection-start="1552" selection-end="1552" vertical-scroll-proportion="-18.583334" vertical-offset="304" max-vertical-offset="1695">
+              <folding>
+                <element signature="e#858#880#0" expanded="true" />
+                <element signature="e#1118#1140#0" expanded="true" />
+                <element signature="e#1519#1541#0" expanded="true" />
+                <element signature="e#1606#1628#0" expanded="true" />
+                <element signature="e#1904#1926#0" expanded="true" />
+                <element signature="e#1995#2017#0" expanded="true" />
+                <element signature="e#2299#2321#0" expanded="true" />
+                <element signature="e#2652#2672#0" expanded="true" />
+                <element signature="e#2765#2785#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="comment.twig" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/views/comment.twig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="81" column="29" selection-start="2958" selection-end="2958" vertical-scroll-proportion="-29.208334" vertical-offset="514" max-vertical-offset="1635">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CacheServiceProvider.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/Ridibooks/Story/Provider/CacheServiceProvider.php">
+      <file leaf-file-name="index.php" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="35" column="25" selection-start="675" selection-end="675" vertical-scroll-proportion="-8.25" vertical-offset="297" max-vertical-offset="705">
+            <state line="11" column="2" selection-start="258" selection-end="258" vertical-scroll-proportion="-6.875" vertical-offset="0" max-vertical-offset="735">
               <folding />
             </state>
           </provider>
@@ -99,6 +146,12 @@
         <option value="$PROJECT_DIR$/app/views/admin/stats_like.twig" />
         <option value="$PROJECT_DIR$/app/Ridibooks/Story/Provider/CacheServiceProvider.php" />
         <option value="$PROJECT_DIR$/app/models/Book.php" />
+        <option value="$PROJECT_DIR$/app/views/comment.twig" />
+        <option value="$PROJECT_DIR$/src/Story/Controller/WebController.php" />
+        <option value="$PROJECT_DIR$/src/Story/Provider/CacheServiceProvider.php" />
+        <option value="$PROJECT_DIR$/app/views/admin/coin_sales_detail.twig" />
+        <option value="$PROJECT_DIR$/docs/db.sql" />
+        <option value="$PROJECT_DIR$/src/Story/Model/InAppBilling.php" />
       </list>
     </option>
   </component>
@@ -127,10 +180,9 @@
     </include_path>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="46" />
     <option name="y" value="22" />
-    <option name="width" value="1234" />
-    <option name="height" value="778" />
+    <option name="width" value="1920" />
+    <option name="height" value="1178" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -184,7 +236,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -213,6 +264,134 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Provider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Model" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CpAdmin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="docs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="story" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -254,24 +433,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="story" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="story" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -299,6 +460,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -341,16 +503,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="46" y="22" width="1234" height="778" extended-state="6" />
+    <frame x="0" y="22" width="1920" height="1178" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32944608" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32871652" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26174498" sideWeight="0.67021275" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26145834" sideWeight="0.67021275" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -358,11 +520,11 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32978722" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32978722" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -382,6 +544,13 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/com/jetbrains/php/lang/psi/stubs/data/date_c.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="307" column="20" selection-start="11619" selection-end="11619" vertical-scroll-proportion="0.0" vertical-offset="4466" max-vertical-offset="9660">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/static/css/bootstrap.min.css">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="0" selection-start="105939" selection-end="105939" vertical-scroll-proportion="0.22920203" vertical-offset="0" max-vertical-offset="0" />
@@ -392,11 +561,6 @@
         <state line="1" column="0" selection-start="33" selection-end="33" vertical-scroll-proportion="0.025951557" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="2" selection-start="267" selection-end="267" vertical-scroll-proportion="0.28546712" vertical-offset="0" max-vertical-offset="0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/composer.json">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="0" selection-start="215" selection-end="215" vertical-scroll-proportion="0.15202703" vertical-offset="0" max-vertical-offset="0" />
@@ -405,11 +569,6 @@
     <entry file="file://$PROJECT_DIR$/app/conf.sample.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="30" column="0" selection-start="738" selection-end="738" vertical-scroll-proportion="0.5067568" vertical-offset="0" max-vertical-offset="0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/Part.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="94" column="5" selection-start="2840" selection-end="2840" vertical-scroll-proportion="0.5691429" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/views/admin/book_detail.twig">
@@ -432,13 +591,6 @@
         <state line="35" column="18" selection-start="1362" selection-end="1362" vertical-scroll-proportion="0.4152249" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/admin.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="397" column="10" selection-start="15896" selection-end="15896" vertical-scroll-proportion="0.15044248" vertical-offset="0" max-vertical-offset="0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/views/admin/stats_like.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state line="31" column="14" selection-start="1060" selection-end="1060" vertical-scroll-proportion="0.6637168" vertical-offset="0" max-vertical-offset="0" />
@@ -449,13 +601,6 @@
         <state line="23" column="23" selection-start="581" selection-end="581" vertical-scroll-proportion="-1.4273356" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/api.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="31" selection-start="3624" selection-end="3624" vertical-scroll-proportion="-10.125" vertical-offset="1197" max-vertical-offset="4920">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/com/jetbrains/php/lang/psi/stubs/data/date_c.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="307" column="20" selection-start="11619" selection-end="11619" vertical-scroll-proportion="-5.7916665" vertical-offset="4466" max-vertical-offset="9660">
@@ -463,27 +608,105 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/Ridibooks/Story/Provider/CacheServiceProvider.php">
+    <entry file="file://$PROJECT_DIR$/app/views/comment.twig">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="25" selection-start="675" selection-end="675" vertical-scroll-proportion="-8.25" vertical-offset="297" max-vertical-offset="705">
+        <state line="81" column="29" selection-start="2958" selection-end="2958" vertical-scroll-proportion="-29.208334" vertical-offset="514" max-vertical-offset="1635">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/index.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="2" selection-start="258" selection-end="258" vertical-scroll-proportion="-6.875" vertical-offset="0" max-vertical-offset="735">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/conf.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="15" selection-start="110" selection-end="110" vertical-scroll-proportion="0.2278481" vertical-offset="0" max-vertical-offset="1095">
+        <state line="17" column="7" selection-start="488" selection-end="488" vertical-scroll-proportion="-10.625" vertical-offset="0" max-vertical-offset="1155">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/Book.php">
+    <entry file="file://$PROJECT_DIR$/src/Story/Provider/CacheServiceProvider.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="72" selection-start="1798" selection-end="1798" vertical-scroll-proportion="0.643038" vertical-offset="391" max-vertical-offset="2355">
+        <state line="20" column="5" selection-start="441" selection-end="441" vertical-scroll-proportion="0.26188168" vertical-offset="0" max-vertical-offset="1031">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Story/Model/Book.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="95" column="0" selection-start="3355" selection-end="3355" vertical-scroll-proportion="9.375" vertical-offset="1650" max-vertical-offset="4170">
           <folding>
-            <marker date="1391864196000" expanded="true" signature="120:151" placeholder="select * fro..book..." />
-            <marker date="1391864196000" expanded="true" signature="2495:2508" placeholder="..." />
-            <marker date="1391864196000" expanded="true" signature="4849:4888" placeholder="select * fro..book_intro..." />
+            <marker date="1395796144000" expanded="true" signature="325:356" placeholder="select * fro..book..." />
+            <marker date="1395796144000" expanded="true" signature="1767:1831" placeholder="SELECT * FRO..book..." />
+            <marker date="1395796144000" expanded="true" signature="3372:3468" placeholder="SELECT b_id ..part..." />
+            <marker date="1395796144000" expanded="true" signature="3931:4041" placeholder="SELECT b_id,..part..." />
+            <marker date="1395796144000" expanded="true" signature="4437:4557" placeholder="SELECT b_id,..part..." />
+            <marker date="1395796144000" expanded="true" signature="8688:8727" placeholder="select * fro..book_intro..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/admin/inapp_product_detail.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="16" selection-start="940" selection-end="940" vertical-scroll-proportion="0.3055286" vertical-offset="0" max-vertical-offset="1031">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/admin/coin_sales_list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1140">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/db.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="306" column="60" selection-start="14601" selection-end="14601" vertical-scroll-proportion="0.40978888" vertical-offset="4163" max-vertical-offset="5265">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/views/admin/coin_sales_detail.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="50" column="59" selection-start="1552" selection-end="1552" vertical-scroll-proportion="-18.583334" vertical-offset="304" max-vertical-offset="1695">
+          <folding>
+            <element signature="e#858#880#0" expanded="true" />
+            <element signature="e#1118#1140#0" expanded="true" />
+            <element signature="e#1519#1541#0" expanded="true" />
+            <element signature="e#1606#1628#0" expanded="true" />
+            <element signature="e#1904#1926#0" expanded="true" />
+            <element signature="e#1995#2017#0" expanded="true" />
+            <element signature="e#2299#2321#0" expanded="true" />
+            <element signature="e#2652#2672#0" expanded="true" />
+            <element signature="e#2765#2785#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Story/Controller/WebController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="110" column="63" selection-start="3113" selection-end="3113" vertical-scroll-proportion="-16.875" vertical-offset="1140" max-vertical-offset="2685">
+          <folding>
+            <marker date="1395796592000" expanded="true" signature="3090:3154" placeholder="select * fro..notice..." />
+            <marker date="1395796592000" expanded="true" signature="3357:3409" placeholder="select * fro..notice..." />
+            <marker date="1395796592000" expanded="true" signature="3813:3877" placeholder="select * fro..banner..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Story/Model/InAppBilling.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="136" column="35" selection-start="5052" selection-end="5052" vertical-scroll-proportion="0.36372453" vertical-offset="1665" max-vertical-offset="3795">
+          <folding>
+            <marker date="1395821531000" expanded="true" signature="1171:1212" placeholder="select * fro..inapp_products..." />
+            <marker date="1395821531000" expanded="true" signature="1355:1397" placeholder="select * fro..inapp_products..." />
+            <marker date="1395821531000" expanded="true" signature="1534:1589" placeholder="select sku f..inapp_products..." />
+            <marker date="1395821531000" expanded="true" signature="7687:7693" placeholder="..." />
           </folding>
         </state>
       </provider>

@@ -142,7 +142,7 @@ EOT;
         InAppBilling::setInAppBillingVerifyInfo($iab_id, $response);
 
         if ($response['developerPayload'] == $payload
-            && $response['purchaseTime'] == $purchase_time
+            //&& $response['purchaseTime'] == $purchase_time
             && $response['purchaseState'] == InAppBilling::PURCHASE_STATE_PURCHASED
             && $response['consumptionState'] == InAppBilling::CONSUMPTION_STATE_CONSUMED) {
             $r = InAppBilling::setInAppBillingSucceeded($iab_id);
