@@ -29,6 +29,7 @@ class ApcCacheWrapper
     public function __construct()
     {
         $this->cache = new ApcCache();
+        $this->cache->setNamespace('story_charging');
     }
 
     public function fetch($key, $fetcher, $ttl = 0)
