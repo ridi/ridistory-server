@@ -58,7 +58,11 @@ class WebController implements ControllerProviderInterface
         $comment = trim($req->get('comment'));
 
         if (empty($nickname) || empty($comment)) {
-            return alert_and_back('닉네임이나 댓글이 없다.');
+            return alert_and_back('닉네임이나 댓글 내용이 없습니다.');
+        }
+
+        if ($nickname == '리디스토리') {
+            return alert_and_back('리디스토리는 닉네임으로 사용하실 수 없습니다.');
         }
 
         $ip = ip2long($_SERVER['REMOTE_ADDR']);
