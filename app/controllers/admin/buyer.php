@@ -26,15 +26,24 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
      */
     public function buyerList(Request $req, Application $app)
     {
+        $search_type = $req->get('search_type', null);
+        $search_keyword = $req->get('search_keyword', null);
         $cur_page = $req->get('page', 0);
 
         $limit = 50;
         $offset = $cur_page * $limit;
 
-        $buyers = Buyer::getListByOffsetAndSize($offset, $limit);
+        if ($search_type && $search_keyword) {
+            $buyers = Buyer::getListBySearchTypeAndKeyword($search_type, $search_keyword);
+        } else {
+            $buyers = Buyer::getListByOffsetAndSize($offset, $limit);
+        }
+
         return $app['twig']->render(
             'admin/buyer_list.twig',
             array(
+                'search_type' => $search_type,
+                'search_keyword' => $search_keyword,
                 'buyers' => $buyers,
                 'cur_page' => $cur_page
             )
