@@ -347,7 +347,7 @@ class ApiController implements ControllerProviderInterface
             }
             return $app->json(array('success' => ($r === true), 'message' => $message, 'coin_balance' => $user_coin_balance));
         } else {    // 비공개, 잘못된 접근
-            return $app->json(array('success' => false, 'message' => '잘못된 접근입니다. 이전 버튼을 눌러 책 목록 화면으로 이동한 뒤, 다시 시도해주세요.'));
+            return $app->json(array('success' => false, 'message' => '잘못된 요청입니다. 이전 버튼을 눌러 책 목록 화면으로 이동한 뒤, 다시 시도해주세요.'));
         }
     }
 
