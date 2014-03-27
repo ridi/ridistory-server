@@ -553,13 +553,13 @@ class ApiController implements ControllerProviderInterface
         $today = date('Y-m-d H:i:s');
         $is_ongoing = strtotime($today) >= strtotime($part['begin_date']) && strtotime($today) <= strtotime($part['end_date']);
 
-        // 연재 진행 중 여부에 따라 분기
+        // 연재중 여부에 따라 분기
         $valid = false;
         if ($is_ongoing) {
             // 연재 중인 경우 (이전 버전 및 유료화 버전의 무료 연재중)
             $valid = Part::isOpenedPart($p_id, $store_id);
         } else {
-            $is_locked = $book['is_active_lock'] && (strtotime($today) <= strtotime($part['begin_date']) && strtotime($today . ' + ' . $book['lock_day_term'] . ' days') >= $part['begin_date']);
+            $is_locked = $book['is_active_lock'] && ($part['price'] > 0) && (strtotime($today) <= strtotime($part['begin_date']) && strtotime($today . ' + ' . $book['lock_day_term'] . ' days') >= $part['begin_date']);
             $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
 
             // Uid가 유효한 경우
@@ -582,6 +582,11 @@ class ApiController implements ControllerProviderInterface
                     // 잠겨져 있는 경우 -> 구매내역 확인
                     if ($is_locked) {
                         $valid = Buyer::hasPurchasedPart($u_id, $p_id);
+                    } else {
+                        // 원래 잠금이어야 하는데, 무료라 강제 공개시킨 경우.
+                        if ($part['price'] <= 0) {
+                            $valid = true;
+                        }
                     }
                 }
             }

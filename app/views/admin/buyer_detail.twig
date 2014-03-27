@@ -29,7 +29,7 @@
                 <option value='IN_EVENT' selected>이벤트</option>
                 <option value='IN_PART_REFUND' selected>파트 환불</option>
             </select>
-            <input type='text' class='input' id='coin_add_amount' placeholder='추가할 코인 갯수를 입력해주세요.' /> <button class='btn btn-success' style='margin-top:-11px;'>추가</button>
+            <input type='text' class='input' id='coin_add_amount' placeholder='추가할 코인 갯수를 입력해주세요.' /> <button class='btn btn-success add_coin' style='margin-top:-11px;'>추가</button>
         </td>
     </tr>
     <tr>
@@ -39,7 +39,7 @@
                 <option value='OUT_WITHDRAW' selected>회수</option>
                 <option value='OUT_COIN_REFUND'>코인 환불</option>
             </select>
-            <input type='text' class='input' id='coin_reduce_amount' placeholder='감소시킬 코인 갯수를 입력해주세요.' /> <button class='btn btn-danger' style='margin-top:-11px;'>감소</button>
+            <input type='text' class='input' id='coin_reduce_amount' placeholder='감소시킬 코인 갯수를 입력해주세요.' /> <button class='btn btn-danger delete_coin' style='margin-top:-11px;'>감소</button>
         </td>
     </tr>
 </table>
@@ -101,7 +101,7 @@
                             파트구매
                         {% elseif coin.source == 'OUT_COIN_REFUND' %}
                             코인환불
-                        {% elseif coin.source == 'OUT_COIN_WITHDRAW' %}
+                        {% elseif coin.source == 'OUT_WITHDRAW' %}
                             회수
                         {% else %}
                             기타
@@ -112,6 +112,26 @@
         </table>
     </div>
 </section>
+
+<h3>구매내역</h3>
+<table class='table'>
+    <tr>
+        <td><b>구매일</b></td>
+        <td><b>파트 ID</b></td>
+        <td><b>파트 제목</b></td>
+        <td><b>가격</b></td>
+        <td><b>삭제</b></td>
+    </tr>
+    {% for purchase in purchases %}
+        <tr>
+            <td>{{ purchase.timestamp }}</td>
+            <td>{{ purchase.p_id }}</td>
+            <td><a href="/admin/part/{{ purchase.p_id }}">{{ purchase.title }}</td>
+            <td>{{ purchase.coin_amount }}</td>
+            <td><button class='btn btn-danger delete_purchase' style='margin-top:-5px;' value='{{ purchase.id }}'>삭제</button></td>
+        </tr>
+    {% endfor %}
+</table>
 
 <div class='form-actions'>
     <button class='btn btn-cancel'>목록으로</button>
@@ -129,7 +149,7 @@
                 return false;
             });
 
-            $('.btn-success').click(function() {
+            $('.add_coin').click(function() {
                 var coin_source = $('#coin_add_source').val();
                 var coin_amount = $('#coin_add_amount').val();
                 if (confirm('코인을 추가하시겠습니까?')) {
@@ -144,7 +164,7 @@
                 return false;
             });
 
-            $('.btn-danger').click(function() {
+            $('.delete_coin').click(function() {
                 var coin_source = $('#coin_reduce_source').val();
                 var coin_amount = $('#coin_reduce_amount').val();
 
@@ -162,6 +182,28 @@
                     }
                     return false;
                 }
+            });
+
+            $('.delete_purchase').click(function() {
+                var ph_id = $(this).val();
+                if (confirm('정말로 삭제하시겠습니까?')) {
+                    var refund_coin = 1;
+                    if (confirm('회원에게 해당 파트 구매에 사용한 코인을 반환하시겠습니까?\n\n확인: 코인 반환\n취소: 코인 회수')) {
+                        // 코인 반환
+                        refund_coin = 1;
+                    } else {
+                        refund_coin = 0;
+                    }
+
+                    $.post('/admin/buyer/{{ buyer.id }}/purchase_history/delete', {'ph_id': ph_id, 'refund_coin': refund_coin}, function(r) {
+                        if (r.error) {
+                            alert(r.error);
+                        } else {
+                            location.href = '/admin/buyer/' + {{ buyer.id}};
+                        }
+                    });
+                }
+                return false;
             });
         });
     </script>

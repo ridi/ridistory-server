@@ -96,7 +96,7 @@ EOT;
 
         //TODO: 추후에 Purchase Status API가 안정화되면, Purchase Status API로 교체
         // Signature 검증
-        $iab_public_key =  "-----BEGIN PUBLIC KEY-----\n".chunk_split(InAppBilling::IAB_PUBLIC_KEY, 64,"\n").'-----END PUBLIC KEY-----';
+        $iab_public_key =  "-----BEGIN PUBLIC KEY-----\n" . chunk_split(InAppBilling::IAB_PUBLIC_KEY, 64,"\n") . '-----END PUBLIC KEY-----';
         $iab_public_key = openssl_get_publickey($iab_public_key);
         $signature = base64_decode($signature);
         $is_valid_iab = openssl_verify($values['purchase_data'], $signature, $iab_public_key);
