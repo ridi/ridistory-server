@@ -50,7 +50,7 @@ if (!$app['debug']) {
         new SentryServiceProvider,
         array(
             'sentry.options' => array(
-                'dsn' => 'https://0b1148ed3b11405596ba90b4a26bc016:f17fee722aca41f896893fd8ded83a2b@app.getsentry.com/11327',
+	            'dsn' => 'https://525c32e7d6884fad9e2b9c8315d8340d:f44cc61cfc284212a3056602ffe964db@app.getsentry.com/21581',
                 // ... and other sentry options
             )
         )
