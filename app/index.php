@@ -15,7 +15,7 @@ require 'conf.php';
 
 $app->register(new Silex\Provider\DoctrineServiceProvider());
 $app->register(new Silex\Provider\SessionServiceProvider());
-//$app->register(new Silex\Provider\SecurityServiceProvider());
+$app->register(new Silex\Provider\SecurityServiceProvider());
 $app->register(new Story\Provider\CacheServiceProvider());
 
 require_once 'controllers/admin/book.php';
