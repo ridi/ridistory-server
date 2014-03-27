@@ -322,7 +322,7 @@ class ApiController implements ControllerProviderInterface
                 } else {
                     $ph_id = Buyer::buyPart($u_id, $p_id, $part['price']);
                     if ($ph_id && $user_coin_balance >= $part['price']) {
-                        $r = Buyer::useCoin($u_id, $part['price'], Buyer::COIN_SOURCE_OUT_USE, $ph_id);
+                        $r = Buyer::useCoin($u_id, $part['price'], Buyer::COIN_SOURCE_OUT_BUY_PART, $ph_id);
                         if ($r === true) {
                             $message = '유료(성공)';
                             $user_coin_balance -= $part['price'];

@@ -26,7 +26,8 @@
         <th>코인 추가</th>
         <td>
             <select id='coin_add_source'>
-                <option value='EVENT' selected>이벤트</option>
+                <option value='IN_EVENT' selected>이벤트</option>
+                <option value='IN_PART_REFUND' selected>파트 환불</option>
             </select>
             <input type='text' class='input' id='coin_add_amount' placeholder='추가할 코인 갯수를 입력해주세요.' /> <button class='btn btn-success' style='margin-top:-11px;'>추가</button>
         </td>
@@ -35,8 +36,8 @@
         <th>코인 감소</th>
         <td>
             <select id='coin_reduce_source'>
-                <option value='WITHDRAW' selected>회수</option>
-                <option value='REFUND'>환불</option>
+                <option value='OUT_WITHDRAW' selected>회수</option>
+                <option value='OUT_COIN_REFUND'>코인 환불</option>
             </select>
             <input type='text' class='input' id='coin_reduce_amount' placeholder='감소시킬 코인 갯수를 입력해주세요.' /> <button class='btn btn-danger' style='margin-top:-11px;'>감소</button>
         </td>
@@ -57,12 +58,14 @@
                     <td>{{ coin.timestamp }}</td>
                     <td>{{ coin.amount }}</td>
                     <td>
-                        {% if coin.source == 'INAPP'  %}
+                        {% if coin.source == 'IN_INAPP'  %}
                             인앱결제
-                        {% elseif coin.source == 'RIDI' %}
+                        {% elseif coin.source == 'IN_RIDI' %}
                             리디캐시
-                        {% elseif coin.source == 'EVENT' %}
+                        {% elseif coin.source == 'IN_EVENT' %}
                             이벤트
+                        {% elseif coin.source == 'IN_PART_REFUND' %}
+                            파트환불
                         {% else %}
                             기타
                         {% endif %}
@@ -94,11 +97,11 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if coin.source == 'USE'  %}
-                            책구매
-                        {% elseif coin.source == 'REFUND' %}
-                            환불
-                        {% elseif coin.source == 'WITHDRAW' %}
+                        {% if coin.source == 'OUT_BUY_PART'  %}
+                            파트구매
+                        {% elseif coin.source == 'OUT_COIN_REFUND' %}
+                            코인환불
+                        {% elseif coin.source == 'OUT_COIN_WITHDRAW' %}
                             회수
                         {% else %}
                             기타
@@ -110,12 +113,21 @@
     </div>
 </section>
 
+<div class='form-actions'>
+    <button class='btn btn-cancel'>목록으로</button>
+</div>
+
 {% endblock %}
 
 {% block script %}
     <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
     <script>
         $(function() {
+
+            $('.btn-cancel').click(function() {
+                location.href = '/admin/buyer/list';
+                return false;
+            });
 
             $('.btn-success').click(function() {
                 var coin_source = $('#coin_add_source').val();

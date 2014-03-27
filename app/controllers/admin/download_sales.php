@@ -20,11 +20,11 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
     public function downloadSalesList(Request $req, Application $app)
     {
-        $begin_date = $req->get('begin_date');
-        $end_date = $req->get('end_date');
+        $search_begin_date = $req->get('begin_date');
+        $search_end_date = $req->get('end_date');
         $search_date = array(
-            'begin_date' => $begin_date,
-            'end_date' => $end_date
+            'begin_date' => $search_begin_date,
+            'end_date' => $search_end_date
         );
 
         $total_sales = 0;
@@ -32,7 +32,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
         $total_free_download = 0;
         $total_charged_download = 0;
 
-        $download_sales = DownloadSales::getWholeList($begin_date, $end_date);
+        $download_sales = DownloadSales::getWholeList($search_begin_date, $search_end_date);
 
         foreach ($download_sales as $ds) {
             // 헤더에 들어갈 정보 계산
@@ -41,6 +41,8 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
             $total_free_download += $ds['free_download'];
             $total_charged_download += $ds['charged_download'];
         }
+
+        $total_free_download = count($download_sales);
 
         $app['twig']->addFilter(
             new \Twig_SimpleFilter('simple_date_format', function($date) {
@@ -51,26 +53,30 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
         $app['twig']->addFunction(
             new Twig_SimpleFunction('get_status', function ($begin_date, $end_date, $end_action_flag, $open_part_count = 0, $total_part_count = 0) {
                 $today = date('Y-m-d H:i:s');
-                $today = strtotime($today);
-                $is_ongoing = strtotime($begin_date) <= $today && strtotime($end_date) >= $today;
+                $is_ongoing = strtotime($begin_date) <= strtotime($today) && strtotime($end_date) >= strtotime($today);
                 if ($is_ongoing) {
                     $status = "연재중(" . $open_part_count . "/" . $total_part_count . ")";
                 } else {
-                    switch ($end_action_flag) {
-                        case Book::ALL_FREE:
-                            $status = "완결(모두 공개)";
-                            break;
-                        case Book::ALL_CHARGED:
-                            $status = "완결(모두 잠금)";
-                            break;
-                        case Book::SALES_CLOSED:
-                            $status = "판매종료(파트 비공개";
-                            break;
-                        case Book::ALL_CLOSED:
-                            $status = "게시종료(전체 비공개)";
-                            break;
-                        default:
-                            $status = "";
+                    $is_completed = strtotime($end_date) < strtotime($today);
+                    if ($is_completed) {
+                        switch ($end_action_flag) {
+                            case Book::ALL_FREE:
+                                $status = "완결(모두 공개)";
+                                break;
+                            case Book::ALL_CHARGED:
+                                $status = "완결(모두 잠금)";
+                                break;
+                            case Book::SALES_CLOSED:
+                                $status = "판매종료(파트 비공개)";
+                                break;
+                            case Book::ALL_CLOSED:
+                                $status = "게시종료(전체 비공개)";
+                                break;
+                            default:
+                                $status = "";
+                        }
+                    } else {
+                        $status = "연재 시작 대기";
                     }
                 }
 
