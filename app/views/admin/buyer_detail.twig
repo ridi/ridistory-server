@@ -117,6 +117,8 @@
 <table class='table'>
     <tr>
         <td><b>구매일</b></td>
+        <td><b>책 ID</b></td>
+        <td><b>책 제목</b></td>
         <td><b>파트 ID</b></td>
         <td><b>파트 제목</b></td>
         <td><b>가격</b></td>
@@ -125,8 +127,10 @@
     {% for purchase in purchases %}
         <tr>
             <td>{{ purchase.timestamp }}</td>
+            <td>{{ purchase.b_id }}</td>
+            <td><a href='/admin/book/{{ purchase.b_id }}'>{{ purchase.b_title }}</a></td>
             <td>{{ purchase.p_id }}</td>
-            <td><a href="/admin/part/{{ purchase.p_id }}">{{ purchase.title }}</td>
+            <td><a href='/admin/part/{{ purchase.p_id }}'>{{ purchase.p_seq }}. {{ purchase.p_title }}</a></td>
             <td>{{ purchase.coin_amount }}</td>
             <td><button class='btn btn-danger delete_purchase' style='margin-top:-5px;' value='{{ purchase.id }}'>삭제</button></td>
         </tr>

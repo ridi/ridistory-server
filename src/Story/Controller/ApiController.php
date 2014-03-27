@@ -284,6 +284,7 @@ class ApiController implements ControllerProviderInterface
         }
 
         $p_id = $req->get('p_id');
+        $is_free_request = $req->get('free_request');
         $part = Part::get($p_id);
         $book = Book::get($part['b_id']);
 
@@ -291,10 +292,10 @@ class ApiController implements ControllerProviderInterface
 
         $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
 
-        $is_free = (!$is_completed && strtotime($part['begin_date']) <= strtotime($today))
+        $is_free = (!$is_completed && (strtotime($part['begin_date']) <= strtotime($today) || $part['price'] == 0))
             || ($is_completed && (($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] == 0) || $book['end_action_flag'] == Book::ALL_FREE));
 
-        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . ' + ' . $book['lock_day_term'] . ' days')))
+        $is_charged = (!$is_completed && (strtotime($part['begin_date']) > strtotime($today) && strtotime($part['begin_date']) <= strtotime($today . ' + ' . $book['lock_day_term'] . ' days')) && $part['price'] > 0)
             || ($is_completed && ($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] > 0));
 
 
@@ -320,6 +321,11 @@ class ApiController implements ControllerProviderInterface
                     $message = '구매내역 존재(성공)';
                     $r = true;
                 } else {
+                    if ($is_free_request) {
+                        // 유료책인데, 무료책으로 요청이 들어온 경우
+                        throw new Exception('이 책은 유료 책으로 전환되었습니다. 이전 버튼을 누른 뒤, 해당 책으로 다시 들어와주세요.');
+                    }
+
                     $ph_id = Buyer::buyPart($u_id, $p_id, $part['price']);
                     if ($ph_id && $user_coin_balance >= $part['price']) {
                         $r = Buyer::useCoin($u_id, $part['price'], Buyer::COIN_SOURCE_OUT_BUY_PART, $ph_id);
@@ -327,10 +333,10 @@ class ApiController implements ControllerProviderInterface
                             $message = '유료(성공)';
                             $user_coin_balance -= $part['price'];
                         } else {
-                            throw new Exception('코인 결제 도중 오류가 발생하였습니다.');
+                            throw new Exception('코인 결제 도중에 오류가 발생하였습니다.');
                         }
                     } else {
-                        throw new Exception(($ph_id > 0) ? '코인이 부족합니다.' : '구매 처리 도중 오류가 발생하였습니다.');
+                        throw new Exception(($ph_id > 0) ? '코인이 부족합니다.' : '구매를 진행하는 도중에 오류가 발생하였습니다.');
                     }
                 }
                 $app['db']->commit();
@@ -341,7 +347,7 @@ class ApiController implements ControllerProviderInterface
             }
             return $app->json(array('success' => ($r === true), 'message' => $message, 'coin_balance' => $user_coin_balance));
         } else {    // 비공개, 잘못된 접근
-            return $app->json(array('success' => false, 'message' => 'Access Denied'));
+            return $app->json(array('success' => false, 'message' => '잘못된 접근입니다. 이전 버튼을 눌러 책 목록 화면으로 이동한 뒤, 다시 시도해주세요.'));
         }
     }
 
