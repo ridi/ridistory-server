@@ -314,6 +314,7 @@ button.default_btn {
   background: white;
   line-height: 1.6em;
   font-size: 13px;
+  word-break: break-all;
 }
 #story section.main {
   width: 100%;

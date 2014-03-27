@@ -2,7 +2,7 @@
 
 {% block container %}
 <section class='row'>
-    <div class='span6'>
+    <div class='span4'>
     <h3>기기등록 ({{ total_registered }})</h3>
     <table class='table'>
     	<tr>
@@ -21,17 +21,19 @@
         {% endfor %}
     </table>
     </div>
-    <div class='span6'>
+    <div class='span8'>
     <h3>다운로드 ({{ total_downloaded }})</h3>
     <table class='table'>
     	<tr>
-    		<td><b>TITLE</b></td>
+            <td><b>책제목</b></td>
+    		<td><b>파트제목</b></td>
     		<td><b>COUNT</b></td>
     	</tr>
-        {% for p in download_stat %}
+        {% for ds in download_stat %}
         <tr>
-            <td>{{ p.title }}</td>
-            <td>{{ p.download_count }}</td>
+            <td>{{ ds.b_title }}</td>
+            <td>{{ ds.p_title }}</td>
+            <td>{{ ds.download_count }}</td>
         </tr>
         {% endfor %}
     </table>
@@ -99,12 +101,14 @@
         <h3>댓글이 많은 파트</h3>
         <table class='table'>
             <tr>
+               <th>책</th>
                <th>파트</th> 
                <th>댓글수</th> 
             </tr>
             {% for p in most_comment_parts %}
             <tr>
-                <td><a href='#' data-toggle='tooltip' title='{{ p.title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
+                <td>{{ p.book_title }}</td>
+                <td><a href='#' data-toggle='tooltip' title='{{ p.book_title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
                 <td>{{ p.num_comment }}</td>
             </tr>
             {% endfor %}
@@ -114,12 +118,14 @@
         <h3>댓글이 적은 파트</h3>
         <table class='table'>
             <tr>
+               <th>책</th>
                <th>파트</th> 
                <th>댓글수</th> 
             </tr>
             {% for p in least_comment_parts %}
             <tr>
-                <td><a href='#' data-toggle='tooltip' title='{{ p.title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
+                <td>{{ p.book_title }}</td>
+                <td><a href='#' data-toggle='tooltip' title='{{ p.book_title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
                 <td>{{ p.num_comment }}</td>
             </tr>
             {% endfor %}

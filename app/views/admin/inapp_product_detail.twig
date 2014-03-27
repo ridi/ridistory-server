@@ -1,0 +1,60 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <form action="/admin/inapp_product/{{ inapp_product.id }}/edit" method='post'>
+        <table class='table'>
+            <tr>
+                <th>SKU</th>
+                <td><input type='text' class='input-xlarge' name='sku' value='{{ inapp_product.sku }}' /></td>
+            </tr>
+            <tr>
+                <th>충전코인수</th>
+                <td><input type='text' class='input-xlarge' name='coin_amount' value='{{ inapp_product.coin_amount }}' /></td>
+            </tr>
+            <tr>
+                <th>보너스코인수</th>
+                <td><input type='text' class='input-xlarge' name='bonus_coin_amount' value='{{ inapp_product.bonus_coin_amount }}' /></td>
+            </tr>
+            <tr>
+                <th>판매 가격</th>
+                <td><input type='text' class='input-xlarge' name='price' value='{{ inapp_product.price }}' /></td>
+            </tr>
+            <tr>
+                <td colspan="2">* <span style="color:#FF0000">SKU</span>는 Google Developer Console 에 입력된 SKU 이름과 <b><u>동일</u></b>해야합니다.</td>
+            </tr>
+        </table>
+
+        <div class='form-actions'>
+            <button type='submit' class='btn btn-success'>수정 완료</button>
+            <button class='btn btn-cancel'>목록으로</button>
+            <button class='btn btn-danger pull-right'>삭제</button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+    <script>
+        $(function() {
+
+            $('.btn-cancel').click(function() {
+                location.href = '/admin/inapp_product/list';
+                return false;
+            });
+
+            $('.btn-danger').click(function() {
+                if (confirm('삭제하시겠습니까?')) {
+                    $.post('/admin/inapp_product/{{ inapp_product.id }}/delete', function(r) {
+                        if (r.error) {
+                            alert(r.error);
+                        } else {
+                            location.href = '/admin/inapp_product/list';
+                        }
+                    })
+                }
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

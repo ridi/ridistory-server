@@ -1,0 +1,94 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+    <div class="well">
+        <div style="float: left;">
+            <h3>매출 확인</h3>
+            <button class="btn" id="all_download_sales_btn">파트 포함 전체 매출 목록 확인 (준비중)</button>
+        </div>
+        <div style="float: right; margin-top: 15px;">
+            <blockquote>
+                <p>총 판매액: <b>{{ (header.total_sales * 90)|number_format(0, '', ',') }}원</b></p>
+                <p>총 정산액: <b>{{ header.total_sales_royalty|number_format(0, '', ',') }}원</b></p>
+                <p>누적 무료 다운로드: <b>{{ header.total_free_download }}건</b></p>
+                <p>누적 유료 다운로드: <b>{{ header.total_charged_download }}건</b></p>
+            </blockquote>
+        </div>
+
+        <div style="clear: both;"></div>
+    </div>
+
+    <form>
+        <div class="well form-inline">
+            <h4>기간 설정</h4>
+            <input type='text' class='input-medium' name='begin_date' value='{{ search_date.begin_date }}' placeholder='0000-00-00' />
+            ~
+            <input type='text' class='input-medium' name='end_date' value='{{ search_date.end_date }}' placeholder='0000-00-00' />
+            <button class="btn">조회</button>
+            <div style='margin-top: 15px;'>
+                * 기간을 입력하지 않으시면, 전체 매출이 조회됩니다. (예. 끝나는 날짜를 입력하지 않으시면, 현재 시간의 매출까지 조회됩니다.)<br />
+                * 시작 날짜의 시간 기준은 0시 0분 0초이며, 끝나는 날짜는 23시 59분 59초입니다.
+            </div>
+        </div>
+    </form>
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th class='span1'>책 ID</th>
+            <th>상품명</th>
+            <th>CP</th>
+            <th>정산율</th>
+            <th>상태</th>
+            <th>연재시작일</th>
+            <th>무료다운</th>
+            <th>유료다운</th>
+            <th>판매액</th>
+            <th>정산액</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for ds in download_sales %}
+            <tr data-bid='{{ ds.b_id }}'>
+                <td>{{ ds.b_id }}</td>
+                <td>{{ ds.title }}</td>
+                <td>{{ ds.cp_name }}</td>
+                <td>{{ ds.royalty_percent }}</td>
+                <td>{{ get_status(ds.begin_date, ds.end_date, ds.end_action_flag, ds.open_part_count, ds.total_part_count) }}</td>
+                <td>{{ ds.begin_date|simple_date_format }}</td>
+                <td>{{ ds.free_download }}</td>
+                <td>{{ ds.charged_download }}</td>
+                <td>{{ (ds.total_sales * 90)|number_format(0, '', ',') }}</td>
+                <td>{{ (ds.total_sales * (ds.royalty_percent/100) * 90)|number_format(0, '', ',') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+
+            $('#all_download_sales_btn').click(function() {
+                //TODO: Depth 없이 파트 포함 매출을 쫙 보여주는 페이지가 필요.
+            });
+
+            $('#js_tbody tr').click(function() {
+                var b_id = $(this).data('bid');
+                var url = '/admin/download_sales/' + b_id;
+                url += '?begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}';
+                location.href = url;
+            });
+
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}

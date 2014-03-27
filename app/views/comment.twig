@@ -77,6 +77,10 @@ $(function() {
     	        alert('닉네임과 댓글을 입력해 주세요');
     	    	return false;
         	}
+            if ($.trim(nickname) == '리디스토리') {
+                alert('리디스토리는 닉네임으로 사용하실 수 없습니다.');
+                return false;
+            }
         	if ($.trim(comment).length > MAX_COMMENT) {
         	    alert('댓글은 ' + MAX_COMMENT + '자 이내로 입력해 주세요.');
         	    return false;

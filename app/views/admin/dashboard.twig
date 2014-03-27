@@ -47,8 +47,10 @@
         		
         		if (payload_length >= 256) {
         			$('#js_message').css('color', 'red');
+                    $('.btn-danger').attr("disabled", "disabled");
         		} else {
         			$('#js_message').css('color', 'black');
+                    $('.btn-danger').removeAttr("disabled");
         		}
         	});
         });

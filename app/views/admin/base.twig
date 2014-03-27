@@ -23,6 +23,12 @@
                 color: white;
                 letter-spacing: -0.1ex;
                 text-shadow: 0 1px 1px #666;
+                float: left;
+            }
+            .header .info {
+                margin-top: 20px;
+                float: right;
+                display: none;
             }
         </style>
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
@@ -30,7 +36,10 @@
     <body>
         <header class="header">
             <div class="container">
-            <h1>RIDI Story CMS</h1>
+            <h1 onclick="location.href='/admin'">RIDI Story CMS</h1>
+            <div class="info" id="gnb_btn_area">
+                <button class="btn" onclick="location.href='/admin/logout'">로그아웃</button>
+            </div>
             {% block header %}
             {% endblock %}
             </div>
@@ -44,32 +53,39 @@
 						<ul class="nav">
 							<li class="span2">
 								<a href="/admin/book/list"><i class='icon-book'></i> 연재물 관리</a>
-								<a href="/admin/storyplusbook/list"><i class='icon-book'></i> 스토리+ 책 관리</a>
+								<a href="/admin/storyplusbook/list"><i class='icon-book'></i> <s>스토리+ 책 관리</s></a>
+                                <a href="/admin/banner/list"><i class='icon-th-list'></i> <s>배너 관리</s></a>
 							</li>
 							<li class="span2">
 							    <a href="/admin/notice/list"><i class='icon-th-list'></i> 공지사항 관리</a>
-                                <a href="/admin/banner/list"><i class='icon-th-list'></i> 배너 관리</a>
+                                <a href="/admin/comment/list"><i class='icon-comment'></i> 리뷰 관리</a>
+                                <a href="/admin/push/dashboard"><i class='icon-star'></i> 푸쉬 메세지 발송</a>
 							</li>
+                            <li class="span2">
+                                <a href="/admin/inapp_product/list"><i class='icon-gift'></i> 인앱상품 관리</a>
+                                <a href="/admin/buyer/list"><i class='icon-user'></i> 회원 관리</a>
+                                <a href="/admin/cp_account/list"><i class='icon-user'></i> CP 관리</a>
+                            </li>
+                            <li class="span2">
+                                <a href="/admin/download_sales/list"><i class='icon-gift'></i> 매출 확인</a>
+                                <a href="/admin/coin_sales/list"><i class='icon-gift'></i> 코인 구매내역</a>
+                            </li>
                             <li class="span2">
                                 <a href="/admin/stats"><i class='icon-signal'></i> 통계</a>
                                 <a href="/admin/stats_like"><i class='icon-signal'></i> 좋아요 통계</a>
                             </li>
-							<li class="span2">
-							    <a href="/admin/comment/list"><i class='icon-comment'></i> 리뷰 관리</a>
-							    <a href="/admin/push/dashboard"><i class='icon-star'></i> 푸쉬 메세지 발송</a>
-							</li>
 						</ul>
 					</div>
 				</div>
 			</div>
-			{% if alert is defined %}
-				{% for key in alert|keys %}
-				<div class='alert alert-{{ key }}'>
-                    <button class="close" data-dismiss="alert">&times;</button>
-				    {{ alert[key] }}
-    		    </div>
-				{% endfor %}
-			{% endif %}
+            {% for alert in app.session.getFlashBag.get('alert') %}
+                {% for key in alert|keys %}
+                    <div class='alert alert-{{ key }}'>
+                        <button class="close" data-dismiss="alert">&times;</button>
+                        {{ alert[key] }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
             
             {% block container %}
             {% endblock %}

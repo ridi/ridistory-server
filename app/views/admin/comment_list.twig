@@ -1,10 +1,23 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
+<form>
+    <div class="well form-inline">
+        <h4>책 제목 검색</h4>
+        <select name='search_type'>
+            <option value='book_title'>책 제목</option>
+            <option value='nickname'>닉네임</option>
+        </select>
+        <input type='text' class='input-xlarge' name='search_keyword' value='{{ search_keyword }}' placeholder='검색어를 입력해주세요.' />
+        <button class="btn">검색</button>
+    </div>
+</form>
+
 <table class='table'>
 	<thead>
 		<tr>
-			<th class='span1'>파트 ID</th>
+            <th class='span2'>제목</th>
+			<th class='span1'>회차</th>
 			<th class='span2'>닉네임</th>
 			<th>Comment</th>
 			<th class='span2'>Timestamp</th>
@@ -14,7 +27,8 @@
 	<tbody>
 		{% for comment in comments %}
 		<tr>
-			<td><a href="/admin/part/{{ comment.p_id }}">{{ comment.p_id }}</a></td>
+            <td>{{ comment.title }}</td>
+			<td><a href="/admin/part/{{ comment.p_id }}">{{ comment.seq }}</a></td>
 			<td>{{ comment.nickname }}<br />{{ comment.ip|long2ip }}</td>
 			<td>{{ comment.comment }}</td>
 			<td>{{ comment.timestamp }}</td>
@@ -25,7 +39,7 @@
 </table>
 <ul class="pager">
   <li class="next">
-    <a href="/admin/comment/list?page={{ cur_page + 1 }}">Older &rarr;</a>
+    <a href="/admin/comment/list?page={{ cur_page + 1 }}&search_type={{ search_type }}&search_keyword={{ search_keyword }}">Older &rarr;</a>
   </li>
 </ul>
 {% endblock %}

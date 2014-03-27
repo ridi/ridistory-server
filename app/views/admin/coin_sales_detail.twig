@@ -1,0 +1,84 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <table class='table'>
+        <colgroup>
+            <col class="span1">
+            <col class="span7">
+        </colgroup>
+
+        <tr>
+            <th>결제 번호</th>
+            <td>{{ coin_sale.id }}</td>
+        </tr>
+        <tr>
+            <th>유저</th>
+            <td><a href='/admin/buyer/{{ coin_sale.u_id }}'>{{ coin_sale.u_id }}</a> ({{ coin_sale.google_id }})</td>
+        </tr>
+        <tr>
+            <th>구글 주문번호</th>
+            <td>{{ coin_sale.order_id }}</td>
+        </tr>
+        <tr>
+            <th>SKU</th>
+            <td>{{ coin_sale.sku }}</td>
+        </tr>
+        <tr>
+            <th>결제 시간</th>
+            <td>
+                {{ coin_sale.purchase_time }}
+            </td>
+        </tr>
+        <tr>
+            <th>결과</th>
+            <td>
+                {% if coin_sale.is_succeeded == 0 %}
+                    <span style="color: #ff0000">오류</span>
+                {% else %}
+                    정상
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Payload</th>
+            <td>
+                {{ coin_sale.payload }}
+            </td>
+        </tr>
+    </table>
+
+    <table class='table'>
+        <thead>
+        <tr>
+            <th>Purchase Token</th>
+            <th>Purchase Data</th>
+            <th>Signature</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.purchase_token }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.purchase_data }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.signature }}</textarea></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class='form-actions'>
+        <button class='btn btn-cancel'>목록으로</button>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+    <script>
+        $(function() {
+
+            $('.btn-cancel').click(function() {
+                location.href = '/admin/coin_sales/list';
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

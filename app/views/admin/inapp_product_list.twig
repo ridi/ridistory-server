@@ -1,0 +1,51 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th>SKU</th>
+            <th>충전되는 코인 갯수</th>
+            <th>보너스 코인 갯수</th>
+            <th>총 판매 횟수</th>
+            <th>판매 가격</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for inapp in inapp_list %}
+            <tr data-iabid='{{ inapp.id }}'>
+                <td>{{ inapp.sku }}</td>
+                <td>{{ inapp.coin_amount }}</td>
+                <td>{{ inapp.bonus_coin_amount }}</td>
+                <td>{{ inapp.total_sales_count }}</td>
+                <td>{{ inapp.price }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button class='btn btn-primary' id='js_add'>추가</button>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#js_add').click(function() {
+                location.href = '/admin/inapp_product/add';
+            });
+
+            $('#js_tbody tr').click(function() {
+                var iab_id = $(this).data('iabid');
+                location.href = '/admin/inapp_product/' + iab_id;
+            });
+
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}

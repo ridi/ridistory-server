@@ -1,0 +1,197 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <form action="/admin/cp_account/{{ cp_account.id }}/edit" method='post'>
+        <table class='table'>
+            <colgroup>
+                <col class="span1">
+                <col class="span7">
+            </colgroup>
+            <tr>
+                <th>CP 로그인</th>
+                <td colspan='3'><a class='cp_login'>[CP 로그인(클릭)]</a></td>
+            </tr>
+            <tr>
+                <th>CP ID</th>
+                <td colspan='3'><input type='text' class='input-small' name='id' value='{{ cp_account.id }}' disabled /></td>
+            </tr>
+            <tr>
+                <th>CP 계정명</th>
+                <td colspan='3'><input type='text' class='input-xxlarge' name='name' value='{{ cp_account.name }}' /></td>
+            </tr>
+            <tr>
+                <th>담당자1</th>
+                <td><input type='text' class='input' name='staff1_name' placeholder='성함' value='{{ cp_account.staff1_name }}' /></td>
+                <td><input type='text' class='input' name='staff1_phone' placeholder='연락처' value='{{ cp_account.staff1_phone }}' /></td>
+                <td><input type='text' class='input' name='staff1_email' placeholder='E-mail' value='{{ cp_account.staff1_email }}' /></td>
+            </tr>
+            <tr>
+                <th>담당자2</th>
+                <td><input type='text' class='input' name='staff2_name' placeholder='성함' value='{{ cp_account.staff2_name }}' /></td>
+                <td><input type='text' class='input' name='staff2_phone' placeholder='연락처' value='{{ cp_account.staff2_phone }}' /></td>
+                <td><input type='text' class='input' name='staff2_email' placeholder='E-mail' value='{{ cp_account.staff2_email }}' /></td>
+            </tr>
+            <tr>
+                <th>CP 사이트 ID</th>
+                <td colspan='3'><input type='text' class='input-xxlarge' name='cp_site_id' value='{{ cp_account.cp_site_id }}' /></td>
+            </tr>
+            <tr>
+                <th>CP 사이트 비밀번호</th>
+                <td colspan='3'><input type='password' class='input-xxlarge' name='password' value='{{ cp_account.password }}' /></td>
+            </tr>
+            <tr>
+                <th>CP 형태</th>
+                <td>
+                    <select class='form-control' name='cp_type'>
+                        <option value='Private'>개인</option>
+                        <option value='Publisher'>출판사</option>
+                        <option value='AG'>AG</option>
+                        <option value='Closed'>폐업</option>
+                        <option value='ETC'>기타</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>계약일</th>
+                <td colspan='3'><input type='text' class='input' name='contract_date' placeholder='yyyymmdd' value='{{ cp_account.contract_date }}' /></td>
+            </tr>
+            <tr>
+                <th>만료일</th>
+                <td colspan='3'><input type='text' class='input' name='end_date' placeholder='yyyymmdd' value='{{ cp_account.end_date }}' /></td>
+            </tr>
+            <tr>
+                <th>자동연장</th>
+                <td colspan='3'><input type='text' class='input-mini' name='auto_contract_renew_year' value='{{ cp_account.auto_contract_renew_year }}' /> 년</td>
+            </tr>
+            <tr>
+                <th>비고</th>
+                <td colspan='3'><textarea rows='3' style='width: 600px' name='etc_note'>{{ cp_account.etc_note }}</textarea></td>
+            </tr>
+            <tr>
+                <th rowspan='2'>사업자정보</th>
+                <td><input type='text' class='input' name='company_num' placeholder='사업자등록번호' value='{{ cp_account.company_num }}' /></td>
+                <td colspan='2'><input type='text' class='input' name='company_name' placeholder='사업자명' value='{{ cp_account.company_name }}' /></td>
+            </tr>
+            <tr>
+                <td><input type='text' class='input' name='company_ceo' placeholder='대표자' value='{{ cp_account.company_ceo }}' /></td>
+                <td><input type='text' class='input' name='company_doing' placeholder='업태' value='{{ cp_account.company_doing }}' /></td>
+                <td><input type='text' class='input' name='company_doing_type' placeholder='종목' value='{{ cp_account.company_doing_type }}' /></td>
+            </tr>
+            <tr>
+                <th rowspan='2'>주소</th>
+                <td colspan='3'><input type='text' class='input' name='zip_code' placeholder='우편번호 (000-000)' value='{{ cp_account.zip_code }}' /></td>
+            </tr>
+            <tr>
+                <td colspan='3'><input type='text' class='input-xxlarge' name='address' placeholder='주소' value='{{ cp_account.address }}' /></td>
+            </tr>
+            <tr>
+                <th>정산담당자</th>
+                <td><input type='text' class='input' name='calculate_staff_name' placeholder='성함' value='{{ cp_account.calculate_staff_name }}' /></td>
+                <td><input type='text' class='input' name='calculate_staff_phone' placeholder='연락처' value='{{ cp_account.calculate_staff_phone }}' /></td>
+                <td><input type='text' class='input' name='calculate_staff_email' placeholder='E-mail' value='{{ cp_account.calculate_staff_email }}' /></td>
+            </tr>
+            <tr>
+                <th rowspan='3'>정산계좌</th>
+                <td colspan='3'><input type='text' class='input' name='calculate_bank' placeholder='은행' value='{{ cp_account.calculate_bank }}' /></td>
+            </tr>
+            <tr>
+                <td colspan='3'><input type='text' class='input-xlarge' name='calculate_account_num' placeholder='계좌번호' value='{{ cp_account.calculate_account_num }}' /></td>
+            </tr>
+            <tr>
+                <td colspan='3'><input type='text' class='input' name='calculate_account_holder' placeholder='예금주' value='{{ cp_account.calculate_account_holder }}' /></td>
+            </tr>
+            <tr>
+                <th>리디북스CP</th>
+                <td colspan='3'>
+                    <label class="checkbox">
+                        <input type='checkbox' name='is_ridibooks_cp' {{ cp_account.is_ridibooks_cp ? 'checked="checked"' }}>리디북스 CP일 경우에 체크</input>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <th>작가도서</th>
+                <td colspan='3'>
+                    <table class='table table-hover table-striped table-condensed'>
+                        <thead>
+                        <tr>
+                            <th class='span2'>책 ID</th>
+                            <th class='span3'>제목</th>
+                            <th class='span2'>정산율</th>
+                            <th class='span3'>시작일</th>
+                            <th class='span3'>종료일</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for book in books %}
+                            <tr data-cid='{{ book.id }}'>
+                                <td>{{ book.id }}</td>
+                                <td><a href='/admin/book/{{ book.id }}' >{{ book.title }} </a></td>
+                                <td>{{ book.royalty_percent }}</td>
+                                <td>{{ book.begin_date }}</td>
+                                <td>{{ book.end_date }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <div class='form-actions'>
+            <button type='submit' class='btn btn-success'>수정 완료</button>
+            <button class='btn btn-cancel'>목록으로</button>
+            <button class='btn btn-danger pull-right'>삭제</button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+    <script>
+        $(function() {
+            $('select option')
+                    .filter('[value="{{ cp_account.cp_type }}"]')
+                    .prop('selected', true);
+
+            $('.btn-cancel').click(function() {
+                location.href = '/admin/cp_account/list';
+                return false;
+            });
+
+            $('.btn-danger').click(function() {
+                if (confirm('삭제하시겠습니까?')) {
+                    $.post('/admin/cp_account/{{ cp_account.id }}/delete', function(r) {
+                        if (r.error) {
+                            alert(r.error);
+                        } else {
+                            location.href = '/admin/cp_account/list';
+                        }
+                    })
+                }
+                return false;
+            });
+
+            $('.cp_login').click(function() {
+                var site_id = '{{ cp_account.cp_site_id }}';
+                var pw = '{{ cp_account.password }}';
+
+                $.post('/cp_admin/login/check', {id: site_id, pw: pw}, function(r) {
+                    if (r.error) {
+                        alert(r.error);
+                    } else {
+                        location.href = '/cp_admin';
+                    }
+                })
+                return false;
+            });
+
+            $('.cp_login').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}

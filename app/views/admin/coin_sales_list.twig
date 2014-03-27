@@ -1,0 +1,73 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+    <form>
+        <div class="well form-inline">
+            <h4>기간 설정</h4>
+            <input type='text' class='input-medium' name='begin_date' value='{{ search_date.begin_date }}' placeholder='0000-00-00' />
+            ~
+            <input type='text' class='input-medium' name='end_date' value='{{ search_date.end_date }}' placeholder='0000-00-00' />
+            <button class="btn">조회</button>
+            <div style='margin-top: 15px;'>
+                * 기간을 입력하지 않으시면, 전체 코인 판매 내역이 조회됩니다. (예. 끝나는 날짜를 입력하지 않으시면, 현재 시간의 판매 내역까지 조회됩니다.)<br />
+                * 시작 날짜의 시간 기준은 0시 0분 0초이며, 끝나는 날짜는 23시 59분 59초입니다.
+            </div>
+        </div>
+    </form>
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th>유저 ID</th>
+            <th>구글 주문번호</th>
+            <th>SKU</th>
+            <th>결제 시간</th>
+            <th>비고</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for coin_sale in coin_sales %}
+            <tr data-salesid='{{ coin_sale.id }}'>
+                <td>{{ coin_sale.u_id }}</td>
+                <td>{{ coin_sale.order_id }}</td>
+                <td>{{ coin_sale.sku }}</td>
+                <td>{{ coin_sale.purchase_time }}</td>
+                <td>
+                    {% if coin_sale.is_succeeded == 0 %}
+                        <span style="color: #ff0000">오류</span>
+                    {% else %}
+                        정상
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul class="pager">
+        <li class="next">
+            <a href="/admin/coin_sales/list?page={{ cur_page + 1 }}&begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}">Older &rarr;</a>
+        </li>
+    </ul>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+
+            $('#js_tbody tr').click(function() {
+                var coin_sales_id = $(this).data('salesid');
+                location.href = '/admin/coin_sales/' + coin_sales_id;
+            });
+
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}

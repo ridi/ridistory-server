@@ -1,0 +1,87 @@
+{% extends '/cp_admin/base.twig' %}
+
+{% block container %}
+
+    <form>
+        <div class="well form-inline">
+            <h4>기간별 조회</h4>
+            <input type="text" class="span2" name="begin_date" value="{{ search_date.begin_date }}" id="begin_date_picker" placeholder="yyyy-mm-dd" >
+            ~
+            <input type="text" class="span2" name="end_date" value="{{ search_date.end_date }}" id="end_date_picker" placeholder="yyyy-mm-dd" >
+            <button class="btn">조회</button>
+            <div style='margin-top: 15px;'>
+                * 기간을 입력하지 않으시면, 전체가 매출이 조회됩니다.<br />
+                <span style="margin-left: 15px;">- 날짜를 입력하지 않을 경우: 전체 누적 정보 조회</span><br />
+                <span style="margin-left: 15px;">- 시작하는 날짜를 입력하지 않을 경우: 끝나는 날짜까지의 누적 정보 조회</span><br />
+                <span style="margin-left: 15px;">- 끝나는 날짜를 입력하지 않을 경우: 현재 시간까지의 누적 정보 조회</span><br />
+                * 시작 날짜의 시간 기준은 0시 0분 0초이며, 끝나는 날짜는 23시 59분 59초입니다.
+            </div>
+        </div>
+    </form>
+
+    <table class='table table-hover table-striped'>
+        <thead>
+        <tr>
+            <th>책제목</th>
+            <th>저자/출판사</th>
+            <th>19세여부</th>
+            <th>상태</th>
+            <th>연재시작일</th>
+            <th>정산율</th>
+            <th>다운로드</th>
+            <th>판매액</th>
+            <th>정산액</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for ds in download_sales %}
+            <tr data-bid='{{ ds.b_id }}'>
+                <td>{{ ds.title }}</td>
+                <td>{{ ds.author }} / {{ ds.publisher }}</td>
+                <td>
+                    {% if ds.adult_only == 1 %}
+                        Y
+                    {% else %}
+                        N
+                    {% endif %}
+                </td>
+                <td>{{ get_status(ds.begin_date, ds.end_date, ds.end_action_flag, ds.open_part_count, ds.total_part_count) }}</td>
+                <td>{{ ds.begin_date|simple_date_format }}</td>
+                <td>{{ ds.royalty_percent }}</td>
+                <td>{{ ds.charged_download }}</td>
+                <td>{{ (ds.total_sales * 90)|number_format(0, '', ',') }}</td>
+                <td>{{ (ds.total_sales * (ds.royalty_percent/100) * 90)|number_format(0, '', ',') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#begin_date_picker').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+
+            $('#end_date_picker').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+
+            $('#js_tbody tr').click(function() {
+                var b_id = $(this).data('bid');
+                var url = '/cp_admin/download_sales/' + b_id;
+                url += '?begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}';
+                location.href = url;
+            });
+
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}

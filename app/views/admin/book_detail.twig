@@ -4,49 +4,63 @@
 <form action="/admin/book/{{ book.id }}/edit" method='post'>
 <table class='table'>
     <colgroup>
-        <col class="span1">
-        <col class="span7">
+        <col class="span1" />
+        <col class="span7" />
     </colgroup>
 	<tr>
 		<th>스토어ID</th>
-		<td><input type='text' class='input-small' name='store_id' value='{{ book.store_id }}'></input></td>
+		<td><input type='text' class='input-small' name='store_id' value='{{ book.store_id }}' /></td>
 	</tr>
 	<tr>
 		<th>표지</th>
 		<td>
-		    <img src='{{ book.cover_url }}' style="height:200px;">
+		    <img src='{{ book.cover_url }}' style="height:200px;" />
 		</td>
 	</tr>
 	<tr>
 		<th>제목</th>
-		<td><input type='text' class='input-xlarge' name='title' value='{{ book.title }}'></input></td>
+		<td><input type='text' class='input-xlarge' name='title' value='{{ book.title }}' /></td>
 	</tr>
 	<tr>
 		<th>카테고리</th>
-		<td><input type='text' class='input' name='category' value='{{ book.category }}'></input></td>
+		<td><input type='text' class='input' name='category' value='{{ book.category }}' /></td>
 	</tr>
+    <tr>
+        <th>CP</th>
+        <td>
+            <select name='cp_id'>
+                {% for cp in cp_accounts %}
+                <option value='{{ cp.id }}'>{{ cp.name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th>정산율</th>
+        <td><input type='text' class='input-mini' name='royalty_percent' value='{{ book.royalty_percent }}' /> %</td>
+    </tr>
 	<tr>
 		<th>저자</th>
-		<td><input type='text' class='input' name='author' value='{{ book.author }}'></input></td>
+		<td><input type='text' class='input' name='author' value='{{ book.author }}' /></td>
 	</tr>
 	<tr>
 		<th>출판사</th>
-		<td><input type='text' class='input' name='publisher' value='{{ book.publisher }}'></input></td>
+		<td><input type='text' class='input' name='publisher' value='{{ book.publisher }}' /></td>
 	</tr>
 	<tr>
 		<th>캐치프레이즈</th>
-		<td><input type='text' class='input-xxlarge' name='catchphrase' value='{{ book.catchphrase }}'></input></td>
+		<td><input type='text' class='input-xxlarge' name='catchphrase' value='{{ book.catchphrase }}' /></td>
 	</tr>
 	<tr>
 		<th>짧은 소개말</th>
 		<td><textarea rows='3' class='input-xxlarge' name='short_description' maxlength='256'>{{ book.short_description }}</textarea></td>
 	</tr>
 	<tr>
-		<th>공개 기간</th>
+		<th>연재 기간</th>
 		<td>
 		    <div class="form-inline">
-		    <input type='text' class='input-medium' name='begin_date' value='{{ book.begin_date }}'></input>
-        	~ <input type='text' class='input-medium' name='end_date' value='{{ book.end_date }}'></input>
+		    <input type='text' class='input-medium' name='begin_date' value='{{ book.begin_date }}' />
+        	~ <input type='text' class='input-medium' name='end_date' value='{{ book.end_date }}' /> (완결일)
 		    </div>
 	    </td>
 	</tr>
@@ -57,16 +71,20 @@
                 <thead>
                     <tr>
                         <th>파트 제목</th>
+                        <th class='span1'>코인</th>
                         <th class='span3'>시작일</th>
                         <th class='span3'>종료일</th>
+                        <th class='span1'>상태</th>
                     </tr>
                 </thead>
             	<tbody id='js_part_list'>
             		{% for part in parts %}
             		<tr data-cid='{{ part.id }}'>
             			<td><a href='/admin/part/{{ part.id }}'>{{ part.seq }}. {{ part.title }} </a></td>
+                        <td>{{ part.price }}</td>
             			<td><span class='begin_date'>{{ part.begin_date }}</span></td>
             			<td>{{ part.end_date }}</td>
+                        <td>{{ part.status }}</td>
             		</tr>
             		{% endfor %}
             	</tbody>
@@ -107,6 +125,35 @@
             </label>
         </td>
     </tr>
+    <tr>
+        <th>잠금 기능</th>
+        <td>
+            <label class="checkbox">
+                <input type='checkbox' name='is_active_lock' {{ book.is_active_lock ? 'checked="checked"' }}>연재중 잠금 기능을 사용할 경우에 체크 (완결 시에는 영향을 받지 않음)</input>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <th>잠금 기간</th>
+        <td><input type='text' class='input-small' name='lock_day_term' value='{{ book.lock_day_term }}' /> 일 (잠금으로 설정할 기간을 입력해주세요. 단위: 일)</td>
+    </tr>
+    <tr>
+        <th>완결 후 상태</th>
+        <td>
+            <label class="radio">
+                <input type='radio' name='end_action_flag' value='ALL_FREE'>모두 공개(무료)</input>
+            </label>
+            <label class="radio">
+                <input type='radio' name='end_action_flag' value='ALL_CHARGED'>모두 잠금(유료)</input> * 각 파트별로 가격이 0보다 커야함. (0일 경우 무료)
+            </label>
+            <label class="radio">
+                <input type='radio' name='end_action_flag' value='SALES_CLOSED'>판매종료(표지만 남기고 파트는 비공개됩니다.)</input>
+            </label>
+            <label class="radio">
+                <input type='radio' name='end_action_flag' value='ALL_CLOSED'>게시종료(앱 내에서 모두 사라집니다.)</input>
+            </label>
+        </td>
+    </tr>
 	<tr>
 	    <th>작품 점수</th>
 	    <td>
@@ -115,6 +162,33 @@
 	        </label>
 	    </td>
 	</tr>
+    <tr>
+        <th>작가의 다른 작품</th>
+        <td>
+            <table class='table table-hover table-striped table-condensed'>
+                <thead>
+                <tr>
+                    <th class='span2'>책 표지</th>
+                    <th class='span2'>스토어 ID</th>
+                    <th class='span5'>도서명</th>
+                    <th class='span2'></th>
+                </tr>
+                </thead>
+                <tbody id='js_recommended_book_list'>
+                {% for rb in recommended_books %}
+                    <tr data-rbid='{{ rb.id }}'>
+                        <!-- TODO: 추후에 스토어 ID에 마우스 가져다 대면, 책 표지 뜨도록 수정 -->
+                        <td><img src='{{ rb.cover_url }}' style="height:100px;" /></td>
+                        <td>{{ rb.store_id }}</td>
+                        <td>{{ rb.title }}</td>
+                        <td><a href='http://ridibooks.com/detail.php?id={{ rb.store_id }}' >[스토어에서 보기]</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button class='btn btn-small btn-primary pull-right' id='js_add_recommended_book'>다른 작품 추가</button>
+        </td>
+    </tr>
 </table>
 
 <table class='table'>
@@ -145,10 +219,17 @@
 <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
 <script>
 $(function() {
+    $('select option')
+            .filter('[value="{{ book.cp_id }}"]')
+            .prop('selected', true);
     
     $('input:radio[name="is_completed"]')
     .filter('[value="{{ book.is_completed }}"]')
     .attr('checked', true);
+
+    $('input:radio[name="end_action_flag"]')
+            .filter('[value="{{ book.end_action_flag }}"]')
+            .attr('checked', true);
     
     // twig 에 bit 연산자가 음슴;;
     $('input:checkbox[name="upload_days[]"]')
@@ -160,7 +241,7 @@ $(function() {
     $('.btn-cancel').click(function() {
         location.href = '/admin/book/list';
         return false;
-    })
+    });
     
     $('.btn-danger').click(function() {
         if (confirm('삭제하시겠습니까?')) {
@@ -174,11 +255,28 @@ $(function() {
         }
         return false;
     });
-    
+
+    $('#js_add_recommended_book').click(function() {
+        location.href = '/admin/recommended_book/add?b_id={{ book.id }}';
+        return false;
+    });
+
+    $('#js_recommended_book_list tr').click(function() {
+        var rb_id = $(this).data('rbid');
+        location.href = '/admin/recommended_book/' + rb_id;
+    });
+
+    $('#js_recommended_book_list tr').hover(function() {
+                $(this).css('cursor', 'pointer');
+            }, function() {
+                $(this).css('cursor', '');
+            }
+    );
+
     $('#js_add').click(function() {
         location.href = '/admin/part/add?b_id={{ book.id }}';
         return false;
-    })
+    });
     
     $('#js_part_list .begin_date').each(function() {
         var now = new Date('{{ today() }}');
