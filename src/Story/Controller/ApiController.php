@@ -396,6 +396,9 @@ class ApiController implements ControllerProviderInterface
             }
         }
 
+        // ReIndex
+        $list = array_values($list);
+
         return $app->json($list);
     }
 
