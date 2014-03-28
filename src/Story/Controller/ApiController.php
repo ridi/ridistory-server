@@ -125,7 +125,7 @@ class ApiController implements ControllerProviderInterface
         if ($inputs['u_id']) {
             $inputs['u_id'] = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $inputs['u_id']);
         } else {
-            return $app->json(array('success' => false, 'message' => 'Access Denied1'));
+            return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
         }
 
         $r = InAppBilling::verifyInAppBilling($inputs);
@@ -137,10 +137,10 @@ class ApiController implements ControllerProviderInterface
                 $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
                 return $app->json(array('success' => true, 'message' => '성공', 'coin_balance' => $coin_amount));
             } else {
-                return $app->json(array('success' => false, 'message' => '코인 증가 오류'));
+                return $app->json(array('success' => false, 'message' => '코인을 충전하는 도중 오류가 발생하였습니다.'));
             }
         } else {
-            return $app->json(array('success' => false, 'message' => 'Access Denied2'));
+            return $app->json(array('success' => false, 'message' => '인앱 결제 도중 오류가 발생였습니다.'));
         }
     }
 
@@ -277,10 +277,10 @@ class ApiController implements ControllerProviderInterface
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             if (!Buyer::isValidUid($u_id)) {
-                return $app->json(array('success' => 'false', 'message' => 'Invalid User'));
+                return $app->json(array('success' => 'false', 'message' => '회원정보를 찾을 수 없습니다.'));
             }
         } else {
-            return $app->json(array('success' => 'false', 'message' => 'Invalid User'));
+            return $app->json(array('success' => 'false', 'message' => '구글 서비스 사용에 동의해 주셔야 책을 볼 수 있습니다.'));
         }
 
         $p_id = $req->get('p_id');

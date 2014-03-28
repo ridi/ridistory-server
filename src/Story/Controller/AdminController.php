@@ -141,6 +141,15 @@ select pc.*, p.seq, b.title from part_comment pc
 where pc.nickname like '%{$search_keyword}%'
 order by id desc limit {$offset}, {$limit}
 EOT;
+            } else if ($search_type == 'ip_addr') {
+                $search_keyword = ip2long($search_keyword);
+                $sql = <<<EOT
+select pc.*, p.seq, b.title from part_comment pc
+ left join (select id, b_id, seq from part) p on p.id = pc.p_id
+ left join (select id, title from book) b on b.id = p.b_id
+where pc.ip = '{$search_keyword}'
+order by id desc limit {$offset}, {$limit}
+EOT;
             }
         } else {
             $sql = <<<EOT
