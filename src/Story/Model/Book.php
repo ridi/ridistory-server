@@ -64,7 +64,15 @@ EOT;
         }
 
         $last_updates = self::getLastUpdated($b_ids);
-        $like_sum = self::getLikeSum($b_ids);
+
+	    $like_sum = $app['cache']->fetch(
+		    'like_sum',
+		    function () use ($b_ids) {
+			    return self::getLikeSum($b_ids);
+		    },
+		    60 * 30
+	    );
+
         $open_part_count = self::getOpenPartCount($b_ids);
 
         foreach ($opened_books as &$b) {
