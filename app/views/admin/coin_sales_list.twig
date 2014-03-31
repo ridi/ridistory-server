@@ -74,6 +74,13 @@
     </table>
 
     <ul class="pager">
+        <li class="previous">
+            {% if cur_page - 1 < 0 %}
+                <a href="/admin/coin_sales/list?page=0&begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}">&larr; Newer</a>
+            {% else %}
+                <a href="/admin/coin_sales/list?page={{ cur_page - 1 }}&begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}">&larr; Newer</a>
+            {% endif %}
+        </li>
         <li class="next">
             <a href="/admin/coin_sales/list?page={{ cur_page + 1 }}&begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}">Older &rarr;</a>
         </li>
