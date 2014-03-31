@@ -405,11 +405,23 @@ EOT;
             'end_date' => $end_date
         );
 
+        //TODO: 임시. 코인 관련 통계 페이지 제작 후, 아래 Coin Sales Stat 관련 코드 제거.
+        $sql = <<<EOT
+select date(a.purchase_time) purchase_date, count(distinct a.u_id) user_count, sum(b.coin_amount) coin_amount, sum(b.bonus_coin_amount) bonus_coin_amount, sum(b.price) total_sales from inapp_history a
+ join inapp_products b on a.sku = b.sku
+group by date(a.purchase_time)
+EOT;
+        $coin_sales_stats = $app['db']->fetchAll($sql);
+        foreach ($coin_sales_stats as &$css) {
+            $css['total_coin_amount'] = $css['coin_amount'] + $css['bonus_coin_amount'];
+        }
+
         $coin_sales = InAppBilling::getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date);
         return $app['twig']->render(
             '/admin/coin_sales_list.twig',
             array(
                 'search_date' => $search_date,
+                'coin_sales_stats' => $coin_sales_stats,
                 'coin_sales' => $coin_sales,
                 'cur_page' => $cur_page
             )
