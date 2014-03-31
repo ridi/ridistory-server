@@ -19,10 +19,10 @@
             {% for coin_sales_stat in coin_sales_stats %}
                 <tr>
                     <td>{{ coin_sales_stat.purchase_date }}</td>
-                    <td>{{ coin_sales_stat.user_count|number_format(0, '', ',') }}</td>
-                    <td>{{ coin_sales_stat.coin_amount|number_format(0, '', ',') }}</td>
-                    <td>{{ coin_sales_stat.bonus_coin_amount|number_format(0, '', ',') }}</td>
-                    <td>{{ coin_sales_stat.total_coin_amount|number_format(0, '', ',') }}</td>
+                    <td>{{ coin_sales_stat.user_count }}</td>
+                    <td>{{ coin_sales_stat.coin_amount }}</td>
+                    <td>{{ coin_sales_stat.bonus_coin_amount }}</td>
+                    <td>{{ coin_sales_stat.total_coin_amount }}</td>
                     <td>{{ coin_sales_stat.total_sales|number_format(0, '', ',') }}</td>
                 </tr>
             {% endfor %}
