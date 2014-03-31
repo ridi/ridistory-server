@@ -42,8 +42,6 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
             $total_charged_download += $ds['charged_download'];
         }
 
-        $total_free_download = count($download_sales);
-
         $app['twig']->addFilter(
             new \Twig_SimpleFilter('simple_date_format', function($date) {
                 return date('y.m.d', strtotime($date));
