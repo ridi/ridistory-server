@@ -58,9 +58,9 @@
                 if (r.error) {
                     alert(r.error);
                 } else {
-                    location.href = '/cp_admin';
+                    window.open('/cp_admin', '_blank');
                 }
-            })
+            });
             return false;
         });
 
