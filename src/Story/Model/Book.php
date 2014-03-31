@@ -116,7 +116,7 @@ EOT;
         return $last_updates;
     }
 
-    private function getLikeSum($b_ids)
+    public function getLikeSum($b_ids)
     {
         global $app;
         $sql = "SELECT b_id, count(*) like_sum FROM part, user_part_like WHERE p_id = part.id GROUP BY b_id HAVING b_id IN (?)";
