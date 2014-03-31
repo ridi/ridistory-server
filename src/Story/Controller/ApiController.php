@@ -100,6 +100,8 @@ class ApiController implements ControllerProviderInterface
                 $buyer = Buyer::get($id);
             }
             $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
+        } else {
+            trigger_error('Failed verify google account. | Ori: ' . $google_id . ' / Server: ' . $server_google_id . ' (Verified: ' . $is_verified_email . ')', E_USER_ERROR);
         }
 
         return $app->json($buyer);
