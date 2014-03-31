@@ -65,7 +65,7 @@ EOT;
 	    $like_sum = $app['cache']->fetch(
 		    'like_sum',
 		    function () use ($b_ids) {
-			    return self::getLikeSum($b_ids);
+			    return Book::getLikeSum($b_ids);
 		    },
 		    60 * 30
 	    );
