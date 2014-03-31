@@ -7,6 +7,7 @@ use Story\Model\Buyer;
 use Story\Model\InAppBilling;
 use Story\Model\RecommendedBook;
 use Story\Util\AES128;
+use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
 
 use Story\Model\Book;
@@ -152,18 +153,20 @@ class ApiController implements ControllerProviderInterface
         /**
          * @var $v Api Version
          *
-         * v1 : Exclude Adult
+         * v1 : Exclude Adult (deprecated, not working)
          * v2 : Include Adult
          * v3 : Use Lock Function
          */
         $v = intval($req->get('v', '1'));
-        $cache_key = 'book_list_' . $v;
 
-        $exclude_adult = ($v < 2);
+	    // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
+	    $ignore_adult_only = false;//!IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']);
+
+        $cache_key = 'book_list_' . $v . $ignore_adult_only;
         $book = $app['cache']->fetch(
             $cache_key,
-            function () use ($exclude_adult) {
-                return Book::getOpenedBookList($exclude_adult);
+            function () use ($ignore_adult_only) {
+                return Book::getOpenedBookList($ignore_adult_only);
             },
             60 * 10
         );

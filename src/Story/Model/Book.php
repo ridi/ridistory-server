@@ -45,12 +45,9 @@ EOT;
         return $app['db']->fetchAll($sql, $bind);
     }
 
-    public static function getOpenedBookList($exclude_adult = true)
+    public static function getOpenedBookList($ignore_adult_only = false)
     {
         $sql = "SELECT * FROM book b WHERE b.begin_date <= ? AND b.end_date >= ?";
-        if ($exclude_adult) {
-            $sql .= " AND adult_only = 0";
-        }
 
         $today = date('Y-m-d H:00:00');
         $bind = array($today, $today);
@@ -85,6 +82,10 @@ EOT;
             $b['last_update'] = in_array($b['id'], $last_updates) ? '1' : '0';
             $b['like_sum'] = isset($like_sum[$b['id']]) ? $like_sum[$b['id']] : '0';
             $b['open_part_count'] = isset($open_part_count[$b['id']]) ? $open_part_count[$b['id']] : '0';
+
+	        if ($ignore_adult_only) {
+		        $b['adult_only'] = '0';
+	        }
         }
 
         return $opened_books;
