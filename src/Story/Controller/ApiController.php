@@ -160,7 +160,7 @@ class ApiController implements ControllerProviderInterface
         $v = intval($req->get('v', '1'));
 
 	    // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
-	    $ignore_adult_only = false;//!IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']);
+	    $ignore_adult_only = !IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']);
 
         $cache_key = 'book_list_' . $v . $ignore_adult_only;
         $book = $app['cache']->fetch(
