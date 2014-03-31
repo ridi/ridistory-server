@@ -34,6 +34,7 @@ CREATE TABLE `book` (
   `royalty_percent` int(11) NOT NULL DEFAULT '0' COMMENT '정산율',
   `is_active_lock` tinyint(4) NOT NULL DEFAULT '0' COMMENT '잠금기능 사용여부 (0: 사용하지 않음, 1: 사용함)',
   `lock_day_term` int(11) NOT NULL DEFAULT '14' COMMENT '잠금일 기간 (기본: 2주)',
+  `refer_count` int(11) NOT NULL DEFAULT '0' COMMENT '조회수',
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `cp_id` (`cp_id`)
@@ -174,6 +175,7 @@ CREATE TABLE `part` (
   PRIMARY KEY (`id`),
   KEY `id` (`id`,`seq`) USING BTREE,
   KEY `b_id` (`b_id`),
+  KEY `begin_date` (`begin_date`),
   CONSTRAINT `part_ibfk_1` FOREIGN KEY (`b_id`) REFERENCES `book` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
