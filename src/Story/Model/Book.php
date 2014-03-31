@@ -258,7 +258,9 @@ EOT;
         return 'http://misc.ridibooks.com/cover/' . $store_id . '/xxlarge';
     }
 
-
+    /*
+     * Book Intro
+     */
     public static function createIntro($values)
     {
         global $app;
