@@ -160,9 +160,9 @@ class ApiController implements ControllerProviderInterface
         $v = intval($req->get('v', '1'));
 
 	    // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
-	    $ignore_adult_only = !IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']);
+	    $ignore_adult_only = (IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']) == false) ? 1 : 0;
 
-        $cache_key = 'book_list_' . $v . $ignore_adult_only;
+        $cache_key = 'book_list_' . $v . '_' . $ignore_adult_only;
         $book = $app['cache']->fetch(
             $cache_key,
             function () use ($ignore_adult_only) {
@@ -175,10 +175,14 @@ class ApiController implements ControllerProviderInterface
 
     public function completedBookList(Request $req, Application $app)
     {
+        // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
+        $ignore_adult_only = (IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']) == false) ? 1 : 0;
+
+        $cache_key = 'completed_book_list_' . $ignore_adult_only;
         $book = $app['cache']->fetch(
-            'completed_book_list',
-            function () {
-                return Book::getCompletedBookList();
+            $cache_key,
+            function ($ignore_adult_only) {
+                return Book::getCompletedBookList($ignore_adult_only);
             },
             60 * 10
         );

@@ -45,7 +45,7 @@ EOT;
         return $app['db']->fetchAll($sql, $bind);
     }
 
-    public static function getOpenedBookList($ignore_adult_only = false)
+    public static function getOpenedBookList($ignore_adult_only = 0)
     {
         $sql = "SELECT * FROM book b WHERE b.begin_date <= ? AND b.end_date >= ?";
 
@@ -146,7 +146,7 @@ EOT;
         return $open_part_count;
     }
 
-    public static function getCompletedBookList()
+    public static function getCompletedBookList($ignore_adult_only = 0)
     {
         $sql = <<<EOT
 select ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum, b.* from book b
@@ -162,6 +162,10 @@ EOT;
             $b['last_update'] = 0;
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
             $b['is_completed'] = 1;
+
+            if ($ignore_adult_only) {
+                $b['adult_only'] = '0';
+            }
         }
 
         return $ar;

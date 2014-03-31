@@ -162,9 +162,12 @@ class AdminBookControllerProvider implements ControllerProviderInterface
 
         // 캐시 삭제
         $app['cache']->delete('book_list_1');
-        $app['cache']->delete('book_list_2');
-        $app['cache']->delete('book_list_3');
-        $app['cache']->delete('completed_book_list');
+        $app['cache']->delete('book_list_2_0');
+        $app['cache']->delete('book_list_2_1');
+        $app['cache']->delete('book_list_3_0');
+        $app['cache']->delete('book_list_3_1');
+        $app['cache']->delete('completed_book_list_0');
+        $app['cache']->delete('completed_book_list_1');
         $app['cache']->delete('part_list_0_0_' . $id);
         $app['cache']->delete('part_list_0_1_' . $id);
         $app['cache']->delete('part_list_1_0_' . $id);
@@ -204,9 +207,12 @@ class AdminBookControllerProvider implements ControllerProviderInterface
 
         // 캐시 삭제
         $app['cache']->delete('book_list_1');
-        $app['cache']->delete('book_list_2');
-        $app['cache']->delete('book_list_3');
-        $app['cache']->delete('completed_book_list');
+        $app['cache']->delete('book_list_2_0');
+        $app['cache']->delete('book_list_2_1');
+        $app['cache']->delete('book_list_3_0');
+        $app['cache']->delete('book_list_3_1');
+        $app['cache']->delete('completed_book_list_0');
+        $app['cache']->delete('completed_book_list_1');
         $app['cache']->delete('part_list_0_0_' . $id);
         $app['cache']->delete('part_list_0_1_' . $id);
         $app['cache']->delete('part_list_1_0_' . $id);
