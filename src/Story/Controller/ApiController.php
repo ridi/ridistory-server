@@ -183,7 +183,7 @@ class ApiController implements ControllerProviderInterface
         $cache_key = 'completed_book_list_' . $ignore_adult_only;
         $book = $app['cache']->fetch(
             $cache_key,
-            function ($ignore_adult_only) {
+            function () use ($ignore_adult_only) {
                 return Book::getCompletedBookList($ignore_adult_only);
             },
             60 * 10
