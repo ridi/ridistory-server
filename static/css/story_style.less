@@ -1,5 +1,12 @@
 @charset "utf-8";
-@default_bg:#f2efe9;
+@default_bg:#fff;
+
+@green1:#324d5d; /* 진한 순서 */
+@green2:#98a6ae;
+@green3:#d6dbdf; 
+
+@num_font: Tahoma,sans-serif;
+
 .default_gradation(){
   background:white; background-image: linear-gradient(180deg, #fff, #f5f3ec);
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#f5f3ec));/* Safari 4+, Chrome 1-9 */
@@ -25,10 +32,10 @@
   background: -o-linear-gradient(top, #fefdfd, #f5f4ed);/* Opera 11.10+ */
 }
 
-body{ width:100%; background:@default_bg; }
+body{ background:@default_bg; }
 button.default_btn{ 
-  -webkit-appearance:none; border: 1px solid #cecac0; border-radius:2px; background:#faf8f4; height: 27px; line-height:27px; 
-  color: #736e66; font-weight:bold; font-size: 13px; letter-spacing:-1px; padding: 0 10px;
+  -webkit-appearance:none; border: none; border-radius:2px; background:#a4b0b7; height: 30px; line-height:30px; 
+  color: #fff; font-weight:bold; font-size: 13px; letter-spacing: -.05em; padding: 0 15px;
 
 }
 #story{ position:relative; }
@@ -101,7 +108,7 @@ button.default_btn{
 }//module_list_grid
 
 .module_title1{
-  width:100%; height:28px; .default_gradation();
+  width:100%; height:28px;
   h2{
     display:block; float:left; margin-left: 10px; height:28px; line-height:28px; color: black; font-weight:bold; letter-spacing:-1px;
   }
@@ -109,19 +116,19 @@ button.default_btn{
 }//.module_title1
 
 .module_title2{
-  width:100%; background:@default_bg; border-bottom:1px solid #d9d5cd;
+  border-top: 2px solid @green1;
   h2.title{
-    margin: 10px; color:black; font-size:16px; font-weight:bold; letter-spacing:-1px; line-height: 1.5;
+    margin: 14px 14px 8px; color:@green1; font-size:16px; font-weight:bold; letter-spacing:-0.05em; line-height: 1.5;
   } 
 }//.module_title2
 
 .module_title3{
-  width:100%; height:30px; border-bottom: 1px solid #989080; .title3_gradation();
+  margin-bottom: 14px;
   .title{
-    float:left; margin-left: 10px; height:30px; line-height:30px; color:white; font-size:14px; font-weight:bold;
+    float:left; margin: 14px 14px 0 14px; color:@green1; font-size:16px; font-weight:bold; letter-spacing:-0.05em; line-height: 1.5;
   }
   .date{
-    float:right; margin-right: 10px; line-height: 30px; color: white;
+    float:right; margin: 14px 14px 0 0; line-height: 30px; color: @green2; line-height: 1.8;
   }
 }
 
@@ -150,14 +157,11 @@ button.default_btn{
 }//.module_tab1
 
 .module_layer_popup{
-  width:100%; height:100%; position:absolute; left:0; top:0; background:rgba( 0,0,0,0.4 );
   .popup_wrap{
-    padding: 10px; position:absolute; left:0; right: 0;
     article{
-     width:100%;
       .popup_contents{
-        box-shadow: 0 0 3px #333;
-        p{ padding: 10px 10px 20px 10px; background:white; line-height:1.6em; font-size: 13px;}
+        border-top: 2px solid @green1;
+        p{ padding: 10px 14px 20px; line-height:1.6em; font-size: 13px;}
       }
     }
   }//.popup_warp
@@ -252,40 +256,42 @@ button.default_btn{
 #story{  
   section.comment{
     article.comment_wrap{
-      width:100%;
-      .module_title2{
-        
-      }
       .comment_tab{
-        background:#faf8f4; width:100%;
         .tab_off{
-          width:100%; height:35px; .default_gradation();
+          height:40px; border-bottom: 1px solid @green3;
           .comment_num{
-            float:left; margin:12px 0 0 10px; color:#666; 
-            .num{ font-weight:bold; color:#ee8d84; } 
+            float:left; margin:8px 0 0 14px; color:#333; font-weight:bold;
+            .num{ color:@green1; font-family: @num_font; border: 1px solid @green1;
+              padding: 2px 4px; border-radius: 3px; display: inline-block;} 
           }
           .btn_tab_open{
-            float:right; margin: 4px 5px 0 0; .btn_gradation();
+            float:right; margin: 4px 5px 0 0;
           }
         }
         .tab_on{
-          width:100%; background:#faf8f4; border-top:1px solid #fcfbf8; border-bottom:1px solid #d9d5cd;
+            background:#e8f1f6; border-bottom:1px solid @green3;
           form{ 
             padding: 7px 10px 10px 10px;
             .input_nick{
-              width:200px; height:24px; background:white; line-height:24px; text-indent:10px; border: 1px solid #d6d4ce; 
-              border-radius:2px; -webkit-appearance:none; margin-bottom:5px;
+              width: 100%; height:30px; background:white; line-height:30px; text-indent:10px; border: 1px solid #c8d4db; 
+              border-radius:3px; -webkit-appearance:none; margin-bottom:5px;
+              box-sizing: border-box; -webkit-box-sizing: border-box;
             }
-            .input_text{
-              width:93%; height:60px; background:white; box-sizing:border-box; padding:3px 10px; border: 1px solid #d6d4ce; 
-              border-radius:2px; -webkit-appearance:none; margin-bottom:5px; line-height:1.3em;
+            #input_comment{
+              width:100%; height:60px; background:white; box-sizing:border-box; padding:6px 10px; border: 1px solid #c8d4db; 
+              border-radius:3px; -webkit-appearance:none; margin-bottom:5px; line-height:1.3em;
+              box-sizing: border-box; -webkit-box-sizing: border-box;
+            }
+            .input_nick:focus, #input_comment:focus {
+              border-color: @green2;
             }
             .char_num{
-              float:left; color:#aaa69f; font-size:10px;
-              .now_num{ color:#76706b; font-weight:bold; }
+              float:left; color:#9baab3; font-size:11px;
+              margin-left: 6px;
+              .now_num{ color:@green1; font-weight:bold; }
             }
             .btn_submit{
-              float:right; margin-bottom:10px; 
+              float:right; margin-bottom:10px; background: @green1;
             }
           }//form
         }//tab_on
@@ -293,23 +299,23 @@ button.default_btn{
       .comment_list{
         width:100%;
         ul.list_wrap{
-          width:100%; padding-top: 10px;
           li{
-            position:relative; padding-left: 63px; padding-right:5px; padding-bottom:10px;
+            position:relative; padding: 10px 14px; border-bottom: 1px solid @green3;
             .avarta{
               position:absolute; left:10px; top:5px; width:32px;
               img{ width:32px; }
             }
+            &.contents_admin { background: #f3f5fb; }
             .contents_wrap{
-              box-sizing:border-box; background:white; border: 1px solid #d7d3ca; border-radius: 10px; padding: 10px 10px 10px 15px; position:relative;
+              position: relative;
               .contents_info{
                 margin-bottom:10px;
                 .box_left_arrow{
                   display:block; position:absolute; width:20px; height:20px; left:-17px; top:20px; text-indent:-20000px;
                   background:url( ../images/bg_comment.png) left top no-repeat; background-size:20px 20px;
                 }
-                .info_id{ color:#333; font-size:14px; }
-                .info_date{ display:inline-block; padding-left: 6px; margin-left:3px; border-left: 1px solid #bbb; color:#bbb; font-size:12px; }
+                .info_id{ color:@green1; font-size:13px; font-weight: bold;}
+                .info_date{ display:inline-block; padding-left: 6px; margin-left:3px; border-left: 2px solid #eee; color:@green2; font-size:12px; font-family: @num_font;}
                 .trash{
                   float: right;
                   img{
@@ -318,7 +324,7 @@ button.default_btn{
                 }
               }
               .contents_text{
-                line-height:1.3em; word-break:break-all;
+                line-height:1.5em; word-break:break-all;
               }
             }//.contents_wrap
           }//li

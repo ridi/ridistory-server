@@ -6,7 +6,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, nav
 hr{ display:none; }
 
 html,body, h1, h2, h3, h4, h5, h6, p, td, label, textarea, a, li, input, button, textarea, select, div{
-	color:#777; font-size:12px; line-height:1em; font-family: '나눔고딕', 'NanumGothic', 'Nanum Gothic', '돋움', Dotum, AppleSDGothic, Tahoma, Geneva ,helvetica, arial, sans-serif;
+	color:#333; font-size:12px; line-height:1em; font-family: '나눔고딕', 'NanumGothic', 'Nanum Gothic', '돋움', Dotum, AppleSDGothic, Tahoma, Geneva ,helvetica, arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6{font-weight:normal; font-size:12px;}
