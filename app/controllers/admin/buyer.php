@@ -39,11 +39,14 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
             $buyers = Buyer::getListByOffsetAndSize($offset, $limit);
         }
 
+        $buyer_count = Buyer::getTotalUserCount();
+
         return $app['twig']->render(
             'admin/buyer_list.twig',
             array(
                 'search_type' => $search_type,
                 'search_keyword' => $search_keyword,
+                'buyer_count' => $buyer_count,
                 'buyers' => $buyers,
                 'cur_page' => $cur_page
             )

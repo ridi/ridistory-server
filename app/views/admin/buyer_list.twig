@@ -4,9 +4,10 @@
 
     <form>
         <div class="well form-inline">
-            <h4>회원 검색</h4>
+            <h4>회원 검색 (총 {{ buyer_count }}명)</h4>
             <select name='search_type'>
                 <option value='google_account' selected>구글 계정</option>
+                <option value='uid'>유저 ID</option>
             </select>
             <input type='text' class='input-xlarge' name='search_keyword' value='{{ search_keyword }}' placeholder='검색어를 입력해주세요.' />
             <button class="btn">검색</button>
