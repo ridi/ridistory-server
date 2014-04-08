@@ -9,41 +9,39 @@
 
         <tr>
             <th>결제 번호</th>
-            <td>{{ coin_sale.id }}</td>
+            <td>{{ inapp_sale.id }}</td>
         </tr>
         <tr>
             <th>유저</th>
-            <td><a href='/admin/buyer/{{ coin_sale.u_id }}'>{{ coin_sale.u_id }}</a> ({{ coin_sale.google_id }})</td>
+            <td><a href='/admin/buyer/{{ inapp_sale.u_id }}'>{{ inapp_sale.u_id }}</a> ({{ inapp_sale.google_id }})</td>
         </tr>
         <tr>
             <th>구글 주문번호</th>
-            <td>{{ coin_sale.order_id }}</td>
+            <td>{{ inapp_sale.order_id }}</td>
         </tr>
         <tr>
             <th>SKU</th>
-            <td>{{ coin_sale.sku }}</td>
+            <td>{{ inapp_sale.sku }}</td>
         </tr>
         <tr>
             <th>결제 시간</th>
             <td>
-                {{ coin_sale.purchase_time }}
+                {{ inapp_sale.purchase_time }}
             </td>
         </tr>
         <tr>
             <th>Payload</th>
             <td>
-                {{ coin_sale.payload }}
+                {{ inapp_sale.payload }}
             </td>
         </tr>
         <tr>
             <th>상태</th>
             <td>
-                {% if coin_sale.status == 'OK' %}
+                {% if inapp_sale.status == 'OK' %}
                     정상
-                {% elseif coin_sale.status == 'REFUNDDED' %}
+                {% elseif inapp_sale.status == 'REFUNDED' %}
                     <span style="color: #0000FF">환불됨</span>
-                {% elseif coin_sale.status == 'CANCELLED' %}
-                    <span style="color: #0000FF">취소됨</span>
                 {% else %}
                     <span style="color: #FF0000">오류</span>
                 {% endif %}
@@ -61,9 +59,9 @@
         </thead>
         <tbody>
         <tr>
-            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.purchase_token }}</textarea></td>
-            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.purchase_data }}</textarea></td>
-            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.signature }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ inapp_sale.purchase_token }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ inapp_sale.purchase_data }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ inapp_sale.signature }}</textarea></td>
         </tr>
         </tbody>
     </table>
@@ -71,7 +69,6 @@
     <div class='form-actions'>
         <button class='btn btn-cancel'>목록으로</button>
         <button class='btn btn-danger pull-right'>환불</button>
-        <button class='btn btn-warning pull-right' style="margin-right: 15px;">취소</button>
     </div>
 
 {% endblock %}
@@ -82,19 +79,13 @@
         $(function() {
             // 목록으로
             $('.btn-cancel').click(function() {
-                location.href = '/admin/coin_sales/list';
+                location.href = '/admin/inapp_sales/list';
                 return false;
             });
 
             // 환불
             $('.btn-danger').click(function() {
                 alert('환불');
-                return false;
-            });
-
-            // 취소
-            $('.btn-warning').click(function() {
-                alert('취소');
                 return false;
             });
         });

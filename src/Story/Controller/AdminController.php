@@ -103,8 +103,10 @@ EOT;
         $admin->post('/inapp_product/{iab_id}/delete', array($this, 'deleteInAppProduct'));
         $admin->post('/inapp_product/{iab_id}/edit', array($this, 'editInAppProduct'));
 
-        $admin->get('/coin_sales/list', array($this, 'coinSalesList'));
-        $admin->get('/coin_sales/{coin_sale_id}', array($this, 'coinSalesDetail'));
+        $admin->get('/inapp_sales/list', array($this, 'inappSalesList'));
+        $admin->get('/inapp_sales/{iab_sale_id}', array($this, 'inappSalesDetail'));
+        $admin->post('/inapp_sales/{iab_sale_id}/refund', array($this, 'refundInappSales'));
+        $admin->post('/inapp_sales/{iab_sale_id}/cancel', array($this, 'cancelInappSales'));
 
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
@@ -390,9 +392,9 @@ EOT;
     }
 
     /*
-     * Coin Sales
+     * InAppBilling Coin Sales
      */
-    public static function coinSalesList(Request $req, Application $app)
+    public static function inappSalesList(Request $req, Application $app)
     {
         $cur_page = $req->get('page', 0);
 
@@ -402,22 +404,30 @@ EOT;
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
 
-        $coin_sales = InAppBilling::getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date);
+        $inapp_sales = InAppBilling::getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date);
         return $app['twig']->render(
-            '/admin/coin_sales_list.twig',
+            '/admin/inapp_sales_list.twig',
             array(
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
-                'coin_sales' => $coin_sales,
+                'inapp_sales' => $inapp_sales,
                 'cur_page' => $cur_page
             )
         );
     }
 
-    public static function coinSalesDetail(Request $req, Application $app, $coin_sale_id)
+    public static function inappSalesDetail(Request $req, Application $app, $iab_sale_id)
     {
-        $coin_sale = InAppBilling::getInAppBillingSalesDetail($coin_sale_id);
-        return $app['twig']->render('/admin/coin_sales_detail.twig', array('coin_sale' => $coin_sale));
+        $inapp_sale = InAppBilling::getInAppBillingSalesDetail($iab_sale_id);
+        return $app['twig']->render('/admin/inapp_sales_detail.twig', array('inapp_sale' => $inapp_sale));
+    }
+
+    public static function refundInappSales(Request $req, Application $app, $iab_sale_id)
+    {
+    }
+
+    public static function cancelInappSales(Request $req, Application $app, $iab_sale_id)
+    {
     }
 
     /*

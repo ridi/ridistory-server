@@ -16,9 +16,8 @@ class InAppBilling
 
     // Status Enum
     const STATUS_OK = 'OK';
-    const STATUS_REFUNDED = 'REFUNDDED';
-    const STATUS_CANCELLED = 'CANCELLED';
-    const STATUS_ERROR = 'ERROR';
+    const STATUS_REFUNDED = 'REFUNDED';
+    const STATUS_PENDING = 'PENDING';
 
     public static function createInAppProduct()
     {
@@ -80,11 +79,13 @@ class InAppBilling
             'order_id' => $order_id,
             'u_id' => $u_id,
             'sku' => $sku,
-            'purchase_time' => date('Y-m-d H:i:s', ($purchase_time / 1000)),
+            // Purchase Time을 서버시간 기준으로 변경. (변경일: 2014년 4월 8일 19시 24분)
+            'purchase_time' => date('Y-m-d H:i:s'),
             'payload' => $payload,
             'purchase_token' => $purchase_token,
             'purchase_data' => $values['purchase_data'],
-            'signature' => $signature
+            'signature' => $signature,
+            'status' => InAppBilling::STATUS_PENDING,
         );
         $iab_id = InAppBilling::saveInAppBillingHistory($bind);
 
@@ -97,7 +98,7 @@ class InAppBilling
         openssl_free_key($iab_public_key);
 
         if ($is_valid_iab == 1) {
-            $r = InAppBilling::setInAppBillingSucceeded($iab_id);
+            $r = InAppBilling::changeInAppBillingStatus($iab_id, InAppBilling::STATUS_OK);
             return ($r === 1);
         } else {
             error_log('Failed Verify Signature: ' . $is_valid_iab, 0);
@@ -112,10 +113,17 @@ class InAppBilling
         return $app['db']->lastInsertId();
     }
 
-    public static function setInAppBillingSucceeded($iab_id)
+    public static function changeInAppBillingStatus($iab_id, $status)
     {
         global $app;
-        return $app['db']->update('inapp_history', array('status' => InAppBilling::STATUS_OK), array('id' => $iab_id));
+        $update_values = array('status' => $status);
+
+        // 환불일 경우, 환불일 적용
+        if ($status == InAppBilling::STATUS_REFUNDED) {
+            $update_values['refunded_date'] = date('Y-m-d H:i:s');
+        }
+
+        return $app['db']->update('inapp_history', $update_values, array('id' => $iab_id));
     }
 
     public static function getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date)
@@ -138,14 +146,14 @@ EOT;
         return $app['db']->fetchAll($sql, $bind);
     }
 
-    public static function getInAppBillingSalesDetail($coin_sale_id)
+    public static function getInAppBillingSalesDetail($iab_sale_id)
     {
         $sql = <<<EOT
 select bu.google_id, ih.* from inapp_history ih
  left join (select * from buyer_user) bu on bu.id = ih.u_id
 where ih.id = ?
 EOT;
-        $bind = array($coin_sale_id);
+        $bind = array($iab_sale_id);
 
         global $app;
         return $app['db']->fetchAssoc($sql, $bind);

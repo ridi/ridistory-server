@@ -25,19 +25,17 @@
         </tr>
         </thead>
         <tbody id='js_tbody'>
-        {% for coin_sale in coin_sales %}
-            <tr data-salesid='{{ coin_sale.id }}'>
-                <td>{{ coin_sale.u_id }}</td>
-                <td>{{ coin_sale.order_id }}</td>
-                <td>{{ coin_sale.sku }}</td>
-                <td>{{ coin_sale.purchase_time }}</td>
+        {% for inapp_sale in inapp_sales %}
+            <tr data-salesid='{{ inapp_sale.id }}'>
+                <td>{{ inapp_sale.u_id }}</td>
+                <td>{{ inapp_sale.order_id }}</td>
+                <td>{{ inapp_sale.sku }}</td>
+                <td>{{ inapp_sale.purchase_time }}</td>
                 <td>
-                    {% if coin_sale.status == 'OK' %}
+                    {% if inapp_sale.status == 'OK' %}
                         정상
-                    {% elseif coin_sale.status == 'REFUNDDED' %}
+                    {% elseif inapp_sale.status == 'REFUNDED' %}
                         <span style="color: #0000FF">환불됨</span>
-                    {% elseif coin_sale.status == 'CANCELLED' %}
-                        <span style="color: #0000FF">취소됨</span>
                     {% else %}
                         <span style="color: #FF0000">오류</span>
                     {% endif %}
@@ -50,13 +48,13 @@
     <ul class="pager">
         <li class="previous">
             {% if cur_page - 1 < 0 %}
-                <a href="/admin/coin_sales/list?page=0&begin_date={{ begin_date }}&end_date={{ end_date }}">&larr; Newer</a>
+                <a href="/admin/inapp_sales/list?page=0&begin_date={{ begin_date }}&end_date={{ end_date }}">&larr; Newer</a>
             {% else %}
-                <a href="/admin/coin_sales/list?page={{ cur_page - 1 }}&begin_date={{ begin_date }}&end_date={{ end_date }}">&larr; Newer</a>
+                <a href="/admin/inapp_sales/list?page={{ cur_page - 1 }}&begin_date={{ begin_date }}&end_date={{ end_date }}">&larr; Newer</a>
             {% endif %}
         </li>
         <li class="next">
-            <a href="/admin/coin_sales/list?page={{ cur_page + 1 }}&begin_date={{ begin_date }}&end_date={{ end_date }}">Older &rarr;</a>
+            <a href="/admin/inapp_sales/list?page={{ cur_page + 1 }}&begin_date={{ begin_date }}&end_date={{ end_date }}">Older &rarr;</a>
         </li>
     </ul>
 
@@ -67,8 +65,8 @@
         $(function() {
 
             $('#js_tbody tr').click(function() {
-                var coin_sales_id = $(this).data('salesid');
-                location.href = '/admin/coin_sales/' + coin_sales_id;
+                var iab_sale_id = $(this).data('salesid');
+                location.href = '/admin/inapp_sales/' + iab_sale_id;
             });
 
             $('#js_tbody tr').hover(function() {
