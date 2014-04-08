@@ -22,7 +22,6 @@
             <th>구글 주문번호</th>
             <th>SKU</th>
             <th>결제 시간</th>
-            <th>비고</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -32,13 +31,6 @@
                 <td>{{ coin_sale.order_id }}</td>
                 <td>{{ coin_sale.sku }}</td>
                 <td>{{ coin_sale.purchase_time }}</td>
-                <td>
-                    {% if coin_sale.is_succeeded == 0 %}
-                        <span style="color: #ff0000">오류</span>
-                    {% else %}
-                        정상
-                    {% endif %}
-                </td>
             </tr>
         {% endfor %}
         </tbody>
