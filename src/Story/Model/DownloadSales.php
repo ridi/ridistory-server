@@ -87,7 +87,7 @@ EOT;
 select date(ph.timestamp) purchase_date, p.b_id, b.title b_title, ph.p_id, p.title p_title, sum(if(is_paid=0, 1, 0)) free_download, sum(if(is_paid=1, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph
  left join (select id, b_id, title from part) p on p.id = ph.p_id
  left join (select id, title from book) b on b.id = p.b_id
-where date(ph.timestamp) >= ? and date(ph.timestamp) <= ? group by ph.p_id, date(ph.timestamp) order by ph.timestamp asc
+where date(ph.timestamp) >= ? and date(ph.timestamp) <= ? group by ph.p_id, date(ph.timestamp) order by ph.timestamp desc
 EOT;
         $bind = array($begin_date, $end_date);
 
