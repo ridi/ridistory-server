@@ -20,8 +20,14 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
     public function downloadSalesList(Request $req, Application $app)
     {
-        $search_begin_date = $req->get('begin_date');
-        $search_end_date = $req->get('end_date');
+        $search_begin_date = $req->get('begin_date', '0000-00-00');
+        $search_end_date = $req->get('end_date', date('Y-m-d'));
+        if ($search_begin_date == '') {
+            $search_begin_date = '0000-00-00';
+        }
+        if ($search_end_date == '') {
+            $search_end_date = date('Y-m-d');
+        }
         $search_date = array(
             'begin_date' => $search_begin_date,
             'end_date' => $search_end_date
@@ -97,8 +103,14 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
     public function downloadSalesDetail(Request $req, Application $app, $b_id)
     {
-        $begin_date = $req->get('begin_date');
-        $end_date = $req->get('end_date');
+        $begin_date = $req->get('begin_date', '0000-00-00');
+        $end_date = $req->get('end_date', date('Y-m-d'));
+        if ($begin_date == '') {
+            $begin_date = '0000-00-00';
+        }
+        if ($end_date == '') {
+            $end_date = date('Y-m-d');
+        }
         $search_date = array(
             'begin_date' => $begin_date,
             'end_date' => $end_date

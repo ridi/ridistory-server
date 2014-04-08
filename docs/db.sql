@@ -123,7 +123,7 @@ CREATE TABLE `inapp_history` (
   `purchase_token` varchar(200) NOT NULL,
   `purchase_data` varchar(1024) NOT NULL,
   `signature` varchar(1024) NOT NULL,
-  `is_succeeded` tinyint(4) NOT NULL DEFAULT '0',
+  `status` enum('OK','REFUNDED','CANCELLED','ERROR') NOT NULL DEFAULT 'ERROR' COMMENT 'OK: 정상, REFUNDDED: 환불됨, CANCELLED: 취소됨, ERROR: 오류',
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_id` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -303,6 +303,15 @@ CREATE TABLE `storyplusbook_intro` (
   PRIMARY KEY (`id`),
   KEY `index_bid` (`b_id`) USING BTREE,
   CONSTRAINT `storyplusbook_intro` FOREIGN KEY (`b_id`) REFERENCES `storyplusbook` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `test_user` (
+  `u_id` int(11) NOT NULL,
+  `comment` varchar(32) NOT NULL,
+  `is_active` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0: Deactive, 1: Active',
+  PRIMARY KEY (`u_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

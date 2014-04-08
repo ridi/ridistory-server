@@ -14,6 +14,12 @@ class InAppBilling
     const CONSUMPTION_STATE_CONSUMED = 1;
     const CONSUMPTION_STATE_NOT_CONSUMED = 0;
 
+    // Status Enum
+    const STATUS_OK = 'OK';
+    const STATUS_REFUNDED = 'REFUNDDED';
+    const STATUS_CANCELLED = 'CANCELLED';
+    const STATUS_ERROR = 'ERROR';
+
     public static function createInAppProduct()
     {
         global $app;
@@ -48,19 +54,7 @@ class InAppBilling
     public static function getInAppProductList()
     {
         global $app;
-        return $app['db']->fetchAll('select sku from inapp_products order by coin_amount asc');
-    }
-
-    public static function getInAppProductListWithTotalSales()
-    {
-        $sql = <<<EOT
-select ip.*, ifnull(total_sales_count, 0) total_sales_count from inapp_products ip
- left join (select sku, count(*) total_sales_count from inapp_history group by sku) ih on ip.sku = ih.sku
-order by ip.coin_amount asc
-EOT;
-
-        global $app;
-        return $app['db']->fetchAll($sql);
+        return $app['db']->fetchAll('select * from inapp_products order by coin_amount asc');
     }
 
     public static function verifyInAppBilling($values)
@@ -121,7 +115,12 @@ EOT;
     public static function setInAppBillingSucceeded($iab_id)
     {
         global $app;
-        return $app['db']->update('inapp_history', array('is_succeeded' => 1), array('id' => $iab_id));
+        $exists = $app['db']->fetchColumn('SHOW COLUMNS FROM inapp_history LIKE \'status\'') ? 1 : 0;
+        if ($exists) {
+            return $app['db']->update('inapp_history', array('status' => InAppBilling::STATUS_OK), array('id' => $iab_id));
+        } else {
+            return $app['db']->update('inapp_history', array('is_succeeded' => 1), array('id' => $iab_id));
+        }
     }
 
     public static function getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date)

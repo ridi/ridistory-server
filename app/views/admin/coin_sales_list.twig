@@ -1,35 +1,6 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-
-    <div class="well form-inline">
-        <h4>통계</h4>
-        <table class='table'>
-            <thead>
-            <tr>
-                <th>날짜</th>
-                <th>구매유저수</th>
-                <th>구입코인수</th>
-                <th>보너스지급코인수</th>
-                <th>충전된코인총계</th>
-                <th>코인구매액총계</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for coin_sales_stat in coin_sales_stats %}
-                <tr>
-                    <td>{{ coin_sales_stat.purchase_date }}</td>
-                    <td>{{ coin_sales_stat.user_count }}</td>
-                    <td>{{ coin_sales_stat.coin_amount }}</td>
-                    <td>{{ coin_sales_stat.bonus_coin_amount }}</td>
-                    <td>{{ coin_sales_stat.total_coin_amount }}</td>
-                    <td>{{ coin_sales_stat.total_sales|number_format(0, '', ',') }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
     <form>
         <div class="well form-inline">
             <h4>기간 설정</h4>

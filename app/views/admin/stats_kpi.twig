@@ -1,0 +1,45 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <form>
+        <div class="well form-inline">
+            <h4>기간 설정</h4>
+            <input type='text' class='input-medium' name='begin_date' value='{{ begin_date }}' placeholder='0000-00-00' />
+            ~
+            <input type='text' class='input-medium' name='end_date' value='{{ end_date }}' placeholder='0000-00-00' />
+            <button class="btn">조회</button>
+            <div style='margin-top: 15px;'>
+                * 기간을 입력하지 않으시면, 전체 통계가 조회됩니다. (예. 끝나는 날짜를 입력하지 않으시면, 현재 시간의 통계까지 조회됩니다.)<br />
+                * 시작 날짜의 시간 기준은 0시 0분 0초이며, 끝나는 날짜는 23시 59분 59초입니다.
+            </div>
+        </div>
+    </form>
+
+    <div class="well form-inline">
+        <h4>코인 구매 지표</h4>
+        <table class='table'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>구매유저수</th>
+                <th>구입코인수</th>
+                <th>보너스지급코인수</th>
+                <th>충전된코인총계</th>
+                <th>코인구매액총계</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bc in buy_coins %}
+                <tr>
+                    <td>{{ bc.purchase_date }}</td>
+                    <td>{{ bc.user_count }}</td>
+                    <td>{{ bc.coin_amount }}</td>
+                    <td>{{ bc.bonus_coin_amount }}</td>
+                    <td>{{ bc.total_coin_amount }}</td>
+                    <td>{{ bc.total_sales|number_format(0, '', ',') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -108,6 +108,7 @@ EOT;
 
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
+        $admin->get('/stats_kpi', array($this, 'statsKpi'));
 
         return $admin;
     }
@@ -362,7 +363,7 @@ EOT;
 
     public static function inAppProductList(Application $app)
     {
-        $inapp_list = InAppBilling::getInAppProductListWithTotalSales();
+        $inapp_list = InAppBilling::getInAppProductList();
         return $app['twig']->render('/admin/inapp_product_list.twig', array('inapp_list' => $inapp_list));
     }
 
@@ -405,23 +406,11 @@ EOT;
             'end_date' => $end_date
         );
 
-        //TODO: 임시. 코인 관련 통계 페이지 제작 후, 아래 Coin Sales Stat 관련 코드 제거.
-        $sql = <<<EOT
-select date(a.purchase_time) purchase_date, count(distinct a.u_id) user_count, sum(b.coin_amount) coin_amount, sum(b.bonus_coin_amount) bonus_coin_amount, sum(b.price) total_sales from inapp_history a
- join inapp_products b on a.sku = b.sku
-group by date(a.purchase_time)
-EOT;
-        $coin_sales_stats = $app['db']->fetchAll($sql);
-        foreach ($coin_sales_stats as &$css) {
-            $css['total_coin_amount'] = $css['coin_amount'] + $css['bonus_coin_amount'];
-        }
-
         $coin_sales = InAppBilling::getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date);
         return $app['twig']->render(
             '/admin/coin_sales_list.twig',
             array(
                 'search_date' => $search_date,
-                'coin_sales_stats' => $coin_sales_stats,
                 'coin_sales' => $coin_sales,
                 'cur_page' => $cur_page
             )
@@ -553,6 +542,35 @@ EOT;
         return $app['twig']->render(
             '/admin/stats_like.twig',
             $twig_var
+        );
+    }
+
+    public static function statsKpi(Application $app, Request $req)
+    {
+        $begin_date = $req->get('begin_date');
+        $end_date = $req->get('end_date');
+
+        $buy_coins = null;
+
+        if ($begin_date && $end_date) {
+            $sql = <<<EOT
+    select date(a.purchase_time) purchase_date, count(distinct a.u_id) user_count, sum(b.coin_amount) coin_amount, sum(b.bonus_coin_amount) bonus_coin_amount, sum(b.price) total_sales from inapp_history a
+     join inapp_products b on a.sku = b.sku
+    where a.is_succeeded = 1 and a.purchase_time >= ? and a.purchase_time <= ? group by date(a.purchase_time)
+EOT;
+            $buy_coins = $app['db']->fetchAll($sql, array(date('Y-m-d 00:00:00', strtotime($begin_date)), date('Y-m-d 23:59:59', strtotime($end_date))));
+            foreach ($buy_coins as &$bc) {
+                $bc['total_coin_amount'] = $bc['coin_amount'] + $bc['bonus_coin_amount'];
+            }
+        }
+
+        return $app['twig']->render(
+            '/admin/stats_kpi.twig',
+            array(
+                'begin_date' => $begin_date,
+                'end_date' => $end_date,
+                'buy_coins' => $buy_coins
+            )
         );
     }
 }
