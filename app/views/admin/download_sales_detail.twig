@@ -32,7 +32,17 @@
         </tr>
         <tr>
             <th>조회 기간</th>
-            <td>{{ search_date.begin_date }} ~ {{ search_date.end_date }}</td>
+            <td>
+                {% if search_date.begin_date == '' and search_date.end_date == '' %}
+                    전체
+                {% elseif search_date.begin_date != '' and search_date.end_date == '' %}
+                    {{ search_date.begin_date }} ~ 현재
+                {% elseif search_date.begin_date == '' and search_date.end_date != '' %}
+                    연재시작 ~ {{ search_date.end_date }}
+                {% else %}
+                    {{ search_date.begin_date }} ~ {{ search_date.end_date }}
+                {% endif %}
+            </td>
         </tr>
         <tr>
             <th>연재별 판매</th>

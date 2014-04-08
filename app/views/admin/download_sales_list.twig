@@ -5,7 +5,7 @@
     <div class="well">
         <div style="float: left;">
             <h3>매출 확인</h3>
-            <button class="btn" id="all_download_sales_btn">파트 포함 전체 매출 목록 확인 (준비중)</button>
+            <button class="btn" id="all_download_sales_btn">파트 포함 전체 매출 목록 확인</button>
         </div>
         <div style="float: right; margin-top: 15px;">
             <blockquote>
@@ -73,7 +73,7 @@
         $(function() {
 
             $('#all_download_sales_btn').click(function() {
-                //TODO: Depth 없이 파트 포함 매출을 쫙 보여주는 페이지가 필요.
+                location.href = '/admin/download_sales/all';
             });
 
             $('#js_tbody tr').click(function() {
