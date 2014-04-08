@@ -120,28 +120,18 @@ class InAppBilling
 
     public static function getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date)
     {
-        $first_timestamp = date('1970-01-01 00:00:01');
-        $today = date('Y-m-d H:i:s');
+        if (!$begin_date) {
+            $begin_date = '0000-00-00';
+        }
+        if (!$end_date) {
+            $end_date = date('Y-m-d');
+        }
 
         $sql = <<<EOT
 select * from inapp_history
-where purchase_time >= ? and purchase_time <= ?
+where date(purchase_time) >= ? and date(purchase_time) <= ?
 order by purchase_time desc limit {$offset}, {$limit}
 EOT;
-
-        if ($begin_date && $end_date) {
-            $begin_date = date('Y-m-d 00:00:00', strtotime($begin_date));
-            $end_date = date('Y-m-d 23:59:59', strtotime($end_date));
-        } else if ($begin_date && !$end_date) {
-            $begin_date = date('Y-m-d 00:00:00', strtotime($begin_date));
-            $end_date = $today;
-        } else if (!$begin_date && $end_date) {
-            $begin_date = $first_timestamp;
-            $end_date = date('Y-m-d 23:59:59', strtotime($end_date));
-        } else {
-            $begin_date = $first_timestamp;
-            $end_date = $today;
-        }
         $bind = array($begin_date, $end_date);
 
         global $app;

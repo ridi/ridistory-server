@@ -4,13 +4,12 @@
     <form>
         <div class="well form-inline">
             <h4>기간 설정</h4>
-            <input type='text' class='input-medium' name='begin_date' value='{{ search_date.begin_date }}' placeholder='0000-00-00' />
+            <input type='text' class='input-medium' name='begin_date' value='{{ begin_date }}' placeholder='0000-00-00' />
             ~
-            <input type='text' class='input-medium' name='end_date' value='{{ search_date.end_date }}' placeholder='0000-00-00' />
+            <input type='text' class='input-medium' name='end_date' value='{{ end_date }}' placeholder='0000-00-00' />
             <button class="btn">조회</button>
             <div style='margin-top: 15px;'>
                 * 기간을 입력하지 않으시면, 전체 코인 판매 내역이 조회됩니다. (예. 끝나는 날짜를 입력하지 않으시면, 현재 시간의 판매 내역까지 조회됩니다.)<br />
-                * 시작 날짜의 시간 기준은 0시 0분 0초이며, 끝나는 날짜는 23시 59분 59초입니다.
             </div>
         </div>
     </form>
@@ -51,13 +50,13 @@
     <ul class="pager">
         <li class="previous">
             {% if cur_page - 1 < 0 %}
-                <a href="/admin/coin_sales/list?page=0&begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}">&larr; Newer</a>
+                <a href="/admin/coin_sales/list?page=0&begin_date={{ begin_date }}&end_date={{ end_date }}">&larr; Newer</a>
             {% else %}
-                <a href="/admin/coin_sales/list?page={{ cur_page - 1 }}&begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}">&larr; Newer</a>
+                <a href="/admin/coin_sales/list?page={{ cur_page - 1 }}&begin_date={{ begin_date }}&end_date={{ end_date }}">&larr; Newer</a>
             {% endif %}
         </li>
         <li class="next">
-            <a href="/admin/coin_sales/list?page={{ cur_page + 1 }}&begin_date={{ search_date.begin_date }}&end_date={{ search_date.end_date }}">Older &rarr;</a>
+            <a href="/admin/coin_sales/list?page={{ cur_page + 1 }}&begin_date={{ begin_date }}&end_date={{ end_date }}">Older &rarr;</a>
         </li>
     </ul>
 
