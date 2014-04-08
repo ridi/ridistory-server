@@ -115,12 +115,7 @@ class InAppBilling
     public static function setInAppBillingSucceeded($iab_id)
     {
         global $app;
-        $exists = $app['db']->fetchColumn('SHOW COLUMNS FROM inapp_history LIKE \'status\'') ? 1 : 0;
-        if ($exists) {
-            return $app['db']->update('inapp_history', array('status' => InAppBilling::STATUS_OK), array('id' => $iab_id));
-        } else {
-            return $app['db']->update('inapp_history', array('is_succeeded' => 1), array('id' => $iab_id));
-        }
+        return $app['db']->update('inapp_history', array('status' => InAppBilling::STATUS_OK), array('id' => $iab_id));
     }
 
     public static function getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date)

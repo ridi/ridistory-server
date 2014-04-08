@@ -556,7 +556,7 @@ EOT;
             $sql = <<<EOT
     select date(a.purchase_time) purchase_date, count(distinct a.u_id) user_count, sum(b.coin_amount) coin_amount, sum(b.bonus_coin_amount) bonus_coin_amount, sum(b.price) total_sales from inapp_history a
      join inapp_products b on a.sku = b.sku
-    where a.purchase_time >= ? and a.purchase_time <= ? group by date(a.purchase_time)
+    where a.status = 'OK' and a.purchase_time >= ? and a.purchase_time <= ? group by date(a.purchase_time)
 EOT;
             $buy_coins = $app['db']->fetchAll($sql, array(date('Y-m-d 00:00:00', strtotime($begin_date)), date('Y-m-d 23:59:59', strtotime($end_date))));
             foreach ($buy_coins as &$bc) {

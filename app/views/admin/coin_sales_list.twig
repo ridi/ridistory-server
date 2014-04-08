@@ -22,6 +22,7 @@
             <th>구글 주문번호</th>
             <th>SKU</th>
             <th>결제 시간</th>
+            <th>상태</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -31,6 +32,17 @@
                 <td>{{ coin_sale.order_id }}</td>
                 <td>{{ coin_sale.sku }}</td>
                 <td>{{ coin_sale.purchase_time }}</td>
+                <td>
+                    {% if coin_sale.status == 'OK' %}
+                        정상
+                    {% elseif coin_sale.status == 'REFUNDDED' %}
+                        <span style="color: #0000FF">환불됨</span>
+                    {% elseif coin_sale.status == 'CANCELLED' %}
+                        <span style="color: #0000FF">취소됨</span>
+                    {% else %}
+                        <span style="color: #FF0000">오류</span>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>

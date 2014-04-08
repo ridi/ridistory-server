@@ -25,20 +25,14 @@
             <td>{{ date_format(cp.contract_date) }}</td>
             <td>{{ date_format(cp.end_date) }}</td>
             <td>{{ cp.book_count }}</td>
+            <td>{{ get_cp_type(cp.cp_type) }}</td>
             <td>
-                {% if cp.cp_type == 'Publisher' %}
-                    출판사
-                {% elseif cp.cp_type == 'Private' %}
-                    개인
-                {% elseif cp.cp_type == 'AG' %}
-                    AG
-                {% elseif cp.cp_type == 'Closed' %}
-                    폐업
-                {% elseif cp.cp_type == 'ETC' %}
-                    기타
-                {% endif %}
+                <form method='post' action='/cp_admin/login/check' target='_blank' style='margin: 0; padding: 0;'>
+                    <input type='hidden' name='id' value='{{ cp.cp_site_id }}' />
+                    <input type='hidden' name='pw' value='{{ cp.password }}' />
+                    <button type='submit' class='btn'>CP 로그인</button>
+                </form>
             </td>
-            <td><a class="cp_login" data-site_id='{{ cp.cp_site_id }}' data-pw='{{ cp.password }}'>[CP 로그인]</a></td>
         </tr>
     {% endfor %}
     </tbody>
@@ -50,20 +44,6 @@
 {% block script %}
 <script>
     $(function() {
-        $('.cp_login').click(function() {
-            var site_id = $(this).data('site_id');
-            var pw = $(this).data('pw');
-
-            $.post('/cp_admin/login/check', {id: site_id, pw: pw}, function(r) {
-                if (r.error) {
-                    alert(r.error);
-                } else {
-                    window.open('/cp_admin', '_blank');
-                }
-            });
-            return false;
-        });
-
         $('#js_add').click(function() {
             location.href = '/admin/cp_account/add';
         });

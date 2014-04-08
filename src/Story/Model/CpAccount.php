@@ -3,6 +3,13 @@ namespace Story\Model;
 
 class CpAccount
 {
+    // CP 형태 Enum
+    const TYPE_PUBLISHER = 'Publisher';
+    const TYPE_PRIVATE = 'Private';
+    const TYPE_AG = 'AG';
+    const TYPE_CLOSED = 'Closed';
+    const TYPE_ETC = 'ETC';
+
     public static function create()
     {
         global $app;

@@ -35,6 +35,20 @@
                 {{ coin_sale.payload }}
             </td>
         </tr>
+        <tr>
+            <th>상태</th>
+            <td>
+                {% if coin_sale.status == 'OK' %}
+                    정상
+                {% elseif coin_sale.status == 'REFUNDDED' %}
+                    <span style="color: #0000FF">환불됨</span>
+                {% elseif coin_sale.status == 'CANCELLED' %}
+                    <span style="color: #0000FF">취소됨</span>
+                {% else %}
+                    <span style="color: #FF0000">오류</span>
+                {% endif %}
+            </td>
+        </tr>
     </table>
 
     <table class='table'>
@@ -56,6 +70,8 @@
 
     <div class='form-actions'>
         <button class='btn btn-cancel'>목록으로</button>
+        <button class='btn btn-danger pull-right'>환불</button>
+        <button class='btn btn-warning pull-right' style="margin-right: 15px;">취소</button>
     </div>
 
 {% endblock %}
@@ -64,9 +80,21 @@
     <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
     <script>
         $(function() {
-
+            // 목록으로
             $('.btn-cancel').click(function() {
                 location.href = '/admin/coin_sales/list';
+                return false;
+            });
+
+            // 환불
+            $('.btn-danger').click(function() {
+                alert('환불');
+                return false;
+            });
+
+            // 취소
+            $('.btn-warning').click(function() {
+                alert('취소');
                 return false;
             });
         });

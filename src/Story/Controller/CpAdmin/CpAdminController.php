@@ -169,8 +169,9 @@ class CpAdminController implements ControllerProviderInterface
 
         $bind = array(
             'cp' => $cp,
+            'begin_date' => $begin_date,
+            'end_date' => $end_date,
             'header' => array('total_sales' => $total_sales, 'total_sales_royalty' => $total_sales_royalty, 'total_download' => $total_charged_download),
-            'search_date' => array('begin_date' => $begin_date, 'end_date' => $end_date),
             'download_sales' => $download_sales
         );
 
@@ -200,9 +201,25 @@ class CpAdminController implements ControllerProviderInterface
             $total_charged_download += $dsd['charged_download'];
         }
 
+        $app['twig']->addFunction(
+            new Twig_SimpleFunction('get_date_scope', function ($begin_date, $end_date) {
+                if (!$begin_date && !$end_date) {
+                    $scope = '전체';
+                } else if ($begin_date && !$end_date) {
+                    $scope = $begin_date . ' ~ 현재';
+                } else if (!$$begin_date && $end_date) {
+                    $scope = '연재시작 ~ ' . $end_date;
+                } else {
+                    $scope = $begin_date . ' ~ ' . $end_date;
+                }
+                return $scope;
+            })
+        );
+
         $bind = array(
             'cp' => $cp,
-            'search_date' => array('begin_date' => $begin_date, 'end_date' => $end_date),
+            'begin_date' => $begin_date,
+            'end_date' => $end_date,
             'download_sales' => $download_sales,
             'download_sales_detail' => $download_sales_detail,
             'footer' => array('total_sales' => $total_sales, 'total_download' => $total_charged_download)

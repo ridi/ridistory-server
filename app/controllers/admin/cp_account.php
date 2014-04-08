@@ -38,6 +38,25 @@ class AdminCpAccountControllerProvider implements ControllerProviderInterface
             })
         );
 
+        $app['twig']->addFunction(
+            new Twig_SimpleFunction('get_cp_type', function ($cp_type) {
+                switch($cp_type) {
+                    case CpAccount::TYPE_PUBLISHER:
+                        return '출판사';
+                    case CpAccount::TYPE_PRIVATE:
+                        return '개인';
+                    case CpAccount::TYPE_AG:
+                        return 'AG';
+                    case CpAccount::TYPE_CLOSED:
+                        return '폐업';
+                    case CpAccount::TYPE_ETC:
+                        return 'ETC';
+                    default:
+                        return '';
+                }
+            })
+        );
+
         return $app['twig']->render('admin/cp_account_list.twig', array('cp_accounts' => $cp_accounts));
     }
 

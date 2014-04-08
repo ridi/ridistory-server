@@ -1,0 +1,67 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+
+    <div class="well form-inline">
+        <button class="btn" id="return_to_list">책 별 목록으로</button>
+        <form>
+            <h3>파트 포함 전체 매출 확인</h3>
+            <h4>기간 설정</h4>
+            <input type='text' class='input-medium' name='begin_date' value='{{ begin_date }}' placeholder='0000-00-00' />
+            ~
+            <input type='text' class='input-medium' name='end_date' value='{{ end_date }}' placeholder='0000-00-00' />
+            <button class="btn">조회</button>
+            <div style='margin-top: 15px;'>
+                * 시작일, 종료일 중 하나는 필수로 입력해 주셔야합니다.<br />
+                * 기간을 입력하지 않으시면, 전체 매출이 조회됩니다. (예. 끝나는 날짜를 입력하지 않으시면, 현재 시간의 매출까지 조회됩니다.)<br />
+            </div>
+        </form>
+    </div>
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th class='span2'>날짜</th>
+            <th class='span1'>책 ID</th>
+            <th>도서명</th>
+            <th class='span1'>파트 ID</th>
+            <th>파트명</th>
+            <th>무료다운</th>
+            <th>유료다운</th>
+            <th>판매액</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for ds in download_sales %}
+            <tr>
+                <td>{{ ds.purchase_date }}</td>
+                <td>{{ ds.b_id }}</td>
+                <td>{{ ds.b_title }}</td>
+                <td>{{ ds.p_id }}</td>
+                <td>{{ ds.p_title }}</td>
+                <td>{{ ds.free_download }}</td>
+                <td>{{ ds.charged_download }}</td>
+                <td>{{ (ds.total_sales * 90)|number_format(0, '', ',') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#return_to_list').click(function() {
+                location.href = '/admin/download_sales/list';
+            });
+
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}
