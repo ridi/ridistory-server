@@ -4,7 +4,7 @@
 <form>
     <div class="well form-inline">
         <h4>책 제목 검색</h4>
-        <select name='search_type'>
+        <select id='search' name='search_type'>
             <option value='book_title'>책 제목</option>
             <option value='nickname'>닉네임</option>
             <option value='ip_addr'>IP 주소</option>
@@ -44,25 +44,21 @@
 <ul class="pager">
     <li class="previous">
         {% if cur_page - 1 < 0 %}
-            <a href="/admin/comment/list?page=0&search_type={{ search_type }}&search_keyword={{ search_keyword }}">&larr; Newer</a>
+            <a href="/admin/comment/list?page=0">&larr; Newer</a>
         {% else %}
-            <a href="/admin/comment/list?page={{ cur_page - 1 }}&search_type={{ search_type }}&search_keyword={{ search_keyword }}">&larr; Newer</a>
+            <a href="/admin/comment/list?page={{ cur_page - 1 }}">&larr; Newer</a>
         {% endif %}
     </li>
     <li class="next">
-        <a href="/admin/comment/list?page={{ cur_page + 1 }}&search_type={{ search_type }}&search_keyword={{ search_keyword }}">Older &rarr;</a>
+        <a href="/admin/comment/list?page={{ cur_page + 1 }}">Older &rarr;</a>
     </li>
 </ul>
 {% endblock %}
 
 {% block script %}
-<script>
-$('#select_all').change(function() {
-    if ($(this).is(':checked')) {
-    	$(':checkbox[id!="select_all"]').attr('checked', 'checked');
-    } else {
-        $(':checkbox[id!="select_all"]').removeAttr('checked');
-    }
-});
-</script>
+    <script>
+        $(function() {
+            $('#search').val('{{ search_type }}');
+        });
+    </script>
 {% endblock %}

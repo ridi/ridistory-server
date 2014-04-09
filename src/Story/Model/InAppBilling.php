@@ -126,24 +126,34 @@ class InAppBilling
         return $app['db']->update('inapp_history', $update_values, array('id' => $iab_id));
     }
 
-    public static function getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date)
+    public static function getInAppBillingSalesListByOffsetAndSize($offset, $limit)
     {
-        if (!$begin_date) {
-            $begin_date = '0000-00-00';
-        }
-        if (!$end_date) {
-            $end_date = date('Y-m-d');
-        }
-
         $sql = <<<EOT
 select * from inapp_history
-where date(purchase_time) >= ? and date(purchase_time) <= ?
 order by purchase_time desc limit {$offset}, {$limit}
 EOT;
-        $bind = array($begin_date, $end_date);
+        global $app;
+        return $app['db']->fetchAll($sql);
+    }
+
+    public static function getInAppBillingSalesListBySearchTypeAndKeyword($type, $keyword)
+    {
+        if ($type == 'uid') {
+            $sql = <<<EOT
+select * from inapp_history
+where u_id = {$keyword} order by purchase_time desc
+EOT;
+        } else if ($type == 'google_order_num') {
+            $sql = <<<EOT
+select * from inapp_history
+where order_id like '%{$keyword}%' order by purchase_time desc
+EOT;
+        } else {
+            $sql = null;
+        }
 
         global $app;
-        return $app['db']->fetchAll($sql, $bind);
+        return $app['db']->fetchAll($sql);
     }
 
     public static function getInAppBillingSalesDetail($iab_sale_id)

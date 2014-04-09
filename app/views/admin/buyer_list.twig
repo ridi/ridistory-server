@@ -5,8 +5,8 @@
     <form>
         <div class="well form-inline">
             <h4>회원 검색 (총 {{ buyer_count }}명)</h4>
-            <select name='search_type'>
-                <option value='google_account' selected>구글 계정</option>
+            <select id='search' name='search_type'>
+                <option value='google_account'>구글 계정</option>
                 <option value='uid'>유저 ID</option>
             </select>
             <input type='text' class='input-xlarge' name='search_keyword' value='{{ search_keyword }}' placeholder='검색어를 입력해주세요.' />
@@ -40,13 +40,13 @@
     <ul class="pager">
         <li class="previous">
             {% if cur_page - 1 < 0 %}
-                <a href="/admin/buyer/list?page=0&search_type={{ search_type }}&search_keyword={{ search_keyword }}">&larr; Newer</a>
+                <a href="/admin/buyer/list?page=0">&larr; Newer</a>
             {% else %}
-                <a href="/admin/buyer/list?page={{ cur_page - 1 }}&search_type={{ search_type }}&search_keyword={{ search_keyword }}">&larr; Newer</a>
+                <a href="/admin/buyer/list?page={{ cur_page - 1 }}">&larr; Newer</a>
             {% endif %}
         </li>
         <li class="next">
-            <a href="/admin/buyer/list?page={{ cur_page + 1 }}&search_type={{ search_type }}&search_keyword={{ search_keyword }}">Older &rarr;</a>
+            <a href="/admin/buyer/list?page={{ cur_page + 1 }}">Older &rarr;</a>
         </li>
     </ul>
 {% endblock %}
@@ -54,6 +54,7 @@
 {% block script %}
     <script>
         $(function() {
+            $('#search').val('{{ search_type }}');
 
             $('#js_tbody tr').click(function() {
                 var b_id = $(this).data('bid');

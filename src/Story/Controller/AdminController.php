@@ -134,7 +134,7 @@ select pc.*, p.seq, b.title from part_comment pc
  left join (select id, b_id, seq from part) p on p.id = pc.p_id
  left join (select id, title from book) b on b.id = p.b_id
 where b.title like '%{$search_keyword}%'
-order by id desc limit {$offset}, {$limit}
+order by id desc
 EOT;
             } else if ($search_type == 'nickname') {
                 $sql = <<<EOT
@@ -142,7 +142,7 @@ select pc.*, p.seq, b.title from part_comment pc
  left join (select id, b_id, seq from part) p on p.id = pc.p_id
  left join (select id, title from book) b on b.id = p.b_id
 where pc.nickname like '%{$search_keyword}%'
-order by id desc limit {$offset}, {$limit}
+order by id desc
 EOT;
             } else if ($search_type == 'ip_addr') {
                 $search_keyword = ip2long($search_keyword);
@@ -151,7 +151,7 @@ select pc.*, p.seq, b.title from part_comment pc
  left join (select id, b_id, seq from part) p on p.id = pc.p_id
  left join (select id, title from book) b on b.id = p.b_id
 where pc.ip = '{$search_keyword}'
-order by id desc limit {$offset}, {$limit}
+order by id desc
 EOT;
             }
         } else {
@@ -396,20 +396,24 @@ EOT;
      */
     public static function inappSalesList(Request $req, Application $app)
     {
+        $search_type = $req->get('search_type', null);
+        $search_keyword = $req->get('search_keyword', null);
         $cur_page = $req->get('page', 0);
 
         $limit = 50;
         $offset = $cur_page * $limit;
 
-        $begin_date = $req->get('begin_date');
-        $end_date = $req->get('end_date');
+        if ($search_type && $search_keyword) {
+            $inapp_sales = InAppBilling::getInAppBillingSalesListBySearchTypeAndKeyword($search_type, $search_keyword);
+        } else {
+            $inapp_sales = InAppBilling::getInAppBillingSalesListByOffsetAndSize($offset, $limit);
+        }
 
-        $inapp_sales = InAppBilling::getInAppBillingSalesListByOffsetAndSize($offset, $limit, $begin_date, $end_date);
         return $app['twig']->render(
             '/admin/inapp_sales_list.twig',
             array(
-                'begin_date' => $begin_date,
-                'end_date' => $end_date,
+                'search_type' => $search_type,
+                'search_keyword' => $search_keyword,
                 'inapp_sales' => $inapp_sales,
                 'cur_page' => $cur_page
             )
