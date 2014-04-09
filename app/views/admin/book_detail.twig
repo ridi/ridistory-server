@@ -231,7 +231,7 @@ $(function() {
             .filter('[value="{{ book.end_action_flag }}"]')
             .attr('checked', true);
     
-    // twig 에 bit 연산자가 음슴;;
+    // twig 에 bit 연산자가 음슴
     $('input:checkbox[name="upload_days[]"]')
     .filter(function(i) {
         return !!({{ book.upload_days }} & (1 << i));

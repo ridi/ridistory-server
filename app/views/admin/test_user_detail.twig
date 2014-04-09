@@ -1,0 +1,64 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<form action="/admin/test_user/{{ test_user.u_id }}/edit" method='post'>
+    <table class='table'>
+        <colgroup>
+            <col class="span1">
+            <col class="span7">
+        </colgroup>
+        <tr>
+            <th>유저 ID</th>
+            <td>{{ test_user.u_id }}</td>
+        </tr>
+        <tr>
+            <th>Comment</th>
+            <td><input type='text' class='input-xlarge' name='comment' value='{{ test_user.comment }}' /></td>
+        </tr>
+        <tr>
+            <th>Active</th>
+            <td>
+                <select name='is_active'>
+                    <option value='0'>비활성</option>
+                    <option value='1'>활성</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+
+    <div class='form-actions'>
+        <button type='submit' class='btn btn-success'>수정 완료</button>
+        <button class='btn btn-cancel'>목록으로</button>
+        <button class='btn btn-danger pull-right'>삭제</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
+    <script>
+        $(function() {
+            $('select option')
+                    .filter('[value="{{ test_user.is_active }}"]')
+                    .prop('selected', true);
+
+            $('.btn-cancel').click(function() {
+                location.href = '/admin/test_user/list';
+                return false;
+            });
+
+            $('.btn-danger').click(function() {
+                if (confirm('삭제하시겠습니까?')) {
+                    $.post('/admin/test_user/{{ test_user.u_id }}/delete', function(r) {
+                        if (r.error) {
+                            alert(r.error);
+                        } else {
+                            location.href = '/admin/test_user/list';
+                        }
+                    })
+                }
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

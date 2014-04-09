@@ -231,7 +231,7 @@ EOT;
 select * from book where cp_id = ?
 EOT;
         global $app;
-        return $app['db']->fetchAll($sql, array($cp_id));;
+        return $app['db']->fetchAll($sql, array($cp_id));
     }
 
     public static function create()

@@ -1,0 +1,66 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th>유저 ID</th>
+            <th>Comment</th>
+            <th>Active</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for test_user in test_users %}
+            <tr data-uid='{{ test_user.u_id }}'>
+                <td>{{ test_user.u_id }}</td>
+                <td>{{ test_user.comment }}</td>
+                <td>
+                    {% if test_user.is_active == 1 %}
+                        활성됨
+                    {% else %}
+                        비활성됨
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button class='btn btn-primary' id='js_add' style='margin-bottom: 10px;'>추가</button>
+
+    <form action='/admin/test_user/add' method='get'>
+        <div class="well form-inline" id='add_form' style='display: none;'>
+            유저 ID : <input type='text' class='input-medium' name='u_id' /><br /><br />
+            Comment: <input type='text' class='input-medium' name='comment' /><br /><br />
+            Active : <select name='is_active'><option value='0' selected>비활성</option><option value='1'>활성</option></select><br /><br />
+            <button class='btn' type='submit'>확인</button>
+        </div>
+    </form>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#js_add').click(function() {
+                if ($('#js_add').text() == '추가') {
+                    $('#js_add').text('취소');
+                    $('#add_form').show();
+                } else {
+                    $('#js_add').text('추가');
+                    $('#add_form').hide();
+                }
+            });
+
+            $('#js_tbody tr').click(function() {
+                var u_id = $(this).data('uid');
+                location.href = '/admin/test_user/' + u_id;
+            });
+
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}

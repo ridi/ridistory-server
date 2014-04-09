@@ -26,6 +26,7 @@ require_once 'controllers/admin/download_sales.php';
 require_once 'controllers/admin/part.php';
 require_once 'controllers/admin/storyplusbook.php';
 require_once 'controllers/admin/storyplusbook_intro.php';
+require_once 'controllers/admin/test_user.php';
 
 $app->mount('/', new Story\Controller\WebController());
 $app->mount('/api', new Story\Controller\ApiController());
@@ -38,6 +39,7 @@ $app->mount('/admin/part', new AdminPartControllerProvider());
 $app->mount('/admin/recommended_book', new AdminRecommendedBookControllerProvider());
 $app->mount('/admin/storyplusbook', new AdminStoryPlusBookControllerProvider());
 $app->mount('/admin/storyplusbook_intro', new AdminStoryPlusBookIntroControllerProvider());
+$app->mount('/admin/test_user', new AdminTestUserControllerProvider());
 $app->mount('/cp_admin', new Story\Controller\CpAdmin\CpAdminController());
 
 $app->run();
