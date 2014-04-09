@@ -26,8 +26,9 @@
         <th>코인 추가</th>
         <td>
             <select id='coin_add_source'>
-                <option value='IN_EVENT' selected>이벤트</option>
-                <option value='IN_PART_REFUND' selected>파트 환불</option>
+                <option value='IN_TEST' selected>테스트</option>
+                <option value='IN_EVENT'>이벤트</option>
+                <option value='IN_PART_REFUND'>파트 환불</option>
             </select>
             <input type='text' class='input' id='coin_add_amount' placeholder='추가할 코인 갯수를 입력해주세요.' /> <button class='btn btn-success add_coin' style='margin-top:-11px;'>추가</button>
         </td>
@@ -62,6 +63,8 @@
                             인앱결제
                         {% elseif coin.source == 'IN_RIDI' %}
                             리디캐시
+                        {% elseif coin.source == 'IN_TEST' %}
+                            테스트
                         {% elseif coin.source == 'IN_EVENT' %}
                             이벤트
                         {% elseif coin.source == 'IN_PART_REFUND' %}
