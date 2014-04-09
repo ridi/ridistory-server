@@ -41,19 +41,19 @@ class InAppBilling
     public static function getInAppProduct($id)
     {
         global $app;
-        return $app['db']->fetchAssoc('select * from inapp_products where id = ?', array($id));
+        return $app['db']->fetchAssoc('select * from inapp_products where id = ? and type = \'GOOGLE\'', array($id));
     }
 
     public static function getInAppProductBySku($sku)
     {
         global $app;
-        return $app['db']->fetchAssoc('select * from inapp_products where sku = ?', array($sku));
+        return $app['db']->fetchAssoc('select * from inapp_products where sku = ? and type = \'GOOGLE\'', array($sku));
     }
 
     public static function getInAppProductList()
     {
         global $app;
-        return $app['db']->fetchAll('select * from inapp_products order by coin_amount asc');
+        return $app['db']->fetchAll('select * from inapp_products where type = \'GOOGLE\' order by coin_amount asc');
     }
 
     public static function verifyInAppBilling($values)
