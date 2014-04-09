@@ -120,7 +120,7 @@ class InAppBilling
 
         // 환불일 경우, 환불일 적용
         if ($status == InAppBilling::STATUS_REFUNDED) {
-            $update_values['refunded_date'] = date('Y-m-d H:i:s');
+            $update_values['refunded_time'] = date('Y-m-d H:i:s');
         }
 
         return $app['db']->update('inapp_history', $update_values, array('id' => $iab_id));

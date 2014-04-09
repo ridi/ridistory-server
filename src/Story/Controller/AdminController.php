@@ -3,6 +3,7 @@ namespace Story\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\Buyer;
 use Story\Model\InAppBilling;
 use Story\Model\PartComment;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,6 +13,7 @@ use Story\Util\IosPush;
 use Story\Util\AndroidPush;
 use Story\Util\PushDevicePicker;
 use Story\Util\PickDeviceResult;
+use Symfony\Component\Security\Acl\Exception\Exception;
 
 class AdminController implements ControllerProviderInterface
 {
@@ -106,7 +108,6 @@ EOT;
         $admin->get('/inapp_sales/list', array($this, 'inappSalesList'));
         $admin->get('/inapp_sales/{iab_sale_id}', array($this, 'inappSalesDetail'));
         $admin->post('/inapp_sales/{iab_sale_id}/refund', array($this, 'refundInappSales'));
-        $admin->post('/inapp_sales/{iab_sale_id}/cancel', array($this, 'cancelInappSales'));
 
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
@@ -428,10 +429,47 @@ EOT;
 
     public static function refundInappSales(Request $req, Application $app, $iab_sale_id)
     {
-    }
+        $inapp_sale = InAppBilling::getInAppBillingSalesDetail($iab_sale_id);
+        // 이미 환불되었는지 여부를 확인
+        if ($inapp_sale['status'] != InAppBilling::STATUS_OK) {
+            $user = Buyer::get($inapp_sale['u_id']);
+            $inapp_product = InAppBilling::getInAppProductBySku($inapp_sale['sku']);
 
-    public static function cancelInappSales(Request $req, Application $app, $iab_sale_id)
-    {
+            $user_coin_balance = $user['coin_balance'];
+            $refund_coin_amount = $inapp_product['coin_amount'] + $inapp_product['bonus_coin_amount'];
+
+            // 환불해줄 코인보다, 사용자의 잔여 코인이 많은지 여부를 확인
+            if ($user_coin_balance >= $refund_coin_amount) {
+                // 트랜잭션 시작
+                $app['db']->beginTransaction();
+                try {
+                    // 코인 회수
+                    $r = Buyer::useCoin($user['id'], $refund_coin_amount, Buyer::COIN_SOURCE_OUT_COIN_REFUND, null);
+                    if ($r) {
+                        // OK -> REFUNDED 로 상태 변경
+                        $r = InAppBilling::changeInAppBillingStatus($iab_sale_id, InAppBilling::STATUS_REFUNDED);
+                        if ($r) {
+                            $app['db']->commit();
+                            $app['session']->getFlashBag()->add('alert', array('success' => '환불되었습니다. (감소 코인: ' . $refund_coin_amount . '개 / 회원 잔여 코인: ' . $user_coin_balance . '개 -> ' . ($user_coin_balance - $refund_coin_amount) . '개)'));
+                        } else {
+                            throw new Exception('환불 도중 오류가 발생했습니다. (상태 변경 DB 오류)');
+                        }
+                    } else {
+                        throw new Exception('환불 도중 오류가 발생했습니다. (코인 감소 DB 오류)');
+                    }
+                } catch (Exception $e) {
+                    $app['db']->rollback();
+                    $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
+                }
+            } else {
+                // 잔여 코인 부족. 환불 불가.
+                $app['session']->getFlashBag()->add('alert', array('error' => '회원의 잔여 코인이 구입시 충전된 코인보다 적어 환불할 수 없습니다. (현재 회원 잔여 코인: ' . $user_coin_balance . '개)'));
+            }
+        } else {
+            $app['session']->getFlashBag()->add('alert', array('error' => '이미 ' . $inapp_sale['refunded_time'] . ' 에 환불 처리 되었습니다.'));
+        }
+
+        return $app->json(array('success' => true));
     }
 
     /*
@@ -567,7 +605,7 @@ EOT;
             $sql = <<<EOT
     select date(a.purchase_time) purchase_date, count(distinct a.u_id) user_count, sum(b.coin_amount) coin_amount, sum(b.bonus_coin_amount) bonus_coin_amount, sum(b.price) total_sales from inapp_history a
      join inapp_products b on a.sku = b.sku
-    where a.status = 'OK' and date(a.purchase_time) >= ? and date(a.purchase_time) <= ? group by date(a.purchase_time)
+    where a.status != 'REFUNDED' and date(a.purchase_time) >= ? and date(a.purchase_time) <= ? group by date(a.purchase_time)
 EOT;
             $buy_coins = $app['db']->fetchAll($sql, array($begin_date, $end_date));
             foreach ($buy_coins as &$bc) {
