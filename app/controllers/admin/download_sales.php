@@ -141,7 +141,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
                     $scope = '전체';
                 } else if ($begin_date && !$end_date) {
                     $scope = $begin_date . ' ~ 현재';
-                } else if (!$$begin_date && $end_date) {
+                } else if (!$begin_date && $end_date) {
                     $scope = '연재시작 ~ ' . $end_date;
                 } else {
                     $scope = $begin_date . ' ~ ' . $end_date;
