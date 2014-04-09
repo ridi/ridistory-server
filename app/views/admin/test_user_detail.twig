@@ -8,8 +8,12 @@
             <col class="span7">
         </colgroup>
         <tr>
+            <th>구글 ID</th>
+            <td>{{ test_user.google_id }}</td>
+        </tr>
+        <tr>
             <th>유저 ID</th>
-            <td>{{ test_user.u_id }}</td>
+            <td><a href='/admin/buyer/{{ test_user.u_id }}'>{{ test_user.u_id }}</a></td>
         </tr>
         <tr>
             <th>Comment</th>

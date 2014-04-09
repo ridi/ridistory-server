@@ -11,14 +11,23 @@ class TestUser
 
     public static function get($u_id)
     {
+        $sql = <<<EOT
+select bu.google_id, tu.* from test_user tu
+ left join (select id, google_id from buyer_user) bu on tu.u_id = bu.id
+where u_id = ?
+EOT;
         global $app;
-        return $app['db']->fetchAssoc('select * from test_user where u_id = ?', array($u_id));
+        return $app['db']->fetchAssoc($sql, array($u_id));
     }
 
     public static function getWholeList()
     {
+        $sql = <<<EOT
+select bu.google_id, tu.* from test_user tu
+ left join (select id, google_id from buyer_user) bu on tu.u_id = bu.id
+EOT;
         global $app;
-        return $app['db']->fetchAll('select * from test_user');
+        return $app['db']->fetchAll($sql);
     }
 
     public static function getConcatUidList($exclude_inactive)

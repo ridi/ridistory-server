@@ -4,6 +4,7 @@
     <table class='table table-hover'>
         <thead>
         <tr>
+            <th>구글 계정</th>
             <th>유저 ID</th>
             <th>Comment</th>
             <th>Active</th>
@@ -12,6 +13,7 @@
         <tbody id='js_tbody'>
         {% for test_user in test_users %}
             <tr data-uid='{{ test_user.u_id }}'>
+                <td>{{ test_user.google_id }}</td>
                 <td>{{ test_user.u_id }}</td>
                 <td>{{ test_user.comment }}</td>
                 <td>
