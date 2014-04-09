@@ -6,6 +6,7 @@ use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
 use Story\Model\InAppBilling;
 use Story\Model\PartComment;
+use Story\Model\TestUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -603,14 +604,22 @@ EOT;
 
         if ($begin_date || $end_date) {
             $sql = <<<EOT
-    select date(a.purchase_time) purchase_date, count(distinct a.u_id) user_count, sum(b.coin_amount) coin_amount, sum(b.bonus_coin_amount) bonus_coin_amount, sum(b.price) total_sales from inapp_history a
-     join inapp_products b on a.sku = b.sku
-    where a.status != 'REFUNDED' and date(a.purchase_time) >= ? and date(a.purchase_time) <= ? group by date(a.purchase_time)
+select date(ih.purchase_time) purchase_date, count(distinct ih.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, sum(if(ih.refunded_time is not null, ip.coin_amount+ip.bonus_coin_amount, 0)) refunded_total_coin_amount, sum(ip.price) total_buy_sales, sum(if(ih.refunded_time is not null, ip.price, 0)) total_refunded_sales from inapp_history ih
+ left join (select * from inapp_products) ip on ih.sku = ip.sku
+where ih.status != 'ERROR' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
 EOT;
+            $test_users = TestUser::getConcatUidList(true);
+            if ($test_users) {
+                $sql .= ' and ih.u_id not in (' . $test_users . ')';
+            }
+            $sql .= ' group by date(ih.purchase_time)';
+
             $buy_coins = $app['db']->fetchAll($sql, array($begin_date, $end_date));
             foreach ($buy_coins as &$bc) {
                 $bc['total_coin_amount'] = $bc['coin_amount'] + $bc['bonus_coin_amount'];
+                $bc['total_sales'] = $bc['total_buy_sales'] - $bc['total_refunded_sales'];
             }
+
         }
 
         return $app['twig']->render(
