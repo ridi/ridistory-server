@@ -12,22 +12,19 @@
                 <td>{{ recommended_book.b_id }}</td>
             </tr>
             <tr>
-                <th>스토어 ID</th>
-                <td><input type='text' class='input-small' name='store_id' value='{{ recommended_book.store_id }}' /></td>
+                <th>표지</th>
+                <td><img id='js_cover' src='{{ recommended_book.cover_url }}' style="height:200px;" /></td>
             </tr>
             <tr>
-                <th>표지</th>
+                <th>스토어 ID</th>
                 <td>
-                    {% if recommended_book.store_id != '' %}
-                        <img src='{{ recommended_book.cover_url }}' style="height:200px;" />
-                    {% else %}
-                        표지 이미지가 존재하지 않습니다. (스토어 ID를 등록해주세요.)
-                    {% endif %}
+                    <input type='text' class='input-small' id='js_store_id' name='store_id' value='{{ recommended_book.store_id }}' style='margin-right: 10px;' />
+                    (스토어 ID를 입력하시면, 자동으로 표지와 도서명을 받아옵니다.)
                 </td>
             </tr>
             <tr>
                 <th>도서명</th>
-                <td><input type='text' class='input-xlarge' name='title' value='{{ recommended_book.title }}' /></td>
+                <td><input type='text' class='input-xlarge' id='js_b_title' name='title' value='{{ recommended_book.title }}' /></td>
             </tr>
         </table>
         <div class='form-actions'>
@@ -67,6 +64,20 @@
                     location.href = '/admin/recommended_book/{{ recommended_book.id }}/delete';
                 }
                 return false;
+            });
+
+            $('#js_store_id').focusout(function() {
+                var b_id = $(this).val();
+                $('#js_store_id').val(b_id);
+                $.getJSON('/api/recommended_book/' + b_id, function(data) {
+                    var message = $('#js_b_title');
+                    if (data.error) {
+                        message.val(data.error);
+                    } else {
+                        $('#js_cover').attr('src', 'http://misc.ridibooks.com/cover/' + b_id + '/xxlarge');
+                        message.val(data.title);
+                    }
+                });
             });
         });
     </script>

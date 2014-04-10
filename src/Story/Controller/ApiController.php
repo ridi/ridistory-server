@@ -39,6 +39,8 @@ class ApiController implements ControllerProviderInterface
         $api->get('/book/{b_id}', array($this, 'bookDetail'));
         $api->post('/book/{b_id}/buy', array($this, 'buyBookPart'));
 
+        $api->get('/recommended_book/{b_id}', array($this, 'recommenedBookDetail'));
+
         $api->get('/part/{p_id}', array($this, 'partDetail'));
 
         $api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userLikePart'));
@@ -376,6 +378,24 @@ class ApiController implements ControllerProviderInterface
 
         $part['b_title'] = $book['title'];
         return $app->json($part);
+    }
+
+    /*
+     * Recommended Book
+     */
+    public function recommenedBookDetail(Request $req, Application $app, $b_id)
+    {
+        // Ridibooks Metadata
+        $ch =curl_init();
+        curl_setopt($ch, CURLOPT_URL, STORE_API_BASE_URL . '/api/book/metadata?b_id=' . $b_id);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        // 이미 JSON 형식의 데이터로 넘어옴.
+        return $response;
     }
 
     /*
