@@ -43,13 +43,14 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
     {
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
+        $exclude_free = ($req->get('exclude_free') ? 1 : 0);
 
         $total_sales = 0;
         $total_sales_royalty = 0;
         $total_free_download = 0;
         $total_charged_download = 0;
 
-        $download_sales = DownloadSales::getWholeList($begin_date, $end_date);
+        $download_sales = DownloadSales::getWholeList($begin_date, $end_date, $exclude_free);
 
         foreach ($download_sales as $ds) {
             // 헤더에 들어갈 정보 계산
@@ -111,6 +112,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
             array(
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
+                'exclude_free' => $exclude_free,
                 'header' => $header,
                 'download_sales' => $download_sales
             )

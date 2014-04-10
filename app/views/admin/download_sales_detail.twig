@@ -69,4 +69,19 @@
         </tr>
      </table>
 
+    <div class='form-actions'>
+        <button class='btn btn-cancel'>목록으로</button>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('.btn-cancel').click(function() {
+                history.back();
+                return false;
+            });
+        });
+    </script>
 {% endblock %}
