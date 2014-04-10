@@ -432,7 +432,7 @@ EOT;
     {
         $inapp_sale = InAppBilling::getInAppBillingSalesDetail($iab_sale_id);
         // 이미 환불되었는지 여부를 확인
-        if ($inapp_sale['status'] != InAppBilling::STATUS_OK) {
+        if ($inapp_sale['status'] == InAppBilling::STATUS_OK) {
             $user = Buyer::get($inapp_sale['u_id']);
             $inapp_product = InAppBilling::getInAppProductBySku($inapp_sale['sku']);
 
