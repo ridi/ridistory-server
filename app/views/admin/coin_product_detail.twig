@@ -1,26 +1,32 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-    <form action="/admin/inapp_product/{{ inapp_product.id }}/edit" method='post'>
+    <form action="/admin/coin_product/{{ coin.id }}/edit" method='post'>
         <table class='table'>
             <tr>
+                <th>종류</th>
+                <td>
+                    <select name='type'>
+                        <option value='GOOGLE'>구글 인앱</option>
+                        <option value='RIDICASH'>리디캐시</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <th>SKU</th>
-                <td><input type='text' class='input-xlarge' name='sku' value='{{ inapp_product.sku }}' /></td>
+                <td><input type='text' class='input-xlarge' name='sku' value='{{ coin.sku }}' /></td>
             </tr>
             <tr>
                 <th>충전코인수</th>
-                <td><input type='text' class='input-xlarge' name='coin_amount' value='{{ inapp_product.coin_amount }}' /></td>
+                <td><input type='text' class='input-xlarge' name='coin_amount' value='{{ coin.coin_amount }}' /></td>
             </tr>
             <tr>
                 <th>보너스코인수</th>
-                <td><input type='text' class='input-xlarge' name='bonus_coin_amount' value='{{ inapp_product.bonus_coin_amount }}' /></td>
+                <td><input type='text' class='input-xlarge' name='bonus_coin_amount' value='{{ coin.bonus_coin_amount }}' /></td>
             </tr>
             <tr>
                 <th>판매 가격</th>
-                <td><input type='text' class='input-xlarge' name='price' value='{{ inapp_product.price }}' /></td>
-            </tr>
-            <tr>
-                <td colspan="2">* <span style="color:#FF0000">SKU</span>는 Google Developer Console 에 입력된 SKU 이름과 <b><u>동일</u></b>해야합니다.</td>
+                <td><input type='text' class='input-xlarge' name='price' value='{{ coin.price }}' /></td>
             </tr>
         </table>
 
@@ -37,19 +43,22 @@
     <script src="/static/js/vendor/jquery.jeditable.mini.js"></script>
     <script>
         $(function() {
+            $('select option')
+                    .filter('[value="{{ coin.type }}"]')
+                    .prop('selected', true);
 
             $('.btn-cancel').click(function() {
-                location.href = '/admin/inapp_product/list';
+                location.href = '/admin/coin_product/list';
                 return false;
             });
 
             $('.btn-danger').click(function() {
                 if (confirm('삭제하시겠습니까?')) {
-                    $.post('/admin/inapp_product/{{ inapp_product.id }}/delete', function(r) {
+                    $.post('/admin/coin_product/{{ coin.id }}/delete', function(r) {
                         if (r.error) {
                             alert(r.error);
                         } else {
-                            location.href = '/admin/inapp_product/list';
+                            location.href = '/admin/coin_product/list';
                         }
                     })
                 }

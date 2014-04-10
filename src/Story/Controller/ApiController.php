@@ -4,6 +4,7 @@ namespace Story\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
+use Story\Model\CoinProduct;
 use Story\Model\InAppBilling;
 use Story\Model\RecommendedBook;
 use Story\Util\AES128;
@@ -69,7 +70,11 @@ class ApiController implements ControllerProviderInterface
         $api->get('/validate_download', array($this, 'validatePartDownload'));
         $api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
 
-        $api->get('/inapp_product/list', array($this, 'inAppProductList'));
+        /*
+         * 4.01, 4.02 버전 사용자들이, /inapp_proudct/list 주소로 API를 호출하므로,
+         * 리디캐시 상품도 /inapp_product/list 에 보내줌.
+         */
+        $api->get('/inapp_product/list', array($this, 'coinProductList'));
 
         $api->get('/shorten_url/{id}', array($this, 'shortenUrl'));
 
@@ -138,7 +143,7 @@ class ApiController implements ControllerProviderInterface
         $r = InAppBilling::verifyInAppBilling($inputs);
         if ($r) {
             $purchase_data = json_decode($inputs['purchase_data'], true);
-            $inapp_info = InAppBilling::getInAppProductBySku($purchase_data['productId']);
+            $inapp_info = CoinProduct::getCoinProductBySkuAndType($purchase_data['productId'], CoinProduct::TYPE_INAPP);
             $r = Buyer::addCoin($inputs['u_id'], ($inapp_info['coin_amount'] + $inapp_info['bonus_coin_amount']), Buyer::COIN_SOURCE_IN_INAPP);
             if ($r) {
                 $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
@@ -673,11 +678,11 @@ class ApiController implements ControllerProviderInterface
     }
 
     /*
-     * In App Billing
+     * Coin Product
      */
-    public function inAppProductList(Request $req, Application $app)
+    public function coinProductList(Request $req, Application $app)
     {
-        $sku_list = InAppBilling::getInAppProductList();
+        $sku_list = CoinProduct::getCoinProductsByType(CoinProduct::TYPE_INAPP);
         return $app->json($sku_list);
     }
 

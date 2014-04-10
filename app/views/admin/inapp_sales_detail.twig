@@ -90,7 +90,7 @@
 
             // 환불
             $('.btn-danger').click(function() {
-                if (confirm('환불시, Google Wallet에서 먼저 환불 처리를 하셔야합니다. 정말로 환불하시겠습니까?')) {
+                if (confirm('환불한 다음 꼭! Google Wallet에서 환불 처리를 하셔야합니다. 정말로 환불하시겠습니까?')) {
                     $.post('/admin/inapp_sales/{{ inapp_sale.id }}/refund', function(r) {
                         if (r.error) {
                             alert(r.error);

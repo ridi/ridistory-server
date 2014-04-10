@@ -19,43 +19,6 @@ class InAppBilling
     const STATUS_REFUNDED = 'REFUNDED';
     const STATUS_PENDING = 'PENDING';
 
-    public static function createInAppProduct()
-    {
-        global $app;
-        $app['db']->insert('inapp_products', array());
-        return $app['db']->lastInsertId();
-    }
-
-    public static function updateInAppProduct($id, $values)
-    {
-        global $app;
-        return $app['db']->update('inapp_products', $values, array('id' => $id));
-    }
-
-    public static function deleteInAppProduct($id)
-    {
-        global $app;
-        return $app['db']->delete('inapp_products', array('id' => $id));
-    }
-
-    public static function getInAppProduct($id)
-    {
-        global $app;
-        return $app['db']->fetchAssoc('select * from inapp_products where id = ? and type = \'GOOGLE\'', array($id));
-    }
-
-    public static function getInAppProductBySku($sku)
-    {
-        global $app;
-        return $app['db']->fetchAssoc('select * from inapp_products where sku = ? and type = \'GOOGLE\'', array($sku));
-    }
-
-    public static function getInAppProductList()
-    {
-        global $app;
-        return $app['db']->fetchAll('select * from inapp_products where type = \'GOOGLE\' order by coin_amount asc');
-    }
-
     public static function verifyInAppBilling($values)
     {
         // Purchase Data (JSON data of Paramters)

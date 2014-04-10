@@ -4,6 +4,7 @@ namespace Story\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
+use Story\Model\CoinProduct;
 use Story\Model\InAppBilling;
 use Story\Model\PartComment;
 use Story\Model\TestUser;
@@ -99,12 +100,6 @@ EOT;
         $admin->get('/banner/{banner_id}', array($this, 'bannerDetail'));
         $admin->post('/banner/{banner_id}/delete', array($this, 'deleteBanner'));
         $admin->post('/banner/{banner_id}/edit', array($this, 'editBanner'));
-
-        $admin->get('/inapp_product/add', array($this, 'addInAppProduct'));
-        $admin->get('/inapp_product/list', array($this, 'inAppProductList'));
-        $admin->get('/inapp_product/{iab_id}', array($this, 'inAppProductDetail'));
-        $admin->post('/inapp_product/{iab_id}/delete', array($this, 'deleteInAppProduct'));
-        $admin->post('/inapp_product/{iab_id}/edit', array($this, 'editInAppProduct'));
 
         $admin->get('/inapp_sales/list', array($this, 'inappSalesList'));
         $admin->get('/inapp_sales/{iab_sale_id}', array($this, 'inappSalesDetail'));
@@ -355,45 +350,6 @@ EOT;
     }
 
     /*
-     * In App Billing Product
-     */
-    public static function addInAppProduct(Application $app)
-    {
-        $iab_id = InAppBilling::createInAppProduct();
-
-        $app['session']->getFlashBag()->add('alert', array('success' => '인앱 상품이 추가되었습니다.'));
-        return $app->redirect('/admin/inapp_product/' . $iab_id);
-    }
-
-    public static function inAppProductList(Application $app)
-    {
-        $inapp_list = InAppBilling::getInAppProductList();
-        return $app['twig']->render('/admin/inapp_product_list.twig', array('inapp_list' => $inapp_list));
-    }
-
-    public static function inAppProductDetail(Request $req, Application $app, $iab_id)
-    {
-        $inapp_product = InAppBilling::getInAppProduct($iab_id);
-        return $app['twig']->render('/admin/inapp_product_detail.twig', array('inapp_product' => $inapp_product));
-    }
-
-    public static function deleteInAppProduct(Request $req, Application $app, $iab_id)
-    {
-        InAppBilling::deleteInAppProduct($iab_id);
-        $app['session']->getFlashBag()->add('alert', array('info' => '인앱 상품이 삭제되었습니다.'));
-        return $app->json(array('success' => true));
-    }
-
-    public static function editInAppProduct(Request $req, Application $app, $iab_id)
-    {
-        $inputs = $req->request->all();
-
-        InAppBilling::updateInAppProduct($iab_id, $inputs);
-        $app['session']->getFlashBag()->add('alert', array('info' => '인앱 상품 정보가 수정되었습니다.'));
-        return $app->redirect('/admin/inapp_product/' . $iab_id);
-    }
-
-    /*
      * InAppBilling Coin Sales
      */
     public static function inappSalesList(Request $req, Application $app)
@@ -434,7 +390,7 @@ EOT;
         // 이미 환불되었는지 여부를 확인
         if ($inapp_sale['status'] == InAppBilling::STATUS_OK) {
             $user = Buyer::get($inapp_sale['u_id']);
-            $inapp_product = InAppBilling::getInAppProductBySku($inapp_sale['sku']);
+            $inapp_product = CoinProduct::getCoinProductBySkuAndType($inapp_sale['sku'], CoinProduct::TYPE_INAPP);
 
             $user_coin_balance = $user['coin_balance'];
             $refund_coin_amount = $inapp_product['coin_amount'] + $inapp_product['bonus_coin_amount'];

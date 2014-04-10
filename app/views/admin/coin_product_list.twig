@@ -1,10 +1,10 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-    <h4>인앱 상품</h4>
     <table class='table table-hover'>
         <thead>
         <tr>
+            <th>종류</th>
             <th>SKU</th>
             <th>충전되는 코인 갯수</th>
             <th>보너스 코인 갯수</th>
@@ -12,12 +12,13 @@
         </tr>
         </thead>
         <tbody id='js_tbody'>
-        {% for inapp in inapp_list %}
-            <tr data-iabid='{{ inapp.id }}'>
-                <td>{{ inapp.sku }}</td>
-                <td>{{ inapp.coin_amount }}</td>
-                <td>{{ inapp.bonus_coin_amount }}</td>
-                <td>{{ inapp.price }}</td>
+        {% for coin in coin_list %}
+            <tr data-cid='{{ coin.id }}'>
+                <td>{{ get_type(coin.type) }}</td>
+                <td>{{ coin.sku }}</td>
+                <td>{{ coin.coin_amount }}</td>
+                <td>{{ coin.bonus_coin_amount }}</td>
+                <td>{{ coin.price }}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -30,12 +31,12 @@
     <script>
         $(function() {
             $('#js_add').click(function() {
-                location.href = '/admin/inapp_product/add';
+                location.href = '/admin/coin_product/add';
             });
 
             $('#js_tbody tr').click(function() {
-                var iab_id = $(this).data('iabid');
-                location.href = '/admin/inapp_product/' + iab_id;
+                var coin_id = $(this).data('cid');
+                location.href = '/admin/coin_product/' + coin_id;
             });
 
             $('#js_tbody tr').hover(function() {
