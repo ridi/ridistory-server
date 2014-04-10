@@ -71,10 +71,10 @@ class ApiController implements ControllerProviderInterface
         $api->get('/validate_storyplusbook_download', array($this, 'validateStoryPlusBookDownload'));
 
         /*
-         * 4.01, 4.02 버전 사용자들이, /inapp_proudct/list 주소로 API를 호출하므로,
-         * 리디캐시 상품도 /inapp_product/list 에 보내줌.
+         * 4.01, 4.02 버전 사용자들이, /inapp_proudct/list 주소로 API를 호출
          */
         $api->get('/inapp_product/list', array($this, 'coinProductList'));
+        $api->get('/coin_product/list', array($this, 'coinProductList'));
 
         $api->get('/shorten_url/{id}', array($this, 'shortenUrl'));
 
@@ -682,7 +682,19 @@ class ApiController implements ControllerProviderInterface
      */
     public function coinProductList(Request $req, Application $app)
     {
-        $sku_list = CoinProduct::getCoinProductsByType(CoinProduct::TYPE_INAPP);
+        /**
+         * @var $v Api Version
+         *
+         * v1 : Only Google InApp Products
+         * v2 : InApp Products + RidiCash Products
+         */
+        $v = intval($req->get('v', '1'));
+        if ($v > 1) {
+            $sku_list = CoinProduct::getWholeCoinProducts();
+        } else {
+            $sku_list = CoinProduct::getCoinProductsByType(CoinProduct::TYPE_INAPP);
+        }
+
         return $app->json($sku_list);
     }
 
