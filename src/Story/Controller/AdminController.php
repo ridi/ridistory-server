@@ -601,25 +601,74 @@ EOT;
         $end_date = $req->get('end_date');
 
         $buy_coins = null;
+        $refunded_coins = null;
 
         if ($begin_date || $end_date) {
             $sql = <<<EOT
-select date(ih.purchase_time) purchase_date, count(distinct ih.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, sum(if(ih.refunded_time is not null, ip.coin_amount+ip.bonus_coin_amount, 0)) refunded_total_coin_amount, sum(ip.price) total_buy_sales, sum(if(ih.refunded_time is not null, ip.price, 0)) total_refunded_sales from inapp_history ih
+select date(ih.purchase_time) purchase_date, count(distinct ih.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from inapp_history ih
  left join (select * from inapp_products) ip on ih.sku = ip.sku
 where ih.status != 'ERROR' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
 EOT;
+            $refunded_sql = <<<EOT
+select date(ih.refunded_time) refunded_date, sum(ip.coin_amount+ip.bonus_coin_amount) refunded_total_coin_amount, sum(ip.price) total_refunded_sales from inapp_history ih
+ left join (select * from inapp_products) ip on ih.sku = ip.sku
+where ih.status = 'REFUNDED' and date(ih.refunded_time) >= ? and date(ih.refunded_time) <= ?
+EOT;
+
             $test_users = TestUser::getConcatUidList(true);
             if ($test_users) {
                 $sql .= ' and ih.u_id not in (' . $test_users . ')';
+                $refunded_sql .= ' and ih.u_id not in (' . $test_users . ')';
             }
             $sql .= ' group by date(ih.purchase_time)';
+            $refunded_sql .= ' group by date(ih.refunded_time)';
 
             $buy_coins = $app['db']->fetchAll($sql, array($begin_date, $end_date));
+            $refunded_coins = $app['db']->fetchAll($refunded_sql, array($begin_date, $end_date));
+
+            foreach ($refunded_coins as $key => $rc) {
+                foreach ($buy_coins as &$bc) {
+                    if ($rc['refunded_date'] == $bc['purchase_date']) {
+                        $bc['refunded_total_coin_amount'] = $rc['refunded_total_coin_amount'];
+                        $bc['total_refunded_sales'] = $rc['total_refunded_sales'];
+                        unset($refunded_coins[$key]);
+                        break;
+                    }
+                }
+            }
+
+            if (count($refunded_coins) > 0) {
+                foreach ($refunded_coins as $key => $rc) {
+                    array_push($buy_coins,
+                        array(
+                            'purchase_date' => $rc['refunded_date'],
+                            'user_count' => 0,
+                            'coin_amount' => 0,
+                            'bonus_coin_amount' => 0,
+                            'refunded_total_coin_amount' => $rc['refunded_total_coin_amount'],
+                            'total_buy_sales' => 0,
+                            'total_refunded_sales' => $rc['total_refunded_sales']
+                        )
+                    );
+                    unset($refunded_coins[$key]);
+                }
+            }
+
+            usort($buy_coins, function ($a, $b) {
+                    $a_time = strtotime($a['purchase_date']);
+                    $b_time = strtotime($b['purchase_date']);
+
+                    if ($a_time == $b_time) {
+                        return 0;
+                    }
+
+                    return ($a_time < $b_time ? -1 : 1);
+            });
+
             foreach ($buy_coins as &$bc) {
                 $bc['total_coin_amount'] = $bc['coin_amount'] + $bc['bonus_coin_amount'];
                 $bc['total_sales'] = $bc['total_buy_sales'] - $bc['total_refunded_sales'];
             }
-
         }
 
         return $app['twig']->render(
