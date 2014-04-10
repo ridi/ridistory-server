@@ -52,6 +52,7 @@ class WebController implements ControllerProviderInterface
      */
     public function addComment(Request $req, Application $app)
     {
+        $is_admin = $req->get('is_admin', 0);
         $p_id = $req->get('p_id');
         $device_id = $req->get('device_id');
         $nickname = trim($req->get('nickname'));
@@ -61,7 +62,7 @@ class WebController implements ControllerProviderInterface
             return alert_and_back('닉네임이나 댓글 내용이 없습니다.');
         }
 
-        if ($nickname == '리디스토리') {
+        if ($nickname == '리디스토리' && $is_admin == 0) {
             return alert_and_back('리디스토리는 닉네임으로 사용하실 수 없습니다.');
         }
 
@@ -70,6 +71,10 @@ class WebController implements ControllerProviderInterface
         // TODO: abuse detection
 
         PartComment::add($p_id, $device_id, $nickname, $comment, $ip);
+
+        if ($is_admin == 1) {
+            $app['session']->getFlashBag()->add('alert', array('success' => '운영자 댓글이 추가되었습니다.'));
+        }
         return $app->redirect($req->headers->get('Referer'));
     }
 

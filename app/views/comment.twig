@@ -31,22 +31,24 @@
 		<div class="comment_list">
 			<ul class="list_wrap">
                 {% for item in comments %}
-                <!-- TODO: 운영자 댓글 기능 추가
-                <li class="contents_admin"> -->
-				<li>
-					<div class="contents_wrap">
-						<p class="contents_info">
-							<span class="info_id">{{ item.nickname }}</span>
-							<span class="info_date">{{ item.timestamp }}</span>
-							{% if item.device_id == device_id %}
-							<span class="trash">
-							    <a href="/comment/{{ item.id }}/delete"><img src="/static/images/comment_trash.png" alt="삭제" /></a>
-							</span>
-							{% endif %}
-						</p>
-						<p class="contents_text">{{ item.comment|e }}</p>
-					</div>
-				</li>
+                    {% if item.nickname == '리디스토리' %}
+                        <li class="contents_admin">
+                    {% else %}
+                        <li>
+                    {% endif %}
+                        <div class="contents_wrap">
+                            <p class="contents_info">
+                                <span class="info_id">{{ item.nickname }}</span>
+                                <span class="info_date">{{ item.timestamp }}</span>
+                                {% if item.device_id == device_id %}
+                                <span class="trash">
+                                    <a href="/comment/{{ item.id }}/delete"><img src="/static/images/comment_trash.png" alt="삭제" /></a>
+                                </span>
+                                {% endif %}
+                            </p>
+                            <p class="contents_text">{{ item.comment|e }}</p>
+                        </div>
+                    </li>
 			    {% endfor %}
 			</ul>
 		</div>

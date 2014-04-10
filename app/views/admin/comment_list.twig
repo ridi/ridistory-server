@@ -1,6 +1,21 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
+<h4>운영자 댓글 <button class='btn btn-primary' id='js_add_admin_comment' style='margin-bottom: 10px;'>추가</button></h4>
+<form id="admin_comment_form" action='/comment/add' method='post' style='display: none;'>
+    <div class="well form-inline">
+        <input type='hidden' name='is_admin' value='1' />
+        <input type='hidden' name='nickname' value='리디스토리' />
+        <input type='hidden' name='device_id' value='' />
+        <input type='text' class='input-small' id='js_part_id' name='p_id' placeholder='파트 ID' style='margin-bottom: 10px;'/><span id='part_info' style="margin-left: 10px;"></span><br />
+        <textarea name='comment' id='input_comment' placeholder='댓글 내용' maxlength='300' style='width: 400px; height:50px;'></textarea><br />
+        <p class="char_num">
+            <span id='js_char_remain' class="now_num">0</span>/300
+        </p>
+        <button id='js_submit' class='btn' type='submit'>등록</button>
+    </div>
+</form>
+
 <form>
     <div class="well form-inline">
         <h4>책 제목 검색</h4>
@@ -56,9 +71,63 @@
 {% endblock %}
 
 {% block script %}
+    <script type="text/javascript" src="/static/js/jquery.autosize.min.js"></script>
     <script>
         $(function() {
+            var MAX_COMMENT = 300;
+
             $('#search').val('{{ search_type }}');
+
+            $('#js_add_admin_comment').click(function() {
+                if ($('#js_add_admin_comment').text() == '추가') {
+                    $('#js_add_admin_comment').text('취소');
+                    $('#admin_comment_form').show();
+                } else {
+                    $('#js_add_admin_comment').text('추가');
+                    $('#admin_comment_form').hide();
+                }
+            });
+
+            $('#js_part_id').focusout(function() {
+                var p_id = $(this).val();
+                $('#js_part_id').val(p_id);
+                $.getJSON('/api/part/' + p_id, function(data) {
+                    var message = $('#part_info');
+                    if (data.error) {
+                        message.text(data.error);
+                    } else {
+                        message.text(data.b_title + " (" + data.seq + "회 - " + data.title + ")");
+                    }
+                });
+            });
+
+            $('#input_comment').keyup(function() {
+                $('#js_char_remain').text($(this).val().length);
+            });
+
+            $('#admin_comment_form').submit(function() {
+                try {
+                    var comment = $(':input[name=comment]').val();
+                    if ($.trim(comment) == '') {
+                        alert('댓글을 입력해 주세요');
+                        return false;
+                    }
+                    if ($.trim(comment).length > MAX_COMMENT) {
+                        alert('댓글은 ' + MAX_COMMENT + '자 이내로 입력해 주세요.');
+                        return false;
+                    }
+                } catch (e) {
+                    console.log(e);
+                    return false;
+                }
+
+                $('#js_submit').hide();
+
+                return true;
+            });
+
+            // 댓글입력창 자동으로 아래로 늘어나게 추가
+            $('#input_comment').autosize();
         });
     </script>
 {% endblock %}

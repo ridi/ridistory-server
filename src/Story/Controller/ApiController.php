@@ -39,6 +39,8 @@ class ApiController implements ControllerProviderInterface
         $api->get('/book/{b_id}', array($this, 'bookDetail'));
         $api->post('/book/{b_id}/buy', array($this, 'buyBookPart'));
 
+        $api->get('/part/{p_id}', array($this, 'partDetail'));
+
         $api->get('/user/{device_id}/part/{p_id}/like', array($this, 'userLikePart'));
         $api->get('/user/{device_id}/part/{p_id}/unlike', array($this, 'userUnlikePart'));
 
@@ -358,6 +360,22 @@ class ApiController implements ControllerProviderInterface
         } else {    // 비공개, 잘못된 접근
             return $app->json(array('success' => false, 'message' => '잘못된 요청입니다. 이전 버튼을 눌러 책 목록 화면으로 이동한 뒤, 다시 시도해주세요.'));
         }
+    }
+
+    /*
+     * Part
+     */
+    public function partDetail(Request $req, Application $app, $p_id)
+    {
+        $part = Part::get($p_id);
+        if ($part == false) {
+            return $app->json(array('success' => false, 'error' => '파트 ID에 해당하는 파트가 존재하지 않습니다.'));
+        }
+
+        $book = Book::get($part['b_id']);
+
+        $part['b_title'] = $book['title'];
+        return $app->json($part);
     }
 
     /*
