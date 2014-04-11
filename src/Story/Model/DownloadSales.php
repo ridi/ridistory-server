@@ -50,15 +50,15 @@ select b.id b_id, b.title, cp.id, cp_id, cp.name cp_name, b.royalty_percent, ifn
  left join (select id, name from cp_account) cp on cp.id = b.cp_id
 where date(ph.timestamp) >= ? and date(ph.timestamp) <= ?
 EOT;
-        if ($exclude_free) {
-            $sql .= ' and coin_amount > 0';
-        }
-
         $test_users = TestUser::getConcatUidList(true);
         if ($test_users) {
             $sql .= ' and ph.u_id not in (' . $test_users . ')';
         }
-        $sql .= ' group by b_id order by (count(*) * p.price) desc';
+        $sql .= ' group by b_id';
+        if ($exclude_free) {
+            $sql .= ' having charged_download > 0';
+        }
+        $sql .= ' order by (count(*) * p.price) desc';
 
         $bind = array($today, $today, $begin_date, $end_date);
 
