@@ -141,7 +141,7 @@ class ApiController implements ControllerProviderInterface
         }
 
         // 결제 수단
-        $buy_method = $inputs['buy_method'];
+        $buy_method = isset($inputs['buy_method']) ? $inputs['buy_method'] : CoinProduct::TYPE_INAPP;
         if (empty($buy_method)) {
             $buy_method = CoinProduct::TYPE_INAPP;
         }
