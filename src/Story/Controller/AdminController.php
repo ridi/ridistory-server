@@ -7,6 +7,7 @@ use Story\Model\Buyer;
 use Story\Model\CoinProduct;
 use Story\Model\InAppBilling;
 use Story\Model\PartComment;
+use Story\Model\RidiCashBilling;
 use Story\Model\TestUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -101,9 +102,13 @@ EOT;
         $admin->post('/banner/{banner_id}/delete', array($this, 'deleteBanner'));
         $admin->post('/banner/{banner_id}/edit', array($this, 'editBanner'));
 
-        $admin->get('/inapp_sales/list', array($this, 'inappSalesList'));
-        $admin->get('/inapp_sales/{iab_sale_id}', array($this, 'inappSalesDetail'));
-        $admin->post('/inapp_sales/{iab_sale_id}/refund', array($this, 'refundInappSales'));
+        $admin->get('/inapp_sales/list', array($this, 'inAppSalesList'));
+        $admin->get('/inapp_sales/{iab_sale_id}', array($this, 'inAppSalesDetail'));
+        $admin->post('/inapp_sales/{iab_sale_id}/refund', array($this, 'refundInAppSales'));
+
+        $admin->get('/ridicash_sales/list', array($this, 'ridiCashSalesList'));
+        $admin->get('/ridicash_sales/{rcb_sale_id}', array($this, 'ridiCashSalesDetail'));
+        $admin->post('/ridicash_sales/{rcb_sale_id}/refund', array($this, 'refundRidiCashSales'));
 
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
@@ -352,7 +357,7 @@ EOT;
     /*
      * InAppBilling Coin Sales
      */
-    public static function inappSalesList(Request $req, Application $app)
+    public static function inAppSalesList(Request $req, Application $app)
     {
         $search_type = $req->get('search_type', null);
         $search_keyword = $req->get('search_keyword', null);
@@ -378,13 +383,13 @@ EOT;
         );
     }
 
-    public static function inappSalesDetail(Request $req, Application $app, $iab_sale_id)
+    public static function inAppSalesDetail(Request $req, Application $app, $iab_sale_id)
     {
         $inapp_sale = InAppBilling::getInAppBillingSalesDetail($iab_sale_id);
         return $app['twig']->render('/admin/inapp_sales_detail.twig', array('inapp_sale' => $inapp_sale));
     }
 
-    public static function refundInappSales(Request $req, Application $app, $iab_sale_id)
+    public static function refundInAppSales(Request $req, Application $app, $iab_sale_id)
     {
         $inapp_sale = InAppBilling::getInAppBillingSalesDetail($iab_sale_id);
         // 이미 환불되었는지 여부를 확인
@@ -424,6 +429,86 @@ EOT;
             }
         } else {
             $app['session']->getFlashBag()->add('alert', array('error' => '이미 ' . $inapp_sale['refunded_time'] . ' 에 환불 처리 되었습니다.'));
+        }
+
+        return $app->json(array('success' => true));
+    }
+
+    /*
+     * RidiCash Coin Sales
+     */
+    public static function ridiCashSalesList(Request $req, Application $app)
+    {
+        $search_type = $req->get('search_type', null);
+        $search_keyword = $req->get('search_keyword', null);
+        $cur_page = $req->get('page', 0);
+
+        $limit = 50;
+        $offset = $cur_page * $limit;
+
+        if ($search_type && $search_keyword) {
+            $ridicash_sales = RidiCashBilling::getRidiCashBillingSalesListBySearchTypeAndKeyword($search_type, $search_keyword);
+        } else {
+            $ridicash_sales = RidiCashBilling::getRidiCashBillingSalesListByOffsetAndSize($offset, $limit);
+        }
+
+        return $app['twig']->render(
+            '/admin/ridicash_sales_list.twig',
+            array(
+                'search_type' => $search_type,
+                'search_keyword' => $search_keyword,
+                'ridicash_sales' => $ridicash_sales,
+                'cur_page' => $cur_page
+            )
+        );
+    }
+
+    public static function ridiCashSalesDetail(Request $req, Application $app, $rcb_sale_id)
+    {
+        $ridicash_sale = RidiCashBilling::getRidiCashBillingSalesDetail($rcb_sale_id);
+        return $app['twig']->render('/admin/ridicash_sales_detail.twig', array('ridicash_sale' => $ridicash_sale));
+    }
+
+    public static function refundRidiCashSales(Request $req, Application $app, $rcb_sale_id)
+    {
+        $ridicash_sale = RidiCashBilling::getRidiCashBillingSalesDetail($rcb_sale_id);
+        // 이미 환불되었는지 여부를 확인
+        if ($ridicash_sale['status'] == InAppBilling::STATUS_OK) {
+            $user = Buyer::get($ridicash_sale['u_id']);
+            $coin_product = CoinProduct::getCoinProductBySkuAndType($ridicash_sale['sku'], CoinProduct::TYPE_RIDICASH);
+
+            $user_coin_balance = $user['coin_balance'];
+            $refund_coin_amount = $coin_product['coin_amount'] + $coin_product['bonus_coin_amount'];
+
+            // 환불해줄 코인보다, 사용자의 잔여 코인이 많은지 여부를 확인
+            if ($user_coin_balance >= $refund_coin_amount) {
+                // 트랜잭션 시작
+                $app['db']->beginTransaction();
+                try {
+                    // 코인 회수
+                    $r = Buyer::useCoin($user['id'], $refund_coin_amount, Buyer::COIN_SOURCE_OUT_COIN_REFUND, null);
+                    if ($r) {
+                        // OK -> REFUNDED 로 상태 변경
+                        $r = RidiCashBilling::changeRidiCashBillingStatusAndTidIfNotNull($rcb_sale_id, null, RidiCashBilling::STATUS_REFUNDED);
+                        if ($r) {
+                            $app['db']->commit();
+                            $app['session']->getFlashBag()->add('alert', array('success' => '환불되었습니다. (감소 코인: ' . $refund_coin_amount . '개 / 회원 잔여 코인: ' . $user_coin_balance . '개 -> ' . ($user_coin_balance - $refund_coin_amount) . '개)'));
+                        } else {
+                            throw new Exception('환불 도중 오류가 발생했습니다. (상태 변경 DB 오류)');
+                        }
+                    } else {
+                        throw new Exception('환불 도중 오류가 발생했습니다. (코인 감소 DB 오류)');
+                    }
+                } catch (Exception $e) {
+                    $app['db']->rollback();
+                    $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
+                }
+            } else {
+                // 잔여 코인 부족. 환불 불가.
+                $app['session']->getFlashBag()->add('alert', array('error' => '회원의 잔여 코인이 구입시 충전된 코인보다 적어 환불할 수 없습니다. (현재 회원 잔여 코인: ' . $user_coin_balance . '개)'));
+            }
+        } else {
+            $app['session']->getFlashBag()->add('alert', array('error' => '이미 ' . $ridicash_sale['refunded_time'] . ' 에 환불 처리 되었습니다.'));
         }
 
         return $app->json(array('success' => true));

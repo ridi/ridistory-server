@@ -7,6 +7,7 @@ use Story\Model\Buyer;
 use Story\Model\CoinProduct;
 use Story\Model\InAppBilling;
 use Story\Model\RecommendedBook;
+use Story\Model\RidiCashBilling;
 use Story\Util\AES128;
 use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,6 +73,7 @@ class ApiController implements ControllerProviderInterface
 
         /*
          * 4.01, 4.02 버전 사용자들이, /inapp_proudct/list 주소로 API를 호출
+         * TODO: 추후에 /inapp_product/list 제거
          */
         $api->get('/inapp_product/list', array($this, 'coinProductList'));
         $api->get('/coin_product/list', array($this, 'coinProductList'));
@@ -143,31 +145,39 @@ class ApiController implements ControllerProviderInterface
         // 결제 수단
         $buy_method = isset($inputs['buy_method']) ? $inputs['buy_method'] : CoinProduct::TYPE_INAPP;
         if (empty($buy_method)) {
+            // Default: 구글 인앱 결제
             $buy_method = CoinProduct::TYPE_INAPP;
         }
 
+        $coin_info = null;
         if ($buy_method == CoinProduct::TYPE_INAPP) {
             // 구글 인앱 결제
             $r = InAppBilling::verifyInAppBilling($inputs);
-            if ($r) {
-                $purchase_data = json_decode($inputs['purchase_data'], true);
-                $inapp_info = CoinProduct::getCoinProductBySkuAndType($purchase_data['productId'], CoinProduct::TYPE_INAPP);
-                $r = Buyer::addCoin($inputs['u_id'], ($inapp_info['coin_amount'] + $inapp_info['bonus_coin_amount']), Buyer::COIN_SOURCE_IN_INAPP);
-                if ($r) {
-                    $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
-                    return $app->json(array('success' => true, 'message' => '성공', 'coin_balance' => $coin_amount));
-                } else {
-                    return $app->json(array('success' => false, 'message' => '코인을 충전하는 도중 오류가 발생하였습니다.'));
-                }
-            } else {
+            if (!$r) {
                 return $app->json(array('success' => false, 'message' => '인앱 결제 도중 오류가 발생였습니다.'));
             }
+            $purchase_data = json_decode($inputs['purchase_data'], true);
+            $coin_info = CoinProduct::getCoinProductBySkuAndType($purchase_data['productId'], CoinProduct::TYPE_INAPP);
+            $coin_source = Buyer::COIN_SOURCE_IN_INAPP;
         } else if ($buy_method == CoinProduct::TYPE_RIDICASH) {
             // 리디캐시 결제
-            return $app->json(array('success' => false, 'message' => '리디캐시 결제 도중 오류가 발생였습니다.'));
+            $r = RidiCashBilling::exchangeRidiCashToCoin($inputs);
+            if (!$r) {
+                return $app->json(array('success' => false, 'message' => '리디캐시 결제 도중 오류가 발생하였습니다.'));
+            }
+            $coin_info = CoinProduct::getCoinProductBySkuAndType($inputs['sku'], CoinProduct::TYPE_RIDICASH);
+            $coin_source = Buyer::COIN_SOURCE_IN_RIDI;
         } else {
             // 잘못된 결제 수단
             return $app->json(array('success' => false, 'message' => '존재하지 않는 결제 수단입니다.'));
+        }
+
+        $r = Buyer::addCoin($inputs['u_id'], ($coin_info['coin_amount'] + $coin_info['bonus_coin_amount']), $coin_source);
+        if ($r) {
+            $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
+            return $app->json(array('success' => true, 'message' => '성공', 'coin_balance' => $coin_amount));
+        } else {
+            return $app->json(array('success' => false, 'message' => '코인을 충전하는 도중 오류가 발생하였습니다.'));
         }
     }
 
