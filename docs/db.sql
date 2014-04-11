@@ -55,8 +55,6 @@ CREATE TABLE `buyer_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `google_id` varchar(255) NOT NULL,
   `google_reg_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `ridibooks_id` varchar(255) DEFAULT NULL,
-  `ridibooks_reg_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`) USING BTREE,
   KEY `id` (`id`) USING BTREE
@@ -141,7 +139,7 @@ CREATE TABLE `inapp_products` (
   `price` int(11) NOT NULL DEFAULT '0' COMMENT '가격',
   `type` enum('GOOGLE','RIDICASH') NOT NULL DEFAULT 'GOOGLE' COMMENT 'GOOGLE: 구글 인앱결제, RIDICASH: 리디캐쉬 결제',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `sku` (`sku`)
+  UNIQUE KEY `sku` (`sku`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -235,6 +233,21 @@ CREATE TABLE `recommended_book` (
   `title` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `b_id` (`b_id`,`store_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ridicash_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `t_id` varchar(50) DEFAULT NULL,
+  `u_id` int(11) NOT NULL,
+  `ridibooks_id` varchar(255) NOT NULL,
+  `sku` varchar(50) NOT NULL,
+  `purchase_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `status` enum('OK','REFUNDED','PENDING') NOT NULL DEFAULT 'PENDING' COMMENT 'OK: 정상, REFUNDED: 환불됨, PENDING: 대기(오류)',
+  `refunded_time` timestamp NULL DEFAULT NULL COMMENT '환불일',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `t_id` (`t_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
