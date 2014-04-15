@@ -280,6 +280,12 @@ class ApiController implements ControllerProviderInterface
             60 * 10
         );
 
+        foreach ($parts as &$part) {
+            $part['is_locked'] = 0;
+            $part['is_purchased'] = 1;
+            $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
+        }
+
         $book['parts'] = $parts;
         $book['has_recommended_books'] = false;
         $book['interest'] = false;
@@ -341,7 +347,7 @@ class ApiController implements ControllerProviderInterface
                 $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
                 $is_valid_uid = Buyer::isValidUid($u_id);
                 if ($is_valid_uid) {
-                    $purchased_flags = Buyer::getPurchasedListByParts($u_id, $parts);
+                    $purchased_flags = Buyer::getPurchasedPartListByBid($u_id, $b_id);
                 }
             }
         }
@@ -358,7 +364,7 @@ class ApiController implements ControllerProviderInterface
             $part['is_purchased'] = 0;
             if ($is_valid_uid) {
                 foreach ($purchased_flags as $pf) {
-                    if ($pf['p_id'] == $part['id']) {
+                    if ($pf['id'] == $part['id']) {
                         $part['is_purchased'] = 1;
                         unset($pf);
                         break;

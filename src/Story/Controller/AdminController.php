@@ -482,6 +482,8 @@ EOT;
 
             // 환불해줄 코인보다, 사용자의 잔여 코인이 많은지 여부를 확인
             if ($user_coin_balance >= $refund_coin_amount) {
+                //TODO: 리디캐시 환불(결제취소) API 연동
+
                 // 트랜잭션 시작
                 $app['db']->beginTransaction();
                 try {
