@@ -69,7 +69,7 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
             $total_coin_out += $out['amount'];
         }
 
-        $purchases = Buyer::getWholePurchasedList($id);
+        $purchases = Buyer::getWholePurchasedPartList($id);
 
         return $app['twig']->render(
             'admin/buyer_detail.twig',

@@ -38,6 +38,7 @@ class ApiController implements ControllerProviderInterface
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
+        $api->post('/book/purchased_list', array($this, 'purchasedBookList'));
         $api->get('/book/{b_id}', array($this, 'bookDetail'));
         $api->post('/book/{b_id}/buy', array($this, 'buyBookPart'));
 
@@ -223,6 +224,23 @@ class ApiController implements ControllerProviderInterface
             60 * 10
         );
         return $app->json($book);
+    }
+
+    public function purchasedBookList(Request $req, Application $app)
+    {
+        $inputs = $req->request->all();
+        error_log(print_r($inputs, true), 0);
+        $u_id = $req->get('u_id', null);
+        if ($u_id) {
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+        } else {
+            return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+        }
+
+        $b_ids = Buyer::getPurchasedBookList($u_id);
+        $list = Book::getListByIds($b_ids, false);
+
+        return $app->json($list);
     }
 
     /**
