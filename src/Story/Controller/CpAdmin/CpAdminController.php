@@ -126,8 +126,8 @@ class CpAdminController implements ControllerProviderInterface
 
         foreach ($download_sales as $ds) {
             // 헤더에 들어갈 정보 계산
-            $total_sales += $ds['total_sales'];
-            $total_sales_royalty += $ds['total_sales'] * $ds['royalty_percent'];
+            $total_sales += $ds['total_sales'] * 90;
+            $total_sales_royalty += $ds['total_sales'] * ($ds['royalty_percent'] / 100) * 90;
             $total_charged_download += $ds['charged_download'];
         }
 
