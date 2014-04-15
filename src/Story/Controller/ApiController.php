@@ -38,7 +38,8 @@ class ApiController implements ControllerProviderInterface
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
-        $api->post('/book/purchased_list', array($this, 'purchasedBookList'));
+        $api->post('/book/purchased/list', array($this, 'purchasedBookList'));
+        $api->post('/book/purchased/{b_id}', array($this, 'purchasedBookDetail'));
         $api->get('/book/{b_id}', array($this, 'bookDetail'));
         $api->post('/book/{b_id}/buy', array($this, 'buyBookPart'));
 
@@ -228,8 +229,6 @@ class ApiController implements ControllerProviderInterface
 
     public function purchasedBookList(Request $req, Application $app)
     {
-        $inputs = $req->request->all();
-        error_log(print_r($inputs, true), 0);
         $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
@@ -241,6 +240,45 @@ class ApiController implements ControllerProviderInterface
         $list = Book::getListByIds($b_ids, true);
 
         return $app->json($list);
+    }
+
+    public function purchasedBookDetail(Request $req, Application $app, $b_id)
+    {
+        $book = Book::get($b_id);
+        if ($book == false) {
+            return $app->json(array('success' => false, 'error' => 'no such book'));
+        }
+
+        $u_id = $req->get('u_id', '0');
+        if ($u_id) {
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+            $is_valid_uid = Buyer::isValidUid($u_id);
+            if (!$is_valid_uid) {
+                return $app->json(array('success' => false, 'error' => 'not valid user'));
+            }
+        } else {
+            return $app->json(array('success' => false, 'error' => 'not valid parameter'));
+        }
+
+        $book['is_active_lock'] = 1;
+
+        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime(date('Y-m-d H:i:s')) ? 1 : 0);
+        $book['is_completed'] = $is_completed;
+
+        $cache_key = 'purchased_part_list_' . $u_id . '_' . $b_id;
+        $parts = $app['cache']->fetch(
+            $cache_key,
+            function () use ($u_id, $b_id) {
+                return Buyer::getPurchasedPartListByBid($u_id, $b_id);
+            },
+            60 * 10
+        );
+
+        $book['parts'] = $parts;
+        $book['has_recommended_books'] = false;
+        $book['interest'] = false;
+
+        return $app->json($book);
     }
 
     /**
