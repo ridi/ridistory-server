@@ -238,7 +238,7 @@ class ApiController implements ControllerProviderInterface
         }
 
         $b_ids = Buyer::getPurchasedBookList($u_id);
-        $list = Book::getListByIds($b_ids, false);
+        $list = Book::getListByIds($b_ids, true);
 
         return $app->json($list);
     }
