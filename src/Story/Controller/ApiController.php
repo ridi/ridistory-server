@@ -236,10 +236,16 @@ class ApiController implements ControllerProviderInterface
             return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
         }
 
-        $b_ids = Buyer::getPurchasedBookList($u_id);
-        $list = Book::getListByIds($b_ids, true);
-
-        return $app->json($list);
+        $cache_key = 'purchased_book_list_' . $u_id;
+        $book = $app['cache']->fetch(
+            $cache_key,
+            function () use ($u_id) {
+                $b_ids = Buyer::getPurchasedBookList($u_id);
+                return Book::getListByIds($b_ids, true);
+            },
+            60 * 10
+        );
+        return $app->json($book);
     }
 
     public function purchasedBookDetail(Request $req, Application $app, $b_id)
@@ -438,6 +444,12 @@ class ApiController implements ControllerProviderInterface
                         throw new Exception(($ph_id > 0) ? '코인이 부족합니다.' : '구매를 진행하는 도중에 오류가 발생하였습니다.');
                     }
                 }
+
+                // 구매목록 캐시 삭제
+                // 캐시 삭제
+                $app['cache']->delete('purchased_book_list_' . $u_id);
+                $app['cache']->delete('purchased_part_list_' . $u_id . '_' . $part['b_id']);
+
                 $app['db']->commit();
             } catch (Exception $e) {
                 $message = $e->getMessage();
