@@ -165,6 +165,10 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
         $app['cache']->delete('part_list_1_0_' . $part['b_id']);
         $app['cache']->delete('part_list_1_1_' . $part['b_id']);
 
+        // 구매목록 캐시 삭제
+        $app['cache']->delete('purchased_book_list_' . $id);
+        $app['cache']->delete('purchased_part_list_' . $id . '_' . $part['b_id']);
+
         return $app->json(array('success' => $result));
     }
 }
