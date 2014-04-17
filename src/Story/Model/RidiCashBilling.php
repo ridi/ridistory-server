@@ -32,7 +32,7 @@ class RidiCashBilling
 
         // 실제 리디캐시 결제(차감)
         $ch =curl_init();
-        curl_setopt($ch, CURLOPT_URL, STORE_API_BASE_URL . '/api/story/exchange_cash_coin.php?payment_token=' . $payment_token . '&sku=' . $sku);
+        curl_setopt($ch, CURLOPT_URL, TEST_STORE_API_BASE_URL . '/api/story/exchange_cash_coin.php?payment_token=' . $payment_token . '&sku=' . $sku);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
 
