@@ -54,8 +54,8 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
 
         foreach ($download_sales as $ds) {
             // 헤더에 들어갈 정보 계산
-            $total_sales += $ds['total_sales'];
-            $total_sales_royalty += $ds['total_sales'] * $ds['royalty_percent'];
+            $total_sales += $ds['total_sales'] * 90;
+            $total_sales_royalty += $ds['total_sales'] * ($ds['royalty_percent'] / 100) * 90;
             $total_free_download += $ds['free_download'];
             $total_charged_download += $ds['charged_download'];
         }
@@ -128,7 +128,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
         $total_free_download = 0;
         $total_charged_download = 0;
 
-        $download_sales = DownloadSales::get($b_id, $begin_date, $end_date);
+        $book_info = Book::get($b_id);
         $download_sales_detail = DownloadSales::getPartSalesList($b_id, $begin_date, $end_date);
         foreach ($download_sales_detail as $dsd) {
             // 푸터에 들어갈 정보 계산
@@ -163,7 +163,7 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
             array(
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
-                'download_sales' => $download_sales,
+                'book_info' => $book_info,
                 'download_sales_detail' => $download_sales_detail,
                 'footer' => $footer
             )

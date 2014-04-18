@@ -8,19 +8,19 @@
         </colgroup>
         <tr>
             <th>책 ID</th>
-            <td>{{ download_sales.b_id }}</td>
+            <td>{{ book_info.id }}</td>
         </tr>
         <tr>
             <th>상품명</th>
-            <td><a href='/admin/book/{{ download_sales.b_id }}' >{{ download_sales.title }}</a></td>
+            <td><a href='/admin/book/{{ book_info.id }}' >{{ book_info.title }}</a></td>
         </tr>
         <tr>
             <th>CP명</th>
-            <td><a href='/admin/cp_account/{{ download_sales.cp_id }}' >{{ download_sales.cp_name }}</a></td>
+            <td><a href='/admin/cp_account/{{ book_info.cp_id }}' >{{ book_info.cp_name }}</a></td>
         </tr>
         <tr>
             <th>정산율</th>
-            <td>{{ download_sales.royalty_percent }}%</td>
+            <td>{{ book_info.royalty_percent }}%</td>
         </tr>
         <tr>
             <th>다운로드</th>
@@ -28,7 +28,7 @@
         </tr>
         <tr>
             <th>정산액</th>
-            <td>{{ (footer.total_sales * (download_sales.royalty_percent/100) * 90)|number_format(0, '', ',') }}원</td>
+            <td>{{ (footer.total_sales * (book_info.royalty_percent/100) * 90)|number_format(0, '', ',') }}원</td>
         </tr>
         <tr>
             <th>조회 기간</th>

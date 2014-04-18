@@ -9,7 +9,7 @@
         </div>
         <div style="float: right; margin-top: 15px;">
             <blockquote>
-                <p>총 판매액: <b>{{ (header.total_sales * 90)|number_format(0, '', ',') }}원</b></p>
+                <p>총 판매액: <b>{{ header.total_sales|number_format(0, '', ',') }}원</b></p>
                 <p>총 정산액: <b>{{ header.total_sales_royalty|number_format(0, '', ',') }}원</b></p>
                 <p>누적 무료 다운로드: <b>{{ header.total_free_download }}건</b></p>
                 <p>누적 유료 다운로드: <b>{{ header.total_charged_download }}건</b></p>
