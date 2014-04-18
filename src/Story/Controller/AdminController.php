@@ -112,7 +112,8 @@ EOT;
 
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
-        $admin->get('/stats_kpi', array($this, 'statsKpi'));
+
+        $admin->get('/stats_kpi/buy', array($this, 'statsKpiBuy'));
 
         return $admin;
     }
@@ -638,7 +639,7 @@ EOT;
         );
     }
 
-    public static function statsKpi(Application $app, Request $req)
+    public static function statsKpiBuy(Application $app, Request $req)
     {
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
@@ -715,7 +716,7 @@ EOT;
         }
 
         return $app['twig']->render(
-            '/admin/stats_kpi.twig',
+            '/admin/stats_kpi_buy.twig',
             array(
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
