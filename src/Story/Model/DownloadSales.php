@@ -48,13 +48,14 @@ EOT;
         if (!$end_date) {
             $end_date = date('Y-m-d');
         }
+        $end_date = date('Y-m-d', strtotime($end_date . ' + 1 day'));
 
         $sql = <<<EOT
 select b.id b_id, b.title, b.royalty_percent, b.author, b.publisher, b.adult_only, ifnull(open_part_count, 0) open_part_count, b.total_part_count, b.begin_date, b.end_date, b.end_action_flag, sum(if(coin_amount=0, 1, 0)) free_download, sum(if(coin_amount!=0, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph
- left join (select id, b_id, price from part) p on p.id = ph.p_id
- left join (select * from book) b on b.id = p.b_id
+ left join part p on p.id = ph.p_id
+ left join book b on b.id = p.b_id
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on pc.b_id = b.id
-where b.cp_id = ? and date(ph.timestamp) >= ? and date(ph.timestamp) <= ?
+where b.cp_id = ? and ph.timestamp >= ? and ph.timestamp < ?
 EOT;
         $test_users = TestUser::getConcatUidList(true);
         if ($test_users) {
