@@ -212,7 +212,8 @@ CREATE TABLE `purchase_history` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_purchase` (`u_id`,`p_id`,`is_paid`) USING BTREE,
   KEY `timestamp` (`timestamp`),
-  KEY `p_id` (`p_id`)
+  KEY `p_id` (`p_id`),
+  KEY `u_id` (`u_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -256,9 +257,9 @@ CREATE TABLE `ridicash_history` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `t_id` (`t_id`),
   KEY `u_id` (`u_id`),
+  KEY `ridibooks_id` (`ridibooks_id`),
   KEY `purchase_time` (`purchase_time`),
-  KEY `refunded_time` (`refunded_time`),
-  KEY `ridibooks_id` (`ridibooks_id`)
+  KEY `refunded_time` (`refunded_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
