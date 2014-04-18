@@ -126,7 +126,10 @@ CREATE TABLE `inapp_history` (
   `status` enum('OK','REFUNDED','PENDING') NOT NULL DEFAULT 'PENDING' COMMENT 'OK: 정상, REFUNDED: 환불됨, PENDING: 대기(오류)',
   `refunded_time` timestamp NULL DEFAULT NULL COMMENT '환불일',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `order_id` (`order_id`)
+  UNIQUE KEY `order_id` (`order_id`),
+  KEY `u_id` (`u_id`),
+  KEY `purchase_time` (`purchase_time`),
+  KEY `refunded_time` (`refunded_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -205,7 +208,10 @@ CREATE TABLE `purchase_history` (
   `coin_amount` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_purchase` (`u_id`,`p_id`,`is_paid`) USING BTREE
+  UNIQUE KEY `unique_purchase` (`u_id`,`p_id`,`is_paid`) USING BTREE,
+  KEY `timestamp` (`timestamp`),
+  KEY `p_id` (`p_id`),
+  KEY `u_id` (`u_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -247,7 +253,11 @@ CREATE TABLE `ridicash_history` (
   `status` enum('OK','REFUNDED','PENDING') NOT NULL DEFAULT 'PENDING' COMMENT 'OK: 정상, REFUNDED: 환불됨, PENDING: 대기(오류)',
   `refunded_time` timestamp NULL DEFAULT NULL COMMENT '환불일',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `t_id` (`t_id`)
+  UNIQUE KEY `t_id` (`t_id`),
+  KEY `u_id` (`u_id`),
+  KEY `ridibooks_id` (`ridibooks_id`),
+  KEY `purchase_time` (`purchase_time`),
+  KEY `refunded_time` (`refunded_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

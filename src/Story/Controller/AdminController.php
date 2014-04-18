@@ -524,9 +524,9 @@ EOT;
         // 기기등록 통계
         $total_registered = $app['db']->fetchColumn('select count(*) from push_devices');
         $sql = <<<EOT
-select date, A.num_registered_ios ios, B.num_registered_android android, (A.num_registered_ios + B.num_registered_android) total from
+select date, ifnull(A.num_registered_ios, 0) ios, ifnull(B.num_registered_android, 0) android, (ifnull(A.num_registered_ios, 0) + ifnull(B.num_registered_android, 0)) total from
     (select date(reg_date) date, count(*) num_registered_ios from push_devices where datediff(now(), reg_date) < 20 and platform = 'iOS' group by date) A
-  natural left join
+  natural right outer join
     (select date(reg_date) date, count(*) num_registered_android from push_devices where datediff(now(), reg_date) < 20 and platform = 'android' group by date) B
   order by date desc
 EOT;
