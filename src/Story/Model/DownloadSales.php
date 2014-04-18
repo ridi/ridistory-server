@@ -3,34 +3,6 @@ namespace Story\Model;
 
 class DownloadSales
 {
-    public static function get($b_id, $begin_date, $end_date)
-    {
-        if (!$begin_date) {
-            $begin_date = '0000-00-00';
-        }
-        if (!$end_date) {
-            $end_date = date('Y-m-d');
-        }
-
-        $sql = <<<EOT
-select b.id b_id, b.title, cp.id cp_id, cp.name cp_name, b.royalty_percent, b.begin_date, b.end_date, b.end_action_flag from purchase_history ph
- left join (select id, b_id, price from part) p on p.id = ph.p_id
- left join (select * from book) b on b.id = p.b_id
- left join (select id, name from cp_account) cp on cp.id = b.cp_id
-where b_id = ? and date(timestamp) >= ? and date(timestamp) <= ?
-EOT;
-        $test_users = TestUser::getConcatUidList(true);
-        if ($test_users) {
-            $sql .= ' and u_id not in (' . $test_users . ')';
-        }
-        $sql .= ' group by b_id';
-
-        $bind = array($b_id, $begin_date, $end_date);
-
-        global $app;
-        return $app['db']->fetchAssoc($sql, $bind);
-    }
-
     public static function getWholeList($begin_date, $end_date, $exclude_free = false)
     {
         $today = date('Y-m-d H:i:s');

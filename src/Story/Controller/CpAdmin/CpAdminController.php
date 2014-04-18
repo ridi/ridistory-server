@@ -193,7 +193,7 @@ class CpAdminController implements ControllerProviderInterface
         $total_sales = 0;
         $total_charged_download = 0;
 
-        $download_sales = DownloadSales::get($b_id, $begin_date, $end_date);
+        $book_info = Book::get($b_id);
         $download_sales_detail = DownloadSales::getPartSalesList($b_id, $begin_date, $end_date);
         foreach ($download_sales_detail as $dsd) {
             // 푸터에 들어갈 정보 계산
@@ -220,7 +220,7 @@ class CpAdminController implements ControllerProviderInterface
             'cp' => $cp,
             'begin_date' => $begin_date,
             'end_date' => $end_date,
-            'download_sales' => $download_sales,
+            'book_info' => $book_info,
             'download_sales_detail' => $download_sales_detail,
             'footer' => array('total_sales' => $total_sales, 'total_download' => $total_charged_download)
         );

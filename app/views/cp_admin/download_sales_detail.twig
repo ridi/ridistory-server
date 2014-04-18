@@ -12,11 +12,11 @@
         </colgroup>
         <tr>
             <th>책제목</th>
-            <td>{{ download_sales.title }}</a></td>
+            <td>{{ book_info.title }}</a></td>
         </tr>
         <tr>
             <th>정산율</th>
-            <td>{{ download_sales.royalty_percent }}%</td>
+            <td>{{ book_info.royalty_percent }}%</td>
         </tr>
         <tr>
             <th>다운로드</th>
@@ -24,7 +24,7 @@
         </tr>
         <tr>
             <th>정산액</th>
-            <td>{{ (footer.total_sales * (download_sales.royalty_percent/100) * 90)|number_format(0, '', ',') }}원</td>
+            <td>{{ (footer.total_sales * (book_info.royalty_percent/100) * 90)|number_format(0, '', ',') }}원</td>
         </tr>
         <tr>
             <th>조회 기간</th>

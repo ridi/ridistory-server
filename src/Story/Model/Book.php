@@ -12,8 +12,14 @@ class Book
 
     public static function get($id)
     {
+        $sql = <<<EOT
+select cp.name cp_name, b.* from book b
+ left join (select id, name from cp_account) cp on b.cp_id = cp.id
+where b.id = ?
+EOT;
+
         global $app;
-        $b = $app['db']->fetchAssoc('select * from book where id = ?', array($id));
+        $b = $app['db']->fetchAssoc($sql, array($id));
         if ($b) {
             /*
              * iOS 사용자들의 책 소개 상단에만 서비스 종료 공지가 표시되도록 소스 추가.
