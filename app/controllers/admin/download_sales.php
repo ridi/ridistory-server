@@ -60,6 +60,16 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
             $total_charged_download += $ds['charged_download'];
         }
 
+        if (!$begin_date) {
+            $begin_date = date('Y-m-01');
+        }
+        if (!$end_date) {
+            $year = date('Y');
+            $month = date('m');
+            $last_day = date('t', mktime(0, 0, 0, $month, 1, $year));
+            $end_date = $year . '-' . $month . '-' . $last_day;
+        }
+
         $app['twig']->addFilter(
             new \Twig_SimpleFilter('simple_date_format', function($date) {
                 return date('y.m.d', strtotime($date));

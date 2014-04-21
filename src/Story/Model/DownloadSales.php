@@ -7,14 +7,15 @@ class DownloadSales
     {
         $today = date('Y-m-d H:i:s');
 
-        if (!$begin_date) {
-            $begin_date = '0000-00-00';
-        }
-        if (!$end_date) {
-            $end_date = date('Y-m-d');
-        }
+        if ($begin_date || $end_date) {
+            if (!$begin_date) {
+                $begin_date = '0000-00-00';
+            }
+            if (!$end_date) {
+                $end_date = date('Y-m-d');
+            }
 
-        $sql = <<<EOT
+            $sql = <<<EOT
 select b.id b_id, b.title, cp.id, cp_id, cp.name cp_name, b.royalty_percent, ifnull(open_part_count, 0) open_part_count, b.total_part_count, b.begin_date, b.end_date, b.end_action_flag, sum(if(coin_amount=0, 1, 0)) free_download, sum(if(coin_amount>0, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph
  left join (select id, b_id, price from part) p on p.id = ph.p_id
  left join (select * from book) b on b.id = p.b_id
@@ -22,20 +23,23 @@ select b.id b_id, b.title, cp.id, cp_id, cp.name cp_name, b.royalty_percent, ifn
  left join (select id, name from cp_account) cp on cp.id = b.cp_id
 where date(ph.timestamp) >= ? and date(ph.timestamp) <= ?
 EOT;
-        $test_users = TestUser::getConcatUidList(true);
-        if ($test_users) {
-            $sql .= ' and ph.u_id not in (' . $test_users . ')';
-        }
-        $sql .= ' group by b_id';
-        if ($exclude_free) {
-            $sql .= ' having charged_download > 0';
-        }
-        $sql .= ' order by (count(*) * p.price) desc';
+            $test_users = TestUser::getConcatUidList(true);
+            if ($test_users) {
+                $sql .= ' and ph.u_id not in (' . $test_users . ')';
+            }
+            $sql .= ' group by b_id';
+            if ($exclude_free) {
+                $sql .= ' having charged_download > 0';
+            }
+            $sql .= ' order by (count(*) * p.price) desc';
 
-        $bind = array($today, $today, $begin_date, $end_date);
+            $bind = array($today, $today, $begin_date, $end_date);
 
-        global $app;
-        return $app['db']->fetchAll($sql, $bind);
+            global $app;
+            return $app['db']->fetchAll($sql, $bind);
+        } else {
+            return array();
+        }
     }
 
     public static function getListByCpId($cp_id, $begin_date, $end_date)
