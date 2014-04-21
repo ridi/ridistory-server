@@ -55,8 +55,6 @@ CREATE TABLE `buyer_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `google_id` varchar(255) NOT NULL,
   `google_reg_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `ridibooks_id` varchar(255) DEFAULT NULL,
-  `ridibooks_reg_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`) USING BTREE,
   KEY `id` (`id`) USING BTREE
@@ -227,7 +225,8 @@ CREATE TABLE `push_devices` (
   `type_flags` int(11) NOT NULL DEFAULT '0',
   `is_active` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `device_id` (`device_id`),
+  UNIQUE KEY `device_id` (`device_id`),
+  KEY `platform` (`platform`),
   KEY `reg_date` (`reg_date`),
   KEY `device_token` (`device_token`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

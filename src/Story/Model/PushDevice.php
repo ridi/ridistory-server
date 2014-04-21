@@ -39,7 +39,11 @@ class PushDevice
                     'device_token' => $device_token,
                     'is_active' => 1
                 );
-                $r = $app['db']->insert('push_devices', $data);
+
+                $sql = <<<EOT
+insert ignore into push_devices (device_id, platform, device_token, is_active) values (?, ?, ?, ?)
+EOT;
+                $r = $app['db']->executeUpdate($sql, $data);
                 return $r === 1;
             }
         }
