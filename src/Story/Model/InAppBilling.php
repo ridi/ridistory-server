@@ -93,10 +93,14 @@ class InAppBilling
     {
         $sql = <<<EOT
 select * from inapp_history
-order by purchase_time desc limit {$offset}, {$limit}
+order by purchase_time desc limit ?, ?
 EOT;
         global $app;
-        return $app['db']->fetchAll($sql);
+        $stmt = $app['db']->executeQuery($sql,
+            array($offset, $limit),
+            array(\PDO::PARAM_INT, \PDO::PARAM_INT)
+        );
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public static function getInAppBillingSalesListBySearchTypeAndKeyword($type, $keyword)
@@ -104,19 +108,22 @@ EOT;
         if ($type == 'uid') {
             $sql = <<<EOT
 select * from inapp_history
-where u_id = '{$keyword}' order by purchase_time desc
+where u_id = ? order by purchase_time desc
 EOT;
+            $bind = array($keyword);
         } else if ($type == 'google_order_num') {
             $sql = <<<EOT
 select * from inapp_history
-where order_id like '%{$keyword}%' order by purchase_time desc
+where order_id like ? order by purchase_time desc
 EOT;
+            $bind = array('%' . $keyword . '%');
         } else {
             $sql = null;
+            $bind = null;
         }
 
         global $app;
-        return $app['db']->fetchAll($sql);
+        return $app['db']->fetchAll($sql, $bind);
     }
 
     public static function getInAppBillingSalesDetail($iab_sale_id)

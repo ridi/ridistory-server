@@ -98,37 +98,49 @@ class AdminController implements ControllerProviderInterface
 select pc.*, p.seq, b.title from part_comment pc
  left join (select id, b_id, seq from part) p on p.id = pc.p_id
  left join (select id, title from book) b on b.id = p.b_id
-where b.title like '%{$search_keyword}%'
+where b.title like ?
 order by id desc
 EOT;
+                $bind = array('%' . $search_keyword . '%');
             } else if ($search_type == 'nickname') {
                 $sql = <<<EOT
 select pc.*, p.seq, b.title from part_comment pc
  left join (select id, b_id, seq from part) p on p.id = pc.p_id
  left join (select id, title from book) b on b.id = p.b_id
-where pc.nickname like '%{$search_keyword}%'
+where pc.nickname like ?
 order by id desc
 EOT;
+                $bind = array('%' . $search_keyword . '%');
             } else if ($search_type == 'ip_addr') {
-                $search_keyword = ip2long($search_keyword);
+                $ip_addr = ip2long($search_keyword);
                 $sql = <<<EOT
 select pc.*, p.seq, b.title from part_comment pc
  left join (select id, b_id, seq from part) p on p.id = pc.p_id
  left join (select id, title from book) b on b.id = p.b_id
-where pc.ip = '{$search_keyword}'
+where pc.ip = ?
 order by id desc
 EOT;
+                $bind = array($ip_addr);
+            } else {
+                $sql = null;
+                $bind = null;
             }
+
+            $comments = $app['db']->fetchAll($sql, $bind);
         } else {
             $sql = <<<EOT
 select pc.*, p.seq, b.title from part_comment pc
  left join (select id, b_id, seq from part) p on p.id = pc.p_id
  left join (select id, title from book) b on b.id = p.b_id
-order by id desc limit {$offset}, {$limit}
+order by id desc limit ?, ?
 EOT;
+            global $app;
+            $stmt = $app['db']->executeQuery($sql,
+                array($offset, $limit),
+                array(\PDO::PARAM_INT, \PDO::PARAM_INT)
+            );
+            $comments = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }
-
-        $comments = $app['db']->fetchAll($sql);
 
         $app['twig']->addFilter(
             new \Twig_SimpleFilter('long2ip', function($ip) {
