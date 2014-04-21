@@ -534,12 +534,12 @@ EOT;
         if ($begin_date || $end_date) {
             $sql = <<<EOT
 select date(ih.purchase_time) purchase_date, count(distinct ih.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from inapp_history ih
- left join (select * from inapp_products) ip on ih.sku = ip.sku
-where ih.status != 'ERROR' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
+ left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
+where ih.status != 'PENDING' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
 EOT;
             $refunded_sql = <<<EOT
 select date(ih.refunded_time) refunded_date, sum(ip.coin_amount+ip.bonus_coin_amount) refunded_total_coin_amount, sum(ip.price) total_refunded_sales from inapp_history ih
- left join (select * from inapp_products) ip on ih.sku = ip.sku
+ left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
 where ih.status = 'REFUNDED' and date(ih.refunded_time) >= ? and date(ih.refunded_time) <= ?
 EOT;
 
