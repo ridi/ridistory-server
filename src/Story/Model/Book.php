@@ -111,7 +111,7 @@ EOT;
 
         $sql = "SELECT b_id FROM part WHERE begin_date >= ? AND begin_date <= ? GROUP BY b_id HAVING b_id IN (?)";
         $bind = array($one_day_before, $today, $b_ids);
-        $bind_type = array(\PDO::PARAM_STR, \PDO::PARAM_STR, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        $bind_type = array(\PDO::PARAM_STR, \PDO::PARAM_STR, Connection::PARAM_INT_ARRAY);
         $ar = $app['db']->fetchAll($sql, $bind, $bind_type);
 
         $last_updates = array();
@@ -126,7 +126,7 @@ EOT;
     {
         global $app;
         $sql = "SELECT b_id, count(*) like_sum FROM part, user_part_like WHERE p_id = part.id GROUP BY b_id HAVING b_id IN (?)";
-        $ar = $app['db']->fetchAll($sql, array($b_ids), array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+        $ar = $app['db']->fetchAll($sql, array($b_ids), array(Connection::PARAM_INT_ARRAY));
 
         $like_sum = array();
         foreach ($ar as $r) {
@@ -142,7 +142,7 @@ EOT;
         $today = date('Y-m-d H:00:00');
         $sql = "SELECT b_id, count(*) open_part_count FROM part WHERE begin_date <= ? AND end_date >= ? GROUP BY b_id HAVING b_id IN (?)";
         $bind = array($today, $today, $b_ids);
-        $bind_type = array(\PDO::PARAM_STR, \PDO::PARAM_STR, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        $bind_type = array(\PDO::PARAM_STR, \PDO::PARAM_STR, Connection::PARAM_INT_ARRAY);
         $ar = $app['db']->fetchAll($sql, $bind, $bind_type);
 
         $open_part_count = array();
