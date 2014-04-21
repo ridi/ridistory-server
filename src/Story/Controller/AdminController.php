@@ -12,10 +12,6 @@ use Story\Model\TestUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use Story\Util\IosPush;
-use Story\Util\AndroidPush;
-use Story\Util\PushDevicePicker;
-use Story\Util\PickDeviceResult;
 use Symfony\Component\Security\Acl\Exception\Exception;
 
 class AdminController implements ControllerProviderInterface
@@ -55,40 +51,6 @@ class AdminController implements ControllerProviderInterface
 
         $admin->get('/comment/list', array($this, 'commentList'));
         $admin->get('/comment/{c_id}/delete', array($this, 'deleteComment'));
-
-        $admin->get('/push/dashboard', array($this, 'pushDashboard'));
-        $admin->get('/push/notify_update', array($this, 'pushNotifyUpdate'));
-        $admin->get('/push/notify_url', array($this, 'pushNotifyUrl'));
-        $admin->get('/push/notify_new_book', array($this, 'pushNotifyNewBook'));
-        $admin->get('/push/notify_remind', array($this, 'pushNotifyRemind'));
-        $admin->get('/push/notify_update_id_range', array($this, 'pushNotifyUpdateUsingIdRange'));
-        $admin->get(
-            '/push/ios_payload_length.ajax',
-            function (Request $req) use ($app) {
-                $b_id = $req->get('b_id');
-                $message = $req->get('message');
-
-                $notification_ios = IosPush::createPartUpdateNotification($b_id);
-                $payload = IosPush::getPayloadInJson($message, $notification_ios);
-                $payload_length = strlen($payload);
-
-                return $app->json(array("payload_length" => $payload_length));
-            }
-        );
-        $admin->get(
-            '/push/target_count.ajax',
-            function (Request $req) use ($app) {
-                $b_id = $req->get('b_id');
-                $sql = <<<EOT
-select platform, count(*) count from user_interest i
- join push_devices p on p.device_id = i.device_id
-where b_id = ? and i.cancel = 0
-group by platform
-EOT;
-                $r = $app['db']->fetchAssoc($sql, array($b_id));
-                return $app->json($r);
-            }
-        );
 
         $admin->get('/notice/add', array($this, 'addNotice'));
         $admin->get('/notice/list', array($this, 'noticeList'));
@@ -191,84 +153,6 @@ EOT;
         $app['session']->getFlashBag()->add('alert', array('info' => '댓글이 삭제되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/comment/list');
         return $app->redirect($redirect_url);
-    }
-
-    /*
-     * Push
-     */
-    public static function pushDashboard(Request $req, Application $app)
-    {
-        return $app['twig']->render('/admin/dashboard.twig');
-    }
-
-    /**
-     * PUSH NOTIFICATION
-     */
-    public static function pushNotifyUpdate(Request $req, Application $app)
-    {
-        $recipient = $req->get('recipient');
-        $b_id = $req->get('b_id');
-        $message = $req->get('message');
-
-        if (empty($b_id) || empty($message)) {
-            return 'not all required fields are filled';
-        }
-
-        $pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $recipient);
-        $notification_android = AndroidPush::createPartUpdateNotification($b_id, $message);
-        $notification_ios = IosPush::createPartUpdateNotification($b_id);
-
-        $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
-
-        return $app->json($result);
-    }
-
-    public static function pushNotifyUrl(Request $req, Application $app)
-    {
-        $b_id = $req->get('b_id');
-        $url = $req->get('url');
-        $message = $req->get('message');
-
-        if (empty($b_id) || empty($message)) {
-            return 'not all required fields are filled';
-        }
-
-        $pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $b_id);
-        $notification_android = AndroidPush::createUrlNotification($url, $message);
-        $notification_ios = IosPush::createUrlNotification($url);
-
-        $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
-
-        return $app->json($result);
-    }
-
-    public static function pushNotifyRemind(Request $req, Application $app)
-    {
-        $range_begin = $req->get('range_begin');
-        $range_end = $req->get('range_end');
-        $message = $req->get('message');
-        if (empty($message)) {
-            return 'not all required fields are filled';
-        }
-
-        $pick_result = PushDevicePicker::pickDevicesUsingIdRange($app['db'], $range_begin, $range_end);
-        $notification_android = AndroidPush::createLaunchAppNotification($message);
-        $notification_ios = IosPush::createLaunchAppNotification();
-
-        $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
-
-        return $app->json($result);
-    }
-
-    public static function _push(PickDeviceResult $pick_result, $message, $notification_ios, $notification_android)
-    {
-        $result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
-        $result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
-
-        return array(
-            "Android" => $result_android,
-            "iOS" => $result_ios
-        );
     }
 
     /*

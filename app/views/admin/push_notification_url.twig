@@ -1,0 +1,52 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/push/part_update">관심 작품</a></li>
+        <li class="active"><a href="/admin/push/url">URL</a></li>
+    </ul>
+
+    <form action='#'>
+        <fieldset>
+            <label>메세지 <b>수신</b> 대상 OS</label>
+            <select id='js_os_type' name='os_type'>
+                <option value='All' selected>전체</option>
+                <option value='Android'>Android</option>
+                <option value='iOS'>iOS</option>
+            </select>
+            <label><b>연결</b>될 URL</label>
+            <input id='js_url' type="text" name='url' class='input-xlarge'>
+            <label>메세지 <span id='js_payload_length'>(0 / 255)</span></label>
+            <input id='js_message' type="text" name='message' class='input-xxlarge'>
+        </fieldset>
+        <button type="submit" class="btn btn-danger" onclick="return confirm('발송하시겠습니까?');">PUSH 발송!</button>
+    </form>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#js_message').keyup(function() {
+                var url = $('#js_url').val();
+                var message = $(this).val();
+
+                $.getJSON('/admin/push/ios_payload_length/url?url=' + url + '&message=' + message, function(data) {
+                    var payload_length = data['payload_length'];
+                    $('#js_payload_length').text('(' + payload_length + ' / 255)');
+
+                    if (payload_length >= 256) {
+                        $('#js_message').css('color', 'red');
+                        $('.btn-danger').attr("disabled", "disabled");
+                    } else {
+                        $('#js_message').css('color', 'black');
+                        $('.btn-danger').removeAttr("disabled");
+                    }
+                });
+            });
+
+            $('form').submit(function() {
+                return true;
+            });
+        });
+    </script>
+{% endblock %}
