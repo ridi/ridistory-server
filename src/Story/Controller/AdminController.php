@@ -600,7 +600,7 @@ EOT;
         }
 
         return $app['twig']->render(
-            '/admin/stats_kpi_buy.twig',
+            '/admin/stats_kpi/buy_coin.twig',
             array(
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,

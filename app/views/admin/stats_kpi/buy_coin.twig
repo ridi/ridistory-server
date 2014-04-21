@@ -1,6 +1,10 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="/admin/stats_kpi/buy">코인 구매 지표</a></li>
+    </ul>
+
     <form>
         <div class="well form-inline">
             <h4>기간 설정</h4>
@@ -12,7 +16,41 @@
     </form>
 
     <div class="well form-inline">
-        <h4>코인 구매 지표</h4>
+        <h4>코인 구매 지표 (인앱)</h4>
+        <table class='table'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>구매유저수</th>
+                <th>구입코인수</th>
+                <th>보너스지급코인수</th>
+                <th>충전된코인총계</th>
+                <th>환불된코인총계</th>
+                <th>코인구매액총계</th>
+                <th>코인환불액총계</th>
+                <th>총계</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bc in buy_coins %}
+                <tr>
+                    <td>{{ bc.purchase_date }}</td>
+                    <td>{{ bc.user_count }}</td>
+                    <td>{{ bc.coin_amount }}</td>
+                    <td>{{ bc.bonus_coin_amount }}</td>
+                    <td>{{ bc.total_coin_amount }}</td>
+                    <td>{{ bc.refunded_total_coin_amount }}</td>
+                    <td>{{ bc.total_buy_sales|number_format(0, '', ',') }}</td>
+                    <td>{{ bc.total_refunded_sales|number_format(0, '', ',') }}</td>
+                    <td>{{ bc.total_sales|number_format(0, '', ',') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="well form-inline">
+        <h4>코인 구매 지표 (리디캐시)</h4>
         <table class='table'>
             <thead>
             <tr>
