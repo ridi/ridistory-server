@@ -104,7 +104,7 @@ EOT;
         if ($type == 'uid') {
             $sql = <<<EOT
 select * from inapp_history
-where u_id = {$keyword} order by purchase_time desc
+where u_id = '{$keyword}' order by purchase_time desc
 EOT;
         } else if ($type == 'google_order_num') {
             $sql = <<<EOT
