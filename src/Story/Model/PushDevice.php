@@ -33,13 +33,10 @@ class PushDevice
                 return $r === 1;
             } else {
                 // 한번도 등록되지 않은 device_id, device_token일 경우 처리
-                $data = array(
-                    'device_id' => $device_id,
-                    'platform' => $platform,
-                    'device_token' => $device_token,
-                    'is_active' => 1
-                );
-                $r = $app['db']->insert('push_devices', $data);
+                $sql = <<<EOT
+insert ignore into push_devices (device_id, platform, device_token, is_active) values (?, ?, ?, 1)
+EOT;
+                $r = $app['db']->executeUpdate($sql, array($device_id, $platform, $device_token));
                 return $r === 1;
             }
         }

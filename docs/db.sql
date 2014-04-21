@@ -225,7 +225,8 @@ CREATE TABLE `push_devices` (
   `type_flags` int(11) NOT NULL DEFAULT '0',
   `is_active` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `device_id` (`device_id`),
+  UNIQUE KEY `device_id` (`device_id`),
+  KEY `platform` (`platform`),
   KEY `reg_date` (`reg_date`),
   KEY `device_token` (`device_token`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
