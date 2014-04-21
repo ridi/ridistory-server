@@ -789,10 +789,11 @@ class ApiController implements ControllerProviderInterface
          */
         $v = intval($req->get('v', '1'));
         if ($v > 1) {
-            $sku_list = CoinProduct::getWholeCoinProducts();
+            $type = CoinProduct::TYPE_ALL;
         } else {
-            $sku_list = CoinProduct::getCoinProductsByType(CoinProduct::TYPE_INAPP);
+            $type = CoinProduct::TYPE_INAPP;
         }
+        $sku_list = CoinProduct::getCoinProductsByType($type);
 
         return $app->json($sku_list);
     }

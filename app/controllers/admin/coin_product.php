@@ -30,7 +30,7 @@ class AdminCoinProductControllerProvider implements ControllerProviderInterface
 
     public static function coinProductList(Application $app)
     {
-        $coin_list = CoinProduct::getWholeCoinProducts();
+        $coin_list = CoinProduct::getCoinProductsByType(CoinProduct::TYPE_ALL);
 
         $app['twig']->addFunction(
             new Twig_SimpleFunction('get_type', function ($type) {
