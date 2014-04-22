@@ -20,12 +20,14 @@ $app->register(new Silex\Provider\ServiceControllerServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Story\Provider\CacheServiceProvider());
 
-$app->register(new Silex\Provider\WebProfilerServiceProvider(),
-    array(
-        'profiler.cache_dir' => __DIR__ . '/../cache/profiler',
-        'profiler.mount_prefix' => '/_profiler', // this is the default
-    )
-);
+if ($app['debug']) {
+    $app->register(new Silex\Provider\WebProfilerServiceProvider(),
+        array(
+            'profiler.cache_dir' => __DIR__ . '/../cache/profiler',
+            'profiler.mount_prefix' => '/_profiler', // this is the default
+        )
+    );
+}
 
 $app->mount('/', new Story\Controller\WebController());
 $app->mount('/api', new Story\Controller\ApiController());
