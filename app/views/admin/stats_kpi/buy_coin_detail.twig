@@ -18,6 +18,7 @@
 
     <div class="well form-inline">
         <h4>코인 구매 상세 지표 (인앱)</h4>
+        <div style='margin-bottom: 30px;'>* coin_29 ~ coin_349는 (충전된 코인 - 환불된 코인) 입니다.</div>
         <table class='table'>
             <thead>
             <tr>
@@ -27,7 +28,10 @@
                 <th>coin_139</th>
                 <th>coin_349</th>
                 <th>충전코인수</th>
+                <th>환불코인수</th>
                 <th>코인구매액총계</th>
+                <th>코인환불액총계</th>
+                <th>총계</th>
             </tr>
             </thead>
             <tbody>
@@ -38,8 +42,48 @@
                     <td>{{ ibc.coin_99 }}</td>
                     <td>{{ ibc.coin_139 }}</td>
                     <td>{{ ibc.coin_349 }}</td>
-                    <td>{{ ibc.coin_amount + ibc.bonus_coin_amount }}</td>
+                    <td>{{ ibc.buy_coin_amount }}</td>
+                    <td>{{ ibc.refunded_coin_amount }}</td>
                     <td>{{ ibc.total_buy_sales|number_format(0, '', ',') }}</td>
+                    <td>{{ ibc.total_refunded_sales|number_format(0, '', ',') }}</td>
+                    <td>{{ (ibc.total_buy_sales - ibc.total_refunded_sales)|number_format(0, '', ',') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="well form-inline">
+        <h4>코인 구매 상세 지표 (리디캐시)</h4>
+        <div style='margin-bottom: 30px;'>* coin_29 ~ coin_349는 (충전된 코인 - 환불된 코인) 입니다.</div>
+        <table class='table'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>coin_29</th>
+                <th>coin_99</th>
+                <th>coin_139</th>
+                <th>coin_349</th>
+                <th>충전코인수</th>
+                <th>환불코인수</th>
+                <th>코인구매액총계</th>
+                <th>코인환불액총계</th>
+                <th>총계</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for rbc in ridicash_buy_coins %}
+                <tr>
+                    <td>{{ rbc.purchase_date }}</td>
+                    <td>{{ rbc.coin_29 }}</td>
+                    <td>{{ rbc.coin_99 }}</td>
+                    <td>{{ rbc.coin_139 }}</td>
+                    <td>{{ rbc.coin_349 }}</td>
+                    <td>{{ rbc.buy_coin_amount }}</td>
+                    <td>{{ rbc.refunded_coin_amount }}</td>
+                    <td>{{ rbc.total_buy_sales|number_format(0, '', ',') }}</td>
+                    <td>{{ rbc.total_refunded_sales|number_format(0, '', ',') }}</td>
+                    <td>{{ (rbc.total_buy_sales - rbc.total_refunded_sales)|number_format(0, '', ',') }}</td>
                 </tr>
             {% endfor %}
             </tbody>

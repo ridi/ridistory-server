@@ -544,9 +544,6 @@ EOT;
         $inapp_buy_coins = null;
         $ridicash_buy_coins = null;
 
-        $inapp_refunded_coins = null;
-        $ridicash_refunded_coins = null;
-
         if ($begin_date && $end_date) {
             $inapp_buy_sql = <<<EOT
 select date(ih.purchase_time) purchase_date, count(distinct ih.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from inapp_history ih
@@ -582,11 +579,13 @@ EOT;
             $inapp_refunded_sql .= ' group by date(ih.refunded_time)';
             $ridicash_refunded_sql .= ' group by date(rh.refunded_time)';
 
-            $inapp_buy_coins = $app['db']->fetchAll($inapp_buy_sql, array($begin_date, $end_date));
-            $ridicash_buy_coins = $app['db']->fetchAll($ridicash_buy_sql, array($begin_date, $end_date));
+            $bind = array($begin_date, $end_date);
 
-            $inapp_refunded_coins = $app['db']->fetchAll($inapp_refunded_sql, array($begin_date, $end_date));
-            $ridicash_refunded_coins = $app['db']->fetchAll($ridicash_refunded_sql, array($begin_date, $end_date));
+            $inapp_buy_coins = $app['db']->fetchAll($inapp_buy_sql, $bind);
+            $ridicash_buy_coins = $app['db']->fetchAll($ridicash_buy_sql, $bind);
+
+            $inapp_refunded_coins = $app['db']->fetchAll($inapp_refunded_sql, $bind);
+            $ridicash_refunded_coins = $app['db']->fetchAll($ridicash_refunded_sql, $bind);
 
             foreach ($inapp_refunded_coins as $key => $irc) {
                 foreach ($inapp_buy_coins as &$ibc) {
@@ -651,7 +650,8 @@ EOT;
                     }
 
                     return ($a_time < $b_time ? -1 : 1);
-            });
+                }
+            );
             usort($ridicash_buy_coins, function ($a, $b) {
                     $a_time = strtotime($a['purchase_date']);
                     $b_time = strtotime($b['purchase_date']);
@@ -661,16 +661,8 @@ EOT;
                     }
 
                     return ($a_time < $b_time ? -1 : 1);
-                });
-
-            foreach ($inapp_buy_coins as &$ibc) {
-                $ibc['total_coin_amount'] = $ibc['coin_amount'] + $ibc['bonus_coin_amount'];
-                $ibc['total_sales'] = $ibc['total_buy_sales'] - $ibc['total_refunded_sales'];
-            }
-            foreach ($ridicash_buy_coins as &$rbc) {
-                $rbc['total_coin_amount'] = $rbc['coin_amount'] + $rbc['bonus_coin_amount'];
-                $rbc['total_sales'] = $rbc['total_buy_sales'] - $rbc['total_refunded_sales'];
-            }
+                }
+            );
         } else {
             if (!$begin_date) {
                 $begin_date = date('Y-m-01');
@@ -700,24 +692,139 @@ EOT;
         $end_date = $req->get('end_date');
 
         $inapp_buy_coins = null;
+        $ridicash_buy_coins = null;
 
         if ($begin_date && $end_date) {
             $inapp_buy_sql = <<<EOT
-select date(ih.purchase_time) purchase_date,
-sum(if(ih.sku='coin_29', 1, 0)) coin_29,
-sum(if(ih.sku='coin_99', 1, 0)) coin_99,
-sum(if(ih.sku='coin_139', 1, 0)) coin_139,
-sum(if(ih.sku='coin_349', 1, 0)) coin_349,
-sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, sum(ip.price) total_buy_sales from inapp_history ih
+select date(ih.purchase_time) purchase_date, sum(if(ih.sku='coin_29', 1, 0)) coin_29, sum(if(ih.sku='coin_99', 1, 0)) coin_99, sum(if(ih.sku='coin_139', 1, 0)) coin_139, sum(if(ih.sku='coin_349', 1, 0)) coin_349, sum(ip.coin_amount + ip.bonus_coin_amount) buy_coin_amount, 0 refunded_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from inapp_history ih
  left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
 where ih.status != 'PENDING' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
 EOT;
+            $ridicash_buy_sql = <<<EOT
+select date(rh.purchase_time) purchase_date, sum(if(rh.sku='coin_29', 1, 0)) coin_29, sum(if(rh.sku='coin_99', 1, 0)) coin_99, sum(if(rh.sku='coin_139', 1, 0)) coin_139, sum(if(rh.sku='coin_349', 1, 0)) coin_349, sum(ip.coin_amount + ip.bonus_coin_amount) buy_coin_amount, 0 refunded_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from ridicash_history rh
+ left join (select * from inapp_products where type = 'RIDICASH') ip on rh.sku = ip.sku
+where rh.status != 'PENDING' and date(rh.purchase_time) >= ? and date(rh.purchase_time) <= ?
+EOT;
+
+            $inapp_refunded_sql = <<<EOT
+select date(ih.refunded_time) refunded_date, sum(if(ih.sku='coin_29', 1, 0)) coin_29, sum(if(ih.sku='coin_99', 1, 0)) coin_99, sum(if(ih.sku='coin_139', 1, 0)) coin_139, sum(if(ih.sku='coin_349', 1, 0)) coin_349, sum(ip.coin_amount + ip.bonus_coin_amount) refunded_coin_amount, sum(ip.price) total_refunded_sales from inapp_history ih
+ left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
+where ih.status = 'REFUNDED' and date(ih.refunded_time) >= ? and date(ih.refunded_time) <= ?
+EOT;
+            $ridicash_refunded_sql = <<<EOT
+select date(rh.refunded_time) refunded_date, sum(if(rh.sku='coin_29', 1, 0)) coin_29, sum(if(rh.sku='coin_99', 1, 0)) coin_99, sum(if(rh.sku='coin_139', 1, 0)) coin_139, sum(if(rh.sku='coin_349', 1, 0)) coin_349, sum(ip.coin_amount + ip.bonus_coin_amount) refunded_coin_amount, sum(ip.price) total_refunded_sales from ridicash_history rh
+ left join (select * from inapp_products where type = 'RIDICASH') ip on rh.sku = ip.sku
+where rh.status = 'REFUNDED' and date(rh.refunded_time) >= ? and date(rh.refunded_time) <= ?
+EOT;
+
+
             $test_users = TestUser::getConcatUidList(true);
             if ($test_users) {
                 $inapp_buy_sql .= ' and ih.u_id not in (' . $test_users . ')';
+                $ridicash_buy_sql .= ' and rh.u_id not in (' . $test_users . ')';
+                $inapp_refunded_sql .= ' and ih.u_id not in (' . $test_users . ')';
+                $ridicash_refunded_sql .= ' and rh.u_id not in (' . $test_users . ')';
             }
             $inapp_buy_sql .= ' group by date(ih.purchase_time)';
-            $inapp_buy_coins = $app['db']->fetchAll($inapp_buy_sql, array($begin_date, $end_date));
+            $ridicash_buy_sql .= ' group by date(rh.purchase_time)';
+            $inapp_refunded_sql .= ' group by date(ih.refunded_time)';
+            $ridicash_refunded_sql .= ' group by date(rh.refunded_time)';
+
+            $bind = array($begin_date, $end_date);
+
+            $inapp_buy_coins = $app['db']->fetchAll($inapp_buy_sql, $bind);
+            $ridicash_buy_coins = $app['db']->fetchAll($ridicash_buy_sql, $bind);
+            $inapp_refunded_coins = $app['db']->fetchAll($inapp_refunded_sql, $bind);
+            $ridicash_refunded_coins = $app['db']->fetchAll($ridicash_refunded_sql, $bind);
+
+            foreach ($inapp_refunded_coins as $key => $irc) {
+                foreach ($inapp_buy_coins as &$ibc) {
+                    if ($irc['refunded_date'] == $ibc['purchase_date']) {
+                        $ibc['coin_29'] -= $irc['coin_29'];
+                        $ibc['coin_99'] -= $irc['coin_99'];
+                        $ibc['coin_139'] -= $irc['coin_139'];
+                        $ibc['coin_349'] -= $irc['coin_349'];
+                        $ibc['refunded_coin_amount'] = $irc['refunded_coin_amount'];
+                        $ibc['total_refunded_sales'] = $irc['total_refunded_sales'];
+                        unset($inapp_refunded_coins[$key]);
+                        break;
+                    }
+                }
+            }
+            foreach ($ridicash_refunded_coins as $key => $rrc) {
+                foreach ($ridicash_buy_coins as &$rbc) {
+                    if ($rrc['refunded_date'] == $rbc['purchase_date']) {
+                        $rbc['coin_29'] -= $rrc['coin_29'];
+                        $rbc['coin_99'] -= $rrc['coin_99'];
+                        $rbc['coin_139'] -= $rrc['coin_139'];
+                        $rbc['coin_349'] -= $rrc['coin_349'];
+                        $rbc['refunded_coin_amount'] = $rrc['refunded_coin_amount'];
+                        $rbc['total_refunded_sales'] = $rrc['total_refunded_sales'];
+                        unset($ridicash_refunded_coins[$key]);
+                        break;
+                    }
+                }
+            }
+
+            if (count($inapp_refunded_coins) > 0) {
+                foreach ($inapp_refunded_coins as $key => $irc) {
+                    array_push($inapp_buy_coins,
+                        array(
+                            'purchase_date' => $irc['refunded_date'],
+                            'coin_29' => -$irc['coin_29'],
+                            'coin_99' => -$irc['coin_99'],
+                            'coin_139' => -$irc['coin_139'],
+                            'coin_349' => -$irc['coin_349'],
+                            'buy_coin_amount' => 0,
+                            'refunded_coin_amount' => $irc['refunded_coin_amount'],
+                            'total_buy_sales' => 0,
+                            'total_refunded_sales' => $irc['total_refunded_sales']
+                        )
+                    );
+                    unset($inapp_refunded_coins[$key]);
+                }
+            }
+            if (count($ridicash_refunded_coins) > 0) {
+                foreach ($ridicash_refunded_coins as $key => $rrc) {
+                    array_push($ridicash_buy_coins,
+                        array(
+                            'purchase_date' => $rrc['refunded_date'],
+                            'coin_29' => -$rrc['coin_29'],
+                            'coin_99' => -$rrc['coin_99'],
+                            'coin_139' => -$rrc['coin_139'],
+                            'coin_349' => -$rrc['coin_349'],
+                            'buy_coin_amount' => 0,
+                            'refunded_coin_amount' => $rrc['refunded_coin_amount'],
+                            'total_buy_sales' => 0,
+                            'total_refunded_sales' => $rrc['total_refunded_sales']
+                        )
+                    );
+                    unset($ridicash_refunded_coins[$key]);
+                }
+            }
+
+            usort($inapp_buy_coins, function ($a, $b) {
+                    $a_time = strtotime($a['purchase_date']);
+                    $b_time = strtotime($b['purchase_date']);
+
+                    if ($a_time == $b_time) {
+                        return 0;
+                    }
+
+                    return ($a_time < $b_time ? -1 : 1);
+                }
+            );
+            usort($ridicash_buy_coins, function ($a, $b) {
+                    $a_time = strtotime($a['purchase_date']);
+                    $b_time = strtotime($b['purchase_date']);
+
+                    if ($a_time == $b_time) {
+                        return 0;
+                    }
+
+                    return ($a_time < $b_time ? -1 : 1);
+                }
+            );
         } else {
             if (!$begin_date) {
                 $begin_date = date('Y-m-01');
@@ -735,7 +842,8 @@ EOT;
             array(
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
-                'inapp_buy_coins' => $inapp_buy_coins
+                'inapp_buy_coins' => $inapp_buy_coins,
+                'ridicash_buy_coins' => $ridicash_buy_coins
             )
         );
     }

@@ -39,11 +39,11 @@
                     <td>{{ ibc.user_count }}</td>
                     <td>{{ ibc.coin_amount }}</td>
                     <td>{{ ibc.bonus_coin_amount }}</td>
-                    <td>{{ ibc.total_coin_amount }}</td>
+                    <td>{{ ibc.coin_amount + ibc.bonus_coin_amount }}</td>
                     <td>{{ ibc.refunded_total_coin_amount }}</td>
                     <td>{{ ibc.total_buy_sales|number_format(0, '', ',') }}</td>
                     <td>{{ ibc.total_refunded_sales|number_format(0, '', ',') }}</td>
-                    <td>{{ ibc.total_sales|number_format(0, '', ',') }}</td>
+                    <td>{{ (ibc.total_buy_sales - ibc.total_refunded_sales)|number_format(0, '', ',') }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -73,11 +73,11 @@
                     <td>{{ rbc.user_count }}</td>
                     <td>{{ rbc.coin_amount }}</td>
                     <td>{{ rbc.bonus_coin_amount }}</td>
-                    <td>{{ rbc.total_coin_amount }}</td>
+                    <td>{{ rbc.coin_amount + rbc.bonus_coin_amount }}</td>
                     <td>{{ rbc.refunded_total_coin_amount }}</td>
                     <td>{{ rbc.total_buy_sales|number_format(0, '', ',') }}</td>
                     <td>{{ rbc.total_refunded_sales|number_format(0, '', ',') }}</td>
-                    <td>{{ rbc.total_sales|number_format(0, '', ',') }}</td>
+                    <td>{{ (rbc.total_buy_sales - rbc.total_refunded_sales)|number_format(0, '', ',') }}</td>
                 </tr>
             {% endfor %}
             </tbody>

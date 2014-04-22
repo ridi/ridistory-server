@@ -388,7 +388,7 @@ class ApiController implements ControllerProviderInterface
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             if (!Buyer::isValidUid($u_id)) {
-                return $app->json(array('success' => 'false', 'message' => '회원정보를 찾을 수 없습니다.'));
+                return $app->json(array('success' => 'false', 'message' => '회원 정보를 찾을 수 없습니다.'));
             }
         } else {
             return $app->json(array('success' => 'false', 'message' => '구글 서비스 사용에 동의해 주셔야 책을 볼 수 있습니다.'));
