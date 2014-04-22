@@ -6,6 +6,7 @@ use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Model\StoryPlusBook;
 use Story\Model\StoryPlusBookIntro;
+use Twig_SimpleFunction;
 
 class StoryPlusBookController implements ControllerProviderInterface
 {

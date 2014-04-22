@@ -6,6 +6,7 @@ use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Model\CpAccount;
 use Story\Model\Book;
+use Twig_SimpleFunction;
 
 class CpAccountController implements ControllerProviderInterface
 {

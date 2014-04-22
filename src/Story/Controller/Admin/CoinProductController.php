@@ -5,6 +5,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Model\CoinProduct;
+use Twig_SimpleFunction;
 
 class CoinProductController implements ControllerProviderInterface
 {

@@ -6,6 +6,7 @@ use Silex\ControllerProviderInterface;
 use Story\Model\Book;
 use Story\Model\DownloadSales;
 use Symfony\Component\HttpFoundation\Request;
+use Twig_SimpleFunction;
 
 class DownloadSalesController implements ControllerProviderInterface
 {
