@@ -1,11 +1,12 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Model\StoryPlusBookIntro;
 
-class AdminStoryPlusBookIntroControllerProvider implements ControllerProviderInterface
+class StoryPlusBookIntroController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {

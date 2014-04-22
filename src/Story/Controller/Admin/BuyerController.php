@@ -1,4 +1,5 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
@@ -6,7 +7,7 @@ use Story\Model\Buyer;
 use Story\Model\Part;
 use Symfony\Component\HttpFoundation\Request;
 
-class AdminBuyerControllerProvider implements ControllerProviderInterface
+class BuyerController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {

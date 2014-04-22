@@ -1,4 +1,5 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
@@ -8,7 +9,7 @@ use Story\Util\PickDeviceResult;
 use Story\Util\PushDevicePicker;
 use Symfony\Component\HttpFoundation\Request;
 
-class AdminPushNotificationControllerProvider implements ControllerProviderInterface
+class PushNotificationController implements ControllerProviderInterface
 {
     const PUSH_TYPE_PART_UPDATE = 'part_update';
     const PUSH_TYPE_URL = 'url';

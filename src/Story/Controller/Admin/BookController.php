@@ -1,4 +1,5 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
@@ -8,7 +9,7 @@ use Story\Model\CpAccount;
 use Story\Model\RecommendedBook;
 use Story\Model\Part;
 
-class AdminBookControllerProvider implements ControllerProviderInterface
+class BookController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {

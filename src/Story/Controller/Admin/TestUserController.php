@@ -1,11 +1,12 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\TestUser;
 use Symfony\Component\HttpFoundation\Request;
 
-class AdminTestUserControllerProvider implements ControllerProviderInterface
+class TestUserController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {

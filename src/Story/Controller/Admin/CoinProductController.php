@@ -1,11 +1,12 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Model\CoinProduct;
 
-class AdminCoinProductControllerProvider implements ControllerProviderInterface
+class CoinProductController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
