@@ -6,3 +6,4 @@ lib/vendor
 lib/composer\.lock
 app/conf\.php
 lib/composer\.phar
+cache/
