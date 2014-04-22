@@ -550,12 +550,12 @@ EOT;
             $inapp_buy_sql = <<<EOT
 select date(ih.purchase_time) purchase_date, count(distinct ih.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from inapp_history ih
  left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
-where ih.status != 'PENDING' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
+where ih.status = 'OK' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
 EOT;
             $ridicash_buy_sql = <<<EOT
 select date(rh.purchase_time) purchase_date, count(distinct rh.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from ridicash_history rh
  left join (select * from inapp_products where type = 'RIDICASH') ip on rh.sku = ip.sku
-where rh.status != 'PENDING' and date(rh.purchase_time) >= ? and date(rh.purchase_time) <= ?
+where rh.status = 'OK' and date(rh.purchase_time) >= ? and date(rh.purchase_time) <= ?
 EOT;
 
             $inapp_refunded_sql = <<<EOT

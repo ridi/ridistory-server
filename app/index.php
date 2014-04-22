@@ -10,14 +10,14 @@ $app->register(
         'twig.path' => __DIR__ . '/views',
     )
 );
-$app->register(new Silex\Provider\ServiceControllerServiceProvider());
-$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 require 'conf.php';
 
 $app->register(new Silex\Provider\DoctrineServiceProvider());
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\SecurityServiceProvider());
+$app->register(new Silex\Provider\ServiceControllerServiceProvider());
+$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Story\Provider\CacheServiceProvider());
 
 $app->register(new Silex\Provider\WebProfilerServiceProvider(),
