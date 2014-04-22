@@ -76,6 +76,7 @@ class AdminController implements ControllerProviderInterface
         $admin->get('/stats_like', array($this, 'statsLike'));
 
         $admin->get('/stats_kpi/buy', array($this, 'statsKpiBuy'));
+        $admin->get('/stats_kpi/buy/detail', array($this, 'statsKpiBuyDetail'));
 
         return $admin;
     }
@@ -546,16 +547,16 @@ EOT;
         $inapp_refunded_coins = null;
         $ridicash_refunded_coins = null;
 
-        if ($begin_date || $end_date) {
+        if ($begin_date && $end_date) {
             $inapp_buy_sql = <<<EOT
 select date(ih.purchase_time) purchase_date, count(distinct ih.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from inapp_history ih
  left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
-where ih.status = 'OK' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
+where ih.status != 'PENDING' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
 EOT;
             $ridicash_buy_sql = <<<EOT
 select date(rh.purchase_time) purchase_date, count(distinct rh.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from ridicash_history rh
  left join (select * from inapp_products where type = 'RIDICASH') ip on rh.sku = ip.sku
-where rh.status = 'OK' and date(rh.purchase_time) >= ? and date(rh.purchase_time) <= ?
+where rh.status != 'PENDING' and date(rh.purchase_time) >= ? and date(rh.purchase_time) <= ?
 EOT;
 
             $inapp_refunded_sql = <<<EOT
@@ -670,6 +671,16 @@ EOT;
                 $rbc['total_coin_amount'] = $rbc['coin_amount'] + $rbc['bonus_coin_amount'];
                 $rbc['total_sales'] = $rbc['total_buy_sales'] - $rbc['total_refunded_sales'];
             }
+        } else {
+            if (!$begin_date) {
+                $begin_date = date('Y-m-01');
+            }
+            if (!$end_date) {
+                $year = date('Y');
+                $month = date('m');
+                $last_day = date('t', mktime(0, 0, 0, $month, 1, $year));
+                $end_date = $year . '-' . $month . '-' . $last_day;
+            }
         }
 
         return $app['twig']->render(
@@ -679,6 +690,52 @@ EOT;
                 'end_date' => $end_date,
                 'inapp_buy_coins' => $inapp_buy_coins,
                 'ridicash_buy_coins' => $ridicash_buy_coins
+            )
+        );
+    }
+
+    public static function statsKpiBuyDetail(Application $app, Request $req)
+    {
+        $begin_date = $req->get('begin_date');
+        $end_date = $req->get('end_date');
+
+        $inapp_buy_coins = null;
+
+        if ($begin_date && $end_date) {
+            $inapp_buy_sql = <<<EOT
+select date(ih.purchase_time) purchase_date,
+sum(if(ih.sku='coin_29', 1, 0)) coin_29,
+sum(if(ih.sku='coin_99', 1, 0)) coin_99,
+sum(if(ih.sku='coin_139', 1, 0)) coin_139,
+sum(if(ih.sku='coin_349', 1, 0)) coin_349,
+sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, sum(ip.price) total_buy_sales from inapp_history ih
+ left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
+where ih.status != 'PENDING' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
+EOT;
+            $test_users = TestUser::getConcatUidList(true);
+            if ($test_users) {
+                $inapp_buy_sql .= ' and ih.u_id not in (' . $test_users . ')';
+            }
+            $inapp_buy_sql .= ' group by date(ih.purchase_time)';
+            $inapp_buy_coins = $app['db']->fetchAll($inapp_buy_sql, array($begin_date, $end_date));
+        } else {
+            if (!$begin_date) {
+                $begin_date = date('Y-m-01');
+            }
+            if (!$end_date) {
+                $year = date('Y');
+                $month = date('m');
+                $last_day = date('t', mktime(0, 0, 0, $month, 1, $year));
+                $end_date = $year . '-' . $month . '-' . $last_day;
+            }
+        }
+
+        return $app['twig']->render(
+            '/admin/stats_kpi/buy_coin_detail.twig',
+            array(
+                'begin_date' => $begin_date,
+                'end_date' => $end_date,
+                'inapp_buy_coins' => $inapp_buy_coins
             )
         );
     }
