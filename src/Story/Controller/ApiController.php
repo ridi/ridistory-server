@@ -124,7 +124,7 @@ class ApiController implements ControllerProviderInterface
     {
         $coin_balance = 0;
 
-        $u_id = $req->get('u_id', '0');
+        $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             if (Buyer::isValidUid($u_id)) {
@@ -255,7 +255,7 @@ class ApiController implements ControllerProviderInterface
             return $app->json(array('success' => false, 'error' => 'no such book'));
         }
 
-        $u_id = $req->get('u_id', '0');
+        $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             $is_valid_uid = Buyer::isValidUid($u_id);
@@ -342,7 +342,7 @@ class ApiController implements ControllerProviderInterface
         $purchased_flags = null;
         // 유료화 버전(v3)이고, Uid가 유효할 경우 구매내역 받아옴.
         if ($v > 2) {
-            $u_id = $req->get('u_id', '0');
+            $u_id = $req->get('u_id', null);
             if ($u_id) {
                 $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
                 $is_valid_uid = Buyer::isValidUid($u_id);
@@ -384,7 +384,7 @@ class ApiController implements ControllerProviderInterface
 
     public function buyBookPart(Request $req, Application $app)
     {
-        $u_id = $req->get('u_id', '0');
+        $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             if (!Buyer::isValidUid($u_id)) {
@@ -699,7 +699,7 @@ class ApiController implements ControllerProviderInterface
          * 유료화 버전(v3)부터는 u_id를 추가적으로 받아서,
          * 닫혀 있는 책에 대해서 구매내역을 체크한다.
          */
-        $u_id = $req->get('u_id', '0');
+        $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
         }

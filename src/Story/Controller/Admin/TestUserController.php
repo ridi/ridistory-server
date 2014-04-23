@@ -27,7 +27,7 @@ class TestUserController implements ControllerProviderInterface
         $comment = $req->get('comment', '');
         $is_active = $req->get('is_active', 0);
 
-        if ($u_id != null) {
+        if ($u_id) {
             $values = array(
                 'u_id' => $u_id,
                 'comment' => $comment,
