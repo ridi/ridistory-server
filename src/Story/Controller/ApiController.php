@@ -43,7 +43,7 @@ class ApiController implements ControllerProviderInterface
         $api->get('/book/{b_id}', array($this, 'bookDetail'));
         $api->post('/book/{b_id}/buy', array($this, 'buyBookPart'));
 
-        $api->get('/recommended_book/{b_id}', array($this, 'recommenedBookDetail'));
+        $api->get('/recommended_book/{b_id}', array($this, 'recommendedBookDetail'));
 
         $api->get('/part/{p_id}', array($this, 'partDetail'));
 
@@ -487,7 +487,7 @@ class ApiController implements ControllerProviderInterface
     /*
      * Recommended Book
      */
-    public function recommenedBookDetail(Request $req, Application $app, $b_id)
+    public function recommendedBookDetail(Request $req, Application $app, $b_id)
     {
         // Ridibooks Metadata
         $ch =curl_init();
