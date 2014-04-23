@@ -1,4 +1,5 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
@@ -6,7 +7,7 @@ use Story\Model\Buyer;
 use Story\Model\Part;
 use Symfony\Component\HttpFoundation\Request;
 
-class AdminBuyerControllerProvider implements ControllerProviderInterface
+class BuyerController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
@@ -69,7 +70,7 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
             $total_coin_out += $out['amount'];
         }
 
-        $purchases = Buyer::getWholePurchasedList($id);
+        $purchases = Buyer::getWholePurchasedPartList($id);
 
         return $app['twig']->render(
             'admin/buyer_detail.twig',
@@ -164,6 +165,10 @@ class AdminBuyerControllerProvider implements ControllerProviderInterface
         $app['cache']->delete('part_list_0_1_' . $part['b_id']);
         $app['cache']->delete('part_list_1_0_' . $part['b_id']);
         $app['cache']->delete('part_list_1_1_' . $part['b_id']);
+
+        // 구매목록 캐시 삭제
+        $app['cache']->delete('purchased_book_list_' . $id);
+        $app['cache']->delete('purchased_part_list_' . $id . '_' . $part['b_id']);
 
         return $app->json(array('success' => $result));
     }

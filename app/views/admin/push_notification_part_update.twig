@@ -1,9 +1,13 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-<form action='/admin/push/notify_update'>
+<ul class="nav nav-tabs">
+    <li class="active"><a href="/admin/push/part_update">관심 작품</a></li>
+    <li><a href="#">URL (준비중)</a></li>
+</ul>
+
+<form action='/admin/push/notify/part_update'>
 	<fieldset>
-		<legend>관심 작품 PUSH 발송</legend>
 		<label>메세지 <b>수신</b> 대상 책 ID</label>
 		<input id='js_interest_recipient' type="text" name='recipient' class='input-small'>
 		<label><b>연결</b>될 책 ID</label>
@@ -41,7 +45,7 @@
         	var b_id = $('#js_interest_bid').val();
         	var message = $(this).val();
         	
-        	$.getJSON('/admin/push/ios_payload_length.ajax?b_id=' + b_id + '&message=' + message, function(data) {
+        	$.getJSON('/admin/push/ios_payload_length/part_update?b_id=' + b_id + '&message=' + message, function(data) {
         		var payload_length = data['payload_length'];
         		$('#js_payload_length').text('(' + payload_length + ' / 255)');
         		

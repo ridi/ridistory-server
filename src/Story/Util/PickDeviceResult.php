@@ -3,6 +3,7 @@ namespace Story\Util;
 
 class PickDeviceResult
 {
+    const PLATFORM_ALL = 'All';
     const PLATFORM_IOS = 'iOS';
     const PLATFORM_ANDROID = 'Android';
 

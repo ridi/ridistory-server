@@ -7,14 +7,11 @@ use Story\Model\Buyer;
 use Story\Model\CoinProduct;
 use Story\Model\InAppBilling;
 use Story\Model\PartComment;
+use Story\Model\RidiCashBilling;
 use Story\Model\TestUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use Story\Util\IosPush;
-use Story\Util\AndroidPush;
-use Story\Util\PushDevicePicker;
-use Story\Util\PickDeviceResult;
 use Symfony\Component\Security\Acl\Exception\Exception;
 
 class AdminController implements ControllerProviderInterface
@@ -55,40 +52,6 @@ class AdminController implements ControllerProviderInterface
         $admin->get('/comment/list', array($this, 'commentList'));
         $admin->get('/comment/{c_id}/delete', array($this, 'deleteComment'));
 
-        $admin->get('/push/dashboard', array($this, 'pushDashboard'));
-        $admin->get('/push/notify_update', array($this, 'pushNotifyUpdate'));
-        $admin->get('/push/notify_url', array($this, 'pushNotifyUrl'));
-        $admin->get('/push/notify_new_book', array($this, 'pushNotifyNewBook'));
-        $admin->get('/push/notify_remind', array($this, 'pushNotifyRemind'));
-        $admin->get('/push/notify_update_id_range', array($this, 'pushNotifyUpdateUsingIdRange'));
-        $admin->get(
-            '/push/ios_payload_length.ajax',
-            function (Request $req) use ($app) {
-                $b_id = $req->get('b_id');
-                $message = $req->get('message');
-
-                $notification_ios = IosPush::createPartUpdateNotification($b_id);
-                $payload = IosPush::getPayloadInJson($message, $notification_ios);
-                $payload_length = strlen($payload);
-
-                return $app->json(array("payload_length" => $payload_length));
-            }
-        );
-        $admin->get(
-            '/push/target_count.ajax',
-            function (Request $req) use ($app) {
-                $b_id = $req->get('b_id');
-                $sql = <<<EOT
-select platform, count(*) count from user_interest i
- join push_devices p on p.device_id = i.device_id
-where b_id = ? and i.cancel = 0
-group by platform
-EOT;
-                $r = $app['db']->fetchAssoc($sql, array($b_id));
-                return $app->json($r);
-            }
-        );
-
         $admin->get('/notice/add', array($this, 'addNotice'));
         $admin->get('/notice/list', array($this, 'noticeList'));
         $admin->get('/notice/{n_id}', array($this, 'noticeDetail'));
@@ -101,13 +64,19 @@ EOT;
         $admin->post('/banner/{banner_id}/delete', array($this, 'deleteBanner'));
         $admin->post('/banner/{banner_id}/edit', array($this, 'editBanner'));
 
-        $admin->get('/inapp_sales/list', array($this, 'inappSalesList'));
-        $admin->get('/inapp_sales/{iab_sale_id}', array($this, 'inappSalesDetail'));
-        $admin->post('/inapp_sales/{iab_sale_id}/refund', array($this, 'refundInappSales'));
+        $admin->get('/inapp_sales/list', array($this, 'inAppSalesList'));
+        $admin->get('/inapp_sales/{iab_sale_id}', array($this, 'inAppSalesDetail'));
+        $admin->post('/inapp_sales/{iab_sale_id}/refund', array($this, 'refundInAppSales'));
+
+        $admin->get('/ridicash_sales/list', array($this, 'ridiCashSalesList'));
+        $admin->get('/ridicash_sales/{rcb_sale_id}', array($this, 'ridiCashSalesDetail'));
+        $admin->post('/ridicash_sales/{rcb_sale_id}/refund', array($this, 'refundRidiCashSales'));
 
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
-        $admin->get('/stats_kpi', array($this, 'statsKpi'));
+
+        $admin->get('/stats_kpi/buy', array($this, 'statsKpiBuy'));
+        $admin->get('/stats_kpi/buy/detail', array($this, 'statsKpiBuyDetail'));
 
         return $admin;
     }
@@ -200,84 +169,6 @@ EOT;
     }
 
     /*
-     * Push
-     */
-    public static function pushDashboard(Request $req, Application $app)
-    {
-        return $app['twig']->render('/admin/dashboard.twig');
-    }
-
-    /**
-     * PUSH NOTIFICATION
-     */
-    public static function pushNotifyUpdate(Request $req, Application $app)
-    {
-        $recipient = $req->get('recipient');
-        $b_id = $req->get('b_id');
-        $message = $req->get('message');
-
-        if (empty($b_id) || empty($message)) {
-            return 'not all required fields are filled';
-        }
-
-        $pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $recipient);
-        $notification_android = AndroidPush::createPartUpdateNotification($b_id, $message);
-        $notification_ios = IosPush::createPartUpdateNotification($b_id);
-
-        $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
-
-        return $app->json($result);
-    }
-
-    public static function pushNotifyUrl(Request $req, Application $app)
-    {
-        $b_id = $req->get('b_id');
-        $url = $req->get('url');
-        $message = $req->get('message');
-
-        if (empty($b_id) || empty($message)) {
-            return 'not all required fields are filled';
-        }
-
-        $pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $b_id);
-        $notification_android = AndroidPush::createUrlNotification($url, $message);
-        $notification_ios = IosPush::createUrlNotification($url);
-
-        $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
-
-        return $app->json($result);
-    }
-
-    public static function pushNotifyRemind(Request $req, Application $app)
-    {
-        $range_begin = $req->get('range_begin');
-        $range_end = $req->get('range_end');
-        $message = $req->get('message');
-        if (empty($message)) {
-            return 'not all required fields are filled';
-        }
-
-        $pick_result = PushDevicePicker::pickDevicesUsingIdRange($app['db'], $range_begin, $range_end);
-        $notification_android = AndroidPush::createLaunchAppNotification($message);
-        $notification_ios = IosPush::createLaunchAppNotification();
-
-        $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
-
-        return $app->json($result);
-    }
-
-    public static function _push(PickDeviceResult $pick_result, $message, $notification_ios, $notification_android)
-    {
-        $result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
-        $result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
-
-        return array(
-            "Android" => $result_android,
-            "iOS" => $result_ios
-        );
-    }
-
-    /*
      * Notice
      */
     public static function addNotice(Application $app)
@@ -364,7 +255,7 @@ EOT;
     /*
      * InAppBilling Coin Sales
      */
-    public static function inappSalesList(Request $req, Application $app)
+    public static function inAppSalesList(Request $req, Application $app)
     {
         $search_type = $req->get('search_type', null);
         $search_keyword = $req->get('search_keyword', null);
@@ -390,13 +281,13 @@ EOT;
         );
     }
 
-    public static function inappSalesDetail(Request $req, Application $app, $iab_sale_id)
+    public static function inAppSalesDetail(Request $req, Application $app, $iab_sale_id)
     {
         $inapp_sale = InAppBilling::getInAppBillingSalesDetail($iab_sale_id);
         return $app['twig']->render('/admin/inapp_sales_detail.twig', array('inapp_sale' => $inapp_sale));
     }
 
-    public static function refundInappSales(Request $req, Application $app, $iab_sale_id)
+    public static function refundInAppSales(Request $req, Application $app, $iab_sale_id)
     {
         $inapp_sale = InAppBilling::getInAppBillingSalesDetail($iab_sale_id);
         // 이미 환불되었는지 여부를 확인
@@ -436,6 +327,88 @@ EOT;
             }
         } else {
             $app['session']->getFlashBag()->add('alert', array('error' => '이미 ' . $inapp_sale['refunded_time'] . ' 에 환불 처리 되었습니다.'));
+        }
+
+        return $app->json(array('success' => true));
+    }
+
+    /*
+     * RidiCash Coin Sales
+     */
+    public static function ridiCashSalesList(Request $req, Application $app)
+    {
+        $search_type = $req->get('search_type', null);
+        $search_keyword = $req->get('search_keyword', null);
+        $cur_page = $req->get('page', 0);
+
+        $limit = 50;
+        $offset = $cur_page * $limit;
+
+        if ($search_type && $search_keyword) {
+            $ridicash_sales = RidiCashBilling::getRidiCashBillingSalesListBySearchTypeAndKeyword($search_type, $search_keyword);
+        } else {
+            $ridicash_sales = RidiCashBilling::getRidiCashBillingSalesListByOffsetAndSize($offset, $limit);
+        }
+
+        return $app['twig']->render(
+            '/admin/ridicash_sales_list.twig',
+            array(
+                'search_type' => $search_type,
+                'search_keyword' => $search_keyword,
+                'ridicash_sales' => $ridicash_sales,
+                'cur_page' => $cur_page
+            )
+        );
+    }
+
+    public static function ridiCashSalesDetail(Request $req, Application $app, $rcb_sale_id)
+    {
+        $ridicash_sale = RidiCashBilling::getRidiCashBillingSalesDetail($rcb_sale_id);
+        return $app['twig']->render('/admin/ridicash_sales_detail.twig', array('ridicash_sale' => $ridicash_sale));
+    }
+
+    public static function refundRidiCashSales(Request $req, Application $app, $rcb_sale_id)
+    {
+        $ridicash_sale = RidiCashBilling::getRidiCashBillingSalesDetail($rcb_sale_id);
+        // 이미 환불되었는지 여부를 확인
+        if ($ridicash_sale['status'] == InAppBilling::STATUS_OK) {
+            $user = Buyer::get($ridicash_sale['u_id']);
+            $coin_product = CoinProduct::getCoinProductBySkuAndType($ridicash_sale['sku'], CoinProduct::TYPE_RIDICASH);
+
+            $user_coin_balance = $user['coin_balance'];
+            $refund_coin_amount = $coin_product['coin_amount'] + $coin_product['bonus_coin_amount'];
+
+            // 환불해줄 코인보다, 사용자의 잔여 코인이 많은지 여부를 확인
+            if ($user_coin_balance >= $refund_coin_amount) {
+                //TODO: 리디캐시 환불(결제취소) API 연동
+
+                // 트랜잭션 시작
+                $app['db']->beginTransaction();
+                try {
+                    // 코인 회수
+                    $r = Buyer::useCoin($user['id'], $refund_coin_amount, Buyer::COIN_SOURCE_OUT_COIN_REFUND, null);
+                    if ($r) {
+                        // OK -> REFUNDED 로 상태 변경
+                        $r = RidiCashBilling::changeRidiCashBillingStatusAndTidIfNotNull($rcb_sale_id, null, RidiCashBilling::STATUS_REFUNDED);
+                        if ($r) {
+                            $app['db']->commit();
+                            $app['session']->getFlashBag()->add('alert', array('success' => '환불되었습니다. (감소 코인: ' . $refund_coin_amount . '개 / 회원 잔여 코인: ' . $user_coin_balance . '개 -> ' . ($user_coin_balance - $refund_coin_amount) . '개)'));
+                        } else {
+                            throw new Exception('환불 도중 오류가 발생했습니다. (상태 변경 DB 오류)');
+                        }
+                    } else {
+                        throw new Exception('환불 도중 오류가 발생했습니다. (코인 감소 DB 오류)');
+                    }
+                } catch (Exception $e) {
+                    $app['db']->rollback();
+                    $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
+                }
+            } else {
+                // 잔여 코인 부족. 환불 불가.
+                $app['session']->getFlashBag()->add('alert', array('error' => '회원의 잔여 코인이 구입시 충전된 코인보다 적어 환불할 수 없습니다. (현재 회원 잔여 코인: ' . $user_coin_balance . '개)'));
+            }
+        } else {
+            $app['session']->getFlashBag()->add('alert', array('error' => '이미 ' . $ridicash_sale['refunded_time'] . ' 에 환불 처리 되었습니다.'));
         }
 
         return $app->json(array('success' => true));
@@ -563,66 +536,112 @@ EOT;
         );
     }
 
-    public static function statsKpi(Application $app, Request $req)
+    public static function statsKpiBuy(Application $app, Request $req)
     {
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
 
-        $buy_coins = null;
-        $refunded_coins = null;
+        $inapp_buy_coins = null;
+        $ridicash_buy_coins = null;
 
-        if ($begin_date || $end_date) {
-            $sql = <<<EOT
+        if ($begin_date && $end_date) {
+            $inapp_buy_sql = <<<EOT
 select date(ih.purchase_time) purchase_date, count(distinct ih.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from inapp_history ih
  left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
 where ih.status != 'PENDING' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
 EOT;
-            $refunded_sql = <<<EOT
+            $ridicash_buy_sql = <<<EOT
+select date(rh.purchase_time) purchase_date, count(distinct rh.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from ridicash_history rh
+ left join (select * from inapp_products where type = 'RIDICASH') ip on rh.sku = ip.sku
+where rh.status != 'PENDING' and date(rh.purchase_time) >= ? and date(rh.purchase_time) <= ?
+EOT;
+
+            $inapp_refunded_sql = <<<EOT
 select date(ih.refunded_time) refunded_date, sum(ip.coin_amount+ip.bonus_coin_amount) refunded_total_coin_amount, sum(ip.price) total_refunded_sales from inapp_history ih
  left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
 where ih.status = 'REFUNDED' and date(ih.refunded_time) >= ? and date(ih.refunded_time) <= ?
 EOT;
+            $ridicash_refunded_sql = <<<EOT
+select date(rh.refunded_time) refunded_date, sum(ip.coin_amount+ip.bonus_coin_amount) refunded_total_coin_amount, sum(ip.price) total_refunded_sales from ridicash_history rh
+ left join (select * from inapp_products where type = 'RIDICASH') ip on rh.sku = ip.sku
+where rh.status = 'REFUNDED' and date(rh.refunded_time) >= ? and date(rh.refunded_time) <= ?
+EOT;
 
             $test_users = TestUser::getConcatUidList(true);
             if ($test_users) {
-                $sql .= ' and ih.u_id not in (' . $test_users . ')';
-                $refunded_sql .= ' and ih.u_id not in (' . $test_users . ')';
+                $inapp_buy_sql .= ' and ih.u_id not in (' . $test_users . ')';
+                $ridicash_buy_sql .= ' and rh.u_id not in (' . $test_users . ')';
+                $inapp_refunded_sql .= ' and ih.u_id not in (' . $test_users . ')';
+                $ridicash_refunded_sql .= ' and rh.u_id not in (' . $test_users . ')';
             }
-            $sql .= ' group by date(ih.purchase_time)';
-            $refunded_sql .= ' group by date(ih.refunded_time)';
+            $inapp_buy_sql .= ' group by date(ih.purchase_time)';
+            $ridicash_buy_sql .= ' group by date(rh.purchase_time)';
+            $inapp_refunded_sql .= ' group by date(ih.refunded_time)';
+            $ridicash_refunded_sql .= ' group by date(rh.refunded_time)';
 
-            $buy_coins = $app['db']->fetchAll($sql, array($begin_date, $end_date));
-            $refunded_coins = $app['db']->fetchAll($refunded_sql, array($begin_date, $end_date));
+            $bind = array($begin_date, $end_date);
 
-            foreach ($refunded_coins as $key => $rc) {
-                foreach ($buy_coins as &$bc) {
-                    if ($rc['refunded_date'] == $bc['purchase_date']) {
-                        $bc['refunded_total_coin_amount'] = $rc['refunded_total_coin_amount'];
-                        $bc['total_refunded_sales'] = $rc['total_refunded_sales'];
-                        unset($refunded_coins[$key]);
+            $inapp_buy_coins = $app['db']->fetchAll($inapp_buy_sql, $bind);
+            $ridicash_buy_coins = $app['db']->fetchAll($ridicash_buy_sql, $bind);
+
+            $inapp_refunded_coins = $app['db']->fetchAll($inapp_refunded_sql, $bind);
+            $ridicash_refunded_coins = $app['db']->fetchAll($ridicash_refunded_sql, $bind);
+
+            foreach ($inapp_refunded_coins as $key => $irc) {
+                foreach ($inapp_buy_coins as &$ibc) {
+                    if ($irc['refunded_date'] == $ibc['purchase_date']) {
+                        $ibc['refunded_total_coin_amount'] = $irc['refunded_total_coin_amount'];
+                        $ibc['total_refunded_sales'] = $irc['total_refunded_sales'];
+                        unset($inapp_refunded_coins[$key]);
+                        break;
+                    }
+                }
+            }
+            foreach ($ridicash_refunded_coins as $key => $rrc) {
+                foreach ($ridicash_buy_coins as &$rbc) {
+                    if ($rrc['refunded_date'] == $rbc['purchase_date']) {
+                        $rbc['refunded_total_coin_amount'] = $rrc['refunded_total_coin_amount'];
+                        $rbc['total_refunded_sales'] = $rrc['total_refunded_sales'];
+                        unset($ridicash_refunded_coins[$key]);
                         break;
                     }
                 }
             }
 
-            if (count($refunded_coins) > 0) {
-                foreach ($refunded_coins as $key => $rc) {
-                    array_push($buy_coins,
+            if (count($inapp_refunded_coins) > 0) {
+                foreach ($inapp_refunded_coins as $key => $irc) {
+                    array_push($inapp_buy_coins,
                         array(
-                            'purchase_date' => $rc['refunded_date'],
+                            'purchase_date' => $irc['refunded_date'],
                             'user_count' => 0,
                             'coin_amount' => 0,
                             'bonus_coin_amount' => 0,
-                            'refunded_total_coin_amount' => $rc['refunded_total_coin_amount'],
+                            'refunded_total_coin_amount' => $irc['refunded_total_coin_amount'],
                             'total_buy_sales' => 0,
-                            'total_refunded_sales' => $rc['total_refunded_sales']
+                            'total_refunded_sales' => $irc['total_refunded_sales']
                         )
                     );
-                    unset($refunded_coins[$key]);
+                    unset($inapp_refunded_coins[$key]);
+                }
+            }
+            if (count($ridicash_refunded_coins) > 0) {
+                foreach ($ridicash_refunded_coins as $key => $rrc) {
+                    array_push($ridicash_buy_coins,
+                        array(
+                            'purchase_date' => $rrc['refunded_date'],
+                            'user_count' => 0,
+                            'coin_amount' => 0,
+                            'bonus_coin_amount' => 0,
+                            'refunded_total_coin_amount' => $rrc['refunded_total_coin_amount'],
+                            'total_buy_sales' => 0,
+                            'total_refunded_sales' => $rrc['total_refunded_sales']
+                        )
+                    );
+                    unset($ridicash_refunded_coins[$key]);
                 }
             }
 
-            usort($buy_coins, function ($a, $b) {
+            usort($inapp_buy_coins, function ($a, $b) {
                     $a_time = strtotime($a['purchase_date']);
                     $b_time = strtotime($b['purchase_date']);
 
@@ -631,20 +650,200 @@ EOT;
                     }
 
                     return ($a_time < $b_time ? -1 : 1);
-            });
+                }
+            );
+            usort($ridicash_buy_coins, function ($a, $b) {
+                    $a_time = strtotime($a['purchase_date']);
+                    $b_time = strtotime($b['purchase_date']);
 
-            foreach ($buy_coins as &$bc) {
-                $bc['total_coin_amount'] = $bc['coin_amount'] + $bc['bonus_coin_amount'];
-                $bc['total_sales'] = $bc['total_buy_sales'] - $bc['total_refunded_sales'];
+                    if ($a_time == $b_time) {
+                        return 0;
+                    }
+
+                    return ($a_time < $b_time ? -1 : 1);
+                }
+            );
+        } else {
+            if (!$begin_date) {
+                $begin_date = date('Y-m-01');
+            }
+            if (!$end_date) {
+                $year = date('Y');
+                $month = date('m');
+                $last_day = date('t', mktime(0, 0, 0, $month, 1, $year));
+                $end_date = $year . '-' . $month . '-' . $last_day;
             }
         }
 
         return $app['twig']->render(
-            '/admin/stats_kpi.twig',
+            '/admin/stats_kpi/buy_coin.twig',
             array(
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
-                'buy_coins' => $buy_coins
+                'inapp_buy_coins' => $inapp_buy_coins,
+                'ridicash_buy_coins' => $ridicash_buy_coins
+            )
+        );
+    }
+
+    public static function statsKpiBuyDetail(Application $app, Request $req)
+    {
+        $begin_date = $req->get('begin_date');
+        $end_date = $req->get('end_date');
+
+        $inapp_buy_coins = null;
+        $ridicash_buy_coins = null;
+
+        if ($begin_date && $end_date) {
+            $inapp_buy_sql = <<<EOT
+select date(ih.purchase_time) purchase_date, sum(if(ih.sku='coin_29', 1, 0)) coin_29, sum(if(ih.sku='coin_99', 1, 0)) coin_99, sum(if(ih.sku='coin_139', 1, 0)) coin_139, sum(if(ih.sku='coin_349', 1, 0)) coin_349, sum(ip.coin_amount + ip.bonus_coin_amount) buy_coin_amount, 0 refunded_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from inapp_history ih
+ left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
+where ih.status != 'PENDING' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
+EOT;
+            $ridicash_buy_sql = <<<EOT
+select date(rh.purchase_time) purchase_date, sum(if(rh.sku='coin_29', 1, 0)) coin_29, sum(if(rh.sku='coin_99', 1, 0)) coin_99, sum(if(rh.sku='coin_139', 1, 0)) coin_139, sum(if(rh.sku='coin_349', 1, 0)) coin_349, sum(ip.coin_amount + ip.bonus_coin_amount) buy_coin_amount, 0 refunded_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from ridicash_history rh
+ left join (select * from inapp_products where type = 'RIDICASH') ip on rh.sku = ip.sku
+where rh.status != 'PENDING' and date(rh.purchase_time) >= ? and date(rh.purchase_time) <= ?
+EOT;
+
+            $inapp_refunded_sql = <<<EOT
+select date(ih.refunded_time) refunded_date, sum(if(ih.sku='coin_29', 1, 0)) coin_29, sum(if(ih.sku='coin_99', 1, 0)) coin_99, sum(if(ih.sku='coin_139', 1, 0)) coin_139, sum(if(ih.sku='coin_349', 1, 0)) coin_349, sum(ip.coin_amount + ip.bonus_coin_amount) refunded_coin_amount, sum(ip.price) total_refunded_sales from inapp_history ih
+ left join (select * from inapp_products where type = 'GOOGLE') ip on ih.sku = ip.sku
+where ih.status = 'REFUNDED' and date(ih.refunded_time) >= ? and date(ih.refunded_time) <= ?
+EOT;
+            $ridicash_refunded_sql = <<<EOT
+select date(rh.refunded_time) refunded_date, sum(if(rh.sku='coin_29', 1, 0)) coin_29, sum(if(rh.sku='coin_99', 1, 0)) coin_99, sum(if(rh.sku='coin_139', 1, 0)) coin_139, sum(if(rh.sku='coin_349', 1, 0)) coin_349, sum(ip.coin_amount + ip.bonus_coin_amount) refunded_coin_amount, sum(ip.price) total_refunded_sales from ridicash_history rh
+ left join (select * from inapp_products where type = 'RIDICASH') ip on rh.sku = ip.sku
+where rh.status = 'REFUNDED' and date(rh.refunded_time) >= ? and date(rh.refunded_time) <= ?
+EOT;
+
+
+            $test_users = TestUser::getConcatUidList(true);
+            if ($test_users) {
+                $inapp_buy_sql .= ' and ih.u_id not in (' . $test_users . ')';
+                $ridicash_buy_sql .= ' and rh.u_id not in (' . $test_users . ')';
+                $inapp_refunded_sql .= ' and ih.u_id not in (' . $test_users . ')';
+                $ridicash_refunded_sql .= ' and rh.u_id not in (' . $test_users . ')';
+            }
+            $inapp_buy_sql .= ' group by date(ih.purchase_time)';
+            $ridicash_buy_sql .= ' group by date(rh.purchase_time)';
+            $inapp_refunded_sql .= ' group by date(ih.refunded_time)';
+            $ridicash_refunded_sql .= ' group by date(rh.refunded_time)';
+
+            $bind = array($begin_date, $end_date);
+
+            $inapp_buy_coins = $app['db']->fetchAll($inapp_buy_sql, $bind);
+            $ridicash_buy_coins = $app['db']->fetchAll($ridicash_buy_sql, $bind);
+            $inapp_refunded_coins = $app['db']->fetchAll($inapp_refunded_sql, $bind);
+            $ridicash_refunded_coins = $app['db']->fetchAll($ridicash_refunded_sql, $bind);
+
+            foreach ($inapp_refunded_coins as $key => $irc) {
+                foreach ($inapp_buy_coins as &$ibc) {
+                    if ($irc['refunded_date'] == $ibc['purchase_date']) {
+                        $ibc['coin_29'] -= $irc['coin_29'];
+                        $ibc['coin_99'] -= $irc['coin_99'];
+                        $ibc['coin_139'] -= $irc['coin_139'];
+                        $ibc['coin_349'] -= $irc['coin_349'];
+                        $ibc['refunded_coin_amount'] = $irc['refunded_coin_amount'];
+                        $ibc['total_refunded_sales'] = $irc['total_refunded_sales'];
+                        unset($inapp_refunded_coins[$key]);
+                        break;
+                    }
+                }
+            }
+            foreach ($ridicash_refunded_coins as $key => $rrc) {
+                foreach ($ridicash_buy_coins as &$rbc) {
+                    if ($rrc['refunded_date'] == $rbc['purchase_date']) {
+                        $rbc['coin_29'] -= $rrc['coin_29'];
+                        $rbc['coin_99'] -= $rrc['coin_99'];
+                        $rbc['coin_139'] -= $rrc['coin_139'];
+                        $rbc['coin_349'] -= $rrc['coin_349'];
+                        $rbc['refunded_coin_amount'] = $rrc['refunded_coin_amount'];
+                        $rbc['total_refunded_sales'] = $rrc['total_refunded_sales'];
+                        unset($ridicash_refunded_coins[$key]);
+                        break;
+                    }
+                }
+            }
+
+            if (count($inapp_refunded_coins) > 0) {
+                foreach ($inapp_refunded_coins as $key => $irc) {
+                    array_push($inapp_buy_coins,
+                        array(
+                            'purchase_date' => $irc['refunded_date'],
+                            'coin_29' => -$irc['coin_29'],
+                            'coin_99' => -$irc['coin_99'],
+                            'coin_139' => -$irc['coin_139'],
+                            'coin_349' => -$irc['coin_349'],
+                            'buy_coin_amount' => 0,
+                            'refunded_coin_amount' => $irc['refunded_coin_amount'],
+                            'total_buy_sales' => 0,
+                            'total_refunded_sales' => $irc['total_refunded_sales']
+                        )
+                    );
+                    unset($inapp_refunded_coins[$key]);
+                }
+            }
+            if (count($ridicash_refunded_coins) > 0) {
+                foreach ($ridicash_refunded_coins as $key => $rrc) {
+                    array_push($ridicash_buy_coins,
+                        array(
+                            'purchase_date' => $rrc['refunded_date'],
+                            'coin_29' => -$rrc['coin_29'],
+                            'coin_99' => -$rrc['coin_99'],
+                            'coin_139' => -$rrc['coin_139'],
+                            'coin_349' => -$rrc['coin_349'],
+                            'buy_coin_amount' => 0,
+                            'refunded_coin_amount' => $rrc['refunded_coin_amount'],
+                            'total_buy_sales' => 0,
+                            'total_refunded_sales' => $rrc['total_refunded_sales']
+                        )
+                    );
+                    unset($ridicash_refunded_coins[$key]);
+                }
+            }
+
+            usort($inapp_buy_coins, function ($a, $b) {
+                    $a_time = strtotime($a['purchase_date']);
+                    $b_time = strtotime($b['purchase_date']);
+
+                    if ($a_time == $b_time) {
+                        return 0;
+                    }
+
+                    return ($a_time < $b_time ? -1 : 1);
+                }
+            );
+            usort($ridicash_buy_coins, function ($a, $b) {
+                    $a_time = strtotime($a['purchase_date']);
+                    $b_time = strtotime($b['purchase_date']);
+
+                    if ($a_time == $b_time) {
+                        return 0;
+                    }
+
+                    return ($a_time < $b_time ? -1 : 1);
+                }
+            );
+        } else {
+            if (!$begin_date) {
+                $begin_date = date('Y-m-01');
+            }
+            if (!$end_date) {
+                $year = date('Y');
+                $month = date('m');
+                $last_day = date('t', mktime(0, 0, 0, $month, 1, $year));
+                $end_date = $year . '-' . $month . '-' . $last_day;
+            }
+        }
+
+        return $app['twig']->render(
+            '/admin/stats_kpi/buy_coin_detail.twig',
+            array(
+                'begin_date' => $begin_date,
+                'end_date' => $end_date,
+                'inapp_buy_coins' => $inapp_buy_coins,
+                'ridicash_buy_coins' => $ridicash_buy_coins
             )
         );
     }

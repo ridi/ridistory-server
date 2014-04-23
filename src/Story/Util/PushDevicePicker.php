@@ -5,10 +5,6 @@ use Doctrine\DBAL\Connection;
 
 class PushDevicePicker
 {
-    const PLATFORM_ALL = 'All';
-    const PLATFORM_IOS = 'iOS';
-    const PLATFORM_ANDROID = 'Android';
-
     /*
      * 기기 정보들 선택 (id, device_token, platform)
      */
@@ -28,7 +24,7 @@ EOT;
 
     static function pickDevicesUsingPlatform(Connection $db, $platform)
     {
-        if ($platform == PushDevicePicker::PLATFORM_ALL) {
+        if ($platform == PickDeviceResult::PLATFORM_ALL) {
             $sql = <<<EOT
 select id, device_token, platform from push_devices where is_active = 1;
 EOT;

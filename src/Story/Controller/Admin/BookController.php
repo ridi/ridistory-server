@@ -1,4 +1,5 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
@@ -7,8 +8,9 @@ use Story\Model\Book;
 use Story\Model\CpAccount;
 use Story\Model\RecommendedBook;
 use Story\Model\Part;
+use Twig_SimpleFunction;
 
-class AdminBookControllerProvider implements ControllerProviderInterface
+class BookController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {

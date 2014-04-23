@@ -1,12 +1,14 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Model\CpAccount;
 use Story\Model\Book;
+use Twig_SimpleFunction;
 
-class AdminCpAccountControllerProvider implements ControllerProviderInterface
+class CpAccountController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {

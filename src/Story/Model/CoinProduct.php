@@ -3,6 +3,7 @@ namespace Story\Model;
 
 class CoinProduct
 {
+    const TYPE_ALL = 'ALL';
     const TYPE_INAPP = 'GOOGLE';
     const TYPE_RIDICASH = 'RIDICASH';
 
@@ -40,12 +41,17 @@ class CoinProduct
     public static function getCoinProductsByType($type)
     {
         global $app;
-        return $app['db']->fetchAll('select * from inapp_products where type = ? order by coin_amount asc', array($type));
-    }
 
-    public static function getWholeCoinProducts()
-    {
-        global $app;
-        return $app['db']->fetchAll('select * from inapp_products order by type asc, coin_amount asc');
+        if ($type == CoinProduct::TYPE_ALL) {
+            $sql = <<<EOT
+select * from inapp_products order by type asc, coin_amount asc
+EOT;
+            return $app['db']->fetchAll($sql);
+        } else {
+            $sql = <<<EOT
+select * from inapp_products where type = ? order by coin_amount asc
+EOT;
+            return $app['db']->fetchAll($sql, array($type));
+        }
     }
 }

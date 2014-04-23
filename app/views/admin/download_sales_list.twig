@@ -27,9 +27,6 @@
             <input type='text' class='input-medium' name='end_date' value='{{ end_date }}' placeholder='0000-00-00' />
             <label style='margin-left: 10px; margin-right: 10px;'><input type='checkbox' name='exclude_free' {% if exclude_free == 1 %} checked {% endif %}> 유료로 판매된 책들만 보기</label>
             <button class="btn">조회</button>
-            <div style='margin-top: 15px;'>
-                * 기간을 입력하지 않으시면, 전체 매출이 조회됩니다. (예. 끝나는 날짜를 입력하지 않으시면, 현재 시간의 매출까지 조회됩니다.)<br />
-            </div>
         </div>
     </form>
 

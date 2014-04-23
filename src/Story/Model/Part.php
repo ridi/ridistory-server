@@ -34,7 +34,7 @@ class Part
         global $app;
         $p = $app['db']->fetchAssoc('select * from part where id = ?', array($id));
         if ($p !== false) {
-            self::_fill_additional($p);
+            self::fill_additional($p);
         }
         return $p;
     }
@@ -76,7 +76,7 @@ EOT;
 
         $ar = $app['db']->fetchAll($sql, $bind);
         foreach ($ar as &$p) {
-            self::_fill_additional($p);
+            self::fill_additional($p);
 
             // 완결인 경우, end_action_flag에 따라 잠금여부 추가
             if ($is_completed) {
@@ -109,7 +109,7 @@ EOT;
         return $ar;
     }
 
-    private static function _fill_additional(&$p)
+    public static function fill_additional(&$p)
     {
         $p['meta_url'] = STORE_API_BASE_URL . '/api/book/metadata?b_id=' . $p['store_id'];
 

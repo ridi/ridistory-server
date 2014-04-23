@@ -5,42 +5,47 @@ class DownloadSales
 {
     public static function getWholeList($begin_date, $end_date, $exclude_free = false)
     {
-        $today = date('Y-m-d H:i:s');
+        $today = date('Y-m-d H:00:00');
 
-        if (!$begin_date) {
-            $begin_date = '0000-00-00';
-        }
-        if (!$end_date) {
-            $end_date = date('Y-m-d');
-        }
+        if ($begin_date || $end_date) {
+            if (!$begin_date) {
+                $begin_date = '0000-00-00';
+            }
+            if (!$end_date) {
+                $end_date = date('Y-m-d');
+            }
+            $end_date = date('Y-m-d', strtotime($end_date . ' + 1 day'));
 
-        $sql = <<<EOT
+            $sql = <<<EOT
 select b.id b_id, b.title, cp.id, cp_id, cp.name cp_name, b.royalty_percent, ifnull(open_part_count, 0) open_part_count, b.total_part_count, b.begin_date, b.end_date, b.end_action_flag, sum(if(coin_amount=0, 1, 0)) free_download, sum(if(coin_amount>0, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph
- left join (select id, b_id, price from part) p on p.id = ph.p_id
- left join (select * from book) b on b.id = p.b_id
+ join part p on p.id = ph.p_id
+ join book b on b.id = p.b_id
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on pc.b_id = b.id
- left join (select id, name from cp_account) cp on cp.id = b.cp_id
-where date(ph.timestamp) >= ? and date(ph.timestamp) <= ?
+ join cp_account cp on cp.id = b.cp_id
+where ph.timestamp >= ? and ph.timestamp < ?
 EOT;
-        $test_users = TestUser::getConcatUidList(true);
-        if ($test_users) {
-            $sql .= ' and ph.u_id not in (' . $test_users . ')';
-        }
-        $sql .= ' group by b_id';
-        if ($exclude_free) {
-            $sql .= ' having charged_download > 0';
-        }
-        $sql .= ' order by (count(*) * p.price) desc';
+            $test_users = TestUser::getConcatUidList(true);
+            if ($test_users) {
+                $sql .= ' and ph.u_id not in (' . $test_users . ')';
+            }
+            $sql .= ' group by b_id';
+            if ($exclude_free) {
+                $sql .= ' having charged_download > 0';
+            }
+            $sql .= ' order by (count(*) * p.price) desc';
 
-        $bind = array($today, $today, $begin_date, $end_date);
+            $bind = array($today, $today, $begin_date, $end_date);
 
-        global $app;
-        return $app['db']->fetchAll($sql, $bind);
+            global $app;
+            return $app['db']->fetchAll($sql, $bind);
+        } else {
+            return array();
+        }
     }
 
     public static function getListByCpId($cp_id, $begin_date, $end_date)
     {
-        $today = date('Y-m-d H:i:s');
+        $today = date('Y-m-d H:00:00');
 
         if (!$begin_date) {
             $begin_date = '0000-00-00';
@@ -77,12 +82,13 @@ EOT;
         if (!$end_date) {
             $end_date = date('Y-m-d');
         }
+        $end_date = date('Y-m-d', strtotime($end_date . ' + 1 day'));
 
         $sql = <<<EOT
-select date(ph.timestamp) purchase_date, p.b_id, b.title b_title, ph.p_id, p.title p_title, sum(if(is_paid=0, 1, 0)) free_download, sum(if(is_paid=1, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph
- left join (select id, b_id, title from part) p on p.id = ph.p_id
- left join (select id, title from book) b on b.id = p.b_id
-where date(ph.timestamp) >= ? and date(ph.timestamp) <= ?
+select left(ph.timestamp, 10) purchase_date, p.b_id, b.title b_title, ph.p_id, p.title p_title, sum(if(is_paid=0, 1, 0)) free_download, sum(if(is_paid=1, 1, 0)) charged_download, sum(coin_amount) total_sales from purchase_history ph
+ join part p on p.id = ph.p_id
+ join book b on b.id = p.b_id
+where ph.timestamp >= ? and ph.timestamp < ?
 EOT;
         $test_users = TestUser::getConcatUidList(true);
         if ($test_users) {

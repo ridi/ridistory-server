@@ -7,6 +7,7 @@ use Story\Model\Buyer;
 use Story\Model\CoinProduct;
 use Story\Model\InAppBilling;
 use Story\Model\RecommendedBook;
+use Story\Model\RidiCashBilling;
 use Story\Util\AES128;
 use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,10 +38,12 @@ class ApiController implements ControllerProviderInterface
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
+        $api->post('/book/purchased/list', array($this, 'purchasedBookList'));
+        $api->post('/book/purchased/{b_id}', array($this, 'purchasedBookDetail'));
         $api->get('/book/{b_id}', array($this, 'bookDetail'));
         $api->post('/book/{b_id}/buy', array($this, 'buyBookPart'));
 
-        $api->get('/recommended_book/{b_id}', array($this, 'recommenedBookDetail'));
+        $api->get('/recommended_book/{b_id}', array($this, 'recommendedBookDetail'));
 
         $api->get('/part/{p_id}', array($this, 'partDetail'));
 
@@ -72,6 +75,7 @@ class ApiController implements ControllerProviderInterface
 
         /*
          * 4.01, 4.02 버전 사용자들이, /inapp_proudct/list 주소로 API를 호출
+         * TODO: 추후에 /inapp_product/list 제거
          */
         $api->get('/inapp_product/list', array($this, 'coinProductList'));
         $api->get('/coin_product/list', array($this, 'coinProductList'));
@@ -143,31 +147,39 @@ class ApiController implements ControllerProviderInterface
         // 결제 수단
         $buy_method = isset($inputs['buy_method']) ? $inputs['buy_method'] : CoinProduct::TYPE_INAPP;
         if (empty($buy_method)) {
+            // Default: 구글 인앱 결제
             $buy_method = CoinProduct::TYPE_INAPP;
         }
 
+        $coin_info = null;
         if ($buy_method == CoinProduct::TYPE_INAPP) {
             // 구글 인앱 결제
             $r = InAppBilling::verifyInAppBilling($inputs);
-            if ($r) {
-                $purchase_data = json_decode($inputs['purchase_data'], true);
-                $inapp_info = CoinProduct::getCoinProductBySkuAndType($purchase_data['productId'], CoinProduct::TYPE_INAPP);
-                $r = Buyer::addCoin($inputs['u_id'], ($inapp_info['coin_amount'] + $inapp_info['bonus_coin_amount']), Buyer::COIN_SOURCE_IN_INAPP);
-                if ($r) {
-                    $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
-                    return $app->json(array('success' => true, 'message' => '성공', 'coin_balance' => $coin_amount));
-                } else {
-                    return $app->json(array('success' => false, 'message' => '코인을 충전하는 도중 오류가 발생하였습니다.'));
-                }
-            } else {
+            if (!$r) {
                 return $app->json(array('success' => false, 'message' => '인앱 결제 도중 오류가 발생였습니다.'));
             }
+            $purchase_data = json_decode($inputs['purchase_data'], true);
+            $coin_info = CoinProduct::getCoinProductBySkuAndType($purchase_data['productId'], CoinProduct::TYPE_INAPP);
+            $coin_source = Buyer::COIN_SOURCE_IN_INAPP;
         } else if ($buy_method == CoinProduct::TYPE_RIDICASH) {
             // 리디캐시 결제
-            return $app->json(array('success' => false, 'message' => '리디캐시 결제 도중 오류가 발생였습니다.'));
+            $r = RidiCashBilling::exchangeRidiCashToCoin($inputs);
+            if (!$r) {
+                return $app->json(array('success' => false, 'message' => '리디캐시 결제 도중 오류가 발생하였습니다.'));
+            }
+            $coin_info = CoinProduct::getCoinProductBySkuAndType($inputs['sku'], CoinProduct::TYPE_RIDICASH);
+            $coin_source = Buyer::COIN_SOURCE_IN_RIDI;
         } else {
             // 잘못된 결제 수단
             return $app->json(array('success' => false, 'message' => '존재하지 않는 결제 수단입니다.'));
+        }
+
+        $r = Buyer::addCoin($inputs['u_id'], ($coin_info['coin_amount'] + $coin_info['bonus_coin_amount']), $coin_source);
+        if ($r) {
+            $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
+            return $app->json(array('success' => true, 'message' => '성공', 'coin_balance' => $coin_amount));
+        } else {
+            return $app->json(array('success' => false, 'message' => '코인을 충전하는 도중 오류가 발생하였습니다.'));
         }
     }
 
@@ -212,6 +224,72 @@ class ApiController implements ControllerProviderInterface
             },
             60 * 10
         );
+        return $app->json($book);
+    }
+
+    public function purchasedBookList(Request $req, Application $app)
+    {
+        $u_id = $req->get('u_id', null);
+        if ($u_id) {
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+        } else {
+            return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+        }
+
+        $cache_key = 'purchased_book_list_' . $u_id;
+        $book = $app['cache']->fetch(
+            $cache_key,
+            function () use ($u_id) {
+                $b_ids = Buyer::getPurchasedBookList($u_id);
+                return Book::getListByIds($b_ids, true);
+            },
+            60 * 10
+        );
+        return $app->json($book);
+    }
+
+    public function purchasedBookDetail(Request $req, Application $app, $b_id)
+    {
+        $book = Book::get($b_id);
+        if ($book == false) {
+            return $app->json(array('success' => false, 'error' => 'no such book'));
+        }
+
+        $u_id = $req->get('u_id', '0');
+        if ($u_id) {
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+            $is_valid_uid = Buyer::isValidUid($u_id);
+            if (!$is_valid_uid) {
+                return $app->json(array('success' => false, 'error' => 'not valid user'));
+            }
+        } else {
+            return $app->json(array('success' => false, 'error' => 'not valid parameter'));
+        }
+
+        $book['is_active_lock'] = 1;
+
+        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime(date('Y-m-d H:i:s')) ? 1 : 0);
+        $book['is_completed'] = $is_completed;
+
+        $cache_key = 'purchased_part_list_' . $u_id . '_' . $b_id;
+        $parts = $app['cache']->fetch(
+            $cache_key,
+            function () use ($u_id, $b_id) {
+                return Buyer::getPurchasedPartListByBid($u_id, $b_id);
+            },
+            60 * 10
+        );
+
+        foreach ($parts as &$part) {
+            $part['is_locked'] = 0;
+            $part['is_purchased'] = 1;
+            $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
+        }
+
+        $book['parts'] = $parts;
+        $book['has_recommended_books'] = false;
+        $book['interest'] = false;
+
         return $app->json($book);
     }
 
@@ -269,7 +347,7 @@ class ApiController implements ControllerProviderInterface
                 $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
                 $is_valid_uid = Buyer::isValidUid($u_id);
                 if ($is_valid_uid) {
-                    $purchased_flags = Buyer::getPurchasedListByParts($u_id, $parts);
+                    $purchased_flags = Buyer::getPurchasedPartListByBid($u_id, $b_id);
                 }
             }
         }
@@ -286,7 +364,7 @@ class ApiController implements ControllerProviderInterface
             $part['is_purchased'] = 0;
             if ($is_valid_uid) {
                 foreach ($purchased_flags as $pf) {
-                    if ($pf['p_id'] == $part['id']) {
+                    if ($pf['id'] == $part['id']) {
                         $part['is_purchased'] = 1;
                         unset($pf);
                         break;
@@ -310,7 +388,7 @@ class ApiController implements ControllerProviderInterface
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             if (!Buyer::isValidUid($u_id)) {
-                return $app->json(array('success' => 'false', 'message' => '회원정보를 찾을 수 없습니다.'));
+                return $app->json(array('success' => 'false', 'message' => '회원 정보를 찾을 수 없습니다.'));
             }
         } else {
             return $app->json(array('success' => 'false', 'message' => '구글 서비스 사용에 동의해 주셔야 책을 볼 수 있습니다.'));
@@ -372,6 +450,12 @@ class ApiController implements ControllerProviderInterface
                         throw new Exception(($ph_id > 0) ? '코인이 부족합니다.' : '구매를 진행하는 도중에 오류가 발생하였습니다.');
                     }
                 }
+
+                // 구매목록 캐시 삭제
+                // 캐시 삭제
+                $app['cache']->delete('purchased_book_list_' . $u_id);
+                $app['cache']->delete('purchased_part_list_' . $u_id . '_' . $part['b_id']);
+
                 $app['db']->commit();
             } catch (Exception $e) {
                 $message = $e->getMessage();
@@ -403,7 +487,7 @@ class ApiController implements ControllerProviderInterface
     /*
      * Recommended Book
      */
-    public function recommenedBookDetail(Request $req, Application $app, $b_id)
+    public function recommendedBookDetail(Request $req, Application $app, $b_id)
     {
         // Ridibooks Metadata
         $ch =curl_init();
@@ -705,10 +789,11 @@ class ApiController implements ControllerProviderInterface
          */
         $v = intval($req->get('v', '1'));
         if ($v > 1) {
-            $sku_list = CoinProduct::getWholeCoinProducts();
+            $type = CoinProduct::TYPE_ALL;
         } else {
-            $sku_list = CoinProduct::getCoinProductsByType(CoinProduct::TYPE_INAPP);
+            $type = CoinProduct::TYPE_INAPP;
         }
+        $sku_list = CoinProduct::getCoinProductsByType($type);
 
         return $app->json($sku_list);
     }

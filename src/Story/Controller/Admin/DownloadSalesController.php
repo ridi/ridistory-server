@@ -1,12 +1,14 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Book;
 use Story\Model\DownloadSales;
 use Symfony\Component\HttpFoundation\Request;
+use Twig_SimpleFunction;
 
-class AdminDownloadSalesControllerProvider implements ControllerProviderInterface
+class DownloadSalesController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
@@ -58,6 +60,16 @@ class AdminDownloadSalesControllerProvider implements ControllerProviderInterfac
             $total_sales_royalty += $ds['total_sales'] * ($ds['royalty_percent'] / 100) * 90;
             $total_free_download += $ds['free_download'];
             $total_charged_download += $ds['charged_download'];
+        }
+
+        if (!$begin_date) {
+            $begin_date = date('Y-m-01');
+        }
+        if (!$end_date) {
+            $year = date('Y');
+            $month = date('m');
+            $last_day = date('t', mktime(0, 0, 0, $month, 1, $year));
+            $end_date = $year . '-' . $month . '-' . $last_day;
         }
 
         $app['twig']->addFilter(

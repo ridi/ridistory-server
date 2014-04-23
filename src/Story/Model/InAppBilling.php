@@ -64,7 +64,7 @@ class InAppBilling
             $r = InAppBilling::changeInAppBillingStatus($iab_id, InAppBilling::STATUS_OK);
             return ($r === 1);
         } else {
-            error_log('Failed Verify Signature: ' . $is_valid_iab, 0);
+            error_log('[INAPP] Failed Verify Signature: ' . $is_valid_iab, 0);
             return false;
         }
     }

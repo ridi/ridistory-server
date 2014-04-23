@@ -3,10 +3,11 @@
 {% block container %}
     <form>
         <div class="well form-inline">
-            <h4>인앱 결제내역 검색</h4>
+            <h4>리디캐시 결제내역 검색</h4>
             <select id='search' name='search_type'>
+                <option value='ridibooks_id'>리디북스 ID</option>
                 <option value='uid'>유저 ID</option>
-                <option value='google_order_num'>구글 주문번호</option>
+                <option value='tid'>주문번호</option>
             </select>
             <input type='text' class='input-xlarge' name='search_keyword' value='{{ search_keyword }}' placeholder='검색어를 입력해주세요.' />
             <button class="btn">검색</button>
@@ -17,23 +18,25 @@
         <thead>
         <tr>
             <th>유저 ID</th>
-            <th>구글 주문번호</th>
+            <th>리디북스 ID</th>
+            <th>주문번호</th>
             <th>SKU</th>
             <th>결제 시간</th>
             <th>상태</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
-        {% for inapp_sale in inapp_sales %}
-            <tr data-salesid='{{ inapp_sale.id }}'>
-                <td>{{ inapp_sale.u_id }}</td>
-                <td>{{ inapp_sale.order_id }}</td>
-                <td>{{ inapp_sale.sku }}</td>
-                <td>{{ inapp_sale.purchase_time }}</td>
+        {% for ridicash_sale in ridicash_sales %}
+            <tr data-salesid='{{ ridicash_sale.id }}'>
+                <td>{{ ridicash_sale.u_id }}</td>
+                <td>{{ ridicash_sale.ridibooks_id }}</td>
+                <td>{{ ridicash_sale.t_id }}</td>
+                <td>{{ ridicash_sale.sku }}</td>
+                <td>{{ ridicash_sale.purchase_time }}</td>
                 <td>
-                    {% if inapp_sale.status == 'OK' %}
+                    {% if ridicash_sale.status == 'OK' %}
                         정상
-                    {% elseif inapp_sale.status == 'REFUNDED' %}
+                    {% elseif ridicash_sale.status == 'REFUNDED' %}
                         <span style="color: #0000FF">환불됨</span>
                     {% else %}
                         <span style="color: #FF0000">오류</span>
@@ -47,13 +50,13 @@
     <ul class="pager">
         <li class="previous">
             {% if cur_page - 1 < 0 %}
-                <a href="/admin/inapp_sales/list?page=0">&larr; Newer</a>
+                <a href="/admin/ridicash_sales/list?page=0">&larr; Newer</a>
             {% else %}
-                <a href="/admin/inapp_sales/list?page={{ cur_page - 1 }}">&larr; Newer</a>
+                <a href="/admin/ridicash_sales/list?page={{ cur_page - 1 }}">&larr; Newer</a>
             {% endif %}
         </li>
         <li class="next">
-            <a href="/admin/inapp_sales/list?page={{ cur_page + 1 }}">Older &rarr;</a>
+            <a href="/admin/ridicash_sales/list?page={{ cur_page + 1 }}">Older &rarr;</a>
         </li>
     </ul>
 
@@ -65,8 +68,8 @@
             $('#search').val('{{ search_type }}');
 
             $('#js_tbody tr').click(function() {
-                var iab_sale_id = $(this).data('salesid');
-                location.href = '/admin/inapp_sales/' + iab_sale_id;
+                var rcb_sale_id = $(this).data('salesid');
+                location.href = '/admin/ridicash_sales/' + rcb_sale_id;
             });
 
             $('#js_tbody tr').hover(function() {

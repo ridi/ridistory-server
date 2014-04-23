@@ -29,7 +29,7 @@ class ApcCacheWrapper
     public function __construct()
     {
         $this->cache = new ApcCache();
-        $this->cache->setNamespace('story_v3');
+        $this->cache->setNamespace('story_v4_test');
     }
 
     public function fetch($key, $fetcher, $ttl = 0)

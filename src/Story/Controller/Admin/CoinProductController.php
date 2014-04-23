@@ -1,11 +1,13 @@
 <?php
+namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Model\CoinProduct;
+use Twig_SimpleFunction;
 
-class AdminCoinProductControllerProvider implements ControllerProviderInterface
+class CoinProductController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
@@ -30,7 +32,7 @@ class AdminCoinProductControllerProvider implements ControllerProviderInterface
 
     public static function coinProductList(Application $app)
     {
-        $coin_list = CoinProduct::getWholeCoinProducts();
+        $coin_list = CoinProduct::getCoinProductsByType(CoinProduct::TYPE_ALL);
 
         $app['twig']->addFunction(
             new Twig_SimpleFunction('get_type', function ($type) {
