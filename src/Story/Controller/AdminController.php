@@ -75,8 +75,10 @@ class AdminController implements ControllerProviderInterface
         $admin->get('/stats', array($this, 'stats'));
         $admin->get('/stats_like', array($this, 'statsLike'));
 
-        $admin->get('/stats_kpi/buy', array($this, 'statsKpiBuy'));
-        $admin->get('/stats_kpi/buy/detail', array($this, 'statsKpiBuyDetail'));
+        $admin->get('/stats_kpi/buy_coin', array($this, 'statsKpiBuyCoin'));
+        $admin->get('/stats_kpi/buy_coin/detail', array($this, 'statsKpiBuyCoinDetail'));
+        $admin->get('/stats_kpi/use_coin', array($this, 'statsKpiUseCoin'));
+        $admin->get('/stats_kpi/use_coin/detail', array($this, 'statsKpiUseCoinDetail'));
 
         return $admin;
     }
@@ -536,7 +538,10 @@ EOT;
         );
     }
 
-    public static function statsKpiBuy(Application $app, Request $req)
+    /*
+     * Stats for KPI
+     */
+    public static function statsKpiBuyCoin(Application $app, Request $req)
     {
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
@@ -686,7 +691,7 @@ EOT;
         );
     }
 
-    public static function statsKpiBuyDetail(Application $app, Request $req)
+    public static function statsKpiBuyCoinDetail(Application $app, Request $req)
     {
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
@@ -844,6 +849,75 @@ EOT;
                 'end_date' => $end_date,
                 'inapp_buy_coins' => $inapp_buy_coins,
                 'ridicash_buy_coins' => $ridicash_buy_coins
+            )
+        );
+    }
+
+    public static function statsKpiUseCoin(Application $app, Request $req)
+    {
+        $begin_date = $req->get('begin_date');
+        $end_date = $req->get('end_date');
+
+        $use_coins = null;
+
+        if ($begin_date && $end_date) {
+            $sql = <<<EOT
+select date(timestamp) use_date, count(distinct u_id) user_count, abs(sum(amount)) used_coin_amount from coin_history
+where source = 'OUT_BUY_PART' and date(timestamp) >= ? and date(timestamp) <= ?
+EOT;
+            $test_users = TestUser::getConcatUidList(true);
+            if ($test_users) {
+                $sql .= ' and u_id not in (' . $test_users . ')';
+            }
+            $sql .= ' group by date(timestamp)';
+
+            $use_coins = $app['db']->fetchAll($sql, array($begin_date, $end_date));
+        } else {
+            if (!$begin_date) {
+                $begin_date = date('Y-m-01');
+            }
+            if (!$end_date) {
+                $year = date('Y');
+                $month = date('m');
+                $last_day = date('t', mktime(0, 0, 0, $month, 1, $year));
+                $end_date = $year . '-' . $month . '-' . $last_day;
+            }
+        }
+
+        return $app['twig']->render(
+            '/admin/stats_kpi/use_coin.twig',
+            array(
+                'begin_date' => $begin_date,
+                'end_date' => $end_date,
+                'use_coins' => $use_coins
+            )
+        );
+    }
+
+    public static function statsKpiUseCoinDetail(Application $app, Request $req)
+    {
+        $begin_date = $req->get('begin_date');
+        $end_date = $req->get('end_date');
+
+        if ($begin_date && $end_date) {
+
+        } else {
+            if (!$begin_date) {
+                $begin_date = date('Y-m-01');
+            }
+            if (!$end_date) {
+                $year = date('Y');
+                $month = date('m');
+                $last_day = date('t', mktime(0, 0, 0, $month, 1, $year));
+                $end_date = $year . '-' . $month . '-' . $last_day;
+            }
+        }
+
+        return $app['twig']->render(
+            '/admin/stats_kpi/use_coin_detail.twig',
+            array(
+                'begin_date' => $begin_date,
+                'end_date' => $end_date
             )
         );
     }
