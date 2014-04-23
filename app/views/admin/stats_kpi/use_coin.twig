@@ -1,0 +1,42 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/stats_kpi/buy_coin">코인 구매 지표</a></li>
+        <li><a href="/admin/stats_kpi/buy_coin/detail">코인충전실적 상세 (충전건수)</a></li>
+        <li class="active"><a href="/admin/stats_kpi/use_coin">코인 사용 지표</a></li>
+        <li><a href="/admin/stats_kpi/use_coin/detail">코인사용실적 상세 (코인 소진 수)</a></li>
+    </ul>
+
+    <form>
+        <div class="well form-inline">
+            <h4>기간 설정</h4>
+            <input type='text' class='input-medium' name='begin_date' value='{{ begin_date }}' placeholder='0000-00-00' />
+            ~
+            <input type='text' class='input-medium' name='end_date' value='{{ end_date }}' placeholder='0000-00-00' />
+            <button class="btn">조회</button>
+        </div>
+    </form>
+
+    <div class="well form-inline">
+        <h4>코인 사용 지표</h4>
+        <table class='table'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>코인사용유저수</th>
+                <th>사용된코인수</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for uc in use_coins %}
+                <tr>
+                    <td>{{ uc.use_date }}</td>
+                    <td>{{ uc.user_count }}</td>
+                    <td>{{ uc.used_coin_amount }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -2,8 +2,10 @@
 
 {% block container %}
     <ul class="nav nav-tabs">
-        <li><a href="/admin/stats_kpi/buy">코인 구매 지표</a></li>
-        <li class="active"><a href="/admin/stats_kpi/buy/detail">코인 구매 지표(상세)</a></li>
+        <li><a href="/admin/stats_kpi/buy_coin">코인 구매 지표</a></li>
+        <li class="active"><a href="/admin/stats_kpi/buy_coin/detail">코인충전실적 상세 (충전건수)</a></li>
+        <li><a href="/admin/stats_kpi/use_coin">코인 사용 지표</a></li>
+        <li><a href="/admin/stats_kpi/use_coin/detail">코인사용실적 상세 (코인 소진 수)</a></li>
     </ul>
 
     <form>
@@ -17,7 +19,7 @@
     </form>
 
     <div class="well form-inline">
-        <h4>코인 구매 상세 지표 (인앱)</h4>
+        <h4>코인충전실적 상세 (인앱)</h4>
         <div style='margin-bottom: 30px;'>* coin_29 ~ coin_349는 (충전된 코인 - 환불된 코인) 입니다.</div>
         <table class='table'>
             <thead>
@@ -54,7 +56,7 @@
     </div>
 
     <div class="well form-inline">
-        <h4>코인 구매 상세 지표 (리디캐시)</h4>
+        <h4>코인충전실적 상세 (리디캐시)</h4>
         <div style='margin-bottom: 30px;'>* coin_29 ~ coin_349는 (충전된 코인 - 환불된 코인) 입니다.</div>
         <table class='table'>
             <thead>
