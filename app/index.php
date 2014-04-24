@@ -4,6 +4,8 @@ $autoloader->add('Story', '../src');
 
 $app = new Silex\Application();
 
+require 'conf.php';
+
 // Twig은 config DI 안됨. why?
 $app->register(
     new Silex\Provider\TwigServiceProvider(),
