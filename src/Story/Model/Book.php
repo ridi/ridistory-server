@@ -125,7 +125,7 @@ EOT;
     public function getLikeSum($b_ids)
     {
         global $app;
-        $sql = "SELECT b_id, count(*) like_sum FROM part, user_part_like WHERE p_id = part.id GROUP BY b_id HAVING b_id IN (?)";
+        $sql = "SELECT b_id, sum(num_likes) like_sum FROM part WHERE b_id IN (?) GROUP BY b_id";
         $ar = $app['db']->fetchAll($sql, array($b_ids), array(Connection::PARAM_INT_ARRAY));
 
         $like_sum = array();
