@@ -1,17 +1,16 @@
 <?php
-$autoloader = require_once '../lib/vendor/autoload.php';
+$autoloader = require_once __DIR__ . '/../lib/vendor/autoload.php';
 $autoloader->add('Story', '../src');
 
 $app = new Silex\Application();
 
+// Twig은 config DI 안됨. why?
 $app->register(
     new Silex\Provider\TwigServiceProvider(),
     array(
         'twig.path' => __DIR__ . '/views',
     )
 );
-
-require 'conf.php';
 
 $app->register(new Silex\Provider\DoctrineServiceProvider());
 $app->register(new Silex\Provider\SessionServiceProvider());
@@ -27,7 +26,21 @@ if ($app['debug']) {
             'profiler.mount_prefix' => '/_profiler', // this is the default
         )
     );
+} else {
+	$app->register(new \Moriony\Silex\Provider\SentryServiceProvider());
+	$app->error(
+		function (\Exception $e, $code) use ($app) {
+			$client = $app['sentry'];
+			$client->captureException($e);
+		}
+	);
+
+	$eh = $app['sentry.error_handler'];
+	$eh->registerExceptionHandler();
+	$eh->registerErrorHandler();
+	$eh->registerShutdownFunction();
 }
+
 
 $app->mount('/', new Story\Controller\WebController());
 $app->mount('/api', new Story\Controller\ApiController());
