@@ -10,6 +10,8 @@
 
     <form>
         <div class="well form-inline">
+            <h4>조회할 책 설정</h4>
+            <textarea rows='8' class='input-medium' name='bid_list'>{{ bid_list }}</textarea> * 조회하실 책 ID 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)
             <h4>기간 설정</h4>
             <input type='text' class='input-medium' name='begin_date' value='{{ begin_date }}' placeholder='0000-00-00' />
             ~
@@ -17,4 +19,28 @@
             <button class="btn">조회</button>
         </div>
     </form>
+
+    <div class="well form-inline">
+        <h4>코인사용실적 상세</h4>
+        <table class='table'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                {% for b in books %}
+                    <th>{{ b.id }}_{{ b.title }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for uc in use_coins %}
+                <tr>
+                    <td>{{ uc.use_date }}</td>
+                    {% for i in 0..(books|length - 1) %}
+                    <td>{{ attribute(uc, 'b_' ~ i) }}</td>
+                        {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

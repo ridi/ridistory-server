@@ -1,6 +1,7 @@
 <?php
 namespace Story\Controller\Admin;
 
+use Exception;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;

@@ -1,6 +1,8 @@
 <?php
 namespace Story\Controller;
 
+use Exception;
+
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
@@ -21,7 +23,6 @@ use Story\Model\UserInterest;
 use Story\Model\UserPartLike;
 use Story\Model\UserStoryPlusBookLike;
 use Story\Model\PushDevice;
-use Symfony\Component\Security\Acl\Exception\Exception;
 
 class ApiController implements ControllerProviderInterface
 {

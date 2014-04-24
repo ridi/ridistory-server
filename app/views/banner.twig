@@ -58,10 +58,11 @@
         }
         
 		function moveToAppStore() {
+            var link;
 			{% if platform == 'android' %}
-				var link = 'ridistory://openinbrowser/#http://bit.ly/11bmRH1';
+				link = 'ridistory://openinbrowser/#http://bit.ly/11bmRH1';
 			{% else %}
-				var link = 'ridistory://openinbrowser/#http://bit.ly/13oU6bN';
+				link = 'ridistory://openinbrowser/#http://bit.ly/13oU6bN';
 			{% endif %}
 
 			location.href = link;

@@ -1,8 +1,10 @@
 <?php
 namespace Story\Controller;
 
+use Doctrine\DBAL\Connection;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\Book;
 use Story\Model\Buyer;
 use Story\Model\CoinProduct;
 use Story\Model\InAppBilling;
@@ -896,11 +898,55 @@ EOT;
 
     public static function statsKpiUseCoinDetail(Application $app, Request $req)
     {
+        $bid_list = trim($req->get('bid_list'));
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
 
-        if ($begin_date && $end_date) {
+        $books = null;
+        $use_coins = null;
 
+        if ($begin_date && $end_date && $bid_list) {
+            $b_ids = explode(PHP_EOL, $bid_list);  // 조회할 책 목록
+            foreach ($b_ids as &$b_id) {
+                $b_id = trim($b_id);
+            }
+
+            $books = Book::getListByIds($b_ids, false);
+
+            if (!empty($books)) {
+                $sql = <<<EOT
+select date(timestamp) use_date
+EOT;
+                $i = 0;
+                foreach ($books as &$book) {
+                    $sql .= ', sum(if(b_id=' . $book['id'] . ', coin_amount, 0)) b_' . $i++;
+                }
+                $sql .= <<<EOT
+ from
+(
+ select ph.*, b_id from purchase_history ph
+ join (
+  select b.id b_id, p.id p_id from book b
+   join part p on b.id = p.b_id
+  where b.id in (?)
+ ) b_info on ph.p_id = b_info.p_id
+) use_info
+where date(timestamp) >= ? and date(timestamp) <= ?
+EOT;
+                $test_users = TestUser::getConcatUidList(true);
+                if ($test_users) {
+                    $sql .= ' and u_id not in (' . $test_users . ')';
+                }
+                $sql .= ' group by date(timestamp)';
+
+                $stmt = $app['db']->executeQuery(
+                    $sql,
+                    array($b_ids, $begin_date, $end_date),
+                    array(Connection::PARAM_INT_ARRAY, \PDO::PARAM_STR, \PDO::PARAM_STR)
+                );
+
+                $use_coins = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            }
         } else {
             if (!$begin_date) {
                 $begin_date = date('Y-m-01');
@@ -916,8 +962,11 @@ EOT;
         return $app['twig']->render(
             '/admin/stats_kpi/use_coin_detail.twig',
             array(
+                'bid_list' => $bid_list,
                 'begin_date' => $begin_date,
-                'end_date' => $end_date
+                'end_date' => $end_date,
+                'books' => $books,
+                'use_coins' => $use_coins
             )
         );
     }
