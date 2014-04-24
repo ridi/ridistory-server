@@ -45,6 +45,7 @@ class RidiCashBilling
             return ($r === 1);
         } else {
             error_log('[RIDICASH] Failed Exchange Ridicash->Coin: ' . print_r($response, true), 0);
+            return false;
         }
     }
 

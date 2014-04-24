@@ -5,18 +5,18 @@
 <table class='table'>
 	<tr>
 		<th>제목</th>
-		<td><input type='text' class='input-xlarge' name='title' value='{{ notice.title }}'></input></td>
+		<td><input type='text' class='input-xlarge' name='title' value='{{ notice.title }}' /></td>
 	</tr>
 	<tr>
 		<th>등록일</th>
 		<td>
-	    	<input type='text' class='input-small' name='reg_date' value='{{ notice.reg_date|date('Y-m-d') }}' placeholder='빈칸이면 오늘'></input>
+	    	<input type='text' class='input-small' name='reg_date' value='{{ notice.reg_date|date('Y-m-d') }}' placeholder='빈칸이면 오늘' />
 
 		    <label class="radio">
-			    <input type='radio' name='is_visible' value='1'>공개</input>
+			    <input type='radio' name='is_visible' value='1' />공개
 		    </label>
 		    <label class="radio">
-			    <input type='radio' name='is_visible' value='0'>비공개</input>
+			    <input type='radio' name='is_visible' value='0' />비공개
 		    </label>
 	    </td>
 	</tr>
