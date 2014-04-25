@@ -71,17 +71,15 @@
 
             // 환불
             $('.btn-danger').click(function() {
-                //TODO: 리디캐시 환불(결제취소) API 적용 후, 환불 서비스 개시.
-                alert('서비스 준비중입니다.');
-                {#if (confirm('환불한 다음 꼭! 리디북스에서 환불 처리를 하셔야합니다. 정말로 환불하시겠습니까?')) {#}
-                    {#$.post('/admin/ridicash_sales/{{ ridicash_sale.id }}/refund', function(r) {#}
-                        {#if (r.error) {#}
-                            {#alert(r.error);#}
-                        {#} else {#}
-                            {#location.href = '/admin/ridicash_sales/{{ ridicash_sale.id }}';#}
-                        {#}#}
-                    {#})#}
-                {#}#}
+                if (confirm('환불한 다음 꼭! 리디북스에서 환불 처리를 하셔야합니다. 정말로 환불하시겠습니까?')) {
+                    $.post('/admin/ridicash_sales/{{ ridicash_sale.id }}/refund', function(r) {
+                        if (r.error) {
+                            alert(r.error);
+                        } else {
+                            location.href = '/admin/ridicash_sales/{{ ridicash_sale.id }}';
+                        }
+                    })
+                }
                 return false;
             });
         });
