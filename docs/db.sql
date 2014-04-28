@@ -176,6 +176,7 @@ CREATE TABLE `part` (
   `price` int(11) NOT NULL DEFAULT '2' COMMENT '가격 (단위: 코인)',
   `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `num_likes` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `id` (`id`,`seq`) USING BTREE,
   KEY `b_id` (`b_id`),
@@ -226,9 +227,9 @@ CREATE TABLE `push_devices` (
   `is_active` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `device_id` (`device_id`),
-  KEY `platform` (`platform`),
   KEY `reg_date` (`reg_date`),
-  KEY `device_token` (`device_token`(255))
+  KEY `device_token` (`device_token`(255)),
+  KEY `platform` (`platform`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -367,6 +368,36 @@ CREATE TABLE `user_part_like` (
   KEY `timestamp` (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`192.168.0.45`*/ /*!50003 TRIGGER `trigger_insert` AFTER INSERT ON `user_part_like` FOR EACH ROW UPDATE part SET num_likes = num_likes + 1 WHERE id = NEW.p_id */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`192.168.0.45`*/ /*!50003 TRIGGER `trigger_delete` AFTER DELETE ON `user_part_like` FOR EACH ROW UPDATE part SET num_likes = num_likes - 1 WHERE id = OLD.p_id */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_storyplusbook_like` (
