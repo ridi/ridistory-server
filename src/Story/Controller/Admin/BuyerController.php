@@ -108,7 +108,7 @@ class BuyerController implements ControllerProviderInterface
     {
         $user_type = $req->get('user_type', null);
         $user_list = $req->get('user_list', null);
-        $coin_add_source = $req->get('coin_add_source', null);
+        $coin_add_reason = $req->get('coin_add_reason', null);
         $coin_add_amount = $req->get('coin_add_amount', 0);
 
         $u_ids = explode(PHP_EOL, $user_list);
@@ -126,7 +126,7 @@ class BuyerController implements ControllerProviderInterface
          */
         unset($u_id);
 
-        if ($user_type && $coin_add_source && ($coin_add_amount > 0)) {
+        if ($user_type && $coin_add_reason && ($coin_add_amount > 0)) {
             /*
              * 구글 계정: 구글 계정 -> 유저 ID + Valid 체크
              * 유저 ID : Valid 체크
@@ -162,7 +162,7 @@ class BuyerController implements ControllerProviderInterface
             $app['db']->beginTransaction();
             try {
                 foreach ($u_ids as $u_id) {
-                    $r = Buyer::addCoin($u_id, $coin_add_amount, $coin_add_source);
+                    $r = Buyer::addCoin($u_id, $coin_add_amount, Buyer::COIN_SOURCE_IN_EVENT);
                     if (!$r) {
                         throw new Exception('코인을 추가하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
                     }

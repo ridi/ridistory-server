@@ -4,7 +4,7 @@
 {% block container %}
     <ul class="nav nav-tabs">
         <li><a href="/admin/buyer/list">회원 목록</a></li>
-        <li class="active"><a href="/admin/buyer/list/coin">코인 일괄 지급</a></li>
+        <li class="active"><a href="/admin/buyer/list/coin">(이벤트)코인 일괄 지급</a></li>
     </ul>
 
     <form action="/admin/buyer/list/coin/add" method='post'>
@@ -26,13 +26,14 @@
                 </td>
             </tr>
             <tr>
-                <th>코인 추가</th>
+                <th rowspan='2'>코인 추가</th>
                 <td>
-                    <select name='coin_add_source'>
-                        <option value='IN_EVENT' selected>이벤트</option>
-                        <option value='IN_TEST'>테스트</option>
-                    </select>
-                    <input type='text' class='input' name='coin_add_amount' placeholder='지급할 코인 갯수를 입력해주세요.' />
+                    <input type='text' class='input-xxlarge' name='coin_add_reason' placeholder='코인 지급 사유를 적어주세요' />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type='text' class='input' name='coin_add_amount' placeholder='지급할 코인 갯수를 입력해주세요' />
                 </td>
             </tr>
         </table>
