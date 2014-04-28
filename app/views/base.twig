@@ -10,7 +10,7 @@
 	<title>리디스토리</title>
 	<link rel="stylesheet" type="text/css" media="all" href="/static/css/reset.css"/>
 	<link rel="stylesheet" type="text/css" media="screen" href="/static/css/story_style.css?201303191"/>
-	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
 </head>
 	<body id="story">
 		<header class="hidden">
@@ -19,8 +19,6 @@
 		{% block container %}
 		{% endblock %}
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/static/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
         {% block script %}
         {% endblock %}
     </body>
