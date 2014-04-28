@@ -15,6 +15,10 @@ class BuyerController implements ControllerProviderInterface
         $admin = $app['controllers_factory'];
 
         $admin->get('list', array($this, 'buyerList'));
+
+        $admin->get('list/coin', array($this, 'buyerListCoin'));
+        $admin->post('list/coin/add', array($this, 'addBuyerListCoin'));
+
         $admin->get('{id}', array($this, 'buyerDetail'));
         $admin->post('{id}/coin/add', array($this, 'addBuyerCoin'));
         $admin->post('{id}/coin/reduce', array($this, 'reduceBuyerCoin'));
@@ -88,6 +92,94 @@ class BuyerController implements ControllerProviderInterface
     /*
      * Coin
      */
+    public function buyerListCoin(Request $req, Application $app)
+    {
+        $user_list = $req->get('user_list', '');
+
+        return $app['twig']->render(
+            'admin/buyer_add_coins.twig',
+            array(
+                'user_list' => $user_list
+            )
+        );
+    }
+
+    public function addBuyerListCoin(Request $req, Application $app)
+    {
+        $user_type = $req->get('user_type', null);
+        $user_list = $req->get('user_list', null);
+        $coin_add_source = $req->get('coin_add_source', null);
+        $coin_add_amount = $req->get('coin_add_amount', 0);
+
+        $u_ids = explode(PHP_EOL, $user_list);
+        foreach ($u_ids as $key => &$u_id) {
+            $trimmed_uid = trim($u_id);
+            if ($trimmed_uid) {
+                $u_id = trim($u_id);
+            } else {
+                unset($u_ids[$key]);
+            }
+        }
+        /*
+         * 참고: http://php.net/manual/ro/control-structures.foreach.php
+         * Reference of a $value and the last array element remain even after the foreach loop. It is recommended to destroy it by unset().
+         */
+        unset($u_id);
+
+        if ($user_type && $coin_add_source && ($coin_add_amount > 0)) {
+            /*
+             * 구글 계정: 구글 계정 -> 유저 ID + Valid 체크
+             * 유저 ID : Valid 체크
+             */
+            if ($user_type == 'google_account') {
+                $google_ids = $u_ids;
+                $u_ids = Buyer::googleAccountsToUserIds($google_ids);
+
+                if (count($google_ids) != count($u_ids)) {
+                    $invalid_google_ids = array_diff($google_ids, array_keys($u_ids));
+                    $message = '';
+                    foreach ($invalid_google_ids as $google_id) {
+                        $message .= $google_id . ' / ';
+                    }
+                    $message = substr($message, 0, strlen($message) - 3);
+
+                    $app['session']->getFlashBag()->add('alert', array('error' => '구글 계정 정보가 정확하지 않습니다. (' . $message . ')'));
+                    return $app->redirect('/admin/buyer/list/coin');
+                }
+            } else if ($user_type == 'uid') {
+                foreach ($u_ids as $u_id) {
+                    if (!Buyer::isValidUid($u_id)) {
+                        $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (유저 ID: ' . $u_id . ')'));
+                        return $app->redirect('/admin/buyer/list/coin');
+                    }
+                }
+            }
+
+            /*
+             * 코인 추가.
+             * 모든 코인을 성공적으로 추가하지 못하면, Rollback
+             */
+            $app['db']->beginTransaction();
+            try {
+                foreach ($u_ids as $u_id) {
+                    $r = Buyer::addCoin($u_id, $coin_add_amount, $coin_add_source);
+                    if (!$r) {
+                        throw new Exception('코인을 추가하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
+                    }
+                }
+                $app['db']->commit();
+                $app['session']->getFlashBag()->add('alert', array('success' => $coin_add_amount . '코인씩을 추가하였습니다. (총 ' . count($u_ids) . '명 / ' . ($coin_add_amount * count($u_ids)) . '코인)'));
+            } catch (Exception $e) {
+                $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
+                $app['db']->rollback();
+            }
+        } else {
+            $app['session']->getFlashBag()->add('alert', array('error' => '정보를 모두 정확히 입력해주세요.'));
+        }
+
+        return $app->redirect('/admin/buyer/list/coin');
+    }
+
     public function addBuyerCoin(Request $req, Application $app, $id)
     {
         $source = $req->get('source');

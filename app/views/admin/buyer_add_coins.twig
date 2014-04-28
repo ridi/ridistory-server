@@ -1,0 +1,45 @@
+
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/buyer/list">회원 목록</a></li>
+        <li class="active"><a href="/admin/buyer/list/coin">코인 일괄 지급</a></li>
+    </ul>
+
+    <form action="/admin/buyer/list/coin/add" method='post'>
+        <table class='table'>
+            <tr>
+                <th>조회 타입</th>
+                <td>
+                    <select name='user_type'>
+                        <option value='google_account' selected>구글 계정</option>
+                        <option value='uid'>유저 ID</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>회원 목록</th>
+                <td>
+                    <textarea rows='8' class='input-xlarge' name='user_list'>{{ user_list }}</textarea>
+                    * 코인을 지급할 회원 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)
+                </td>
+            </tr>
+            <tr>
+                <th>코인 추가</th>
+                <td>
+                    <select name='coin_add_source'>
+                        <option value='IN_EVENT' selected>이벤트</option>
+                        <option value='IN_TEST'>테스트</option>
+                    </select>
+                    <input type='text' class='input' name='coin_add_amount' placeholder='지급할 코인 갯수를 입력해주세요.' />
+                </td>
+            </tr>
+        </table>
+
+        <div class='form-actions'>
+            <button type='submit' class='btn btn-danger pull-right'>코인 지급</button>
+        </div>
+    </form>
+
+{% endblock %}
