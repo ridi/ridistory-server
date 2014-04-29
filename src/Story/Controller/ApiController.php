@@ -93,31 +93,37 @@ class ApiController implements ControllerProviderInterface
         $google_id = $req->get('google_account');
         $token = $req->get('token');
 
-        // Google Services Auth
-        $ch =curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' . $token);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
+        if ($google_id && $token) {
+            // Google Services Auth
+            $ch =curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' . $token);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HEADER, false);
 
-        $response = curl_exec($ch);
-        $response = json_decode($response, true);
-        curl_close($ch);
+            $response = curl_exec($ch);
+            $response = json_decode($response, true);
+            curl_close($ch);
 
-        $buyer = null;
-        $server_google_id = $response['email'];
-        $is_verified_email = $response['verified_email'];
-        if ($server_google_id == $google_id && $is_verified_email) {
-            $buyer = Buyer::getByGoogleAccount($google_id);
-            if ($buyer == null) {
-                $id = Buyer::add($google_id);
-                $buyer = Buyer::get($id);
+            $buyer = null;
+            $server_google_id = $response['email'];
+            $is_verified_email = $response['verified_email'];
+            if ($server_google_id == $google_id && $is_verified_email) {
+                $buyer = Buyer::getByGoogleAccount($google_id);
+                if ($buyer == null) {
+                    $id = Buyer::add($google_id);
+                    $buyer = Buyer::get($id);
+                }
+                $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
             }
-            $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
-        } else {
-            trigger_error('Failed verify google account. | Ori: ' . $google_id . ' / Server: ' . $server_google_id . ' (Verified: ' . $is_verified_email . ')', E_USER_ERROR);
+
+            if (empty($buyer)) {
+                trigger_error('Failed verify google account. | Ori: ' . $google_id . ' / Server: ' . $server_google_id . ' (Verified: ' . $is_verified_email . ')', E_USER_ERROR);
+            }
+
+            return $app->json($buyer);
         }
 
-        return $app->json($buyer);
+        return null;
     }
 
     public function getBuyerCoinBalance(Request $req, Application $app)
