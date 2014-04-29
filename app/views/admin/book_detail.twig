@@ -99,20 +99,20 @@
                 {% set weekday = ['일', '월', '화', '수', '목', '금', '토'] %}
                 {% for i in 0..6 %}
                 <label class="checkbox inline">
-                    <input type='checkbox' name='upload_days[]' value='{{ 2 ** i }}'>{{ weekday[i] }}</input>
+                    <input type='checkbox' name='upload_days[]' value='{{ 2 ** i }}' />{{ weekday[i] }}
                 </label>
                 {% endfor %}	                
             </div>
             <div class='span2'>
     		    <label class="radio">
-    			    <input type='radio' name='is_completed' value='0'>연재 중</input>
+    			    <input type='radio' name='is_completed' value='0' />연재 중
     		    </label>
     		    <label class="radio">
-    			    <input type='radio' name='is_completed' value='1'>연재 완료</input>
+    			    <input type='radio' name='is_completed' value='1' />연재 완료
     		    </label>
             </div>
             <div class='span2'>
-    		    <label>총 <input type='text' class='input-small' name='total_part_count' value='{{ book.total_part_count }}'> 회</input>
+    		    <label>총 <input type='text' class='input-small' name='total_part_count' value='{{ book.total_part_count }}' /> 회
     		    </label>
 		    </div>
 	    </td>
@@ -121,7 +121,7 @@
         <th>성인</th>
         <td>
             <label class="checkbox">
-                <input type='checkbox' name='adult_only' {{ book.adult_only ? 'checked="checked"' }}>성인용인 경우에 체크</input>
+                <input type='checkbox' name='adult_only' {{ book.adult_only ? 'checked="checked"' }} />성인용인 경우에 체크
             </label>
         </td>
     </tr>
@@ -129,7 +129,7 @@
         <th>잠금 기능</th>
         <td>
             <label class="checkbox">
-                <input type='checkbox' name='is_active_lock' {{ book.is_active_lock ? 'checked="checked"' }}>연재중 잠금 기능을 사용할 경우에 체크 (완결 시에는 영향을 받지 않음)</input>
+                <input type='checkbox' name='is_active_lock' {{ book.is_active_lock ? 'checked="checked"' }} />연재중 잠금 기능을 사용할 경우에 체크 (완결 시에는 영향을 받지 않음)
             </label>
         </td>
     </tr>
@@ -141,16 +141,16 @@
         <th>완결 후 상태</th>
         <td>
             <label class="radio">
-                <input type='radio' name='end_action_flag' value='ALL_FREE'>모두 공개(무료)</input>
+                <input type='radio' name='end_action_flag' value='ALL_FREE' />모두 공개(무료)
             </label>
             <label class="radio">
-                <input type='radio' name='end_action_flag' value='ALL_CHARGED'>모두 잠금(유료)</input> * 각 파트별로 가격이 0보다 커야함. (0일 경우 무료)
+                <input type='radio' name='end_action_flag' value='ALL_CHARGED' />모두 잠금(유료) * 각 파트별로 가격이 0보다 커야함. (0일 경우 무료)
             </label>
             <label class="radio">
-                <input type='radio' name='end_action_flag' value='SALES_CLOSED'>판매종료(표지만 남기고 파트는 비공개됩니다.)</input>
+                <input type='radio' name='end_action_flag' value='SALES_CLOSED' />판매종료(표지만 남기고 파트는 비공개됩니다.)
             </label>
             <label class="radio">
-                <input type='radio' name='end_action_flag' value='ALL_CLOSED'>게시종료(앱 내에서 모두 사라집니다.)</input>
+                <input type='radio' name='end_action_flag' value='ALL_CLOSED' />게시종료(앱 내에서 모두 사라집니다.)
             </label>
         </td>
     </tr>
@@ -158,7 +158,7 @@
 	    <th>작품 점수</th>
 	    <td>
 		    <label>
-	      	  <input type='text' class='input-small' name='score' value='{{ book.score }}'> 점</input>
+	      	  <input type='text' class='input-small' name='score' value='{{ book.score }}' /> 점
 	        </label>
 	    </td>
 	</tr>

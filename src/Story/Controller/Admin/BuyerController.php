@@ -196,7 +196,12 @@ class BuyerController implements ControllerProviderInterface
             } else if ($user_type == 'uid') {
                 $invalid_u_ids = Buyer::isValidUids($u_ids);
                 if (count($invalid_u_ids) > 0) {
-                    $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (유저 ID: ' . $u_id . ')'));
+                    $message = '';
+                    foreach ($invalid_u_ids as $u_id) {
+                        $message .= $u_id . ' / ';
+                    }
+                    $message = substr($message, 0, strlen($message) - 3);
+                    $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (' . $message . ')'));
                     return $app->redirect('/admin/buyer/list/coin');
                 }
             }
