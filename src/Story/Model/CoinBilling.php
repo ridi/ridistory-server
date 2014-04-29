@@ -149,12 +149,12 @@ class CoinBilling
         if ($payment == CoinProduct::TYPE_INAPP || $payment == CoinProduct::TYPE_RIDICASH) {
             $coin_sale = self::getBillingSalesDetail($payment, $id);
         } else {
-            throw new Exception('결제 수단이 잘못 되었습니다.');
+            throw new \Exception('결제 수단이 잘못 되었습니다.');
         }
 
         // 환불할 수 있는 결제인지를 검증
         if ($coin_sale['status'] != CoinBilling::STATUS_OK) {
-            throw new Exception('이미 환불되었거나, 환불할 수 없는 결제입니다.');
+            throw new \Exception('이미 환불되었거나, 환불할 수 없는 결제입니다.');
         }
 
         $user = Buyer::get($coin_sale['u_id']);
@@ -180,13 +180,13 @@ class CoinBilling
             // 코인 회수(감소)
             $r = Buyer::useCoin($user['id'], $refund_coin_amount, Buyer::COIN_SOURCE_OUT_COIN_REFUND, null);
             if (!$r) {
-                throw new Exception('환불 도중 오류가 발생했습니다. (코인 감소 DB 오류)');
+                throw new \Exception('환불 도중 오류가 발생했습니다. (코인 감소 DB 오류)');
             }
 
             // 상태 변경 (정상 -> 환불됨)
             $r = self::changeBillingStatusAndValues($id, $payment, self::STATUS_REFUNDED);
             if (!$r) {
-                throw new Exception('환불 도중 오류가 발생했습니다. (상태 변경 DB 오류)');
+                throw new \Exception('환불 도중 오류가 발생했습니다. (상태 변경 DB 오류)');
             }
 
             $app['db']->commit();
