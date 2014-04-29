@@ -189,7 +189,7 @@ class BuyerController implements ControllerProviderInterface
             $app['session']->getFlashBag()->add('alert', array('error' => '코인을 추가하지 못했습니다. (코인 추가 이유가 없거나, 추가하려는 코인이 0개 입니다.)'));
         }  else {
             $r = Buyer::addCoin($id, $coin_amount, $source);
-            if ($r === 1) {
+            if ($r) {
                 $app['session']->getFlashBag()->add('alert', array('success' => $coin_amount.'코인이 추가되었습니다.'));
             } else {
                 $app['session']->getFlashBag()->add('alert', array('error' => '코인을 추가하지 못했습니다. (DB 오류)'));

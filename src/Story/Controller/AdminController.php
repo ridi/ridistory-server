@@ -317,50 +317,15 @@ EOT;
     public static function refundCoinSales(Request $req, Application $app, $id)
     {
         $payment = $req->get('payment', null);
-        if ($payment == CoinProduct::TYPE_INAPP || $payment == CoinProduct::TYPE_RIDICASH) {
-            $coin_sales = CoinBilling::getBillingSalesDetail($payment, $id);
-        } else {
-            return $app->json(array('success' => false));
-        }
-
-        if ($coin_sales['status'] == CoinBilling::STATUS_OK) {
-            $user = Buyer::get($coin_sales['u_id']);
-            $product = CoinProduct::getCoinProductBySkuAndType($coin_sales['sku'], $payment);
-
-            $user_coin_balance = $user['coin_balance'];
-            $refund_coin_amount = $product['coin_amount'] + $product['bonus_coin_amount'];
-
-            // 환불해줄 코인보다, 사용자의 잔여 코인이 많은지 여부 확인
-            if ($user_coin_balance >= $refund_coin_amount) {
-                // 리디캐시 결제일 경우에, 리디북스의 결제 취소 API 호출
-                if ($payment == CoinProduct::TYPE_RIDICASH) {
-                    //TODO: 리디북스 결제 취소 API 호출
-                }
-
-                // 트랜잭션 시작
-                $app['db']->beginTransaction();
-                try {
-                    $r = Buyer::useCoin($user['id'], $refund_coin_amount, Buyer::COIN_SOURCE_OUT_COIN_REFUND, null);
-                    if ($r) {
-                        $r = CoinBilling::changeBillingStatusAndValues($id, $payment, CoinBilling::STATUS_REFUNDED);
-                        if ($r) {
-                            $app['db']->commit();
-                            $app['session']->getFlashBag()->add('alert', array('success' => '환불되었습니다. (감소 코인: ' . $refund_coin_amount . '개 / 회원 잔여 코인: ' . $user_coin_balance . '개 -> ' . ($user_coin_balance - $refund_coin_amount) . '개)'));
-                        } else {
-                            throw new Exception('환불 도중 오류가 발생했습니다. (상태 변경 DB 오류)');
-                        }
-                    } else {
-                        throw new Exception('환불 도중 오류가 발생했습니다. (코인 감소 DB 오류)');
-                    }
-                } catch (\Exception $e) {
-                    $app['db']->rollback();
-                    $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
-                }
-            } else {
-                $app['session']->getFlashBag()->add('alert', array('error' => '회원의 잔여 코인이 구입시 충전된 코인보다 적어 환불할 수 없습니다. (현재 회원 잔여 코인: ' . $user_coin_balance . '개)'));
+        if ($payment) {
+            try {
+                $user_remain_coin = CoinBilling::refund($payment, $id);
+                $app['session']->getFlashBag()->add('alert', array('success' => '환불되었습니다. (회원 잔여 코인: ' . $user_remain_coin . '개)'));
+            } catch (\Exception $e) {
+                $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
             }
         } else {
-            $app['session']->getFlashBag()->add('alert', array('error' => '이미 ' . $coin_sales['refunded_time'] . ' 에 환불 처리 되었습니다.'));
+            return $app->json(array('success' => false));
         }
 
         return $app->json(array('success' => true));
