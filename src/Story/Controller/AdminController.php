@@ -89,14 +89,14 @@ class AdminController implements ControllerProviderInterface
      */
     public static function commentList(Request $req, Application $app)
     {
-        $search_type = $req->get('search_type', null);
+        $search_type = $req->get('search_type', 'book_title');
         $search_keyword = $req->get('search_keyword', null);
         $cur_page = $req->get('page', 0);
 
         $limit = 50;
         $offset = $cur_page * $limit;
 
-        if ($search_type && $search_keyword) {
+        if ($search_keyword) {
             if ($search_type == 'book_title') {
                 $sql = <<<EOT
 select pc.*, p.seq, b.title from part_comment pc
@@ -276,7 +276,7 @@ EOT;
         $limit = 50;
         $offset = $cur_page * $limit;
 
-        if ($search_type && $search_keyword) {
+        if ($search_keyword) {
             $coin_sales = CoinBilling::getBillingSalesListBySearchTypeAndKeyword($payment, $search_type, $search_keyword);
         } else {
             $coin_sales = CoinBilling::getBillingSalesListByOffsetAndSize($payment, $offset, $limit);

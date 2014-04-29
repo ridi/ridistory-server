@@ -32,14 +32,14 @@ class BuyerController implements ControllerProviderInterface
      */
     public function buyerList(Request $req, Application $app)
     {
-        $search_type = $req->get('search_type', null);
+        $search_type = $req->get('search_type', 'google_account');
         $search_keyword = $req->get('search_keyword', null);
         $cur_page = $req->get('page', 0);
 
         $limit = 50;
         $offset = $cur_page * $limit;
 
-        if ($search_type && $search_keyword) {
+        if ($search_keyword) {
             $buyers = Buyer::getListBySearchTypeAndKeyword($search_type, $search_keyword);
         } else {
             $buyers = Buyer::getListByOffsetAndSize($offset, $limit);
