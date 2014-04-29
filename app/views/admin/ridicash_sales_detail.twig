@@ -71,7 +71,7 @@
             // 환불
             $('.btn-danger').click(function() {
                 if (confirm('환불한 다음 꼭! 리디북스에서 환불 처리를 하셔야합니다. 정말로 환불하시겠습니까?')) {
-                    $.post('/admin/ridicash_sales/{{ ridicash_sale.id }}/refund', function(r) {
+                    $.post('/admin/ridicash_sales/{{ ridicash_sale.id }}/refund', {'payment': 'RIDICASH'}, function(r) {
                         if (r.error) {
                             alert(r.error);
                         } else {
