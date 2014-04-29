@@ -116,6 +116,12 @@ class BuyerController implements ControllerProviderInterface
             } else if ($user_type == 'uid') {
                 $invalid_ids = Buyer::isValidUids($accounts);
             }
+
+            if (count($invalid_ids) == 0) {
+                $app['session']->getFlashBag()->add('alert', array('success' => '입력하신 계정이 모두 정상입니다.'));
+            } else {
+                $app['session']->getFlashBag()->add('alert', array('error' => '존재하지 않는 계정이 ' . count($invalid_ids) . '건 존재합니다.'));
+            }
         }
 
         return $app['twig']->render(
@@ -187,11 +193,10 @@ class BuyerController implements ControllerProviderInterface
                     return $app->redirect('/admin/buyer/list/coin');
                 }
             } else if ($user_type == 'uid') {
-                foreach ($u_ids as $u_id) {
-                    if (!Buyer::isValidUid($u_id)) {
-                        $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (유저 ID: ' . $u_id . ')'));
-                        return $app->redirect('/admin/buyer/list/coin');
-                    }
+                $invalid_u_ids = Buyer::isValidUids($u_ids);
+                if (count($invalid_u_ids) > 0) {
+                    $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (유저 ID: ' . $u_id . ')'));
+                    return $app->redirect('/admin/buyer/list/coin');
                 }
             }
 
