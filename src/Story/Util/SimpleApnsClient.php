@@ -1,6 +1,8 @@
 <?php
 namespace Story\Util;
 
+use Exception;
+
 class SimpleApnsClient
 {
     const ENVIRONMENT_PRODUCTION = 0;
@@ -79,7 +81,7 @@ class SimpleApnsClient
     public function send()
     {
         if ($this->isConnected() == false || empty($this->payload)) {
-            throw new \Exception("sending push is not prepared.", 1);
+            throw new Exception("sending push is not prepared.", 1);
         }
 
         $error_response_list = array();

@@ -113,6 +113,18 @@ CREATE TABLE `cp_account` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ch_id` int(11) NOT NULL COMMENT 'coin_history의 id',
+  `u_id` int(11) NOT NULL COMMENT 'coin_history의 u_id',
+  `comment` varchar(255) NOT NULL COMMENT '코인 지급 사유',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '코인지급일',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ch_id` (`ch_id`,`u_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `inapp_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `order_id` varchar(100) NOT NULL,

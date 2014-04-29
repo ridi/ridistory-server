@@ -5,6 +5,7 @@ use Exception;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
+use Story\Model\Event;
 use Story\Model\Part;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -207,9 +208,14 @@ class BuyerController implements ControllerProviderInterface
             $app['db']->beginTransaction();
             try {
                 foreach ($u_ids as $u_id) {
-                    $r = Buyer::addCoin($u_id, $coin_add_amount, Buyer::COIN_SOURCE_IN_EVENT);
-                    if (!$r) {
+                    $ch_id = Buyer::addCoin($u_id, $coin_add_amount, Buyer::COIN_SOURCE_IN_EVENT);
+                    if (!$ch_id) {
                         throw new Exception('코인을 추가하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
+                    }
+
+                    $r = Event::add(array('u_id' => $u_id, 'ch_id' => $ch_id, 'comment' => $coin_add_reason));
+                    if (!$r) {
+                        throw new Exception('코인 추가 이벤트를 등록하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
                     }
                 }
                 $app['db']->commit();

@@ -1,6 +1,8 @@
 <?php
 namespace Story\Model;
 
+use Exception;
+
 class RecommendedBook
 {
     private $row;
@@ -9,7 +11,7 @@ class RecommendedBook
     {
         $this->row = self::get($id);
         if ($this->row === false) {
-            throw new \Exception('Invalid Recommended Book Id: ' . $id);
+            throw new Exception('Invalid Recommended Book Id: ' . $id);
         }
     }
 

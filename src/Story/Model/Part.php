@@ -1,6 +1,8 @@
 <?php
 namespace Story\Model;
 
+use Exception;
+
 class Part
 {
     private $row;
@@ -9,7 +11,7 @@ class Part
     {
         $this->row = self::get($id);
         if ($this->row === false) {
-            throw new \Exception('Invalid Part Id: ' . $id);
+            throw new Exception('Invalid Part Id: ' . $id);
         }
     }
 

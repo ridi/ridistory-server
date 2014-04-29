@@ -2,18 +2,16 @@
 namespace Story\Controller;
 
 use Doctrine\DBAL\Connection;
+use Exception;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Book;
-use Story\Model\Buyer;
 use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
 use Story\Model\PartComment;
 use Story\Model\TestUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Symfony\Component\Security\Acl\Exception\Exception;
 
 class AdminController implements ControllerProviderInterface
 {
@@ -321,7 +319,7 @@ EOT;
             try {
                 $user_remain_coin = CoinBilling::refund($payment, $id);
                 $app['session']->getFlashBag()->add('alert', array('success' => '환불되었습니다. (회원 잔여 코인: ' . $user_remain_coin . '개)'));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
             }
         } else {
