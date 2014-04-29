@@ -19,7 +19,7 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\SecurityServiceProvider());
 $app->register(new Silex\Provider\ServiceControllerServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
-$app->register(new Story\Provider\CacheServiceProvider());
+$app->register(new Story\SilexServiceProvider\CacheServiceProvider());
 
 if ($app['debug']) {
     $app->register(new Silex\Provider\WebProfilerServiceProvider(),

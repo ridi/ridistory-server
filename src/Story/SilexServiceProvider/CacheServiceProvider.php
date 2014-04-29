@@ -1,6 +1,6 @@
 <?php
 
-namespace Story\Provider;
+namespace Story\SilexServiceProvider;
 
 use Doctrine\Common\Cache\ApcCache;
 use Silex\Application;
