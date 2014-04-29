@@ -1,0 +1,50 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/buyer/list">회원 목록</a></li>
+        <li class="active"><a href="/admin/buyer/list/verify">회원 검증</a></li>
+        <li><a href="/admin/buyer/list/coin">(이벤트)코인 일괄 지급</a></li>
+    </ul>
+
+    <form>
+        <div class="well form-inline">
+            <h4>회원 검증</h4>
+            <div>
+            <select id='user_type' name='user_type'>
+                <option value='google_account'>구글 계정</option>
+                <option value='uid'>유저 ID</option>
+            </select>
+            </div>
+            <div style="margin-top: 10px; margin-bottom: 10px;">
+            <textarea rows='8' class='input-xlarge' name='user_list'>{{ user_list }}</textarea>
+            * 검증할 회원 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)
+            </div>
+            <button type='submit' class="btn">조회(검증)</button>
+        </div>
+    </form>
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th>잘못된 계정 정보</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for invalid_id in invalid_ids %}
+            <tr>
+                <td>{{ invalid_id }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#user_type').val('{{ user_type }}');
+        });
+    </script>
+{% endblock %}

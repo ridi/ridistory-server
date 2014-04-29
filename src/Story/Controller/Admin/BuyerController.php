@@ -16,6 +16,8 @@ class BuyerController implements ControllerProviderInterface
 
         $admin->get('list', array($this, 'buyerList'));
 
+        $admin->get('list/verify', array($this, 'verifyBuyerList'));
+
         $admin->get('list/coin', array($this, 'buyerListCoin'));
         $admin->post('list/coin/add', array($this, 'addBuyerListCoin'));
 
@@ -88,6 +90,44 @@ class BuyerController implements ControllerProviderInterface
             )
         );
     }
+
+    /*
+     * Verify
+     */
+    public function verifyBuyerList(Request $req, Application $app)
+    {
+        $user_type = $req->get('user_type', 'google_account');
+        $user_list = $req->get('user_list', '');
+
+        $accounts = explode(PHP_EOL, $user_list);
+        foreach ($accounts as $key => &$account) {
+            $trimmed_account = trim($account);
+            if ($trimmed_account) {
+                $account = trim($account);
+            } else {
+                unset($accounts[$key]);
+            }
+        }
+
+        $invalid_ids = null;
+        if (!empty($accounts) && $user_type) {
+            if ($user_type == 'google_account') {
+                $invalid_ids = Buyer::isValidGoogleAccounts($accounts);
+            } else if ($user_type == 'uid') {
+                $invalid_ids = Buyer::isValidUids($accounts);
+            }
+        }
+
+        return $app['twig']->render(
+            'admin/buyer_verify.twig',
+            array(
+                'user_type' => $user_type,
+                'user_list' => $user_list,
+                'invalid_ids' => $invalid_ids
+            )
+        );
+    }
+
 
     /*
      * Coin
