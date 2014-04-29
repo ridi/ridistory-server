@@ -24,16 +24,16 @@
         </tr>
         </thead>
         <tbody id='js_tbody'>
-        {% for inapp_sale in inapp_sales %}
-            <tr data-salesid='{{ inapp_sale.id }}'>
-                <td>{{ inapp_sale.u_id }}</td>
-                <td>{{ inapp_sale.order_id }}</td>
-                <td>{{ inapp_sale.sku }}</td>
-                <td>{{ inapp_sale.purchase_time }}</td>
+        {% for coin_sale in coin_sales %}
+            <tr data-salesid='{{ coin_sale.id }}'>
+                <td>{{ coin_sale.u_id }}</td>
+                <td>{{ coin_sale.order_id }}</td>
+                <td>{{ coin_sale.sku }}</td>
+                <td>{{ coin_sale.purchase_time }}</td>
                 <td>
-                    {% if inapp_sale.status == 'OK' %}
+                    {% if coin_sale.status == 'OK' %}
                         정상
-                    {% elseif inapp_sale.status == 'REFUNDED' %}
+                    {% elseif coin_sale.status == 'REFUNDED' %}
                         <span style="color: #0000FF">환불됨</span>
                     {% else %}
                         <span style="color: #FF0000">오류</span>

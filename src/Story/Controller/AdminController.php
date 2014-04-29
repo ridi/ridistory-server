@@ -6,10 +6,9 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Book;
 use Story\Model\Buyer;
+use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
-use Story\Model\InAppBilling;
 use Story\Model\PartComment;
-use Story\Model\RidiCashBilling;
 use Story\Model\TestUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -66,12 +65,12 @@ class AdminController implements ControllerProviderInterface
         $admin->post('/banner/{banner_id}/delete', array($this, 'deleteBanner'));
         $admin->post('/banner/{banner_id}/edit', array($this, 'editBanner'));
 
-        $admin->get('/inapp_sales/list', array($this, 'inAppSalesList'));
-        $admin->get('/inapp_sales/{iab_sale_id}', array($this, 'inAppSalesDetail'));
+        $admin->get('/inapp_sales/list', array($this, 'coinSalesList'));
+        $admin->get('/inapp_sales/{id}', array($this, 'coinSalesDetail'));
         $admin->post('/inapp_sales/{id}/refund', array($this, 'refundCoinSales'));
 
-        $admin->get('/ridicash_sales/list', array($this, 'ridiCashSalesList'));
-        $admin->get('/ridicash_sales/{rcb_sale_id}', array($this, 'ridiCashSalesDetail'));
+        $admin->get('/ridicash_sales/list', array($this, 'coinSalesList'));
+        $admin->get('/ridicash_sales/{id}', array($this, 'coinSalesDetail'));
         $admin->post('/ridicash_sales/{id}/refund', array($this, 'refundCoinSales'));
 
         $admin->get('/stats', array($this, 'stats'));
@@ -257,11 +256,20 @@ EOT;
     }
 
     /*
-     * InAppBilling Coin Sales
+     * Coin Sales
      */
-    public static function inAppSalesList(Request $req, Application $app)
+    public static function coinSalesList(Request $req, Application $app)
     {
-        $search_type = $req->get('search_type', null);
+        // URL로 인앱결제/리디캐시 결제 분리
+        $request_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $is_inapp = (strpos($request_url, 'inapp_sales') !== false);
+        if ($is_inapp) {
+            $payment = CoinProduct::TYPE_INAPP;
+        } else {
+            $payment = CoinProduct::TYPE_RIDICASH;
+        }
+
+        $search_type = $req->get('search_type', ($is_inapp ? 'uid' : 'ridibooks_id'));
         $search_keyword = $req->get('search_keyword', null);
         $cur_page = $req->get('page', 0);
 
@@ -269,40 +277,53 @@ EOT;
         $offset = $cur_page * $limit;
 
         if ($search_type && $search_keyword) {
-            $inapp_sales = InAppBilling::getInAppBillingSalesListBySearchTypeAndKeyword($search_type, $search_keyword);
+            $coin_sales = CoinBilling::getBillingSalesListBySearchTypeAndKeyword($payment, $search_type, $search_keyword);
         } else {
-            $inapp_sales = InAppBilling::getInAppBillingSalesListByOffsetAndSize($offset, $limit);
+            $coin_sales = CoinBilling::getBillingSalesListByOffsetAndSize($payment, $offset, $limit);
         }
 
         return $app['twig']->render(
-            '/admin/inapp_sales_list.twig',
+            ($is_inapp ? '/admin/inapp_sales_list.twig' : '/admin/ridicash_sales_list.twig'),
             array(
                 'search_type' => $search_type,
                 'search_keyword' => $search_keyword,
-                'inapp_sales' => $inapp_sales,
+                'coin_sales' => $coin_sales,
                 'cur_page' => $cur_page
             )
         );
     }
 
-    public static function inAppSalesDetail(Request $req, Application $app, $iab_sale_id)
+    public static function coinSalesDetail(Request $req, Application $app, $id)
     {
-        $inapp_sale = InAppBilling::getInAppBillingSalesDetail($iab_sale_id);
-        return $app['twig']->render('/admin/inapp_sales_detail.twig', array('inapp_sale' => $inapp_sale));
+        // URL로 인앱결제/리디캐시 결제 분리
+        $request_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $is_inapp = (strpos($request_url, 'inapp_sales') !== false);
+        if ($is_inapp) {
+            $payment = CoinProduct::TYPE_INAPP;
+        } else {
+            $payment = CoinProduct::TYPE_RIDICASH;
+        }
+
+        $coin_sale = CoinBilling::getBillingSalesDetail($payment, $id);
+        return $app['twig']->render(
+            ($is_inapp ? '/admin/inapp_sales_detail.twig' : '/admin/ridicash_sales_detail.twig'),
+            array('coin_sale' => $coin_sale)
+        );
     }
 
+    /*
+     * Refund Coin Sales
+     */
     public static function refundCoinSales(Request $req, Application $app, $id)
     {
         $payment = $req->get('payment', null);
-        if ($payment == CoinProduct::TYPE_INAPP) {
-            $coin_sales = InAppBilling::getInAppBillingSalesDetail($id);
-        } else if ($payment == CoinProduct::TYPE_RIDICASH) {
-            $coin_sales = RidiCashBilling::getRidiCashBillingSalesDetail($id);
+        if ($payment == CoinProduct::TYPE_INAPP || $payment == CoinProduct::TYPE_RIDICASH) {
+            $coin_sales = CoinBilling::getBillingSalesDetail($payment, $id);
         } else {
             return $app->json(array('success' => false));
         }
 
-        if ($coin_sales['status'] == InAppBilling::STATUS_OK) {
+        if ($coin_sales['status'] == CoinBilling::STATUS_OK) {
             $user = Buyer::get($coin_sales['u_id']);
             $product = CoinProduct::getCoinProductBySkuAndType($coin_sales['sku'], $payment);
 
@@ -321,12 +342,7 @@ EOT;
                 try {
                     $r = Buyer::useCoin($user['id'], $refund_coin_amount, Buyer::COIN_SOURCE_OUT_COIN_REFUND, null);
                     if ($r) {
-                        if ($payment == CoinProduct::TYPE_INAPP) {
-                            $r = InAppBilling::changeInAppBillingStatus($id, InAppBilling::STATUS_REFUNDED);
-                        } else {
-                            $r = RidiCashBilling::changeRidiCashBillingStatusAndTidIfNotNull($id, null, InAppBilling::STATUS_REFUNDED);
-                        }
-
+                        $r = CoinBilling::changeBillingStatusAndValues($id, $payment, CoinBilling::STATUS_REFUNDED);
                         if ($r) {
                             $app['db']->commit();
                             $app['session']->getFlashBag()->add('alert', array('success' => '환불되었습니다. (감소 코인: ' . $refund_coin_amount . '개 / 회원 잔여 코인: ' . $user_coin_balance . '개 -> ' . ($user_coin_balance - $refund_coin_amount) . '개)'));
@@ -348,41 +364,6 @@ EOT;
         }
 
         return $app->json(array('success' => true));
-    }
-
-    /*
-     * RidiCash Coin Sales
-     */
-    public static function ridiCashSalesList(Request $req, Application $app)
-    {
-        $search_type = $req->get('search_type', null);
-        $search_keyword = $req->get('search_keyword', null);
-        $cur_page = $req->get('page', 0);
-
-        $limit = 50;
-        $offset = $cur_page * $limit;
-
-        if ($search_type && $search_keyword) {
-            $ridicash_sales = RidiCashBilling::getRidiCashBillingSalesListBySearchTypeAndKeyword($search_type, $search_keyword);
-        } else {
-            $ridicash_sales = RidiCashBilling::getRidiCashBillingSalesListByOffsetAndSize($offset, $limit);
-        }
-
-        return $app['twig']->render(
-            '/admin/ridicash_sales_list.twig',
-            array(
-                'search_type' => $search_type,
-                'search_keyword' => $search_keyword,
-                'ridicash_sales' => $ridicash_sales,
-                'cur_page' => $cur_page
-            )
-        );
-    }
-
-    public static function ridiCashSalesDetail(Request $req, Application $app, $rcb_sale_id)
-    {
-        $ridicash_sale = RidiCashBilling::getRidiCashBillingSalesDetail($rcb_sale_id);
-        return $app['twig']->render('/admin/ridicash_sales_detail.twig', array('ridicash_sale' => $ridicash_sale));
     }
 
     /*

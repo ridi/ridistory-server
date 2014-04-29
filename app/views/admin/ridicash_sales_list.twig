@@ -26,17 +26,17 @@
         </tr>
         </thead>
         <tbody id='js_tbody'>
-        {% for ridicash_sale in ridicash_sales %}
-            <tr data-salesid='{{ ridicash_sale.id }}'>
-                <td>{{ ridicash_sale.u_id }}</td>
-                <td>{{ ridicash_sale.ridibooks_id }}</td>
-                <td>{{ ridicash_sale.t_id }}</td>
-                <td>{{ ridicash_sale.sku }}</td>
-                <td>{{ ridicash_sale.purchase_time }}</td>
+        {% for coin_sale in coin_sales %}
+            <tr data-salesid='{{ coin_sale.id }}'>
+                <td>{{ coin_sale.u_id }}</td>
+                <td>{{ coin_sale.ridibooks_id }}</td>
+                <td>{{ coin_sale.t_id }}</td>
+                <td>{{ coin_sale.sku }}</td>
+                <td>{{ coin_sale.purchase_time }}</td>
                 <td>
-                    {% if ridicash_sale.status == 'OK' %}
+                    {% if coin_sale.status == 'OK' %}
                         정상
-                    {% elseif ridicash_sale.status == 'REFUNDED' %}
+                    {% elseif coin_sale.status == 'REFUNDED' %}
                         <span style="color: #0000FF">환불됨</span>
                     {% else %}
                         <span style="color: #FF0000">오류</span>

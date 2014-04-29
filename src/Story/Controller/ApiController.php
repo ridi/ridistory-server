@@ -6,10 +6,9 @@ use Exception;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
+use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
-use Story\Model\InAppBilling;
 use Story\Model\RecommendedBook;
-use Story\Model\RidiCashBilling;
 use Story\Util\AES128;
 use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
@@ -146,30 +145,28 @@ class ApiController implements ControllerProviderInterface
         }
 
         // 결제 수단
-        $buy_method = isset($inputs['buy_method']) ? $inputs['buy_method'] : CoinProduct::TYPE_INAPP;
-        if (empty($buy_method)) {
+        $payment = isset($inputs['buy_method']) ? $inputs['buy_method'] : CoinProduct::TYPE_INAPP;
+        if (empty($payment)) {
             // Default: 구글 인앱 결제
-            $buy_method = CoinProduct::TYPE_INAPP;
+            $payment = CoinProduct::TYPE_INAPP;
         }
 
-        $coin_info = null;
-        if ($buy_method == CoinProduct::TYPE_INAPP) {
-            // 구글 인앱 결제
-            $r = InAppBilling::verifyInAppBilling($inputs);
+        if ($payment == CoinProduct::TYPE_INAPP || $payment == CoinProduct::TYPE_RIDICASH) {
+            $r = CoinBilling::verify($inputs, $payment);
             if (!$r) {
-                return $app->json(array('success' => false, 'message' => '인앱 결제 도중 오류가 발생였습니다.'));
+                return $app->json(array('success' => false, 'message' => '결제 도중 오류가 발생였습니다.'));
             }
-            $purchase_data = json_decode($inputs['purchase_data'], true);
-            $coin_info = CoinProduct::getCoinProductBySkuAndType($purchase_data['productId'], CoinProduct::TYPE_INAPP);
-            $coin_source = Buyer::COIN_SOURCE_IN_INAPP;
-        } else if ($buy_method == CoinProduct::TYPE_RIDICASH) {
-            // 리디캐시 결제
-            $r = RidiCashBilling::exchangeRidiCashToCoin($inputs);
-            if (!$r) {
-                return $app->json(array('success' => false, 'message' => '리디캐시 결제 도중 오류가 발생하였습니다.'));
+
+            if ($payment == CoinProduct::TYPE_INAPP) {
+                $purchase_data = json_decode($inputs['purchase_data'], true);
+                $sku = $purchase_data['productId'];
+                $coin_source = Buyer::COIN_SOURCE_IN_INAPP;
+            } else {
+                $sku = $inputs['sku'];
+                $coin_source = Buyer::COIN_SOURCE_IN_RIDI;
             }
-            $coin_info = CoinProduct::getCoinProductBySkuAndType($inputs['sku'], CoinProduct::TYPE_RIDICASH);
-            $coin_source = Buyer::COIN_SOURCE_IN_RIDI;
+
+            $coin_info = CoinProduct::getCoinProductBySkuAndType($sku, $payment);
         } else {
             // 잘못된 결제 수단
             return $app->json(array('success' => false, 'message' => '존재하지 않는 결제 수단입니다.'));

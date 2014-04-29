@@ -9,38 +9,38 @@
 
         <tr>
             <th>결제 번호</th>
-            <td>{{ inapp_sale.id }}</td>
+            <td>{{ coin_sale.id }}</td>
         </tr>
         <tr>
             <th>유저</th>
-            <td><a href='/admin/buyer/{{ inapp_sale.u_id }}'>{{ inapp_sale.u_id }}</a> ({{ inapp_sale.google_id }})</td>
+            <td><a href='/admin/buyer/{{ coin_sale.u_id }}'>{{ coin_sale.u_id }}</a> ({{ coin_sale.google_id }})</td>
         </tr>
         <tr>
             <th>구글 주문번호</th>
-            <td>{{ inapp_sale.order_id }}</td>
+            <td>{{ coin_sale.order_id }}</td>
         </tr>
         <tr>
             <th>SKU</th>
-            <td>{{ inapp_sale.sku }}</td>
+            <td>{{ coin_sale.sku }}</td>
         </tr>
         <tr>
             <th>결제 시간</th>
             <td>
-                {{ inapp_sale.purchase_time }}
+                {{ coin_sale.purchase_time }}
             </td>
         </tr>
         <tr>
             <th>Payload</th>
             <td>
-                {{ inapp_sale.payload }}
+                {{ coin_sale.payload }}
             </td>
         </tr>
         <tr>
             <th>상태</th>
             <td>
-                {% if inapp_sale.status == 'OK' %}
+                {% if coin_sale.status == 'OK' %}
                     정상
-                {% elseif inapp_sale.status == 'REFUNDED' %}
+                {% elseif coin_sale.status == 'REFUNDED' %}
                     <span style="color: #0000FF">환불됨</span>
                 {% else %}
                     <span style="color: #FF0000">오류</span>
@@ -59,9 +59,9 @@
         </thead>
         <tbody>
         <tr>
-            <td><textarea rows='15' style='width: 260px' disabled>{{ inapp_sale.purchase_token }}</textarea></td>
-            <td><textarea rows='15' style='width: 260px' disabled>{{ inapp_sale.purchase_data }}</textarea></td>
-            <td><textarea rows='15' style='width: 260px' disabled>{{ inapp_sale.signature }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.purchase_token }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.purchase_data }}</textarea></td>
+            <td><textarea rows='15' style='width: 260px' disabled>{{ coin_sale.signature }}</textarea></td>
         </tr>
         </tbody>
     </table>
@@ -77,7 +77,7 @@
     <script>
         $(function() {
             // 정상일 경우에만, 환불 버튼 활성화
-            {% if inapp_sale.status != 'OK' %}
+            {% if coin_sale.status != 'OK' %}
                 $('.btn-danger').attr('disabled', 'disabled');
             {% endif %}
 
@@ -90,11 +90,11 @@
             // 환불
             $('.btn-danger').click(function() {
                 if (confirm('환불한 다음 꼭! Google Wallet에서 환불 처리를 하셔야합니다. 정말로 환불하시겠습니까?')) {
-                    $.post('/admin/inapp_sales/{{ inapp_sale.id }}/refund', {'payment': 'GOOGLE'}, function(r) {
+                    $.post('/admin/inapp_sales/{{ coin_sale.id }}/refund', {'payment': 'GOOGLE'}, function(r) {
                         if (r.error) {
                             alert(r.error);
                         } else {
-                            location.href = '/admin/inapp_sales/{{ inapp_sale.id }}';
+                            location.href = '/admin/inapp_sales/{{ coin_sale.id }}';
                         }
                     })
                 }

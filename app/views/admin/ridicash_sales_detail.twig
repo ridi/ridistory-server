@@ -9,36 +9,36 @@
 
         <tr>
             <th>결제 번호</th>
-            <td>{{ ridicash_sale.id }}</td>
+            <td>{{ coin_sale.id }}</td>
         </tr>
         <tr>
             <th>유저</th>
-            <td><a href='/admin/buyer/{{ ridicash_sale.u_id }}'>{{ ridicash_sale.u_id }}</a> ({{ ridicash_sale.google_id }})</td>
+            <td><a href='/admin/buyer/{{ coin_sale.u_id }}'>{{ coin_sale.u_id }}</a> ({{ coin_sale.google_id }})</td>
         </tr>
         <tr>
             <th>리디북스 ID</th>
-            <td>{{ ridicash_sale.ridibooks_id }}</td>
+            <td>{{ coin_sale.ridibooks_id }}</td>
         </tr>
         <tr>
             <th>주문번호</th>
-            <td>{{ ridicash_sale.t_id }}</td>
+            <td>{{ coin_sale.t_id }}</td>
         </tr>
         <tr>
             <th>SKU</th>
-            <td>{{ ridicash_sale.sku }}</td>
+            <td>{{ coin_sale.sku }}</td>
         </tr>
         <tr>
             <th>결제 시간</th>
             <td>
-                {{ ridicash_sale.purchase_time }}
+                {{ coin_sale.purchase_time }}
             </td>
         </tr>
         <tr>
             <th>상태</th>
             <td>
-                {% if ridicash_sale.status == 'OK' %}
+                {% if coin_sale.status == 'OK' %}
                     정상
-                {% elseif ridicash_sale.status == 'REFUNDED' %}
+                {% elseif coin_sale.status == 'REFUNDED' %}
                     <span style="color: #0000FF">환불됨</span>
                 {% else %}
                     <span style="color: #FF0000">오류</span>
@@ -58,7 +58,7 @@
     <script>
         $(function() {
             // 정상일 경우에만, 환불 버튼 활성화
-            {% if ridicash_sale.status != 'OK' %}
+            {% if coin_sale.status != 'OK' %}
             $('.btn-danger').attr('disabled', 'disabled');
             {% endif %}
 
@@ -71,11 +71,11 @@
             // 환불
             $('.btn-danger').click(function() {
                 if (confirm('환불한 다음 꼭! 리디북스에서 환불 처리를 하셔야합니다. 정말로 환불하시겠습니까?')) {
-                    $.post('/admin/ridicash_sales/{{ ridicash_sale.id }}/refund', {'payment': 'RIDICASH'}, function(r) {
+                    $.post('/admin/ridicash_sales/{{ coin_sale.id }}/refund', {'payment': 'RIDICASH'}, function(r) {
                         if (r.error) {
                             alert(r.error);
                         } else {
-                            location.href = '/admin/ridicash_sales/{{ ridicash_sale.id }}';
+                            location.href = '/admin/ridicash_sales/{{ coin_sale.id }}';
                         }
                     })
                 }
