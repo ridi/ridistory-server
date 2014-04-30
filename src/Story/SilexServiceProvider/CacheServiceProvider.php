@@ -12,7 +12,7 @@ class CacheServiceProvider implements ServiceProviderInterface
     {
         $app['cache'] = $app->share(
             function ($app) {
-                return new ApcCacheWrapper();
+                return new ApcCacheWrapper($app['cache.namespace']);
             }
         );
     }
@@ -26,10 +26,10 @@ class ApcCacheWrapper
 {
     private $cache;
 
-    public function __construct()
+    public function __construct($namespace)
     {
         $this->cache = new ApcCache();
-        $this->cache->setNamespace('story_v4');
+        $this->cache->setNamespace($namespace);
     }
 
     public function fetch($key, $fetcher, $ttl = 0)

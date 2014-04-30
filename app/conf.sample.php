@@ -14,6 +14,8 @@ $app['db.options'] = array(
 	//)
 );
 
+$app['cache.namespace'] = 'story_v5';
+
 $app['security.firewalls'] = array(
 	'admin' => array(
 		'pattern' => '^/admin$',
