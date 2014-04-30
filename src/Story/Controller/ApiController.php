@@ -5,10 +5,10 @@ use Exception;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Entity\RecommendedBookFactory;
 use Story\Model\Buyer;
 use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
-use Story\Model\RecommendedBook;
 use Story\Util\AES128;
 use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
@@ -378,7 +378,7 @@ class ApiController implements ControllerProviderInterface
         }
 
         $book['parts'] = $parts;
-        $book['has_recommended_books'] = (RecommendedBook::hasRecommendedBooks($b_id) > 0) ? true : false;
+        $book['has_recommended_books'] = (RecommendedBookFactory::hasRecommendedBooks($b_id) > 0) ? true : false;
 
         $device_id = $req->get('device_id');
         $book['interest'] = ($device_id === null) ? false : UserInterest::hasInterestInBook($device_id, $b_id);

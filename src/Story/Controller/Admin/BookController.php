@@ -4,6 +4,7 @@ namespace Story\Controller\Admin;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Story\Entity\RecommendedBookFactory;
 use Story\Model\Book;
 use Story\Model\CpAccount;
 use Story\Model\RecommendedBook;
@@ -85,7 +86,7 @@ class BookController implements ControllerProviderInterface
     {
         $book = Book::get($id);
         $cp_accounts = CpAccount::getCpList();
-        $recommended_books = RecommendedBook::getRecommendedBookListByBid($id, true);
+        $recommended_books = RecommendedBookFactory::getRecommendedBookListByBid($id, true);
 
         $today = date('Y-m-d H:i:s');
 
@@ -159,7 +160,7 @@ class BookController implements ControllerProviderInterface
         }
         Book::delete($id);
         Book::deleteIntro($id);
-        RecommendedBook::deleteByBid($id);
+        RecommendedBookFactory::deleteByBid($id);
         $app['session']->getFlashBag()->add('alert', array('info' => '책이 삭제되었습니다.'));
 
         // 캐시 삭제
