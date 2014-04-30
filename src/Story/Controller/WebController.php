@@ -3,7 +3,7 @@ namespace Story\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
-use Story\Model\RecommendedBook;
+use Story\Entity\RecommendedBookFactory;
 use Symfony\Component\HttpFoundation\Request;
 
 use Story\Model\Book;
@@ -166,7 +166,7 @@ class WebController implements ControllerProviderInterface
         $recommended_books = $app['cache']->fetch(
             'recommended_book_list_' . $b_id,
             function () use ($b_id) {
-                return RecommendedBook::getRecommendedBookListByBid($b_id, false);
+                return RecommendedBookFactory::getRecommendedBookListByBid($b_id, false);
             },
             60 * 10
         );
