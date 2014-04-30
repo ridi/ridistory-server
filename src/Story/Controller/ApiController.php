@@ -447,6 +447,7 @@ class ApiController implements ControllerProviderInterface
                         if ($r) {
                             $message = '유료(성공)';
                             $user_coin_balance -= $part['price'];
+                            $r = true;
                         } else {
                             throw new Exception('파트 구매 도중에 오류가 발생하였습니다.');
                         }
@@ -466,7 +467,7 @@ class ApiController implements ControllerProviderInterface
                 $app['db']->rollback();
                 $r = false;
             }
-            return $app->json(array('success' => ($r > 0), 'message' => $message, 'coin_balance' => $user_coin_balance));
+            return $app->json(array('success' => ($r === true), 'message' => $message, 'coin_balance' => $user_coin_balance));
         } else {    // 비공개, 잘못된 접근
             return $app->json(array('success' => false, 'message' => '잘못된 요청입니다. 이전 버튼을 눌러 책 목록 화면으로 이동한 뒤, 다시 시도해주세요.'));
         }
