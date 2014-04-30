@@ -18,6 +18,7 @@ class BuyerController implements ControllerProviderInterface
         $admin->get('list', array($this, 'buyerList'));
 
         $admin->get('list/verify', array($this, 'verifyBuyerList'));
+        $admin->post('list/verify', array($this, 'verifyBuyerList'));
 
         $admin->get('list/coin', array($this, 'buyerListCoin'));
         $admin->post('list/coin/add', array($this, 'addBuyerListCoin'));
@@ -113,12 +114,12 @@ class BuyerController implements ControllerProviderInterface
         $invalid_ids = null;
         if (!empty($accounts) && $user_type) {
             if ($user_type == 'google_account') {
-                $invalid_ids = Buyer::isValidGoogleAccounts($accounts);
+                $invalid_ids = Buyer::verifyGoogleAccounts($accounts);
             } else if ($user_type == 'uid') {
-                $invalid_ids = Buyer::isValidUids($accounts);
+                $invalid_ids = Buyer::verifyUids($accounts);
             }
 
-            if (count($invalid_ids) == 0) {
+            if (empty($invalid_ids)) {
                 $app['session']->getFlashBag()->add('alert', array('success' => '입력하신 계정이 모두 정상입니다.'));
             } else {
                 $app['session']->getFlashBag()->add('alert', array('error' => '존재하지 않는 계정이 ' . count($invalid_ids) . '건 존재합니다.'));
@@ -173,64 +174,58 @@ class BuyerController implements ControllerProviderInterface
          */
         unset($u_id);
 
-        if ($user_type && $coin_add_reason && ($coin_add_amount > 0)) {
-            /*
-             * 구글 계정: 구글 계정 -> 유저 ID + Valid 체크
-             * 유저 ID : Valid 체크
-             */
-            if ($user_type == 'google_account') {
-                $google_ids = $u_ids;
-                $u_ids = Buyer::googleAccountsToUserIds($google_ids);
+        // 지급 인원 수 검사
+        if (count($u_ids) > 1000 || empty($u_ids)) {
+            $app['session']->getFlashBag()->add('alert', array('error' => '코인은 한 번에 1명 ~ 1,000명까지 지급 가능합니다. (지급 인원 수를 확인해주세요)'));
+            return $app->redirect('/admin/buyer/list/coin');
+        }
 
-                if (count($google_ids) != count($u_ids)) {
-                    $invalid_google_ids = array_diff($google_ids, array_keys($u_ids));
-                    $message = '';
-                    foreach ($invalid_google_ids as $google_id) {
-                        $message .= $google_id . ' / ';
-                    }
-                    $message = substr($message, 0, strlen($message) - 3);
-
-                    $app['session']->getFlashBag()->add('alert', array('error' => '구글 계정 정보가 정확하지 않습니다. (' . $message . ')'));
-                    return $app->redirect('/admin/buyer/list/coin');
-                }
-            } else if ($user_type == 'uid') {
-                $invalid_u_ids = Buyer::isValidUids($u_ids);
-                if (count($invalid_u_ids) > 0) {
-                    $message = '';
-                    foreach ($invalid_u_ids as $u_id) {
-                        $message .= $u_id . ' / ';
-                    }
-                    $message = substr($message, 0, strlen($message) - 3);
-                    $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (' . $message . ')'));
-                    return $app->redirect('/admin/buyer/list/coin');
-                }
-            }
-
-            /*
-             * 코인 추가.
-             * 모든 코인을 성공적으로 추가하지 못하면, Rollback
-             */
-            $app['db']->beginTransaction();
-            try {
-                foreach ($u_ids as $u_id) {
-                    $ch_id = Buyer::addCoin($u_id, $coin_add_amount, Buyer::COIN_SOURCE_IN_EVENT);
-                    if (!$ch_id) {
-                        throw new Exception('코인을 추가하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
-                    }
-
-                    $r = Event::add(array('u_id' => $u_id, 'ch_id' => $ch_id, 'comment' => $coin_add_reason));
-                    if (!$r) {
-                        throw new Exception('코인 추가 이벤트를 등록하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
-                    }
-                }
-                $app['db']->commit();
-                $app['session']->getFlashBag()->add('alert', array('success' => $coin_add_amount . '코인씩을 추가하였습니다. (총 ' . count($u_ids) . '명 / ' . ($coin_add_amount * count($u_ids)) . '코인)'));
-            } catch (Exception $e) {
-                $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
-                $app['db']->rollback();
-            }
-        } else {
+        if (!$coin_add_reason && ($coin_add_amount <= 0)) {
             $app['session']->getFlashBag()->add('alert', array('error' => '정보를 모두 정확히 입력해주세요.'));
+            return $app->redirect('/admin/buyer/list/coin');
+        }
+
+        if ($user_type == 'google_account') {
+            $invalid_u_ids = Buyer::verifyGoogleAccounts($u_ids);
+        } else if ($user_type == 'uid') {
+            $invalid_u_ids = Buyer::verifyUids($u_ids);
+        }
+
+        if (!empty($invalid_u_ids)) {
+            $message = '';
+            foreach ($invalid_u_ids as $u_id) {
+                $message .= $u_id . ' / ';
+            }
+            $message = substr($message, 0, strlen($message) - 3);
+
+            $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (' . $message . ')'));
+            return $app->redirect('/admin/buyer/list/coin');
+        } else if ($user_type == 'google_account') {
+            $u_ids = Buyer::googleAccountsToUserIds($u_ids);
+        }
+
+        /*
+         * 코인 추가.
+         * 모든 코인을 성공적으로 추가하지 못하면, Rollback
+         */
+        $app['db']->beginTransaction();
+        try {
+            foreach ($u_ids as $u_id) {
+                $ch_id = Buyer::addCoin($u_id, $coin_add_amount, Buyer::COIN_SOURCE_IN_EVENT);
+                if (!$ch_id) {
+                    throw new Exception('코인을 추가하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
+                }
+
+                $r = Event::add(array('u_id' => $u_id, 'ch_id' => $ch_id, 'comment' => $coin_add_reason));
+                if (!$r) {
+                    throw new Exception('코인 추가 이벤트를 등록하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
+                }
+            }
+            $app['db']->commit();
+            $app['session']->getFlashBag()->add('alert', array('success' => $coin_add_amount . '코인씩을 추가하였습니다. (총 ' . count($u_ids) . '명 / ' . ($coin_add_amount * count($u_ids)) . '코인)'));
+        } catch (Exception $e) {
+            $app['db']->rollback();
+            $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
         }
 
         return $app->redirect('/admin/buyer/list/coin');
