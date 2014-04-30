@@ -69,7 +69,7 @@ EOT;
         $last_updates = self::getLastUpdated($b_ids);
 
 	    $like_sum = $app['cache']->fetch(
-		    'like_sum',
+		    'like_sum_v2',
 		    function () use ($b_ids) {
 			    return Book::getLikeSum($b_ids);
 		    },
@@ -125,7 +125,7 @@ EOT;
     public function getLikeSum($b_ids)
     {
         global $app;
-	    $sql = "SELECT b_id, count(*) like_sum FROM part, user_part_like WHERE p_id = part.id GROUP BY b_id HAVING b_id IN (?)";
+        $sql = "SELECT b_id, sum(num_likes) like_sum FROM part WHERE b_id IN (?) GROUP BY b_id";
         $ar = $app['db']->fetchAll($sql, array($b_ids), array(Connection::PARAM_INT_ARRAY));
 
         $like_sum = array();
@@ -157,7 +157,7 @@ EOT;
         $sql = <<<EOT
 select ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum, b.* from book b
  left join (select b_id, count(*) open_part_count from part group by b_id) pc on b.id = pc.b_id
- left join (select b_id, count(*) like_sum from user_part_like, part where p_id = part.id group by b_id) ls on b.id = ls.b_id
+ left join (select b_id, sum(num_likes) like_sum from part group by b_id) ls on b.id = ls.b_id
 where (b.is_completed = 1 or b.end_date < ?) and end_action_flag != 'ALL_CLOSED'
 EOT;
         $today = date('Y-m-d H:00:00');
