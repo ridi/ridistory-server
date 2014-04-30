@@ -1,0 +1,75 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/buyer/list">회원 목록</a></li>
+        <li><a href="/admin/buyer/bloc/verify">회원 검증</a></li>
+        <li class="active"><a href="/admin/buyer/bloc/coin">코인 일괄 지급/회수</a></li>
+    </ul>
+
+    <form id='batch_form' method='post'>
+        <table class='table'>
+            <tr>
+                <td colspan="2">* 코인은 '<b>이벤트</b>' 항목으로 일괄 지급되며, '<b>회수</b>' 항목으로 일괄 회수됩니다.</td>
+            </tr>
+            <tr>
+                <th>입력 구분</th>
+                <td>
+                    <select name='user_type'>
+                        <option value='google_account' selected>구글 계정</option>
+                        <option value='uid'>유저 ID</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>회원 목록</th>
+                <td>
+                    <textarea rows='8' class='input-xlarge' name='user_list'></textarea>
+                    * 코인을 지급할 회원 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)
+                </td>
+            </tr>
+            <tr>
+                <th>사유</th>
+                <td>
+                    <input type='text' class='input-xxlarge' name='comment' placeholder='코인 지급/회수 사유를 적어주세요' />
+                </td>
+            </tr>
+            <tr>
+                <th>코인 갯수</th>
+                <td>
+                    <input type='text' class='input-xlarge' name='coin_amount' placeholder='지급/회수할 코인 갯수를 입력해주세요' />
+                </td>
+            </tr>
+        </table>
+
+        <div class='form-actions'>
+            <button class='btn btn-cancel'>입력 초기화</button>
+            <button class='btn btn-success pull-right'>코인 지급</button>
+            <button class='btn btn-danger pull-right' style='margin-right: 20px;'>코인 회수</button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('.btn-cancel').click(function() {
+                location.reload(true);
+                return false;
+            });
+
+            $('.btn-success').click(function() {
+                var form = document.getElementById('batch_form');
+                form.action = '/admin/buyer/bloc/coin/add';
+                form.submit();
+            });
+
+            $('.btn-danger').click(function() {
+                var form = document.getElementById('batch_form');
+                form.action = '/admin/buyer/bloc/coin/reduce';
+                form.submit();
+            });
+        });
+    </script>
+{% endblock %}

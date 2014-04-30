@@ -180,7 +180,7 @@ class CoinBilling
         $app['db']->beginTransaction();
         try {
             // 코인 회수(감소)
-            $r = Buyer::useCoin($user['id'], $refund_coin_amount, Buyer::COIN_SOURCE_OUT_COIN_REFUND, null);
+            $r = Buyer::useCoin($user['id'], $refund_coin_amount, Buyer::COIN_SOURCE_OUT_COIN_REFUND);
             if (!$r) {
                 throw new Exception('환불 도중 오류가 발생했습니다. (코인 감소 DB 오류)');
             }
