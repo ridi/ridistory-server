@@ -33,7 +33,7 @@ class RecommendedBook
     public static function hasRecommendedBooks($b_id)
     {
         $sql = <<<EOT
-select ifnull(count(*), 0) from recommended_book where b_id = ? and store_id != '' and title != ''
+select count(*) from recommended_book where b_id = ? and store_id != '' and title != ''
 EOT;
         global $app;
         return $app['db']->fetchColumn($sql, array($b_id));
