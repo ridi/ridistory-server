@@ -841,6 +841,10 @@ EOT;
 
         $books = null;
         $use_coins = null;
+        $book_download = null;
+        $book_charged_download = null;
+        $total_download = 0;
+        $total_charged_download = 0;
 
         if ($begin_date && $end_date && $bid_list) {
             $b_ids = explode(PHP_EOL, $bid_list);  // 조회할 책 목록
@@ -870,19 +874,75 @@ EOT;
 ) use_info
 where date(timestamp) >= ? and date(timestamp) <= ?
 EOT;
+                $book_download_sql = <<<EOT
+select b_id, count(distinct ph.u_id) count from purchase_history ph
+ join (
+  select b.id b_id, p.id p_id from book b
+   join part p on b.id = p.b_id
+  where b.id in (?)
+ ) b_info on ph.p_id = b_info.p_id
+where date(ph.timestamp) >= ? and date(ph.timestamp) <= ?
+EOT;
+                $total_download_sql = <<<EOT
+select count(distinct u_id) from purchase_history
+where p_id in (
+ select id from part where b_id in (?)
+) and date(timestamp) >= ? and date(timestamp) <= ?
+EOT;
+
                 $test_users = TestUser::getConcatUidList(true);
                 if ($test_users) {
                     $sql .= ' and u_id not in (' . $test_users . ')';
+                    $book_download_sql .= ' and ph.u_id not in (' . $test_users . ')';
+                    $total_download_sql .= ' and u_id not in (' . $test_users . ')';
                 }
+                $book_charged_download_sql = $book_download_sql . ' and is_paid = 1';
+                $total_charged_download_sql = $total_download_sql . ' and is_paid = 1';
+
                 $sql .= ' group by date(timestamp)';
+                $book_download_sql .= ' group by b_id';
+                $book_charged_download_sql .= ' group by b_id';
+
+                $bind = array($b_ids, $begin_date, $end_date);
 
                 $stmt = $app['db']->executeQuery(
                     $sql,
-                    array($b_ids, $begin_date, $end_date),
+                    $bind,
                     array(Connection::PARAM_INT_ARRAY, \PDO::PARAM_STR, \PDO::PARAM_STR)
                 );
-
                 $use_coins = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+                // Book Download
+                $stmt = $app['db']->executeQuery(
+                    $book_download_sql,
+                    $bind,
+                    array(Connection::PARAM_INT_ARRAY, \PDO::PARAM_STR, \PDO::PARAM_STR)
+                );
+                $book_download = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+                $stmt = $app['db']->executeQuery(
+                    $book_charged_download_sql,
+                    $bind,
+                    array(Connection::PARAM_INT_ARRAY, \PDO::PARAM_STR, \PDO::PARAM_STR)
+                );
+                $book_charged_download = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+                // Total Download
+                $stmt = $app['db']->executeQuery(
+                    $total_download_sql,
+                    $bind,
+                    array(Connection::PARAM_INT_ARRAY, \PDO::PARAM_STR, \PDO::PARAM_STR)
+                );
+                $total_download = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                $total_download = $total_download[0];
+
+                $stmt = $app['db']->executeQuery(
+                    $total_charged_download_sql,
+                    $bind,
+                    array(Connection::PARAM_INT_ARRAY, \PDO::PARAM_STR, \PDO::PARAM_STR)
+                );
+                $total_charged_download= $stmt->fetchAll(\PDO::FETCH_COLUMN);
+                $total_charged_download = $total_charged_download[0];
             }
         } else {
             if (!$begin_date) {
@@ -903,7 +963,11 @@ EOT;
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
                 'books' => $books,
-                'use_coins' => $use_coins
+                'use_coins' => $use_coins,
+                'book_download' => $book_download,
+                'book_charged_download' => $book_charged_download,
+                'total_download' => $total_download,
+                'total_charged_download' => $total_charged_download
             )
         );
     }

@@ -22,6 +22,8 @@
 
     <div class="well form-inline">
         <h4>코인사용실적 상세</h4>
+        <div>총 다운로드 수: <b>{{ total_download }}</b></div>
+        <div style='margin-bottom: 30px;'>총 유료다운 수: <b>{{ total_charged_download }}</b></div>
         <table class='table'>
             <thead>
             <tr>
@@ -36,10 +38,22 @@
                 <tr>
                     <td>{{ uc.use_date }}</td>
                     {% for i in 0..(books|length - 1) %}
-                    <td>{{ attribute(uc, 'b_' ~ i) }}</td>
-                        {% endfor %}
+                        <td>{{ attribute(uc, 'b_' ~ i) }}</td>
+                    {% endfor %}
                 </tr>
             {% endfor %}
+            <tr>
+                <th>다운로드유저수</th>
+                {% for download in book_download %}
+                    <td><b>{{ download.count }}</b></td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th>유료다운유저수</th>
+                {% for download in book_charged_download %}
+                    <td><b>{{ download.count }}</b></td>
+                {% endfor %}
+            </tr>
             </tbody>
         </table>
     </div>
