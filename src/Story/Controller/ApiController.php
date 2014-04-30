@@ -448,7 +448,7 @@ class ApiController implements ControllerProviderInterface
                             $message = '유료(성공)';
                             $user_coin_balance -= $part['price'];
                         } else {
-                            throw new Exception('코인 결제 도중에 오류가 발생하였습니다.');
+                            throw new Exception('파트 구매 도중에 오류가 발생하였습니다.');
                         }
                     } else {
                         throw new Exception(($ph_id > 0) ? '코인이 부족합니다.' : '구매를 진행하는 도중에 오류가 발생하였습니다.');

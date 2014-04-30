@@ -462,6 +462,9 @@ EOT;
         $inapp_buy_coins = null;
         $ridicash_buy_coins = null;
 
+        $inapp_accumulated_user = 0;
+        $ridicash_accumulated_user = 0;
+
         if ($begin_date && $end_date) {
             $inapp_buy_sql = <<<EOT
 select date(ih.purchase_time) purchase_date, count(distinct ih.u_id) user_count, sum(ip.coin_amount) coin_amount, sum(ip.bonus_coin_amount) bonus_coin_amount, 0 refunded_total_coin_amount, sum(ip.price) total_buy_sales, 0 total_refunded_sales from inapp_history ih
@@ -485,12 +488,23 @@ select date(rh.refunded_time) refunded_date, sum(ip.coin_amount+ip.bonus_coin_am
 where rh.status = 'REFUNDED' and date(rh.refunded_time) >= ? and date(rh.refunded_time) <= ?
 EOT;
 
+            $inapp_accumulated_user_sql = <<<EOT
+select count(distinct u_id) from inapp_history
+where status != 'PENDING' and date(purchase_time) >= ? and date(purchase_time) <= ?
+EOT;
+            $ridicash_accumulated_user_sql = <<<EOT
+select count(distinct u_id) from ridicash_history
+where status != 'PENDING' and date(purchase_time) >= ? and date(purchase_time) <= ?
+EOT;
+
             $test_users = TestUser::getConcatUidList(true);
             if ($test_users) {
                 $inapp_buy_sql .= ' and ih.u_id not in (' . $test_users . ')';
                 $ridicash_buy_sql .= ' and rh.u_id not in (' . $test_users . ')';
                 $inapp_refunded_sql .= ' and ih.u_id not in (' . $test_users . ')';
                 $ridicash_refunded_sql .= ' and rh.u_id not in (' . $test_users . ')';
+                $inapp_accumulated_user_sql .= ' and u_id not in (' . $test_users . ')';
+                $ridicash_accumulated_user_sql .= ' and u_id not in (' . $test_users . ')';
             }
             $inapp_buy_sql .= ' group by date(ih.purchase_time)';
             $ridicash_buy_sql .= ' group by date(rh.purchase_time)';
@@ -504,6 +518,9 @@ EOT;
 
             $inapp_refunded_coins = $app['db']->fetchAll($inapp_refunded_sql, $bind);
             $ridicash_refunded_coins = $app['db']->fetchAll($ridicash_refunded_sql, $bind);
+
+            $inapp_accumulated_user = $app['db']->fetchColumn($inapp_accumulated_user_sql, $bind);
+            $ridicash_accumulated_user = $app['db']->fetchColumn($ridicash_accumulated_user_sql, $bind);
 
             foreach ($inapp_refunded_coins as $key => $irc) {
                 foreach ($inapp_buy_coins as &$ibc) {
@@ -599,7 +616,9 @@ EOT;
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
                 'inapp_buy_coins' => $inapp_buy_coins,
-                'ridicash_buy_coins' => $ridicash_buy_coins
+                'ridicash_buy_coins' => $ridicash_buy_coins,
+                'inapp_accumulated_user' => $inapp_accumulated_user,
+                'ridicash_accumulated_user' => $ridicash_accumulated_user
             )
         );
     }
@@ -772,19 +791,25 @@ EOT;
         $end_date = $req->get('end_date');
 
         $use_coins = null;
+        $accumulated_user = 0;
 
         if ($begin_date && $end_date) {
             $sql = <<<EOT
 select date(timestamp) use_date, count(distinct u_id) user_count, abs(sum(amount)) used_coin_amount from coin_history
 where source = 'OUT_BUY_PART' and date(timestamp) >= ? and date(timestamp) <= ?
 EOT;
+            $bind = array($begin_date, $end_date);
+
             $test_users = TestUser::getConcatUidList(true);
             if ($test_users) {
                 $sql .= ' and u_id not in (' . $test_users . ')';
             }
-            $sql .= ' group by date(timestamp)';
 
-            $use_coins = $app['db']->fetchAll($sql, array($begin_date, $end_date));
+            $accumulated_user = $app['db']->fetchAll($sql, $bind);
+            $accumulated_user = $accumulated_user[0]['user_count'];
+
+            $sql .= ' group by date(timestamp)';
+            $use_coins = $app['db']->fetchAll($sql, $bind);
         } else {
             if (!$begin_date) {
                 $begin_date = date('Y-m-01');
@@ -802,7 +827,8 @@ EOT;
             array(
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
-                'use_coins' => $use_coins
+                'use_coins' => $use_coins,
+                'accumulated_user' => $accumulated_user
             )
         );
     }
