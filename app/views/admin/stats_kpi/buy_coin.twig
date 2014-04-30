@@ -87,4 +87,27 @@
             </tbody>
         </table>
     </div>
+
+    <div class="well form-inline">
+        <h4>코인 구매(지급) 지표 (이벤트)</h4>
+        <div style='margin-bottom: 30px;'>누적 지급자 수: <b>{{ event_accumulated_user }}</b></div>
+        <table class='table'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>지급유저수</th>
+                <th>지급코인수</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ec in event_coins %}
+                <tr>
+                    <td>{{ ec.event_date }}</td>
+                    <td>{{ ec.user_count }}</td>
+                    <td>{{ ec.coin_amount }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
