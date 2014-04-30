@@ -203,15 +203,10 @@ class BuyerController implements ControllerProviderInterface
         $app['db']->beginTransaction();
         try {
             foreach ($u_ids as $u_id) {
-                $ch_id = Buyer::useCoin($u_id, -$coin_amount, Buyer::COIN_SOURCE_OUT_WITHDRAW);
+                $ch_id = Buyer::reduceCoin($u_id, -$coin_amount, Buyer::COIN_SOURCE_OUT_WITHDRAW);
 
                 if (!$ch_id) {
                     throw new Exception('코인을 회수하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
-                }
-
-                $r = Event::add(array('u_id' => $u_id, 'ch_id' => $ch_id, 'comment' => trim($comment)));
-                if (!$r) {
-                    throw new Exception('코인 회수 이벤트를 등록하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
                 }
             }
             $app['db']->commit();
@@ -319,7 +314,7 @@ class BuyerController implements ControllerProviderInterface
         if ($source == '' || $coin_amount == 0) {
             $app['session']->getFlashBag()->add('alert', array('error' => '코인을 감소시키지지 못했습니다. (코인 감소 이유가 없거나, 감소시키려는 코인이 0개 입니다.)'));
         }  else {
-            $r = Buyer::useCoin($id, $coin_amount, $source);
+            $r = Buyer::reduceCoin($id, $coin_amount, $source);
             if ($r) {
                 $app['session']->getFlashBag()->add('alert', array('success' => abs($coin_amount).'코인을 감소하였습니다.'));
             } else {
@@ -350,7 +345,7 @@ class BuyerController implements ControllerProviderInterface
             if ($delete_coin_history == 1) {
                 $app['session']->getFlashBag()->add('alert', array('info' => '구매내역이 삭제되었습니다. (코인 반환)'));
             } else {
-                Buyer::useCoin($id, $part['price'], Buyer::COIN_SOURCE_OUT_WITHDRAW);
+                Buyer::reduceCoin($id, $part['price'], Buyer::COIN_SOURCE_OUT_WITHDRAW);
                 $app['session']->getFlashBag()->add('alert', array('info' => '구매내역이 삭제되었습니다. (코인 회수)'));
             }
 
