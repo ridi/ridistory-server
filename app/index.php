@@ -22,12 +22,14 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Story\SilexServiceProvider\CacheServiceProvider());
 
 if ($app['debug']) {
+    /*
     $app->register(new Silex\Provider\WebProfilerServiceProvider(),
         array(
             'profiler.cache_dir' => __DIR__ . '/../cache/profiler',
             'profiler.mount_prefix' => '/_profiler', // this is the default
         )
     );
+    */
 } else {
 	$app->register(new \Moriony\Silex\Provider\SentryServiceProvider());
 	$app->error(
