@@ -479,7 +479,7 @@ select date(rh.purchase_time) purchase_date, count(distinct rh.u_id) user_count,
 where rh.status != 'PENDING' and date(rh.purchase_time) >= ? and date(rh.purchase_time) <= ?
 EOT;
             $event_sql = <<<EOT
-select date(eh.timestamp) event_date, count(distinct eh.u_id) user_count, sum(amount) coin_amount from event_history eh
+select date(eh.timestamp) event_date, count(distinct eh.u_id) user_count, sum(ch.amount) coin_amount, 0 withdraw_coin_amount from event_history eh
  left join coin_history ch on eh.ch_id = ch.id
 where date(eh.timestamp) >= ? and date(eh.timestamp) <= ?
 EOT;
@@ -493,6 +493,10 @@ EOT;
 select date(rh.refunded_time) refunded_date, sum(ip.coin_amount+ip.bonus_coin_amount) refunded_total_coin_amount, sum(ip.price) total_refunded_sales from ridicash_history rh
  left join (select * from inapp_products where type = 'RIDICASH') ip on rh.sku = ip.sku
 where rh.status = 'REFUNDED' and date(rh.refunded_time) >= ? and date(rh.refunded_time) <= ?
+EOT;
+            $event_withdraw_sql = <<<EOT
+select date(timestamp) withdraw_date, abs(sum(amount)) withdraw_coin_amount from coin_history
+where source = 'OUT_WITHDRAW' and date(timestamp) >= ? and date(timestamp) <= ?
 EOT;
 
             $inapp_accumulated_user_sql = <<<EOT
@@ -515,6 +519,7 @@ EOT;
                 $event_sql .= ' and eh.u_id not in (' . $test_users . ')';
                 $inapp_refunded_sql .= ' and ih.u_id not in (' . $test_users . ')';
                 $ridicash_refunded_sql .= ' and rh.u_id not in (' . $test_users . ')';
+                $event_withdraw_sql .= ' and u_id not in (' . $test_users . ')';
                 $inapp_accumulated_user_sql .= ' and u_id not in (' . $test_users . ')';
                 $ridicash_accumulated_user_sql .= ' and u_id not in (' . $test_users . ')';
                 $event_accumulated_user_sql .= ' and u_id not in (' . $test_users . ')';
@@ -524,6 +529,7 @@ EOT;
             $event_sql .= ' group by date(eh.timestamp)';
             $inapp_refunded_sql .= ' group by date(ih.refunded_time)';
             $ridicash_refunded_sql .= ' group by date(rh.refunded_time)';
+            $event_withdraw_sql .= ' group by date(timestamp)';
 
             $bind = array($begin_date, $end_date);
 
@@ -533,6 +539,7 @@ EOT;
 
             $inapp_refunded_coins = $app['db']->fetchAll($inapp_refunded_sql, $bind);
             $ridicash_refunded_coins = $app['db']->fetchAll($ridicash_refunded_sql, $bind);
+            $event_withdraw_coins = $app['db']->fetchAll($event_withdraw_sql, $bind);
 
             $inapp_accumulated_user = $app['db']->fetchColumn($inapp_accumulated_user_sql, $bind);
             $ridicash_accumulated_user = $app['db']->fetchColumn($ridicash_accumulated_user_sql, $bind);
@@ -554,6 +561,15 @@ EOT;
                         $rbc['refunded_total_coin_amount'] = $rrc['refunded_total_coin_amount'];
                         $rbc['total_refunded_sales'] = $rrc['total_refunded_sales'];
                         unset($ridicash_refunded_coins[$key]);
+                        break;
+                    }
+                }
+            }
+            foreach($event_withdraw_coins as $key => $ewc) {
+                foreach($event_coins as &$ec) {
+                    if ($ewc['withdraw_date'] == $ec['event_date']) {
+                        $ec['withdraw_coin_amount'] = $ewc['withdraw_coin_amount'];
+                        unset($event_withdraw_coins[$key]);
                         break;
                     }
                 }
@@ -591,6 +607,18 @@ EOT;
                     unset($ridicash_refunded_coins[$key]);
                 }
             }
+            if (count($event_withdraw_coins) > 0) {
+                foreach($event_withdraw_coins as $key => $ewc) {
+                    array_push($event_coins,
+                        array(
+                            'event_date' => $ewc['withdraw_date'],
+                            'user_count' => 0,
+                            'coin_amount' => 0,
+                            'withdraw_coin_amount' => $ewc['withdraw_coin_amount']
+                        )
+                    );
+                }
+            }
 
             usort($inapp_buy_coins, function ($a, $b) {
                     $a_time = strtotime($a['purchase_date']);
@@ -604,6 +632,17 @@ EOT;
                 }
             );
             usort($ridicash_buy_coins, function ($a, $b) {
+                    $a_time = strtotime($a['purchase_date']);
+                    $b_time = strtotime($b['purchase_date']);
+
+                    if ($a_time == $b_time) {
+                        return 0;
+                    }
+
+                    return ($a_time < $b_time ? -1 : 1);
+                }
+            );
+            usort($event_coins, function ($a, $b) {
                     $a_time = strtotime($a['purchase_date']);
                     $b_time = strtotime($b['purchase_date']);
 
