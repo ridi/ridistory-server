@@ -66,7 +66,7 @@ EOT;
         if ($test_users) {
             $sql .= ' and ph.u_id not in (' . $test_users . ')';
         }
-        $sql .= ' group by b_id order by (count(*) * p.price) desc';
+        $sql .= ' group by b_id order by b.begin_date desc';
 
         $bind = array($today, $today, $cp_id, $begin_date, $end_date);
 

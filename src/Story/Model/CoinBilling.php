@@ -232,6 +232,7 @@ EOT;
                 switch($type) {
                     case 'uid':
                         $sql .= ' u_id = ?';
+                        $bind = array($keyword);
                         break;
                     case 'google_order_num':
                         $sql .= ' order_id like ?';
@@ -244,6 +245,7 @@ EOT;
                 switch($type) {
                     case 'uid':
                         $sql .= ' u_id = ?';
+                        $bind = array($keyword);
                         break;
                     case 'tid':
                         $sql .= ' t_id like ?';
