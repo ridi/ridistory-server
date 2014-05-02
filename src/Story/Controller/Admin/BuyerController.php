@@ -62,7 +62,7 @@ class BuyerController implements ControllerProviderInterface
                 }
 
                 if (empty($invalid_ids)) {
-                    $app['session']->getFlashBag()->add('alert', array('success' => '입력하신 계정이 모두 정상입니다.'));
+                    $app['session']->getFlashBag()->add('alert', array('success' => '입력하신 계정이 모두 정상입니다. (' . count($accounts) . '건)'));
                 } else {
                     $app['session']->getFlashBag()->add('alert', array('error' => '존재하지 않는 계정이 ' . count($invalid_ids) . '건 존재합니다.'));
                 }
