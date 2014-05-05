@@ -1,0 +1,66 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/buyer/list">회원 목록</a></li>
+        <li><a href="/admin/buyer/bloc/verify">회원 검증</a></li>
+        <li><a href="/admin/buyer/bloc/coin">코인 일괄 지급/회수</a></li>
+        <li class="active"><a href="/admin/buyer/bloc/coin/period">기간제 코인 회수</a></li>
+    </ul>
+
+    <form id='batch_form' method='post'>
+        <table class='table'>
+            <tr>
+                <td colspan="2">* 코인은 '<b>회수</b>' 항목으로 일괄 회수됩니다.</td>
+            </tr>
+            <tr>
+                <th>UID 목록</th>
+                <td>
+                    <textarea rows='8' class='input-xlarge' name='user_list'></textarea>
+                    * 코인을 회수할 회원(UID) 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)
+                </td>
+            </tr>
+            <tr>
+                <th>기준 코인 갯수</th>
+                <td>
+                    <input type='text' class='input-xlarge' name='coin_amount' placeholder='지급했던 코인 갯수를 입력해주세요' /> * 기준 코인보다 적게 사용한 경우, 잔량이 회수됩니다.
+                </td>
+            </tr>
+            <tr>
+                <th rowspan="2">사용일</th>
+                <td>
+                    <input type='text' class='input-xlarge' name='begin_date' placeholder='0000-00-00 00:00:00' /> * 예) 2014-05-06 07:48:20
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type='text' class='input-xlarge' name='end_date' placeholder='0000-00-00 00:00:00' />
+                </td>
+            </tr>
+        </table>
+
+        <div class='form-actions'>
+            <button class='btn btn-cancel'>입력 초기화</button>
+            <button class='btn btn-danger pull-right'>코인 회수</button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('.btn-cancel').click(function() {
+                location.reload(true);
+                return false;
+            });
+
+
+            $('.btn-danger').click(function() {
+                var form = document.getElementById('batch_form');
+                form.action = '/admin/buyer/bloc/coin/period/reduce';
+                form.submit();
+            });
+        });
+    </script>
+{% endblock %}
