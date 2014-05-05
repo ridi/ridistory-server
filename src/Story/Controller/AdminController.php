@@ -643,8 +643,8 @@ EOT;
                 }
             );
             usort($event_coins, function ($a, $b) {
-                    $a_time = strtotime($a['purchase_date']);
-                    $b_time = strtotime($b['purchase_date']);
+                    $a_time = strtotime($a['event_date']);
+                    $b_time = strtotime($b['event_date']);
 
                     if ($a_time == $b_time) {
                         return 0;
