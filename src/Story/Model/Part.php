@@ -54,8 +54,7 @@ class Part
         $today = date('Y-m-d H:00:00');
         if ($with_social_info) {
             $sql = <<<EOT
-select p.*, ifnull(like_count, 0) like_count, ifnull(comment_count, 0) comment_count from part p
- left join (select p_id, count(*) like_count from user_part_like group by p_id) l on p.id = l.p_id
+select p.*, num_likes like_count, ifnull(comment_count, 0) comment_count from part p
  left join (select p_id, count(*) comment_count from part_comment group by p_id) c on p.id = c.p_id
 where b_id = ? and begin_date <= ?
 EOT;
