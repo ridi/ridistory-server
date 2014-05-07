@@ -24,11 +24,8 @@ class BuyerController implements ControllerProviderInterface
         );
         $admin->post('bloc/coin/add', array($this, 'addBuyerListBlocCoin'));
         $admin->post('bloc/coin/reduce', array($this, 'reduceBuyerListBlocCoin'));
-        $admin->get('bloc/coin/period', function () use ($app) {
-                return $app['twig']->render('admin/buyer_bloc_period_coin.twig');
-            }
-        );
-        $admin->post('bloc/coin/period/reduce', array($this, 'reduceBuyerListBlocPeriodCoin'));
+        $admin->get('bloc/coin/period_reduce', array($this, 'reduceBuyerListBlocPeriodCoin'));
+        $admin->post('bloc/coin/period_reduce', array($this, 'reduceBuyerListBlocPeriodCoin'));
 
         $admin->get('list', array($this, 'buyerList'));
         $admin->get('{id}', array($this, 'buyerDetail'));
@@ -125,7 +122,7 @@ class BuyerController implements ControllerProviderInterface
         }
 
         if (!empty($invalid_u_ids)) {
-            $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (' . implode(' / ', $invalid_u_ids) . ')'));
+            $app['session']->getFlashBag()->add('alert', array('error' => '회원 계정 정보가 정확하지 않습니다. (' . implode(' / ', $invalid_u_ids) . ')'));
             return $app->redirect('/admin/buyer/bloc/coin');
         } else if ($user_type == 'google_account') {
             $u_ids = Buyer::googleAccountsToUserIds($u_ids);
@@ -195,7 +192,7 @@ class BuyerController implements ControllerProviderInterface
         }
 
         if (!empty($invalid_u_ids)) {
-            $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (' . implode(' / ', $invalid_u_ids) . ')'));
+            $app['session']->getFlashBag()->add('alert', array('error' => '회원 계정 정보가 정확하지 않습니다. (' . implode(' / ', $invalid_u_ids) . ')'));
             return $app->redirect('/admin/buyer/bloc/coin');
         } else if ($user_type == 'google_account') {
             $u_ids = Buyer::googleAccountsToUserIds($u_ids);
@@ -226,9 +223,10 @@ class BuyerController implements ControllerProviderInterface
     public function reduceBuyerListBlocPeriodCoin(Request $req, Application $app)
     {
         $user_list = $req->get('user_list', null);
-        $coin_amount = $req->get('coin_amount', 0);
+        $standard_coin_amount = $req->get('standard_coin_amount', 0);
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
+        $coin_usages = null;
 
         $u_ids = explode(PHP_EOL, $user_list);
         foreach ($u_ids as $key => &$u_id) {
@@ -242,48 +240,67 @@ class BuyerController implements ControllerProviderInterface
         unset($u_id);
 
         // 인원 수 검사
-        if (empty($u_ids)) {
-            $app['session']->getFlashBag()->add('alert', array('error' => '회원을 1명 이상 입력해주세요.'));
-            return $app->redirect('/admin/buyer/bloc/coin/period');
-        }
-
-        if (!$begin_date && !$end_date && ($coin_amount <= 0)) {
-            $app['session']->getFlashBag()->add('alert', array('error' => '정보를 모두 정확히 입력해주세요.'));
-            return $app->redirect('/admin/buyer/bloc/coin/period');
-        }
-
-        // 입력한 회원 정보 중에, 유효하지 않은 회원이 있는지를 검사
-        $invalid_u_ids = Buyer::verifyUids($u_ids);
-        if (!empty($invalid_u_ids)) {
-            $app['session']->getFlashBag()->add('alert', array('error' => '계정 정보가 정확하지 않습니다. (' . implode(' / ', $invalid_u_ids) . ')'));
-            return $app->redirect('/admin/buyer/bloc/coin/period');
-        }
-
-        $coin_balances = Buyer::getRemainCoinsAfterEventUsageByUidAndTime($u_ids, $begin_date, $end_date, $coin_amount);
-
-        /*
-         * 코인 회수.
-         * 모든 코인을 성공적으로 회수하지 못하면, Rollback
-         */
-        $app['db']->beginTransaction();
-        try {
-            $total_withdraw_coin_amount = 0;
-            foreach ($coin_balances as $coin_balance) {
-                $ch_id = Buyer::reduceCoin($coin_balance['u_id'], -$coin_balance['coin_balance'], Buyer::COIN_SOURCE_OUT_WITHDRAW);
-                if (!$ch_id) {
-                    throw new Exception('코인을 회수하는 도중 오류가 발생했습니다. (유저 ID: ' . $coin_balance['u_id'] . ')');
-                } else {
-                    $total_withdraw_coin_amount += $coin_balance['coin_balance'];
-                }
+        if (!empty($u_ids)) {
+            if (!$begin_date && !$end_date && ($standard_coin_amount <= 0)) {
+                $app['session']->getFlashBag()->add('alert', array('error' => '정보를 모두 정확히 입력해주세요.'));
+                return $app->redirect('/admin/buyer/bloc/coin/period');
             }
-            $app['db']->commit();
-            $app['session']->getFlashBag()->add('alert', array('success' => '코인을 회수하였습니다. (총 ' . count($u_ids) . '명 / ' . $total_withdraw_coin_amount . '코인)'));
-        } catch (Exception $e) {
-            $app['db']->rollback();
-            $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
+
+            // 입력한 회원 정보 중에, 유효하지 않은 회원이 있는지를 검사
+            $invalid_u_ids = Buyer::verifyUids($u_ids);
+            if (!empty($invalid_u_ids)) {
+                $app['session']->getFlashBag()->add('alert', array('error' => '회원 계정 정보가 정확하지 않습니다. (' . implode(' / ', $invalid_u_ids) . ')'));
+                return $app->redirect('/admin/buyer/bloc/coin/period');
+            }
+
+            // 회원들의 코인 사용량 (파트 구매로 사용한 코인만 계산)
+            $coin_usages = Buyer::getCoinUsageByUidAndTime($u_ids, $begin_date, $end_date);
+
+            /*
+             * 코인 회수.
+             * 모든 코인을 성공적으로 회수하지 못하면, Rollback
+             */
+            $app['db']->beginTransaction();
+            try {
+                $total_withdraw_coin_amount = 0;
+                $withdraw_user_count = 0;
+                foreach ($coin_usages as $coin_usage) {
+                    if ($coin_usage['used_coin'] < $standard_coin_amount) {
+                        // 회원의 코인 잔액 체크. (중간에 회수, 환불 등의 이유로 코인이 빠져나갔을 수도 있다.)
+                        $reduce_coin_amount = $standard_coin_amount - $coin_usage['used_coin'];
+                        $user_coin_balance = Buyer::getCoinBalance($coin_usage['u_id']);
+                        if ($user_coin_balance < $reduce_coin_amount) {
+                            throw new Exception('회원의 코인이 부족합니다. (중간에 회수/환불 등의 이유로 코인 부족) (유저 ID: ' . $coin_usage['u_id'] . ' / 회원의 현재 코인: ' . $user_coin_balance . ')');
+                        }
+
+                        // 코인 회수
+                        $ch_id = Buyer::reduceCoin($coin_usage['u_id'], -($standard_coin_amount - $coin_usage['used_coin']), Buyer::COIN_SOURCE_OUT_WITHDRAW);
+                        if (!$ch_id) {
+                            throw new Exception('코인을 회수하는 도중 오류가 발생했습니다. (유저 ID: ' . $coin_usage['u_id'] . ')');
+                        } else {
+                            $total_withdraw_coin_amount += $coin_usage['used_coin'];
+                            $withdraw_user_count++;
+                        }
+                    }
+                }
+                $app['db']->commit();
+                $app['session']->getFlashBag()->add('alert', array('success' => '코인을 회수하였습니다. (총: ' . count($u_ids) . '명 / 회수대상: ' . $withdraw_user_count . '명 / 회수코인: ' . $total_withdraw_coin_amount . '코인)'));
+            } catch (Exception $e) {
+                $app['db']->rollback();
+                $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
+            }
         }
 
-        return $app->redirect('/admin/buyer/bloc/coin/period');
+        return $app['twig']->render(
+            'admin/buyer_bloc_period_coin.twig',
+            array(
+                'user_list' => $user_list,
+                'standard_coin_amount' => $standard_coin_amount,
+                'begin_date' => $begin_date,
+                'end_date' => $end_date,
+                'coin_usages' => $coin_usages
+            )
+        );
     }
 
     /*
