@@ -13,7 +13,7 @@ class TestUser
     {
         $sql = <<<EOT
 select bu.google_id, tu.* from test_user tu
- left join (select id, google_id from buyer_user) bu on tu.u_id = bu.id
+ left join buyer_user bu on tu.u_id = bu.id
 where u_id = ?
 EOT;
         global $app;
@@ -23,8 +23,8 @@ EOT;
     public static function getWholeList()
     {
         $sql = <<<EOT
-select bu.google_id, tu.* from test_user tu
- left join (select id, google_id from buyer_user) bu on tu.u_id = bu.id
+sselect bu.google_id, tu.* from test_user tu
+ left join buyer_user bu on tu.u_id = bu.id
 EOT;
         global $app;
         return $app['db']->fetchAll($sql);
@@ -33,14 +33,20 @@ EOT;
     public static function getConcatUidList($exclude_inactive)
     {
         $sql = <<<EOT
-select group_concat(u_id) from test_user
+select u_id from test_user
 EOT;
         if ($exclude_inactive) {
             $sql .= ' where is_active = 1';
         }
 
         global $app;
-        return $app['db']->fetchColumn($sql);
+        $results = $app['db']->fetchAll($sql);
+
+        $test_u_ids = array();
+        foreach ($results as $result) {
+            array_push($test_u_ids, $result['u_id']);
+        }
+        return implode(',', $test_u_ids);
     }
 
     public static function update($u_id, $values)

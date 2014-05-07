@@ -14,7 +14,7 @@ class Book
     {
         $sql = <<<EOT
 select cp.name cp_name, b.* from book b
- left join (select id, name from cp_account) cp on b.cp_id = cp.id
+ left join cp_account cp on b.cp_id = cp.id
 where b.id = ?
 EOT;
 
@@ -42,9 +42,9 @@ EOT;
         $sql = <<<EOT
 select count(part.b_id) uploaded_part_count, ifnull(open_part_count, 0) open_part_count, cp.name cp_name, b.* from book b
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on b.id = pc.b_id
- left join (select id, name from cp_account) cp on cp.id = b.cp_id
+ left join cp_account cp on cp.id = b.cp_id
  left join part on b.id = part.b_id group by b.id, part.b_id
-order by begin_date desc
+order by b.begin_date desc
 EOT;
         $bind = array($today, $today);
         global $app;

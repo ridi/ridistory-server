@@ -152,11 +152,6 @@ class ApiController implements ControllerProviderInterface
 
         // 결제 수단
         $payment = isset($inputs['buy_method']) ? $inputs['buy_method'] : CoinProduct::TYPE_INAPP;
-        if (empty($payment)) {
-            // Default: 구글 인앱 결제
-            $payment = CoinProduct::TYPE_INAPP;
-        }
-
         if ($payment == CoinProduct::TYPE_INAPP || $payment == CoinProduct::TYPE_RIDICASH) {
             $r = CoinBilling::verify($inputs, $payment);
             if (!$r) {

@@ -94,48 +94,29 @@ class AdminController implements ControllerProviderInterface
         $limit = 50;
         $offset = $cur_page * $limit;
 
+        $sql = <<<EOT
+select pc.*, p.seq, b.title from part_comment pc
+ left join part p on p.id = pc.p_id
+ left join book b on b.id = p.b_id
+EOT;
         if ($search_keyword) {
             if ($search_type == 'book_title') {
-                $sql = <<<EOT
-select pc.*, p.seq, b.title from part_comment pc
- left join (select id, b_id, seq from part) p on p.id = pc.p_id
- left join (select id, title from book) b on b.id = p.b_id
-where b.title like ?
-order by id desc
-EOT;
+                $sql .= ' where b.title like ?';
                 $bind = array('%' . $search_keyword . '%');
             } else if ($search_type == 'nickname') {
-                $sql = <<<EOT
-select pc.*, p.seq, b.title from part_comment pc
- left join (select id, b_id, seq from part) p on p.id = pc.p_id
- left join (select id, title from book) b on b.id = p.b_id
-where pc.nickname like ?
-order by id desc
-EOT;
+                $sql .= ' where pc.nickname like ?';
                 $bind = array('%' . $search_keyword . '%');
             } else if ($search_type == 'ip_addr') {
                 $ip_addr = ip2long($search_keyword);
-                $sql = <<<EOT
-select pc.*, p.seq, b.title from part_comment pc
- left join (select id, b_id, seq from part) p on p.id = pc.p_id
- left join (select id, title from book) b on b.id = p.b_id
-where pc.ip = ?
-order by id desc
-EOT;
+                $sql .= ' where pc.ip = ?';
                 $bind = array($ip_addr);
-            } else {
-                $sql = null;
-                $bind = null;
             }
+            $sql .= ' order by pc.id desc';
 
             $comments = $app['db']->fetchAll($sql, $bind);
         } else {
-            $sql = <<<EOT
-select pc.*, p.seq, b.title from part_comment pc
- left join (select id, b_id, seq from part) p on p.id = pc.p_id
- left join (select id, title from book) b on b.id = p.b_id
-order by id desc limit ?, ?
-EOT;
+            $sql .= ' order by pc.id desc limit ?, ?';
+
             global $app;
             $stmt = $app['db']->executeQuery($sql,
                 array($offset, $limit),
@@ -352,7 +333,7 @@ EOT;
 select part.id p_id, b.title b_title, part.title p_title, download_count from part
  join (select p_id, count(p_id) download_count from stat_download
  		group by p_id order by count(p_id) desc limit 20) stat on part.id = stat.p_id
- left join (select id, title from book) b on b.id = part.b_id
+ left join book b on b.id = part.b_id
  order by download_count desc
 EOT;
         $download_stat = $app['db']->fetchAll($sql);
@@ -379,9 +360,8 @@ EOT;
         // 스토리+ 책 다운로드 통계
         $sql = <<<EOT
 select storyplusbook.title, ifnull(download_count, 0) download_count from storyplusbook
-	left join (select storyplusbook_id, count(storyplusbook_id) download_count from stat_download_storyplusbook group by storyplusbook_id) A
-	on storyplusbook.id = A.storyplusbook_id
-	order by download_count desc
+ left join (select storyplusbook_id, count(storyplusbook_id) download_count from stat_download_storyplusbook group by storyplusbook_id) A on storyplusbook.id = A.storyplusbook_id
+order by download_count desc
 EOT;
         $download_stat_storyplusbook = $app['db']->fetchAll($sql);
 
