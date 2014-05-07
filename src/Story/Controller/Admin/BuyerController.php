@@ -274,11 +274,11 @@ class BuyerController implements ControllerProviderInterface
                         }
 
                         // 코인 회수
-                        $ch_id = Buyer::reduceCoin($coin_usage['u_id'], -($standard_coin_amount - $coin_usage['used_coin']), Buyer::COIN_SOURCE_OUT_WITHDRAW);
+                        $ch_id = Buyer::reduceCoin($coin_usage['u_id'], -$reduce_coin_amount, Buyer::COIN_SOURCE_OUT_WITHDRAW);
                         if (!$ch_id) {
                             throw new Exception('코인을 회수하는 도중 오류가 발생했습니다. (유저 ID: ' . $coin_usage['u_id'] . ')');
                         } else {
-                            $total_withdraw_coin_amount += $coin_usage['used_coin'];
+                            $total_withdraw_coin_amount += $reduce_coin_amount;
                             $withdraw_user_count++;
                         }
                     }
