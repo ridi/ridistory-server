@@ -23,7 +23,7 @@ EOT;
     public static function getWholeList()
     {
         $sql = <<<EOT
-sselect bu.google_id, tu.* from test_user tu
+select bu.google_id, tu.* from test_user tu
  left join buyer_user bu on tu.u_id = bu.id
 EOT;
         global $app;
