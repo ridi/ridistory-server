@@ -146,6 +146,9 @@ class ApiController implements ControllerProviderInterface
         $inputs = $req->request->all();
         if ($inputs['u_id']) {
             $inputs['u_id'] = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $inputs['u_id']);
+            if (!Buyer::isValidUid($inputs['u_id'])) {
+                return $app->json(array('success' => 'false', 'message' => '회원 정보를 찾을 수 없습니다.'));
+            }
         } else {
             return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
         }
@@ -236,6 +239,9 @@ class ApiController implements ControllerProviderInterface
         $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+            if (!Buyer::isValidUid($u_id)) {
+                return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+            }
         } else {
             return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
         }
@@ -244,11 +250,20 @@ class ApiController implements ControllerProviderInterface
         $book = $app['cache']->fetch(
             $cache_key,
             function () use ($u_id) {
-                $b_ids = Buyer::getPurchasedBookList($u_id);
+                $purchases = Buyer::getWholePurchasedList($u_id);
+
+                $b_ids = array();
+                foreach ($purchases as $purchase) {
+                    $part = Part::get($purchase['p_id']);
+                    if (!in_array($part['b_id'], $b_ids, true)) {
+                        array_push($b_ids, $part['b_id']);
+                    }
+                }
                 return Book::getListByIds($b_ids, true);
             },
             60 * 10
         );
+
         return $app->json($book);
     }
 
@@ -279,7 +294,8 @@ class ApiController implements ControllerProviderInterface
         $parts = $app['cache']->fetch(
             $cache_key,
             function () use ($u_id, $b_id) {
-                return Buyer::getPurchasedPartListByBid($u_id, $b_id);
+                $p_ids = Buyer::getPurchasedPartIdListByBid($u_id, $b_id);
+                return Part::getListByIds($p_ids, true);
             },
             60 * 10
         );
@@ -343,7 +359,7 @@ class ApiController implements ControllerProviderInterface
         );
 
         $is_valid_uid = false;
-        $purchased_flags = null;
+        $purchased_p_ids = null;
         // 유료화 버전(v3)이고, Uid가 유효할 경우 구매내역 받아옴.
         if ($v > 2) {
             $u_id = $req->get('u_id', null);
@@ -351,7 +367,7 @@ class ApiController implements ControllerProviderInterface
                 $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
                 $is_valid_uid = Buyer::isValidUid($u_id);
                 if ($is_valid_uid) {
-                    $purchased_flags = Buyer::getPurchasedPartListByBid($u_id, $b_id);
+                    $purchased_p_ids = Buyer::getPurchasedPartIdListByBid($u_id, $b_id);
                 }
             }
         }
@@ -367,10 +383,9 @@ class ApiController implements ControllerProviderInterface
 
             $part['is_purchased'] = 0;
             if ($is_valid_uid) {
-                foreach ($purchased_flags as $pf) {
-                    if ($pf['id'] == $part['id']) {
+                foreach ($purchased_p_ids as $p_id) {
+                    if ($p_id == $part['id']) {
                         $part['is_purchased'] = 1;
-                        unset($pf);
                         break;
                     }
                 }
