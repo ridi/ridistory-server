@@ -1,6 +1,7 @@
 <?php
 namespace Story\Model;
 
+use Doctrine\DBAL\Connection;
 use Exception;
 
 class Part
@@ -45,6 +46,34 @@ class Part
     {
         $p = new Part($p_id);
         return $p->isOpened() && $p->getStoreId() == $store_id;
+    }
+
+    public static function getListByIds($p_ids, $with_social_info = false)
+    {
+        if ($with_social_info) {
+            $sql = <<<EOT
+select p.*, num_likes like_count, ifnull(comment_count, 0) comment_count from part p
+ left join (select p_id, count(*) comment_count from part_comment group by p_id) c on p.id = c.p_id
+EOT;
+        } else {
+            $sql = <<<EOT
+select * from part
+EOT;
+        }
+        $sql .= ' where p.id in (?)';
+
+        global $app;
+        $stmt = $app['db']->executeQuery(
+            $sql,
+            array($p_ids),
+            array(Connection::PARAM_INT_ARRAY)
+        );
+
+        $ar = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        foreach ($ar as &$p) {
+            self::fill_additional($p);
+        }
+        return $ar;
     }
 
     public static function getListByBid($b_id, $with_social_info = false, $active_lock = false, $is_completed = false, $end_action_flag = Book::SALES_CLOSED, $lock_day_term = 14)

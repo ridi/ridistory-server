@@ -4,6 +4,7 @@ namespace Story\Controller\Admin;
 use Exception;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Model\Book;
 use Story\Model\Buyer;
 use Story\Model\Event;
 use Story\Model\Part;
@@ -347,11 +348,35 @@ class BuyerController implements ControllerProviderInterface
 
         $coin_out = Buyer::getCoinOutList($id);
         $total_coin_out = 0;
-        foreach ($coin_out as $out) {
+        foreach ($coin_out as &$out) {
+            if ($out['p_id']) {
+                $part = Part::get($out['p_id']);
+                $book = Book::get($part['b_id']);
+
+                $out['b_title'] = $book['title'];
+                $out['b_id'] = $book['id'];
+                $out['title'] = $part['title'];
+                $out['seq'] = $part['seq'];
+            } else {
+                $out['b_title'] = null;
+                $out['b_id'] = null;
+                $out['title'] = null;
+                $out['seq'] = null;
+            }
             $total_coin_out += $out['amount'];
         }
 
-        $purchases = Buyer::getWholePurchasedPartList($id);
+        $purchases = Buyer::getWholePurchasedList($id);
+        foreach ($purchases as &$purchase) {
+            $p_id = $purchase['p_id'];
+            $part = Part::get($p_id);
+            $book = Book::get($part['b_id']);
+
+            $purchase['b_id'] = $book['id'];
+            $purchase['b_title'] = $book['title'];
+            $purchase['p_seq'] = $part['seq'];
+            $purchase['p_title'] = $part['title'];
+        }
 
         return $app['twig']->render(
             'admin/buyer_detail.twig',
