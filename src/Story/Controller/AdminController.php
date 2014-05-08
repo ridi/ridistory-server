@@ -51,12 +51,6 @@ class AdminController implements ControllerProviderInterface
         $admin->get('/comment/list', array($this, 'commentList'));
         $admin->get('/comment/{c_id}/delete', array($this, 'deleteComment'));
 
-        $admin->get('/notice/add', array($this, 'addNotice'));
-        $admin->get('/notice/list', array($this, 'noticeList'));
-        $admin->get('/notice/{n_id}', array($this, 'noticeDetail'));
-        $admin->post('/notice/{n_id}/delete', array($this, 'deleteNotice'));
-        $admin->post('/notice/{n_id}/edit', array($this, 'editNotice'));
-
         $admin->get('/banner/add', array($this, 'addBanner'));
         $admin->get('/banner/list', array($this, 'bannerList'));
         $admin->get('/banner/{banner_id}', array($this, 'bannerDetail'));
@@ -147,48 +141,6 @@ EOT;
         PartComment::delete($c_id);
         $app['session']->getFlashBag()->add('alert', array('info' => '댓글이 삭제되었습니다.'));
         $redirect_url = $req->headers->get('referer', '/admin/comment/list');
-        return $app->redirect($redirect_url);
-    }
-
-    /*
-     * Notice
-     */
-    public static function addNotice(Application $app)
-    {
-        $app['db']->insert('notice', array('title' => '제목이 없습니다.', 'is_visible' => 0));
-        $r = $app['db']->lastInsertId();
-        $app['session']->getFlashBag()->add('alert', array('success' => '공지사항이 추가되었습니다.'));
-        return $app->redirect('/admin/notice/' . $r);
-    }
-
-    public static function noticeList(Request $req, Application $app)
-    {
-        $notice_list = $app['db']->fetchAll('select * from notice');
-        return $app['twig']->render('/admin/notice_list.twig', array('notice_list' => $notice_list));
-    }
-
-    public static function noticeDetail(Request $req, Application $app, $n_id)
-    {
-        $notice = $app['db']->fetchAssoc('select * from notice where id = ?', array($n_id));
-        return $app['twig']->render('/admin/notice_detail.twig', array('notice' => $notice));
-    }
-
-    public static function deleteNotice(Request $req, Application $app, $n_id)
-    {
-        $app['db']->delete('notice', array('id' => $n_id));
-        $app['session']->getFlashBag()->add('alert', array('info' => '공지사항이 삭제되었습니다.'));
-        $redirect_url = $req->headers->get('referer', '/admin/notice/list');
-        return $app->redirect($redirect_url);
-    }
-
-    public static function editNotice(Request $req, Application $app, $n_id)
-    {
-        $inputs = $req->request->all();
-
-        $app['db']->update('notice', $inputs, array('id' => $n_id));
-
-        $app['session']->getFlashBag()->add('alert', array('info' => '공지사항이 수정되었습니다.'));
-        $redirect_url = $req->headers->get('referer', '/admin/notice/list');
         return $app->redirect($redirect_url);
     }
 

@@ -4,6 +4,7 @@ namespace Story\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Entity\RecommendedBookFactory;
+use Story\Model\Notice;
 use Symfony\Component\HttpFoundation\Request;
 
 use Story\Model\Book;
@@ -113,13 +114,13 @@ class WebController implements ControllerProviderInterface
      */
     public function noticeList(Application $app)
     {
-        $notice = $app['db']->fetchAll('select * from notice where is_visible = 1 order by reg_date desc');
+        $notice = Notice::getList(true);
         return $app['twig']->render('/notice.twig', array('notice' => $notice));
     }
 
     public function noticeDetail(Application $app, $n_id)
     {
-        $notice_item = $app['db']->fetchAssoc('select * from notice where id = ? and is_visible = 1', array($n_id));
+        $notice_item = Notice::get($n_id, true);
         return $app['twig']->render('/notice_item.twig', array('notice_item' => $notice_item));
     }
 

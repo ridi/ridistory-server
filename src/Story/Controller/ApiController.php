@@ -9,6 +9,7 @@ use Story\Entity\RecommendedBookFactory;
 use Story\Model\Buyer;
 use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
+use Story\Model\Notice;
 use Story\Util\AES128;
 use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,6 +68,7 @@ class ApiController implements ControllerProviderInterface
         $api->get('/version/storyplusbook', array($this, 'getStoryPlusBookVersion'));
 
         $api->get('/latest_version', array($this, 'getLatestVersion'));
+        $api->get('/notice/new', array($this, 'getIfNoticeNew'));
 
         $api->get('/push_device/register', array($this, 'registerPushDevice'));
 
@@ -682,6 +684,17 @@ class ApiController implements ControllerProviderInterface
 
         return $app->json(array('error' => 'invalid platform'));
     }
+
+    /*
+     * Check Notice New
+     */
+    public function getIfNoticeNew(Application $app, Request $req)
+    {
+        $new_count = Notice::getNewNoticeCount();
+        $is_new = ($new_count > 0) ? true : false;
+        return $app->json(array('is_new' => $is_new));
+    }
+
 
     /*
      * Push Device
