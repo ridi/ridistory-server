@@ -3,9 +3,6 @@ namespace Story\Model;
 
 class Notice
 {
-    // n일 전의 공지사항까지 앱에서, New 뱃지를 띄움
-    const NEW_NOTICE_DAY = 1;
-
     public static function get($id, $exclude_invisible = true)
     {
         $sql = <<<EOT
@@ -45,16 +42,6 @@ EOT;
 
         global $app;
         return $app['db']->fetchAll($sql);
-    }
-
-    public static function getNewNoticeCount()
-    {
-        $sql = <<<EOT
-select count(*) from notice
-where datediff(now(), reg_date) < ?
-EOT;
-        global $app;
-        return $app['db']->fetchColumn($sql, array(self::NEW_NOTICE_DAY + 1));
     }
 
     public static function create()

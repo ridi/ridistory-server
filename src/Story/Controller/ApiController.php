@@ -68,7 +68,7 @@ class ApiController implements ControllerProviderInterface
         $api->get('/version/storyplusbook', array($this, 'getStoryPlusBookVersion'));
 
         $api->get('/latest_version', array($this, 'getLatestVersion'));
-        $api->get('/notice/new', array($this, 'isNewNoticeExists'));
+        $api->get('/latest_notice', array($this, 'getLatestNotice'));
 
         $api->get('/push_device/register', array($this, 'registerPushDevice'));
 
@@ -688,17 +688,10 @@ class ApiController implements ControllerProviderInterface
     /*
      * Check Notice New
      */
-    public function isNewNoticeExists(Application $app, Request $req)
+    public function getLatestNotice(Application $app, Request $req)
     {
-        $new_count = Notice::getNewNoticeCount();
-        $is_new = ($new_count > 0) ? true : false;
-        $result['is_new'] = $is_new;
-
-        if ($is_new) {
-            $latest_notice = Notice::getLatestNotice(true);
-            $result['latest_notice_date'] = $latest_notice['reg_date'];
-        }
-        return $app->json($result);
+        $latest_notice = Notice::getLatestNotice(true);
+        return $app->json(array('latest_notice_date' => $latest_notice['reg_date']));
     }
 
 
