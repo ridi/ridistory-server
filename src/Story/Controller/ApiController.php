@@ -692,7 +692,13 @@ class ApiController implements ControllerProviderInterface
     {
         $new_count = Notice::getNewNoticeCount();
         $is_new = ($new_count > 0) ? true : false;
-        return $app->json(array('is_new' => $is_new));
+        $result['is_new'] = $is_new;
+
+        if ($is_new) {
+            $latest_notice = Notice::getLatestNotice(true);
+            $result['latest_notice_date'] = $latest_notice['reg_date'];
+        }
+        return $app->json($result);
     }
 
 

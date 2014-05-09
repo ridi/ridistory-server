@@ -3,6 +3,9 @@ namespace Story\Model;
 
 class Notice
 {
+    // n일 전의 공지사항까지 앱에서, New 뱃지를 띄움
+    const NEW_NOTICE_DAY = 1;
+
     public static function get($id, $exclude_invisible = true)
     {
         $sql = <<<EOT
@@ -14,6 +17,20 @@ EOT;
 
         global $app;
         return $app['db']->fetchAssoc($sql, array($id));
+    }
+
+    public static function getLatestNotice($exclude_invisible = true)
+    {
+        $sql = <<<EOT
+select * from notice
+EOT;
+        if ($exclude_invisible) {
+            $sql .= ' where is_visible = 1';
+        }
+        $sql .= ' order by reg_date desc limit 1';
+
+        global $app;
+        return $app['db']->fetchAssoc($sql);
     }
 
     public static function getList($exclude_invisible = true)
@@ -34,10 +51,10 @@ EOT;
     {
         $sql = <<<EOT
 select count(*) from notice
-where datediff(now(), reg_date) < 2
+where datediff(now(), reg_date) < ?
 EOT;
         global $app;
-        return $app['db']->fetchColumn($sql);
+        return $app['db']->fetchColumn($sql, array(self::NEW_NOTICE_DAY + 1));
     }
 
     public static function create()
