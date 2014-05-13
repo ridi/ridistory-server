@@ -865,9 +865,15 @@ EOT;
 select date(timestamp) use_date
 EOT;
                 $i = 0;
+                // 책 ID 목록을 비우고, 실제 존재하는 책 ID로만 다시 배열을 만듬.
+                unset($b_ids);
+                $b_ids = array();
                 foreach ($books as &$book) {
+                    array_push($b_ids, $book['id']);
                     $sql .= ', sum(if(b_id=' . $book['id'] . ', coin_amount, 0)) b_' . $i++;
                 }
+
+                // 책 별 사용한 코인 수
                 $sql .= <<<EOT
  from
 (
@@ -880,6 +886,7 @@ EOT;
 ) use_info
 where date(timestamp) >= ? and date(timestamp) <= ?
 EOT;
+                // 책 별 다운로드(유료+무료) 수
                 $book_download_sql = <<<EOT
 select b_id, count(distinct ph.u_id) count from purchase_history ph
  join (
@@ -889,19 +896,22 @@ select b_id, count(distinct ph.u_id) count from purchase_history ph
  ) b_info on ph.p_id = b_info.p_id
 where date(ph.timestamp) >= ? and date(ph.timestamp) <= ?
 EOT;
+                // 총 다운로드 수
                 $total_download_sql = <<<EOT
 select count(distinct u_id) from purchase_history
 where p_id in (
  select id from part where b_id in (?)
 ) and date(timestamp) >= ? and date(timestamp) <= ?
 EOT;
-
+                // 테스트 유저 제외
                 $test_users = TestUser::getConcatUidList(true);
                 if ($test_users) {
                     $sql .= ' and u_id not in (' . $test_users . ')';
                     $book_download_sql .= ' and ph.u_id not in (' . $test_users . ')';
                     $total_download_sql .= ' and u_id not in (' . $test_users . ')';
                 }
+
+                // 책 별 유료 다운로드, 총 유료 다운로드 수
                 $book_charged_download_sql = $book_download_sql . ' and is_paid = 1';
                 $total_charged_download_sql = $total_download_sql . ' and is_paid = 1';
 
@@ -933,6 +943,7 @@ EOT;
                 );
                 $book_charged_download = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+                // 책 별 유/무료 다운로드 수가 없는 경우에 대한 예외 처리
                 if (count($b_ids) != count($book_download)) {
                     $temp_b_ids = $b_ids;
                     foreach ($book_download as $bd) {
@@ -966,6 +977,7 @@ EOT;
                     }
                 }
 
+                // 책 ID로 오름차순 정렬
                 usort($book_download, function ($a, $b) {
                         if ($a['b_id'] == $b['b_id']) {
                             return 0;
@@ -983,7 +995,7 @@ EOT;
                     }
                 );
 
-                // Total Download
+                // 총 다운로드 수
                 $stmt = $app['db']->executeQuery(
                     $total_download_sql,
                     $bind,
@@ -992,6 +1004,7 @@ EOT;
                 $total_download = $stmt->fetchAll(\PDO::FETCH_COLUMN);
                 $total_download = $total_download[0];
 
+                // 총 유료 다운로드 수
                 $stmt = $app['db']->executeQuery(
                     $total_charged_download_sql,
                     $bind,

@@ -11,7 +11,9 @@
     <form>
         <div class="well form-inline">
             <h4>조회할 책 설정</h4>
-            <textarea rows='8' class='input-medium' name='bid_list'>{{ bid_list }}</textarea> * 조회하실 책 ID 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)
+            * 조회하실 책 ID 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)<br />
+            * 책 ID에 해당하는 책이 없는 경우에는, 조회되지 않습니다.<br />
+            <textarea style='margin-top:20px;' rows='8' class='input-medium' name='bid_list'>{{ bid_list }}</textarea>
             <h4>기간 설정</h4>
             <input type='text' class='input-medium' name='begin_date' value='{{ begin_date }}' placeholder='0000-00-00' />
             ~
