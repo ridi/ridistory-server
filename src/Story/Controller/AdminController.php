@@ -933,6 +933,48 @@ EOT;
                 );
                 $book_charged_download = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+                foreach ($b_ids as $b_id) {
+                    $null_flag = true;
+                    foreach ($book_download as $bd) {
+                        if ($bd['b_id'] == $b_id) {
+                            $null_flag = false;
+                            break;
+                        }
+                    }
+
+                    if ($null_flag) {
+                        array_push($book_download, array('b_id' => $b_id, 'count' => 0));
+                    }
+
+                    $null_flag = true;
+                    foreach ($book_charged_download as $bcd) {
+                        if ($bcd['b_id'] == $b_id) {
+                            $null_flag = false;
+                            break;
+                        }
+                    }
+
+                    if ($null_flag) {
+                        array_push($book_charged_download, array('b_id' => $b_id, 'count' => 0));
+                    }
+                }
+                usort($book_download, function ($a, $b) {
+                        if ($a['b_id'] == $b['b_id']) {
+                            return 0;
+                        }
+
+                        return ($a['b_id'] < $b['b_id'] ? -1 : 1);
+                    }
+                );
+                usort($book_charged_download, function ($a, $b) {
+                        if ($a['b_id'] == $b['b_id']) {
+                            return 0;
+                        }
+
+                        return ($a['b_id'] < $b['b_id'] ? -1 : 1);
+                    }
+                );
+
                 // Total Download
                 $stmt = $app['db']->executeQuery(
                     $total_download_sql,
