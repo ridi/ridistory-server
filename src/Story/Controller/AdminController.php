@@ -933,31 +933,39 @@ EOT;
                 );
                 $book_charged_download = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-                foreach ($b_ids as $b_id) {
-                    $null_flag = true;
+                if (count($b_ids) != count($book_download)) {
+                    $temp_b_ids = $b_ids;
                     foreach ($book_download as $bd) {
-                        if ($bd['b_id'] == $b_id) {
-                            $null_flag = false;
-                            break;
+                        foreach ($temp_b_ids as $key => $temp_b_id) {
+                            if ($bd['b_id'] == $temp_b_id) {
+                                unset($temp_b_ids[$key]);
+                                break;
+                            }
                         }
                     }
-
-                    if ($null_flag) {
-                        array_push($book_download, array('b_id' => $b_id, 'count' => 0));
-                    }
-
-                    $null_flag = true;
-                    foreach ($book_charged_download as $bcd) {
-                        if ($bcd['b_id'] == $b_id) {
-                            $null_flag = false;
-                            break;
+                    if (!empty($temp_b_ids)) {
+                        foreach ($temp_b_ids as $temp_b_id) {
+                            array_push($book_download, array('b_id' => $temp_b_id, 'count' => 0));
                         }
-                    }
-
-                    if ($null_flag) {
-                        array_push($book_charged_download, array('b_id' => $b_id, 'count' => 0));
                     }
                 }
+                if (count($b_ids) != count($book_charged_download)) {
+                    $temp_b_ids = $b_ids;
+                    foreach ($book_charged_download as $bd) {
+                        foreach ($temp_b_ids as $key => $temp_b_id) {
+                            if ($bd['b_id'] == $temp_b_id) {
+                                unset($temp_b_ids[$key]);
+                                break;
+                            }
+                        }
+                    }
+                    if (!empty($temp_b_ids)) {
+                        foreach ($temp_b_ids as $temp_b_id) {
+                            array_push($book_charged_download, array('b_id' => $temp_b_id, 'count' => 0));
+                        }
+                    }
+                }
+
                 usort($book_download, function ($a, $b) {
                         if ($a['b_id'] == $b['b_id']) {
                             return 0;
