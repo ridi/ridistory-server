@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Story\Entity\RecommendedBookFactory;
 use Story\Model\Book;
 use Story\Model\CpAccount;
-use Story\Model\RecommendedBook;
 use Story\Model\Part;
 use Twig_SimpleFunction;
 

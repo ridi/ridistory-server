@@ -5,7 +5,6 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Entity\RecommendedBookFactory;
 use Symfony\Component\HttpFoundation\Request;
-use Story\Model\RecommendedBook;
 
 class RecommendedBookController implements ControllerProviderInterface
 {
