@@ -112,23 +112,23 @@ EOT;
         }
         $end_date = date('Y-m-d', strtotime($end_date . ' + 1 day'));
 
+        $sql = <<<EOT
+select p.id p_id, p.seq, p.title, p.price,
+ ifnull(sum(not ph.is_paid), 0) free_download,
+ ifnull(sum(ph.is_paid), 0) charged_download,
+ ifnull(sum(ph.coin_amount), 0) total_coin_amount
+from part p
+ left join (select * from purchase_history where timestamp >= ? and timestamp < ?
+EOT;
         $test_users = TestUser::getConcatUidList(true);
         if ($test_users) {
-            $sql = <<<EOT
-select p.id p_id, p.seq, p.title, p.price, ifnull(free_download, 0) free_download, ifnull(charged_download, 0) charged_download, ifnull(total_coin_amount, 0) total_coin_amount from part p
- left join (select p_id, count(*) free_download from purchase_history where coin_amount = 0 and timestamp >= ? and timestamp < ? and u_id not in ({$test_users}) group by p_id) ph on p.id = ph.p_id
- left join (select p_id, count(*) charged_download, sum(coin_amount) total_coin_amount from purchase_history where coin_amount > 0 and timestamp >= ? and timestamp < ? and u_id not in ({$test_users}) group by p_id) ph2 on p.id = ph2.p_id
-where b_id = ? order by p.seq
-EOT;
-        } else {
-            $sql = <<<EOT
-select p.id p_id, p.seq, p.title, p.price, ifnull(free_download, 0) free_download, ifnull(charged_download, 0) charged_download, ifnull(total_coin_amount, 0) total_coin_amount from part p
- left join (select p_id, count(*) free_download from purchase_history where coin_amount = 0 and timestamp >= ? and timestamp < ? group by p_id) ph on p.id = ph.p_id
- left join (select p_id, count(*) charged_download, sum(coin_amount) total_coin_amount from purchase_history where coin_amount > 0 and timestamp >= ? and timestamp < ? group by p_id) ph2 on p.id = ph2.p_id
-where b_id = ? order by p.seq
-EOT;
+            $sql .= ' and u_id not in (' . $test_users . ')';
         }
-        $bind = array($begin_date, $end_date, $begin_date, $end_date, $b_id);
+        $sql .= <<<EOT
+) ph on ph.p_id = p.id
+where p.b_id = ? group by p.id order by seq
+EOT;
+        $bind = array($begin_date, $end_date, $b_id);
 
         global $app;
         return $app['db']->fetchAll($sql, $bind);
