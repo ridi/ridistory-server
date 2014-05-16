@@ -5,11 +5,11 @@ use Exception;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Entity\NoticeFactory;
 use Story\Entity\RecommendedBookFactory;
 use Story\Model\Buyer;
 use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
-use Story\Model\Notice;
 use Story\Util\AES128;
 use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
@@ -690,10 +690,9 @@ class ApiController implements ControllerProviderInterface
      */
     public function getLatestNotice(Application $app, Request $req)
     {
-        $latest_notice = Notice::getLatestNotice(true);
-        return $app->json(array('latest_notice_date' => $latest_notice['reg_date']));
+        $latest_notice = NoticeFactory::getLatestNotice(true);
+        return $app->json(array('latest_notice_date' => $latest_notice->reg_date));
     }
-
 
     /*
      * Push Device

@@ -50,7 +50,6 @@ class RecommendedBookFactory
         $em = EntityManagerProvider::getEntityManager();
         $em->persist($rb);
         $em->flush();
-        error_log($rb->id);
         return $rb->id;
     }
 
