@@ -30,6 +30,8 @@ class BuyerController implements ControllerProviderInterface
         $admin->get('bloc/coin/period_reduce', array($this, 'reduceBuyerListBlocPeriodCoin'));
         $admin->post('bloc/coin/period_reduce', array($this, 'reduceBuyerListBlocPeriodCoin'));
 
+        $admin->get('migration_history', array($this, 'buyerMigrationHistory'));
+
         $admin->get('list', array($this, 'buyerList'));
         $admin->get('{id}', array($this, 'buyerDetail'));
         $admin->post('{id}/coin/add', array($this, 'addBuyerCoin'));
@@ -445,6 +447,15 @@ class BuyerController implements ControllerProviderInterface
                 'purchases' => $purchases
             )
         );
+    }
+
+    /*
+     * Migration History
+     */
+    public function buyerMigrationHistory(Request $req, Application $app)
+    {
+        $buyers = Buyer::getMigrationHistoryList();
+        return $app['twig']->render('admin/buyer/buyer_migration_history.twig', array('buyers' => $buyers));
     }
 
     /*

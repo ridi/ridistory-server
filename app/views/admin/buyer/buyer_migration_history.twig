@@ -1,0 +1,34 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/buyer/list">회원 목록</a></li>
+        <li><a href="/admin/buyer/bloc/verify">회원 검증</a></li>
+        <li><a href="/admin/buyer/bloc/search">회원 일괄 검색</a></li>
+        <li><a href="/admin/buyer/bloc/coin">코인 일괄 지급/회수</a></li>
+        <li><a href="/admin/buyer/bloc/coin/period_reduce">기간제 코인 회수</a></li>
+        <li class="active"><a href="/admin/buyer/migration_history">회원 계정이전 히스토리</a></li>
+    </ul>
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th class='span1'>유저 ID</th>
+            <th>원래 구글 계정</th>
+            <th>새로운 구글 계정</th>
+            <th>계정 이전일</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for buyer in buyers %}
+            <tr>
+                <td>{{ buyer.u_id }}</td>
+                <td>{{ buyer.old_google_id }}</td>
+                <td>{{ buyer.new_google_id }}</td>
+                <td>{{ buyer.migration_time }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
