@@ -370,6 +370,18 @@ CREATE TABLE `user_interest` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_migration_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `u_id` int(11) NOT NULL COMMENT '회원 ID',
+  `old_google_id` varchar(255) NOT NULL COMMENT '원래 구글 계정',
+  `new_google_id` varchar(255) NOT NULL COMMENT '새로운 구글 계정',
+  `migration_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '마이그레이션 일자',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `old_google_id` (`old_google_id`,`new_google_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_part_like` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `device_id` varchar(32) NOT NULL,
