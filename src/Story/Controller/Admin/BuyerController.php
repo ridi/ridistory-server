@@ -105,7 +105,13 @@ class BuyerController implements ControllerProviderInterface
                 try {
                     if ($user_type == 'google_account') {
                         $invalid_ids = Buyer::verifyGoogleAccounts($accounts);
-                        $accounts = Buyer::googleAccountsToUserIds($accounts);
+
+                        // 구글 계정 -> 유저 ID 변환
+                        $converted_u_ids = Buyer::googleAccountsToUserIds($accounts);
+                        $accounts = array();
+                        foreach ($converted_u_ids as $u_id) {
+                            array_push($accounts, $u_id);
+                        }
                     } else if ($user_type == 'uid') {
                         $invalid_ids = Buyer::verifyUids($accounts);
                     } else {
