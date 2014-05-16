@@ -28,7 +28,7 @@ class TestUserController implements ControllerProviderInterface
         $is_active = $req->get('is_active', 0);
 
         if ($u_id) {
-            $r = TestUserFactory::add($u_id, $comment, $is_active);
+            $r = TestUserFactory::create($u_id, $comment, $is_active);
             if ($r) {
                 $app['session']->getFlashBag()->add('alert', array('success' => '테스트 계정이 추가되었습니다.'));
                 return $app->redirect('/admin/test_user/' . $u_id);
