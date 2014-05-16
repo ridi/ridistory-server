@@ -1,0 +1,61 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/buyer/list">회원 목록</a></li>
+        <li><a href="/admin/buyer/bloc/verify">회원 검증</a></li>
+        <li class="active"><a href="/admin/buyer/bloc/search">회원 일괄 검색</a></li>
+        <li><a href="/admin/buyer/bloc/coin">코인 일괄 지급/회수</a></li>
+        <li><a href="/admin/buyer/bloc/coin/period_reduce">기간제 코인 회수</a></li>
+    </ul>
+
+    <form method='post'>
+        <div class="well form-inline">
+            <h4>회원 일괄 검색</h4>
+            <div>
+                <select id='user_type' name='user_type'>
+                    <option value='google_account'>구글 계정</option>
+                    <option value='uid'>유저 ID</option>
+                </select>
+            </div>
+            <div style="margin-top: 10px; margin-bottom: 10px;">
+                <textarea rows='8' class='input-xlarge' name='user_list'>{{ user_list }}</textarea>
+                * 검색할 회원 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)
+            </div>
+            <button type='submit' class="btn">변환</button>
+        </div>
+    </form>
+
+    <h4>검색 결과</h4>
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th>유저 ID</th>
+            <th>구글 계정</th>
+            <th>리디북스 계정</th>
+            <th>잔여 코인</th>
+            <th>가입일</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for searched_account in searched_accounts %}
+            <tr>
+                <td>{{ searched_account.id }}</td>
+                <td>{{ searched_account.google_id }}</td>
+                <td>{{ searched_account.ridibooks_id }}</td>
+                <td>{{ searched_account.coin_balance }}</td>
+                <td>{{ searched_account.google_reg_date }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#user_type').val('{{ user_type }}');
+        });
+    </script>
+{% endblock %}

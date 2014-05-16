@@ -19,8 +19,10 @@ class BuyerController implements ControllerProviderInterface
         // 일괄 작업
         $admin->get('bloc/verify', array($this, 'verifyBuyerListBloc'));
         $admin->post('bloc/verify', array($this, 'verifyBuyerListBloc'));
+        $admin->get('bloc/search', array($this, 'searchBuyerListBloc'));
+        $admin->post('bloc/search', array($this, 'searchBuyerListBloc'));
         $admin->get('bloc/coin', function () use ($app) {
-                return $app['twig']->render('admin/buyer_bloc_coin.twig');
+                return $app['twig']->render('admin/buyer/buyer_bloc_coin.twig');
             }
         );
         $admin->post('bloc/coin/add', array($this, 'addBuyerListBlocCoin'));
@@ -73,11 +75,60 @@ class BuyerController implements ControllerProviderInterface
         }
 
         return $app['twig']->render(
-            'admin/buyer_verify.twig',
+            'admin/buyer/buyer_bloc_verify.twig',
             array(
                 'user_type' => $user_type,
                 'user_list' => $user_list,
                 'invalid_ids' => $invalid_ids
+            )
+        );
+    }
+
+    public function searchBuyerListBloc(Request $req, Application $app)
+    {
+        $user_type = $req->get('user_type', 'google_account');
+        $user_list = $req->get('user_list', '');
+
+        $searched_accounts = null;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $accounts = explode(PHP_EOL, $user_list);
+            foreach ($accounts as $key => &$account) {
+                $trimmed_account = trim($account);
+                if ($trimmed_account) {
+                    $account = trim($account);
+                } else {
+                    unset($accounts[$key]);
+                }
+            }
+
+            if (!empty($accounts) && $user_type) {
+                try {
+                    if ($user_type == 'google_account') {
+                        $invalid_ids = Buyer::verifyGoogleAccounts($accounts);
+                        $accounts = Buyer::googleAccountsToUserIds($accounts);
+                    } else if ($user_type == 'uid') {
+                        $invalid_ids = Buyer::verifyUids($accounts);
+                    } else {
+                        throw new Exception('회원 조회 타입이 잘못됬습니다.');
+                    }
+
+                    if (!empty($invalid_ids)) {
+                        throw new Exception('존재하지 않는 계정이 ' . count($invalid_ids) . '건 존재합니다. (' . implode(',', $invalid_ids) . ')');
+                    }
+
+                    $searched_accounts = Buyer::getByUids($accounts);
+                } catch (Exception $e) {
+                    $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
+                }
+            }
+        }
+
+        return $app['twig']->render(
+            'admin/buyer/buyer_bloc_search.twig',
+            array(
+                'user_type' => $user_type,
+                'user_list' => $user_list,
+                'searched_accounts' => $searched_accounts
             )
         );
     }
@@ -293,7 +344,7 @@ class BuyerController implements ControllerProviderInterface
         }
 
         return $app['twig']->render(
-            'admin/buyer_bloc_period_coin.twig',
+            'admin/buyer/buyer_bloc_period_coin.twig',
             array(
                 'user_list' => $user_list,
                 'standard_coin_amount' => $standard_coin_amount,
@@ -325,7 +376,7 @@ class BuyerController implements ControllerProviderInterface
         $buyer_count = Buyer::getTotalUserCount();
 
         return $app['twig']->render(
-            'admin/buyer_list.twig',
+            'admin/buyer/buyer_list.twig',
             array(
                 'search_type' => $search_type,
                 'search_keyword' => $search_keyword,
@@ -338,7 +389,7 @@ class BuyerController implements ControllerProviderInterface
 
     public function buyerDetail(Request $req, Application $app, $id)
     {
-        $buyer = Buyer::get($id);
+        $buyer = Buyer::getByUids(array($id));
 
         $coin_in = Buyer::getCoinInList($id);
         $total_coin_in = 0;
@@ -379,7 +430,7 @@ class BuyerController implements ControllerProviderInterface
         }
 
         return $app['twig']->render(
-            'admin/buyer_detail.twig',
+            'admin/buyer/buyer_detail.twig',
             array(
                 'buyer' => $buyer,
                 'coin_in' => $coin_in,

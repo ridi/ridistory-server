@@ -159,7 +159,7 @@ class CoinBilling
             throw new Exception('이미 환불되었거나, 환불할 수 없는 결제입니다.');
         }
 
-        $user = Buyer::get($coin_sale['u_id']);
+        $user = Buyer::getByUids(array($coin_sale['u_id']));
         $product = CoinProduct::getCoinProductBySkuAndType($coin_sale['sku'], $payment);
 
         $user_coin_balance = $user['coin_balance'];
