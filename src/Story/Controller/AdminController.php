@@ -5,11 +5,11 @@ use Doctrine\DBAL\Connection;
 use Exception;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Entity\TestUserFactory;
 use Story\Model\Book;
 use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
 use Story\Model\PartComment;
-use Story\Model\TestUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -450,7 +450,7 @@ select count(*) from (
   where ih.status != 'PENDING' and date(ih.purchase_time) >= ? and date(ih.purchase_time) <= ?
 EOT;
 
-            $test_users = TestUser::getConcatUidList(true);
+            $test_users = TestUserFactory::getConcatUidList(true);
             if ($test_users) {
                 $inapp_buy_sql .= ' and ih.u_id not in (' . $test_users . ')';
                 $ridicash_buy_sql .= ' and rh.u_id not in (' . $test_users . ')';
@@ -661,7 +661,7 @@ where rh.status = 'REFUNDED' and date(rh.refunded_time) >= ? and date(rh.refunde
 EOT;
 
 
-            $test_users = TestUser::getConcatUidList(true);
+            $test_users = TestUserFactory::getConcatUidList(true);
             if ($test_users) {
                 $inapp_buy_sql .= ' and ih.u_id not in (' . $test_users . ')';
                 $ridicash_buy_sql .= ' and rh.u_id not in (' . $test_users . ')';
@@ -806,7 +806,7 @@ where source = 'OUT_BUY_PART' and date(timestamp) >= ? and date(timestamp) <= ?
 EOT;
             $bind = array($begin_date, $end_date);
 
-            $test_users = TestUser::getConcatUidList(true);
+            $test_users = TestUserFactory::getConcatUidList(true);
             if ($test_users) {
                 $sql .= ' and u_id not in (' . $test_users . ')';
             }
@@ -904,7 +904,7 @@ where p_id in (
 ) and date(timestamp) >= ? and date(timestamp) <= ?
 EOT;
                 // 테스트 유저 제외
-                $test_users = TestUser::getConcatUidList(true);
+                $test_users = TestUserFactory::getConcatUidList(true);
                 if ($test_users) {
                     $sql .= ' and u_id not in (' . $test_users . ')';
                     $book_download_sql .= ' and ph.u_id not in (' . $test_users . ')';

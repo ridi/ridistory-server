@@ -1,6 +1,8 @@
 <?php
 namespace Story\Model;
 
+use Story\Entity\TestUserFactory;
+
 class DownloadSales
 {
     public static function getWholeList($begin_date, $end_date, $exclude_free = false)
@@ -24,7 +26,7 @@ select b.id b_id, b.title, cp.id, cp_id, cp.name cp_name, b.royalty_percent, ifn
  join cp_account cp on cp.id = b.cp_id
 where ph.timestamp >= ? and ph.timestamp < ?
 EOT;
-            $test_users = TestUser::getConcatUidList(true);
+            $test_users = TestUserFactory::getConcatUidList(true);
             if ($test_users) {
                 $sql .= ' and ph.u_id not in (' . $test_users . ')';
             }
@@ -62,7 +64,7 @@ select b.id b_id, b.title, b.royalty_percent, b.author, b.publisher, b.adult_onl
  left join (select b_id, count(*) open_part_count from part where begin_date <= ? and end_date >= ? group by b_id) pc on pc.b_id = b.id
 where b.cp_id = ? and ph.is_paid = 1 and ph.timestamp >= ? and ph.timestamp < ?
 EOT;
-        $test_users = TestUser::getConcatUidList(true);
+        $test_users = TestUserFactory::getConcatUidList(true);
         if ($test_users) {
             $sql .= ' and ph.u_id not in (' . $test_users . ')';
         }
@@ -90,7 +92,7 @@ select left(ph.timestamp, 10) purchase_date, p.b_id, b.title b_title, ph.p_id, p
  join book b on b.id = p.b_id
 where ph.timestamp >= ? and ph.timestamp < ?
 EOT;
-        $test_users = TestUser::getConcatUidList(true);
+        $test_users = TestUserFactory::getConcatUidList(true);
         if ($test_users) {
             $sql .= ' and ph.u_id not in (' . $test_users . ')';
         }
@@ -120,7 +122,7 @@ select p.id p_id, p.seq, p.title, p.price,
 from part p
  left join (select * from purchase_history where timestamp >= ? and timestamp < ?
 EOT;
-        $test_users = TestUser::getConcatUidList(true);
+        $test_users = TestUserFactory::getConcatUidList(true);
         if ($test_users) {
             $sql .= ' and u_id not in (' . $test_users . ')';
         }

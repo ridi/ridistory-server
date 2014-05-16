@@ -3,7 +3,7 @@ namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
-use Story\Model\TestUser;
+use Story\Entity\TestUserFactory;
 use Symfony\Component\HttpFoundation\Request;
 
 class TestUserController implements ControllerProviderInterface
@@ -28,12 +28,7 @@ class TestUserController implements ControllerProviderInterface
         $is_active = $req->get('is_active', 0);
 
         if ($u_id) {
-            $values = array(
-                'u_id' => $u_id,
-                'comment' => $comment,
-                'is_active' => $is_active
-            );
-            $r = TestUser::add($values);
+            $r = TestUserFactory::add($u_id, $comment, $is_active);
             if ($r) {
                 $app['session']->getFlashBag()->add('alert', array('success' => '테스트 계정이 추가되었습니다.'));
                 return $app->redirect('/admin/test_user/' . $u_id);
@@ -49,19 +44,19 @@ class TestUserController implements ControllerProviderInterface
 
     public static function testUserList(Request $req, Application $app)
     {
-        $test_users = TestUser::getWholeList();
+        $test_users = TestUserFactory::getList();
         return $app['twig']->render('/admin/test_user_list.twig', array('test_users' => $test_users));
     }
 
     public static function testUserDetail(Request $req, Application $app, $u_id)
     {
-        $test_user = TestUser::get($u_id);
+        $test_user = TestUserFactory::get($u_id);
         return $app['twig']->render('/admin/test_user_detail.twig', array('test_user' => $test_user));
     }
 
     public static function deleteTestUser(Request $req, Application $app, $u_id)
     {
-        TestUser::delete($u_id);
+        TestUserFactory::delete($u_id);
         $app['session']->getFlashBag()->add('alert', array('info' => '테스트 계정이 삭제되었습니다.'));
         return $app->json(array('success' => true));
     }
@@ -70,7 +65,7 @@ class TestUserController implements ControllerProviderInterface
     {
         $inputs = $req->request->all();
 
-        TestUser::update($u_id, $inputs);
+        TestUserFactory::update($u_id, $inputs);
 
         $app['session']->getFlashBag()->add('alert', array('info' => '테스트 계정이 수정되었습니다.'));
         return $app->redirect('/admin/test_user/' . $u_id);
