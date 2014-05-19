@@ -394,10 +394,12 @@ EOT;
         $inapp_buy_coins = null;
         $ridicash_buy_coins = null;
         $event_coins = null;
+        $cs_reward_coins = null;
 
         $inapp_accumulated_user = 0;
         $ridicash_accumulated_user = 0;
         $event_accumulated_user = 0;
+        $cs_reward_accumulated_user = 0;
         $inapp_and_ridicash_accumulated_user = 0;
 
         if ($begin_date && $end_date) {
@@ -415,6 +417,11 @@ EOT;
 select date(eh.timestamp) event_date, count(distinct eh.u_id) user_count, sum(ch.amount) coin_amount, 0 withdraw_coin_amount from event_history eh
  left join coin_history ch on eh.ch_id = ch.id
 where date(eh.timestamp) >= ? and date(eh.timestamp) <= ?
+EOT;
+            $cs_reward_sql = <<<EOT
+select date(crh.timestamp) reward_date, count(distinct crh.u_id) user_count, sum(ch.amount) coin_amount from cs_reward_history crh
+ left join coin_history ch on crh.ch_id = ch.id
+where date(crh.timestamp) >= ? and date(crh.timestamp) <= ?
 EOT;
 
             $inapp_refunded_sql = <<<EOT
@@ -444,6 +451,10 @@ EOT;
 select count(distinct u_id) from event_history
 where date(timestamp) >= ? and date(timestamp) <= ?
 EOT;
+            $cs_reward_accumulated_user_sql = <<<EOT
+select count(distinct u_id) from cs_reward_history
+where date(timestamp) >= ? and date(timestamp) <= ?
+EOT;
             $inapp_and_ridicash_accumulated_user_sql = <<<EOT
 select count(*) from (
   select distinct u_id from inapp_history ih
@@ -455,12 +466,14 @@ EOT;
                 $inapp_buy_sql .= ' and ih.u_id not in (' . $test_users . ')';
                 $ridicash_buy_sql .= ' and rh.u_id not in (' . $test_users . ')';
                 $event_sql .= ' and eh.u_id not in (' . $test_users . ')';
+                $cs_reward_sql .= ' and crh.u_id not in (' . $test_users . ')';
                 $inapp_refunded_sql .= ' and ih.u_id not in (' . $test_users . ')';
                 $ridicash_refunded_sql .= ' and rh.u_id not in (' . $test_users . ')';
                 $event_withdraw_sql .= ' and u_id not in (' . $test_users . ')';
                 $inapp_accumulated_user_sql .= ' and u_id not in (' . $test_users . ')';
                 $ridicash_accumulated_user_sql .= ' and u_id not in (' . $test_users . ')';
                 $event_accumulated_user_sql .= ' and u_id not in (' . $test_users . ')';
+                $cs_reward_accumulated_user_sql .= ' and u_id not in (' . $test_users . ')';
 
                 $inapp_and_ridicash_accumulated_user_sql .= ' and ih.u_id not in (' . $test_users . ')';
                 $inapp_and_ridicash_accumulated_user_sql .= <<<EOT
@@ -473,6 +486,7 @@ EOT;
             $inapp_buy_sql .= ' group by date(ih.purchase_time)';
             $ridicash_buy_sql .= ' group by date(rh.purchase_time)';
             $event_sql .= ' group by date(eh.timestamp)';
+            $cs_reward_sql .= ' group by date(crh.timestamp) order by date(crh.timestamp) asc';
             $inapp_refunded_sql .= ' group by date(ih.refunded_time)';
             $ridicash_refunded_sql .= ' group by date(rh.refunded_time)';
             $event_withdraw_sql .= ' group by date(timestamp)';
@@ -483,6 +497,7 @@ EOT;
             $inapp_buy_coins = $app['db']->fetchAll($inapp_buy_sql, $bind);
             $ridicash_buy_coins = $app['db']->fetchAll($ridicash_buy_sql, $bind);
             $event_coins = $app['db']->fetchAll($event_sql, $bind);
+            $cs_reward_coins = $app['db']->fetchAll($cs_reward_sql, $bind);
 
             $inapp_refunded_coins = $app['db']->fetchAll($inapp_refunded_sql, $bind);
             $ridicash_refunded_coins = $app['db']->fetchAll($ridicash_refunded_sql, $bind);
@@ -491,6 +506,7 @@ EOT;
             $inapp_accumulated_user = $app['db']->fetchColumn($inapp_accumulated_user_sql, $bind);
             $ridicash_accumulated_user = $app['db']->fetchColumn($ridicash_accumulated_user_sql, $bind);
             $event_accumulated_user = $app['db']->fetchColumn($event_accumulated_user_sql, $bind);
+            $cs_reward_accumulated_user = $app['db']->fetchColumn($cs_reward_accumulated_user_sql, $bind);
             $inapp_and_ridicash_accumulated_user = $app['db']->fetchColumn($inapp_and_ridicash_accumulated_user_sql, array($begin_date, $end_date, $begin_date, $end_date));
 
             foreach ($inapp_refunded_coins as $key => $irc) {
@@ -621,9 +637,11 @@ EOT;
                 'inapp_buy_coins' => $inapp_buy_coins,
                 'ridicash_buy_coins' => $ridicash_buy_coins,
                 'event_coins' => $event_coins,
+                'cs_reward_coins' => $cs_reward_coins,
                 'inapp_accumulated_user' => $inapp_accumulated_user,
                 'ridicash_accumulated_user' => $ridicash_accumulated_user,
                 'event_accumulated_user' => $event_accumulated_user,
+                'cs_reward_accumulated_user' => $cs_reward_accumulated_user,
                 'inapp_and_ridicash_accumulated_user' => $inapp_and_ridicash_accumulated_user
             )
         );

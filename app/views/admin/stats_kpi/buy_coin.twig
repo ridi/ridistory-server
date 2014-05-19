@@ -113,4 +113,27 @@
             </tbody>
         </table>
     </div>
+
+    <div class="well form-inline">
+        <h4>코인 구매(지급) 지표 (고객보상)</h4>
+        <div style='margin-bottom: 30px;'>누적 지급자 수: <b>{{ cs_reward_accumulated_user }}</b></div>
+        <table class='table'>
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>지급유저수</th>
+                <th>지급코인수</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for crc in cs_reward_coins %}
+                <tr>
+                    <td>{{ crc.reward_date }}</td>
+                    <td>{{ crc.user_count }}</td>
+                    <td>{{ crc.coin_amount }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
