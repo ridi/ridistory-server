@@ -13,15 +13,23 @@
     <form id='batch_form' method='post'>
         <table class='table'>
             <tr>
-                <td colspan="2">* 코인은 '<b>이벤트</b>' 항목으로 일괄 지급되며, '<b>회수</b>' 항목으로 일괄 회수됩니다.</td>
-            </tr>
-            <tr>
                 <th>입력 구분</th>
                 <td>
                     <select name='user_type'>
                         <option value='google_account' selected>구글 계정</option>
                         <option value='uid'>유저 ID</option>
                     </select>
+                </td>
+            </tr>
+            <tr>
+                <th>지급/회수 사유</th>
+                <td>
+                    <select name='coin_source'>
+                        <option value='IN_EVENT' selected>[지급] 이벤트</option>
+                        <option value='IN_CS_REWARD'>[지급] 고객보상</option>
+                        <option value='OUT_WITHDRAW'>[회수] 회수</option>
+                    </select>
+                    * '지급', '회수' 사유를 정확히 입력해주세요.
                 </td>
             </tr>
             <tr>

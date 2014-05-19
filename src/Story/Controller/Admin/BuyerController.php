@@ -144,6 +144,7 @@ class BuyerController implements ControllerProviderInterface
     public function addBuyerListBlocCoin(Request $req, Application $app)
     {
         $user_type = $req->get('user_type', null);
+        $coin_source = $req->get('coin_source', null);
         $user_list = $req->get('user_list', null);
         $comment = $req->get('comment', null);
         $coin_amount = $req->get('coin_amount', 0);
@@ -163,13 +164,19 @@ class BuyerController implements ControllerProviderInterface
          */
         unset($u_id);
 
+        // 코인 Source 검사
+        if ($coin_source != Buyer::COIN_SOURCE_IN_EVENT && $coin_source != Buyer::COIN_SOURCE_IN_CS_REWARD) {
+            $app['session']->getFlashBag()->add('alert', array('error' => '코인 지급 사유를 정확히 입력해주세요.'));
+            return $app->redirect('/admin/buyer/bloc/coin');
+        }
+
         // 인원 수 검사
         if (count($u_ids) > 1000 || empty($u_ids)) {
             $app['session']->getFlashBag()->add('alert', array('error' => '코인은 한 번에 1명 ~ 1,000명까지 지급 가능합니다. (인원 수를 확인해주세요)'));
             return $app->redirect('/admin/buyer/bloc/coin');
         }
 
-        if (!$comment && ($coin_amount <= 0)) {
+        if (!$comment || ($coin_amount <= 0)) {
             $app['session']->getFlashBag()->add('alert', array('error' => '정보를 모두 정확히 입력해주세요.'));
             return $app->redirect('/admin/buyer/bloc/coin');
         }
@@ -179,6 +186,9 @@ class BuyerController implements ControllerProviderInterface
             $invalid_u_ids = Buyer::verifyGoogleAccounts($u_ids);
         } else if ($user_type == 'uid') {
             $invalid_u_ids = Buyer::verifyUids($u_ids);
+        } else {
+            $app['session']->getFlashBag()->add('alert', array('error' => '회원 입력 구분을 정확히 입력해주세요.'));
+            return $app->redirect('/admin/buyer/bloc/coin');
         }
 
         if (!empty($invalid_u_ids)) {
@@ -195,14 +205,16 @@ class BuyerController implements ControllerProviderInterface
         $app['db']->beginTransaction();
         try {
             foreach ($u_ids as $u_id) {
-                $ch_id = Buyer::addCoin($u_id, $coin_amount, Buyer::COIN_SOURCE_IN_EVENT);
+                $ch_id = Buyer::addCoin($u_id, $coin_amount, $coin_source);
                 if (!$ch_id) {
                     throw new Exception('코인을 추가하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
                 }
 
-                $r = Event::add(array('u_id' => $u_id, 'ch_id' => $ch_id, 'comment' => trim($comment)));
-                if (!$r) {
-                    throw new Exception('코인 추가 이벤트를 등록하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
+                if ($coin_source == Buyer::COIN_SOURCE_IN_EVENT) {
+                    $r = Event::add(array('u_id' => $u_id, 'ch_id' => $ch_id, 'comment' => trim($comment)));
+                    if (!$r) {
+                        throw new Exception('코인 추가 이벤트를 등록하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
+                    }
                 }
             }
             $app['db']->commit();
@@ -218,6 +230,7 @@ class BuyerController implements ControllerProviderInterface
     public function reduceBuyerListBlocCoin(Request $req, Application $app)
     {
         $user_type = $req->get('user_type', null);
+        $coin_source = $req->get('coin_source', null);
         $user_list = $req->get('user_list', null);
         $comment = $req->get('comment', null);
         $coin_amount = $req->get('coin_amount', 0);
@@ -233,13 +246,19 @@ class BuyerController implements ControllerProviderInterface
         }
         unset($u_id);
 
+        // 코인 Source 검사
+        if ($coin_source != Buyer::COIN_SOURCE_OUT_WITHDRAW) {
+            $app['session']->getFlashBag()->add('alert', array('error' => '코인 회수 사유를 정확히 입력해주세요.'));
+            return $app->redirect('/admin/buyer/bloc/coin');
+        }
+
         // 인원 수 검사
         if (count($u_ids) > 1000 || empty($u_ids)) {
             $app['session']->getFlashBag()->add('alert', array('error' => '코인은 한 번에 1명 ~ 1,000명까지 회수 가능합니다. (인원 수를 확인해주세요)'));
             return $app->redirect('/admin/buyer/bloc/coin');
         }
 
-        if (!$comment && ($coin_amount <= 0)) {
+        if (!$comment || ($coin_amount <= 0)) {
             $app['session']->getFlashBag()->add('alert', array('error' => '정보를 모두 정확히 입력해주세요.'));
             return $app->redirect('/admin/buyer/bloc/coin');
         }
@@ -249,6 +268,9 @@ class BuyerController implements ControllerProviderInterface
             $invalid_u_ids = Buyer::verifyGoogleAccounts($u_ids);
         } else if ($user_type == 'uid') {
             $invalid_u_ids = Buyer::verifyUids($u_ids);
+        } else {
+            $app['session']->getFlashBag()->add('alert', array('error' => '회원 입력 구분을 정확히 입력해주세요.'));
+            return $app->redirect('/admin/buyer/bloc/coin');
         }
 
         if (!empty($invalid_u_ids)) {
@@ -265,7 +287,7 @@ class BuyerController implements ControllerProviderInterface
         $app['db']->beginTransaction();
         try {
             foreach ($u_ids as $u_id) {
-                $ch_id = Buyer::reduceCoin($u_id, -$coin_amount, Buyer::COIN_SOURCE_OUT_WITHDRAW);
+                $ch_id = Buyer::reduceCoin($u_id, -$coin_amount, $coin_source);
                 if (!$ch_id) {
                     throw new Exception('코인을 회수하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
                 }
