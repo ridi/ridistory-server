@@ -66,7 +66,7 @@ CREATE TABLE `coin_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `u_id` int(11) NOT NULL,
   `amount` int(11) NOT NULL COMMENT 'Buy/Use amount of coin',
-  `source` enum('IN_INAPP','IN_RIDI','IN_TEST','IN_EVENT','IN_PART_REFUND','OUT_BUY_PART','OUT_COIN_REFUND','OUT_WITHDRAW') NOT NULL COMMENT 'IN_INAPP: 인앱결제, IN_RIDI: 리디캐시 결제, IN_TEST: 테스트용 코인, IN_EVENT: 이벤트용 코인, IN_PART_REFUND: 구매한 파트 환불, OUT_BUY_PART: 코인사용(파트 구매), OUT_COIN_REFUND: 환불, OUT_WITHDRAW: 회수(취소)',
+  `source` enum('IN_INAPP','IN_RIDI','IN_TEST','IN_EVENT','IN_CS_REWARD','OUT_BUY_PART','OUT_COIN_REFUND','OUT_WITHDRAW') NOT NULL COMMENT 'IN_INAPP: 인앱결제, IN_RIDI: 리디캐시 결제, IN_TEST: 테스트용 코인, IN_EVENT: 이벤트용 코인, IN_CS_REWARD: 고객 보상, OUT_BUY_PART: 코인사용(파트 구매), OUT_COIN_REFUND: 환불, OUT_WITHDRAW: 회수(취소)',
   `ph_id` int(11) DEFAULT NULL COMMENT 'Purchase History ID. (Only for USE)',
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

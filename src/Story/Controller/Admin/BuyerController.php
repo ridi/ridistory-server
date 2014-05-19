@@ -507,6 +507,7 @@ class BuyerController implements ControllerProviderInterface
      */
     public function deletePurchasedHistory(Request $req, Application $app, $id)
     {
+        //TODO: 구매기록 삭제 시에 수치가 바뀜으로써, 통계/정산에 영향을 미치므로, 다른 방법을 강구해보아야 함. (추후 CS 접수시 개발)
         $ph_id = $req->get('ph_id');
         $delete_coin_history = $req->get('refund_coin');
 
