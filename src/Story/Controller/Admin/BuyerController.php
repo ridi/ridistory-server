@@ -6,6 +6,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Book;
 use Story\Model\Buyer;
+use Story\Model\CsReward;
 use Story\Model\Event;
 use Story\Model\Part;
 use Symfony\Component\HttpFoundation\Request;
@@ -210,11 +211,14 @@ class BuyerController implements ControllerProviderInterface
                     throw new Exception('코인을 추가하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
                 }
 
+                $history_values = array('u_id' => $u_id, 'ch_id' => $ch_id, 'comment' => trim($comment));
                 if ($coin_source == Buyer::COIN_SOURCE_IN_EVENT) {
-                    $r = Event::add(array('u_id' => $u_id, 'ch_id' => $ch_id, 'comment' => trim($comment)));
-                    if (!$r) {
-                        throw new Exception('코인 추가 이벤트를 등록하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
-                    }
+                    $r = Event::add($history_values);
+                } else {
+                    $r = CsReward::add($history_values);
+                }
+                if (!$r) {
+                    throw new Exception('코인 추가 히스토리를 등록하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
                 }
             }
             $app['db']->commit();
@@ -488,8 +492,8 @@ class BuyerController implements ControllerProviderInterface
         $source = $req->get('source');
         $coin_amount = $req->get('coin_amount');
 
-        if ($source == '' || $coin_amount == 0) {
-            $app['session']->getFlashBag()->add('alert', array('error' => '코인을 추가하지 못했습니다. (코인 추가 이유가 없거나, 추가하려는 코인이 0개 입니다.)'));
+        if ($source != Buyer::COIN_SOURCE_IN_TEST || $coin_amount == 0) {
+            $app['session']->getFlashBag()->add('alert', array('error' => '코인을 추가하지 못했습니다. (코인 추가 이유가 잘못되었거나, 추가하려는 코인이 0개 입니다.)'));
         }  else {
             $r = Buyer::addCoin($id, $coin_amount, $source);
             if ($r) {

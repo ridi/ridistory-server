@@ -5,7 +5,7 @@
     <li class="active"><a href="/admin/buyer/list">회원 목록</a></li>
     <li><a href="/admin/buyer/bloc/verify">회원 검증</a></li>
     <li><a href="/admin/buyer/bloc/search">회원 일괄 검색</a></li>
-    <li><a href="/admin/buyer/bloc/coin">코인 일괄 지급/회수</a></li>
+    <li><a href="/admin/buyer/bloc/coin">코인 지급/회수</a></li>
     <li><a href="/admin/buyer/bloc/coin/period_reduce">기간제 코인 회수</a></li>
     <li><a href="/admin/buyer/migration_history">회원 계정이전 히스토리</a></li>
 </ul>
@@ -38,10 +38,9 @@
     <tr>
         <th>코인 추가</th>
         <td>
+            * 이벤트, 고객보상 코인 지급은 상단 '<b>코인 지급/회수</b>'에서 해주세요.<br />
             <select id='coin_add_source'>
-                <option value='IN_EVENT' selected>이벤트</option>
-                <option value='IN_CS_REWARD'>고객보상</option>
-                <option value='IN_TEST'>테스트</option>
+                <option value='IN_TEST' selected>테스트</option>
             </select>
             <input type='text' class='input' id='coin_add_amount' placeholder='추가할 코인 갯수를 입력해주세요.' /> <button class='btn btn-success add_coin' style='margin-top:-11px;'>추가</button>
         </td>
