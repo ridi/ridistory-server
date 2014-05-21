@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Story\Model\Book;
 use Story\Model\Part;
 use Story\Model\PartComment;
+use Symfony\Component\HttpFoundation\Response;
 
 class WebController implements ControllerProviderInterface
 {
@@ -20,6 +21,7 @@ class WebController implements ControllerProviderInterface
          */
         $web = $app['controllers_factory'];
 
+        $web->get('/', array($this, 'index'));
         $web->get('/book/{b_id}/intro', array($this, 'bookIntro'));
 
         $web->post('/comment/add', array($this, 'addComment'));
@@ -36,6 +38,11 @@ class WebController implements ControllerProviderInterface
         $web->get('/recommended_book/{b_id}', array($this, 'recommendedBook'));
 
         return $web;
+    }
+
+    public function index(Application $app)
+    {
+        return Response::create('haha', Response::HTTP_NO_CONTENT);
     }
 
     /*
