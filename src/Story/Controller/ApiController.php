@@ -36,6 +36,7 @@ class ApiController implements ControllerProviderInterface
         $api->post('/buyer/auth', array($this, 'authBuyerGoogleAccount'));
         $api->get('/buyer/coin', array($this, 'getBuyerCoinBalance'));
         $api->post('/buyer/coin/add', array($this, 'addBuyerCoin'));
+        $api->post('/buyer/inapp_data/save', array($this, 'saveInAppBillingData'));
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
@@ -143,24 +144,72 @@ class ApiController implements ControllerProviderInterface
         return $app->json(compact("coin_balance"));
     }
 
+    public function saveInAppBillingData(Request $req, Application $app)
+    {
+        $inputs = $req->request->all();
+        if ($inputs['u_id']) {
+            $inputs['u_id'] = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $inputs['u_id']);
+            if (!Buyer::isValidUid($inputs['u_id'])) {
+                return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+            }
+        } else {
+            return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+        }
+
+        $iab_data = CoinBilling::getInAppBillingBindIfNotNull($inputs);
+        $r = CoinBilling::saveBillingHistory($iab_data, CoinProduct::TYPE_INAPP);
+        if ($r) {
+            return $app->json(array('success' => true, 'message' => '성공'));
+        } else {
+            return $app->json(array('success' => false, 'message' => '결제 정보에 오류가 있습니다.'));
+        }
+    }
+
     public function addBuyerCoin(Request $req, Application $app)
     {
         $inputs = $req->request->all();
         if ($inputs['u_id']) {
             $inputs['u_id'] = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $inputs['u_id']);
             if (!Buyer::isValidUid($inputs['u_id'])) {
-                return $app->json(array('success' => 'false', 'message' => '회원 정보를 찾을 수 없습니다.'));
+                return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
             }
         } else {
             return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
         }
 
+        /**
+         * @var $v Api Version
+         *
+         * v1 : Save InAppBilling data when done Consume (Android RidiStory Ver <= 4.12)
+         * v2 : Save InAppBilling data when done Purchase (Android RidiStory Ver > 4.12)
+         */
+        $v = intval($req->get('v', '1'));
+
         // 결제 수단
         $payment = isset($inputs['buy_method']) ? $inputs['buy_method'] : CoinProduct::TYPE_INAPP;
-        if ($payment == CoinProduct::TYPE_INAPP || $payment == CoinProduct::TYPE_RIDICASH) {
+
+        // v1 에서는 여기서 결제정보를 저장
+        // v2 에서는 결제완료 후, save api를 호출해서 따로 저장
+        if ($v == 1 && $payment == CoinProduct::TYPE_INAPP) {
+            $iab_data = CoinBilling::getInAppBillingBindIfNotNull($inputs);
+            $r = CoinBilling::saveBillingHistory($iab_data, CoinProduct::TYPE_INAPP);
+            if (!$r) {
+                return $app->json(array('success' => false, 'message' => '결제 정보에 오류가 있습니다.'));
+            }
+        }
+
+        // 트랜잭션 시작 (결제 정보 저장 + 코인 추가)
+        $app['db']->beginTransaction();
+        try {
+            // 결제 수단 체크
+            if ($payment != CoinProduct::TYPE_INAPP && $payment != CoinProduct::TYPE_RIDICASH) {
+                throw new Exception('존재하지 않는 결제 수단입니다');
+            }
+
+            // 결제 검증
             $r = CoinBilling::verify($inputs, $payment);
             if (!$r) {
-                return $app->json(array('success' => false, 'message' => '결제 도중 오류가 발생였습니다.'));
+                throw new Exception('결제 도중 오류가 발생하였습니다');
             }
 
             if ($payment == CoinProduct::TYPE_INAPP) {
@@ -173,18 +222,23 @@ class ApiController implements ControllerProviderInterface
             }
 
             $coin_info = CoinProduct::getCoinProductBySkuAndType($sku, $payment);
-        } else {
-            // 잘못된 결제 수단
-            return $app->json(array('success' => false, 'message' => '존재하지 않는 결제 수단입니다.'));
+
+            // 코인 추가
+            $r = Buyer::addCoin($inputs['u_id'], ($coin_info['coin_amount'] + $coin_info['bonus_coin_amount']), $coin_source);
+            if ($r) {
+                $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
+                $result = array('success' => true, 'message' => '성공', 'coin_balance' => $coin_amount);;
+            } else {
+                throw new Exception('코인을 충전하는 도중 오류가 발생하였습니다.');
+            }
+
+            $app['db']->commit();
+        } catch (Exception $e) {
+            $app['db']->rollback();
+            $result = array('success' => false, 'message' => $e->getMessage());
         }
 
-        $r = Buyer::addCoin($inputs['u_id'], ($coin_info['coin_amount'] + $coin_info['bonus_coin_amount']), $coin_source);
-        if ($r) {
-            $coin_amount = Buyer::getCoinBalance($inputs['u_id']);
-            return $app->json(array('success' => true, 'message' => '성공', 'coin_balance' => $coin_amount));
-        } else {
-            return $app->json(array('success' => false, 'message' => '코인을 충전하는 도중 오류가 발생하였습니다.'));
-        }
+        return $app->json($result);
     }
 
     /*

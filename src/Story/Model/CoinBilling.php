@@ -28,7 +28,7 @@ class CoinBilling
         }
     }
 
-    private static function verifyInAppBilling($values)
+    public static function getInAppBillingBindIfNotNull($values)
     {
         // Purchase Data (JSON data of Paramters)
         $purchase_data = json_decode($values['purchase_data'], true);
@@ -42,8 +42,9 @@ class CoinBilling
         $purchase_token = $purchase_data['purchaseToken'];
         $signature = $values['signature'];
 
+        // Null Check
         if ($u_id == null || $order_id == null || $sku == null || $payload == null || $purchase_time == null || $purchase_token == null || $signature == null) {
-            return false;
+            return null;
         }
 
         // 인앱 결제 내역에 등록
@@ -51,7 +52,6 @@ class CoinBilling
             'order_id' => $order_id,
             'u_id' => $u_id,
             'sku' => $sku,
-            // Purchase Time을 서버시간 기준으로 변경. (변경일: 2014년 4월 8일 19시 24분)
             'purchase_time' => date('Y-m-d H:i:s'),
             'payload' => $payload,
             'purchase_token' => $purchase_token,
@@ -59,7 +59,23 @@ class CoinBilling
             'signature' => $signature,
             'status' => self::STATUS_PENDING,
         );
-        $iab_id = self::saveBillingHistory($bind, CoinProduct::TYPE_INAPP);
+
+        return $bind;
+    }
+
+    private static function verifyInAppBilling($values)
+    {
+        $purchase_data = json_decode($values['purchase_data'], true);
+        $order_id = $purchase_data['orderId'];
+
+        $signature = $values['signature'];
+
+        // 저장되어 있는 결제정보가 없으면 오류
+        $history = self::getBillingSalesDetailByOrderId(CoinProduct::TYPE_INAPP, $order_id);
+        if ($history == null) {
+            trigger_error('InAppBilling History NullException | OrderId: ' . $order_id, E_USER_ERROR);
+            return false;
+        }
 
         //TODO: 추후에 Purchase Status API가 안정화되면, Purchase Status API로 교체
         // Signature 검증
@@ -72,7 +88,7 @@ class CoinBilling
         openssl_free_key($iab_public_key);
 
         if ($is_valid_iab == 1) {
-            $r = self::changeBillingStatusAndValues($iab_id, CoinProduct::TYPE_INAPP, self::STATUS_OK);
+            $r = self::changeBillingStatusAndValues($history['id'], CoinProduct::TYPE_INAPP, self::STATUS_OK);
             return ($r === 1);
         } else {
             error_log('[INAPP] Failed Verify InAppBilling(Signature): ' . $is_valid_iab, 0);
@@ -121,7 +137,7 @@ class CoinBilling
         }
     }
 
-    private static function saveBillingHistory($values, $payment)
+    public static function saveBillingHistory($values, $payment)
     {
         global $app;
         $app['db']->insert(self::getDBTableName($payment), $values);
@@ -279,6 +295,28 @@ where bh.id = ?
 EOT;
             global $app;
             return $app['db']->fetchAssoc($sql, array($id));
+        } else {
+            return null;
+        }
+    }
+
+    private static function getBillingSalesDetailByOrderId($payment, $order_id)
+    {
+        $field = null;
+        if ($payment == CoinProduct::TYPE_INAPP) {
+            $field = 'order_id';
+        } else if ($payment == CoinProduct::TYPE_RIDICASH) {
+            $field = 't_id';
+        }
+
+        $table = self::getDBTableName($payment);
+        if ($table) {
+            $sql = <<<EOT
+select * from {$table}
+where {$field} = ?
+EOT;
+            global $app;
+            return $app['db']->fetchAssoc($sql, array($order_id));
         } else {
             return null;
         }
