@@ -822,10 +822,11 @@ class ApiController implements ControllerProviderInterface
                         // 구매내역 확인
                         $valid = Buyer::hasPurchasedPart($u_id, $p_id);
 
+                        //TODO: 첫 회를 무료로 제공하는 것이 확정되면 추가. @유대열
                         // 첫 회를 구매한 적이 없지만, 해당 책의 파트 구매내역이 있으면, 첫 회 제공.
-                        if (!$valid && $part['seq'] == 1 && $part['price'] == 0) {
-                            $valid = Buyer::hasPurchasedPartInBook($u_id, $part['b_id']);
-                        }
+//                        if (!$valid && $part['seq'] == 1 && $part['price'] == 0) {
+//                            $valid = Buyer::hasPurchasedPartInBook($u_id, $part['b_id']);
+//                        }
                     }
                 } else {
                     // 잠겨져 있는 경우 -> 구매내역 확인
