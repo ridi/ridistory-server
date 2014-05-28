@@ -775,15 +775,6 @@ class ApiController implements ControllerProviderInterface
      */
     public function validatePartDownload(Request $req, Application $app)
     {
-        /*
-         * 유료화 버전(v3)부터는 u_id를 추가적으로 받아서,
-         * 닫혀 있는 책에 대해서 구매내역을 체크한다.
-         */
-        $u_id = $req->get('u_id', null);
-        if ($u_id) {
-            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
-        }
-
         $p_id = $req->get('p_id');
         $store_id = $req->get('store_id');
 
@@ -802,11 +793,21 @@ class ApiController implements ControllerProviderInterface
             $is_locked = $book['is_active_lock'] && ($part['price'] > 0) && (strtotime($today) <= strtotime($part['begin_date']) && strtotime($today . ' + ' . $book['lock_day_term'] . ' days') >= $part['begin_date']);
             $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
 
+            /*
+             * 유료화 버전(v3)부터는 u_id를 추가적으로 받아서,
+             * 닫혀 있는 책에 대해서 구매내역을 체크한다.
+             */
+            $u_id = $req->get('u_id', null);
+            if ($u_id) {
+                $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+            }
+
             // Uid가 유효한 경우
             if (Buyer::isValidUid($u_id)) {
                 if ($is_completed) {
-                    // 완결된 경우 -> ALL_FREE    : true
-                    //          -> ALL_CHARGED : 구매내역 확인
+                    // 완결된 경우 -> ALL_FREE                 : true
+                    //          -> ALL_CHARGED              : 구매내역 확인
+                    //          -> SALES_CLOSED, ALL_CLOSED : 구매내역 확인 (+ 해당 책의 파트 구매내역이 있으면 첫 회 제공)
                     if ($book['end_action_flag'] == Book::ALL_FREE) {
                         $valid = true;
                     } else if ($book['end_action_flag'] == Book::ALL_CHARGED) {
@@ -816,6 +817,14 @@ class ApiController implements ControllerProviderInterface
                         } else {
                             // 모두 잠금이지만, 가격이 공짜인 경우 다운로드 허가.
                             $valid = true;
+                        }
+                    } else if ($book['end_action_flag'] == Book::SALES_CLOSED || $book['end_action_flag'] == Book::ALL_CLOSED) {
+                        // 구매내역 확인
+                        $valid = Buyer::hasPurchasedPart($u_id, $p_id);
+
+                        // 첫 회를 구매한 적이 없지만, 해당 책의 파트 구매내역이 있으면, 첫 회 제공.
+                        if (!$valid && $part['seq'] == 1 && $part['price'] == 0) {
+                            $valid = Buyer::hasPurchasedPartInBook($u_id, $part['b_id']);
                         }
                     }
                 } else {
