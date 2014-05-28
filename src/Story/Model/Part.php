@@ -48,6 +48,15 @@ class Part
         return $p->isOpened() && $p->getStoreId() == $store_id;
     }
 
+    public static function getFirstSeq($b_id)
+    {
+        $sql = <<<EOT
+select * from part where b_id = ? and seq = 1
+EOT;
+        global $app;
+        return $app['db']->fetchAssoc($sql, array($b_id));
+    }
+
     public static function getListByIds($p_ids, $with_social_info = false)
     {
         if ($with_social_info) {

@@ -345,7 +345,7 @@ class ApiController implements ControllerProviderInterface
         $parts = $app['cache']->fetch(
             $cache_key,
             function () use ($u_id, $b_id) {
-                $p_ids = Buyer::getPurchasedPartIdListByBid($u_id, $b_id);
+                $p_ids = Buyer::getPurchasedPartIdListByBid($u_id, $b_id, true);
                 return Part::getListByIds($p_ids, true);
             },
             60 * 10
@@ -418,7 +418,7 @@ class ApiController implements ControllerProviderInterface
                 $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
                 $is_valid_uid = Buyer::isValidUid($u_id);
                 if ($is_valid_uid) {
-                    $purchased_p_ids = Buyer::getPurchasedPartIdListByBid($u_id, $b_id);
+                    $purchased_p_ids = Buyer::getPurchasedPartIdListByBid($u_id, $b_id, false);
                 }
             }
         }
