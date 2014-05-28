@@ -70,7 +70,7 @@ class WebController implements ControllerProviderInterface
             return alert_and_back('닉네임이나 댓글 내용이 없습니다.');
         }
 
-        if ($nickname == '리디스토리' && $is_admin == 0) {
+        if ($nickname == PartComment::ADMIN_NICKNAME && $is_admin == 0) {
             return alert_and_back('리디스토리는 닉네임으로 사용하실 수 없습니다.');
         }
 
@@ -96,8 +96,9 @@ class WebController implements ControllerProviderInterface
 
         $device_id = $req->get('device_id');
 
-        $num_comments = PartComment::getCommentCount($p_id);
-        $comments = PartComment::getList($p_id);
+        $num_comments = PartComment::getCommentCount($p_id, true);
+        $admin_comments = PartComment::getAdminComments($p_id);
+        $comments = PartComment::getList($p_id, true);
 
         return $app['twig']->render(
             '/comment.twig',
@@ -105,6 +106,7 @@ class WebController implements ControllerProviderInterface
                 'part' => $part,
                 'device_id' => $device_id,
                 'num_comments' => $num_comments,
+                'admin_comments' => $admin_comments,
                 'comments' => $comments
             )
         );

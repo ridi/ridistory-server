@@ -30,12 +30,20 @@
 		</div>
 		<div class="comment_list">
 			<ul class="list_wrap">
+                {% for item in admin_comments %}
+                    <li class="contents_admin">
+                        <div class="contents_wrap">
+                            <p class="contents_info">
+                                <span class="info_id">{{ item.nickname }}</span>
+                                <span class="info_date">{{ item.timestamp }}</span>
+                            </p>
+                            <p class="contents_text">{{ item.comment|e }}</p>
+                        </div>
+                    </li>
+                {% endfor %}
+
                 {% for item in comments %}
-                    {% if item.nickname == '리디스토리' %}
-                        <li class="contents_admin">
-                    {% else %}
-                        <li>
-                    {% endif %}
+                    <li>
                         <div class="contents_wrap">
                             <p class="contents_info">
                                 <span class="info_id">{{ item.nickname }}</span>
