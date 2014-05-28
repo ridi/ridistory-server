@@ -88,35 +88,10 @@ class AdminController implements ControllerProviderInterface
         $limit = 50;
         $offset = $cur_page * $limit;
 
-        $sql = <<<EOT
-select pc.*, p.seq, b.title from part_comment pc
- left join part p on p.id = pc.p_id
- left join book b on b.id = p.b_id
-EOT;
         if ($search_keyword) {
-            if ($search_type == 'book_title') {
-                $sql .= ' where b.title like ?';
-                $bind = array('%' . $search_keyword . '%');
-            } else if ($search_type == 'nickname') {
-                $sql .= ' where pc.nickname like ?';
-                $bind = array('%' . $search_keyword . '%');
-            } else if ($search_type == 'ip_addr') {
-                $ip_addr = ip2long($search_keyword);
-                $sql .= ' where pc.ip = ?';
-                $bind = array($ip_addr);
-            }
-            $sql .= ' order by pc.id desc';
-
-            $comments = $app['db']->fetchAll($sql, $bind);
+            $comments = PartComment::getListBySearchTypeAndKeyword($search_type, $search_keyword);
         } else {
-            $sql .= ' order by pc.id desc limit ?, ?';
-
-            global $app;
-            $stmt = $app['db']->executeQuery($sql,
-                array($offset, $limit),
-                array(\PDO::PARAM_INT, \PDO::PARAM_INT)
-            );
-            $comments = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $comments = PartComment::getListByOffsetAndSize($offset, $limit);
         }
 
         $app['twig']->addFilter(

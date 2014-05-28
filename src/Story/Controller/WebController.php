@@ -96,9 +96,9 @@ class WebController implements ControllerProviderInterface
 
         $device_id = $req->get('device_id');
 
-        $num_comments = PartComment::getCommentCount($p_id, true);
+        $num_comments = PartComment::getCommentsCount($p_id, true);
         $admin_comments = PartComment::getAdminComments($p_id);
-        $comments = PartComment::getList($p_id, true);
+        $comments = PartComment::getComments($p_id, true);
 
         return $app['twig']->render(
             '/comment.twig',

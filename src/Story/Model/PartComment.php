@@ -19,7 +19,7 @@ class PartComment
         return $r === 1;
     }
 
-    public static function getList($p_id, $exclude_admin_comment = true)
+    public static function getComments($p_id, $exclude_admin_comment = true)
     {
         $sql = <<<EOT
 select * from part_comment
@@ -34,6 +34,48 @@ EOT;
         return $app['db']->fetchAll($sql, array($p_id));
     }
 
+    public static function getListByOffsetAndSize($offset, $limit)
+    {
+        $sql = <<<EOT
+select pc.*, p.seq, b.title from part_comment pc
+ left join part p on p.id = pc.p_id
+ left join book b on b.id = p.b_id
+order by pc.id desc limit ?, ?
+EOT;
+        global $app;
+        $stmt = $app['db']->executeQuery($sql,
+            array($offset, $limit),
+            array(\PDO::PARAM_INT, \PDO::PARAM_INT)
+        );
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public static function getListBySearchTypeAndKeyword($search_type, $search_keyword)
+    {
+        $sql = <<<EOT
+select pc.*, p.seq, b.title from part_comment pc
+ left join part p on p.id = pc.p_id
+ left join book b on b.id = p.b_id
+EOT;
+        if ($search_type == 'book_title') {
+            $sql .= ' where b.title like ?';
+            $bind = array('%' . $search_keyword . '%');
+        } else if ($search_type == 'nickname') {
+            $sql .= ' where pc.nickname like ?';
+            $bind = array('%' . $search_keyword . '%');
+        } else if ($search_type == 'ip_addr') {
+            $ip_addr = ip2long($search_keyword);
+            $sql .= ' where pc.ip = ?';
+            $bind = array($ip_addr);
+        } else {
+            $sql = null;
+            $bind = null;
+        }
+
+        global $app;
+        return $app['db']->fetchAll($sql, $bind);
+    }
+
     public static function getAdminComments($p_id)
     {
         $admin_nickname = PartComment::ADMIN_NICKNAME;
@@ -46,7 +88,7 @@ EOT;
         return $app['db']->fetchAll($sql, array($p_id));
     }
 
-    public static function getCommentCount($p_id, $exclude_admin_comment = true)
+    public static function getCommentsCount($p_id, $exclude_admin_comment = true)
     {
         $sql = <<<EOT
 select count(*) from part_comment
