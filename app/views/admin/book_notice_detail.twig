@@ -1,0 +1,80 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <h3>책 안내글</h3>
+    <form action="/admin/book/notice/{{ book_notice.id }}/edit" method='POST'>
+        <table class='table'>
+            <colgroup>
+                <col class="span1">
+                <col class="span7">
+            </colgroup>
+            <tr>
+                <th>책 ID</th>
+                <td>{{ book_notice.b_id }}</td>
+            </tr>
+            <tr>
+                <th>내용</th>
+                <td>
+                    <textarea name='message' id='input_message' placeholder='안내글 내용' maxlength='255' style='width: 400px; height: 50px;'>{{ book_notice.message }}</textarea>
+                    <p class="char_num">
+                        <span id='js_char_remain' class="now_num">0</span>/255자
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th>등록일</th>
+                <td><input type='text' class='input-medium' name='reg_date' value='{{ book_notice.reg_date }}' placeholder='빈칸이면 오늘' /></td>
+            </tr>
+            <tr>
+                <th>공개여부</th>
+                <td>
+                    <label class="radio">
+                        <input type='radio' name='is_visible' value='1' />공개
+                    </label>
+                    <label class="radio">
+                        <input type='radio' name='is_visible' value='0' />비공개
+                    </label>
+                </td>
+            </tr>
+        </table>
+        <div class='form-actions'>
+            <button class='btn btn-success'>저장</button>
+            <button class='btn btn-cancel'>취소</button>
+            <button class='btn btn-danger pull-right'>삭제</button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript" src="/static/bower_components/jquery-autosize/jquery.autosize.min.js"></script>
+    <script>
+        $(function() {
+            $('input:radio[name="is_visible"]')
+                    .filter('[value="{{ book_notice.is_visible }}"]')
+                    .attr('checked', true);
+
+            // 최초에 몇 자가 입력되어 있는지 가지고 와서 적용
+            $('#js_char_remain').text($('#input_message').val().length);
+
+            $('#input_message').keyup(function() {
+                $('#js_char_remain').text($(this).val().length);
+            });
+
+            // 안내글 입력창 자동으로 아래로 늘어나게 추가
+            $('#input_message').autosize();
+
+            $('.btn-cancel').click(function() {
+                history.back();
+                return false;
+            });
+
+            $('.btn-danger').click(function() {
+                if (confirm('삭제하시겠습니까?')) {
+                    location.href = '/admin/book/notice/{{ book_notice.id }}/delete';
+                }
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

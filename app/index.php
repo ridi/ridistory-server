@@ -50,6 +50,8 @@ $app->mount('/', new Story\Controller\WebController());
 $app->mount('/api', new Story\Controller\ApiController());
 $app->mount('/admin', new Story\Controller\AdminController());
 $app->mount('/admin/book', new Story\Controller\Admin\BookController());
+$app->mount('/admin/book/notice', new \Story\Controller\Admin\BookNoticeController());
+$app->mount('/admin/book/recommended_book', new Story\Controller\Admin\RecommendedBookController());
 $app->mount('/admin/buyer', new Story\Controller\Admin\BuyerController());
 $app->mount('/admin/coin_product', new Story\Controller\Admin\CoinProductController());
 $app->mount('/admin/cp_account', new Story\Controller\Admin\CpAccountController());
@@ -57,7 +59,6 @@ $app->mount('/admin/download_sales', new Story\Controller\Admin\DownloadSalesCon
 $app->mount('/admin/notice', new \Story\Controller\Admin\NoticeController());
 $app->mount('/admin/part', new Story\Controller\Admin\PartController());
 $app->mount('/admin/push', new Story\Controller\Admin\PushNotificationController());
-$app->mount('/admin/recommended_book', new Story\Controller\Admin\RecommendedBookController());
 $app->mount('/admin/storyplusbook', new Story\Controller\Admin\StoryPlusBookController());
 $app->mount('/admin/storyplusbook_intro', new Story\Controller\Admin\StoryPlusBookIntroController());
 $app->mount('/admin/test_user', new Story\Controller\Admin\TestUserController());

@@ -7,11 +7,15 @@
         <input type='hidden' name='is_admin' value='1' />
         <input type='hidden' name='nickname' value='리디스토리' />
         <input type='hidden' name='device_id' value='' />
-        <input type='text' class='input-small' id='js_part_id' name='p_id' placeholder='파트 ID' style='margin-bottom: 10px;'/><span id='part_info' style="margin-left: 10px;"></span><br />
-        <textarea name='comment' id='input_comment' placeholder='댓글 내용' maxlength='300' style='width: 400px; height:50px;'></textarea><br />
+
+        <input type='text' class='input-small' id='js_part_id' name='p_id' placeholder='파트 ID' style='margin-bottom: 10px;'/>
+        <span id='part_info' style="margin-left: 10px;"></span><br />
+
+        <textarea name='comment' id='input_comment' placeholder='댓글 내용' maxlength='300' style='width: 400px; height: 50px;'></textarea>
         <p class="char_num">
-            <span id='js_char_remain' class="now_num">0</span>/300
+            <span id='js_char_remain' class="now_num">0</span>/300자
         </p>
+
         <button id='js_submit' class='btn' type='submit'>등록</button>
     </div>
 </form>

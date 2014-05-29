@@ -3,6 +3,7 @@ namespace Story\Controller\Admin;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Entity\BookNoticeFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Story\Entity\RecommendedBookFactory;
 use Story\Model\Book;
@@ -127,6 +128,8 @@ class BookController implements ControllerProviderInterface
             }
         }
 
+        $book_notices = BookNoticeFactory::getList($id, false);
+
         $intro = Book::getIntro($id);
         if ($intro === false) {
             $intro = array('b_id' => $id, 'description' => '', 'about_author' => '');
@@ -144,6 +147,7 @@ class BookController implements ControllerProviderInterface
             array(
                 'book' => $book,
                 'cp_accounts' => $cp_accounts,
+                'book_notices' => $book_notices,
                 'parts' => $parts,
                 'recommended_books' => $recommended_books,
                 'intro' => $intro,

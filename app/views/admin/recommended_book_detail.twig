@@ -1,7 +1,7 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-    <form action="/admin/recommended_book/{{ recommended_book.id }}/edit" method='POST'>
+    <form action="/admin/book/recommended_book/{{ recommended_book.id }}/edit" method='POST'>
         <table class='table'>
             <colgroup>
                 <col class="span1">
@@ -46,7 +46,7 @@
 
             $('.btn-danger').click(function() {
                 if (confirm('삭제하시겠습니까?')) {
-                    location.href = '/admin/recommended_book/{{ recommended_book.id }}/delete';
+                    location.href = '/admin/book/recommended_book/{{ recommended_book.id }}/delete';
                 }
                 return false;
             });

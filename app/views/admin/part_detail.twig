@@ -29,7 +29,12 @@
 	</tr>
     <tr>
         <th>작가의 말</th>
-        <td><input type='text' class='input' name='author_comment' value='{{ part.author_comment }}' /></td>
+        <td>
+            <textarea name='author_comment' id='input_author_comment' placeholder='작가의 말 내용' maxlength='300' style='width: 400px; height: 50px;'>{{ part.author_comment }}</textarea>
+            <p class="char_num">
+                <span id='js_char_remain' class="now_num">0</span>/300자
+            </p>
+        </td>
     </tr>
 	<tr>
 		<th>시작일</th>
@@ -70,6 +75,15 @@ $(function() {
             $('#js_api_result').append('<tr><th>' + key + '</th><td>' + data[key] + '</td></tr>');
     	}
     });
+
+    $('#js_char_remain').text($('#input_author_comment').val().length);
+
+    $('#input_author_comment').keyup(function() {
+        $('#js_char_remain').text($(this).val().length);
+    });
+
+    // 댓글입력창 자동으로 아래로 늘어나게 추가
+    $('#input_author_comment').autosize();
 });
 </script>
 {% endblock %}

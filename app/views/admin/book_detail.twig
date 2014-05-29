@@ -55,6 +55,36 @@
 		<th>짧은 소개말</th>
 		<td><textarea rows='3' class='input-xxlarge' name='short_description' maxlength='400'>{{ book.short_description }}</textarea></td>
 	</tr>
+    <tr>
+        <th>안내글</th>
+        <td>
+            <table class='table table-hover table-striped table-condensed'>
+                <thead>
+                <tr>
+                    <th>내용</th>
+                    <th class='span3'>등록일</th>
+                    <th class='span1'>상태</th>
+                </tr>
+                </thead>
+                <tbody id='js_book_notice_list'>
+                {% for notice in book_notices %}
+                    <tr data-nid='{{ notice.id }}'>
+                        <td>{{ notice.message }}</td>
+                        <td>{{ notice.reg_date }}</td>
+                        <td>
+                            {% if notice.is_visible == '1' %}
+                                공개
+                            {% else %}
+                                비공개
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button class='btn btn-small btn-primary pull-right' id='js_add_book_notice'>안내글 추가</button>
+        </td>
+    </tr>
 	<tr>
 		<th>연재 기간</th>
 		<td>
@@ -255,14 +285,31 @@ $(function() {
         return false;
     });
 
+    $('#js_add_book_notice').click(function() {
+        location.href = '/admin/book/notice/add?b_id={{ book.id }}';
+        return false;
+    });
+
+    $('#js_book_notice_list tr').click(function() {
+        var rb_id = $(this).data('nid');
+        location.href = '/admin/book/notice/' + rb_id;
+    });
+
+    $('#js_book_notice_list tr').hover(function() {
+                $(this).css('cursor', 'pointer');
+            }, function() {
+                $(this).css('cursor', '');
+            }
+    );
+
     $('#js_add_recommended_book').click(function() {
-        location.href = '/admin/recommended_book/add?b_id={{ book.id }}';
+        location.href = '/admin/book/recommended_book/add?b_id={{ book.id }}';
         return false;
     });
 
     $('#js_recommended_book_list tr').click(function() {
         var rb_id = $(this).data('rbid');
-        location.href = '/admin/recommended_book/' + rb_id;
+        location.href = '/admin/book/recommended_book/' + rb_id;
     });
 
     $('#js_recommended_book_list tr').hover(function() {

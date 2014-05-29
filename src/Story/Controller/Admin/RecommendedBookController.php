@@ -25,7 +25,7 @@ class RecommendedBookController implements ControllerProviderInterface
         $b_id = $req->get('b_id');
         $rb_id = RecommendedBookFactory::create($b_id);
         $app['session']->getFlashBag()->add('alert', array('success' => '작가의 다른 작품이 추가되었습니다.'));
-        return $app->redirect('/admin/recommended_book/' . $rb_id);
+        return $app->redirect('/admin/book/recommended_book/' . $rb_id);
     }
 
     public function recommendedBookDetail(Request $req, Application $app, $id)
