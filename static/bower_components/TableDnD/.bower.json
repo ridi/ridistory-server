@@ -1,0 +1,14 @@
+{
+  "name": "TableDnD",
+  "homepage": "https://github.com/isocra/TableDnD",
+  "_release": "38a769a9c7",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "38a769a9c70eb24d4bb8c7792d21dc20b8b266d7"
+  },
+  "_source": "git://github.com/isocra/TableDnD.git",
+  "_target": "*",
+  "_originalSource": "TableDnD",
+  "_direct": true
+}
