@@ -119,7 +119,8 @@ CREATE TABLE `cs_reward_history` (
   `u_id` int(11) NOT NULL COMMENT 'coin_history의 u_id',
   `comment` varchar(255) NOT NULL COMMENT '코인 지급 사유 (고객 보상 사유)',
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '코인지급일',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ch_id` (`ch_id`,`u_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -200,6 +201,7 @@ CREATE TABLE `part` (
   `begin_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `num_likes` int(11) NOT NULL DEFAULT '0',
+  `author_comment` varchar(300) DEFAULT NULL COMMENT '작가의 말',
   PRIMARY KEY (`id`),
   KEY `id` (`id`,`seq`) USING BTREE,
   KEY `b_id` (`b_id`),
