@@ -31,7 +31,7 @@ class PartController implements ControllerProviderInterface
     public function partDetail(Request $req, Application $app, $id)
     {
         $part = Part::get($id);
-        return $app['twig']->render('admin/part_detail.twig', array('part' => $part));
+        return $app['twig']->render('admin/book/part_detail.twig', array('part' => $part));
     }
 
     public function deletePart(Request $req, Application $app, $id)

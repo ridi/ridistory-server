@@ -31,7 +31,7 @@ class BookNoticeController implements ControllerProviderInterface
     public function bookNoticeDetail(Request $req, Application $app, $id)
     {
         $book_notice = BookNoticeFactory::get($id, false);
-        return $app['twig']->render('admin/book_notice_detail.twig', array('book_notice' => $book_notice));
+        return $app['twig']->render('admin/book/book_notice_detail.twig', array('book_notice' => $book_notice));
     }
 
     public function deleteBookNotice(Request $req, Application $app, $id)

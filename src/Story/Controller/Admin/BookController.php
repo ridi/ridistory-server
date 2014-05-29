@@ -17,6 +17,9 @@ class BookController implements ControllerProviderInterface
     {
         $admin = $app['controllers_factory'];
 
+        $admin->get('manage_score', array($this, 'onGoingBookList'));
+        $admin->get('manage_score/edit', array($this, 'editBookScoreList'));
+
         $admin->get('add', array($this, 'addBook'));
         $admin->get('list', array($this, 'bookList'));
         $admin->get('{id}', array($this, 'bookDetail'));
@@ -79,7 +82,7 @@ class BookController implements ControllerProviderInterface
                 }
             }
         }
-        return $app['twig']->render('admin/book_list.twig', array('books' => $books));
+        return $app['twig']->render('admin/book/book_list.twig', array('books' => $books));
     }
 
     public function bookDetail(Request $req, Application $app, $id)
@@ -143,7 +146,7 @@ class BookController implements ControllerProviderInterface
         );
 
         return $app['twig']->render(
-            'admin/book_detail.twig',
+            'admin/book/book_detail.twig',
             array(
                 'book' => $book,
                 'cp_accounts' => $cp_accounts,
@@ -225,5 +228,27 @@ class BookController implements ControllerProviderInterface
         $app['cache']->delete('part_list_1_1_' . $id);
 
         return $app->redirect('/admin/book/' . $id);
+    }
+
+    public function onGoingBookList(Request $req, Application $app)
+    {
+        $books = Book::getOpenedBookList(false);
+
+        // 작품 점수 순으로 정렬
+        usort($books, function ($a, $b) {
+                if ($a['score'] == $b['score']) {
+                    return 0;
+                }
+
+                return ($a['score'] > $b['score'] ? -1 : 1);
+            }
+        );
+
+        return $app['twig']->render('admin/book/manage_book_score.twig', array('books' => $books));
+    }
+
+    public function editBookScoreList(Request $req, Application $app)
+    {
+
     }
 }

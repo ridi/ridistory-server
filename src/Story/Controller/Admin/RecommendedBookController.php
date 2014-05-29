@@ -31,7 +31,7 @@ class RecommendedBookController implements ControllerProviderInterface
     public function recommendedBookDetail(Request $req, Application $app, $id)
     {
         $recommended_book = RecommendedBookFactory::get($id);
-        return $app['twig']->render('admin/recommended_book_detail.twig', array('recommended_book' => $recommended_book));
+        return $app['twig']->render('admin/book/recommended_book_detail.twig', array('recommended_book' => $recommended_book));
     }
 
     public function deleteRecommendedBook(Request $req, Application $app, $id)

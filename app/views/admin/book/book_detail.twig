@@ -1,6 +1,11 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
+<ul class="nav nav-tabs">
+    <li class="active"><a href="/admin/book/list">연재물 목록</a></li>
+    <li><a href="/admin/book/manage_score">인기순 관리</a></li>
+</ul>
+
 <form action="/admin/book/{{ book.id }}/edit" method='post'>
 <table class='table'>
     <colgroup>

@@ -1,0 +1,48 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+<ul class="nav nav-tabs">
+    <li><a href="/admin/book/list">연재물 목록</a></li>
+    <li class="active"><a href="/admin/book/manage_score">인기순 관리</a></li>
+</ul>
+
+<h4>인기순 관리</h4>
+<table class='table table-hover'>
+    <thead>
+    <tr>
+        <th class='span1'>책 ID</th>
+        <th>제목</th>
+        <th class='span3'>시작일</th>
+        <th class='span2'>점수</th>
+    </tr>
+    </thead>
+    <tbody id='js_tbody'>
+    {% for book in books %}
+        <tr data-bid='{{ book.id }}'>
+            <td>{{ book.id }}</td>
+            <td>{{ book.title }}
+                {% if book.adult_only %}
+                    <i class='icon-heart'></i>
+                {% endif %}
+            </td>
+            <td>{{ book.begin_date }}</td>
+            <td><input type='text' class='input-small' name='score' value='{{ book.score }}' /></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#js_tbody tr').hover(function() {
+                        $(this).css('cursor', 'pointer');
+                    }, function() {
+                        $(this).css('cursor', '');
+                    }
+            );
+        });
+    </script>
+{% endblock %}
