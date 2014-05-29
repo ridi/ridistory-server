@@ -133,6 +133,10 @@ class CoinBilling
             return ($r === 1);
         } else {
             error_log('[RIDICASH] Failed Verify RidicashBilling: ' . print_r($response, true), 0);
+            if (empty($response)) {
+                // 리디스토리 -> 리디북스로의 서버 요청이 막혔을 경우에 Sentry에 등록시킴
+                trigger_error('Failed verify RidicashBilling: (Response is null)', E_USER_ERROR);
+            }
             return false;
         }
     }
