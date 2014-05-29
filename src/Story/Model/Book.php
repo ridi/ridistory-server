@@ -53,8 +53,9 @@ EOT;
 
     public static function getOpenedBookList($ignore_adult_only = 0)
     {
-        $sql = "SELECT * FROM book b WHERE b.begin_date <= ? AND b.end_date >= ?";
-
+        $sql = <<<EOT
+SELECT * FROM book b WHERE b.begin_date <= ? AND b.end_date >= ?
+EOT;
         $today = date('Y-m-d H:00:00');
         $bind = array($today, $today);
 

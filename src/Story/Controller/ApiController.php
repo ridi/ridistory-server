@@ -353,7 +353,12 @@ class ApiController implements ControllerProviderInterface
 
         foreach ($parts as &$part) {
             $part['is_locked'] = 0;
-            $part['is_purchased'] = 1;
+            if ($part['seq'] == 1 && $part['price'] == 0) {
+                // 첫 회 제공의 경우, 고객이 구매한 것이 아니라 무료로 제공하는 것이므로, 구매=false를 보내줌.
+                $part['is_purchased'] = 0;
+            } else {
+                $part['is_purchased'] = 1;
+            }
             $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
         }
 
@@ -557,6 +562,8 @@ class ApiController implements ControllerProviderInterface
 
     /*
      * Recommended Book
+     * CMS에서 작가의 다른 작품 추가했을 때, 책 표지(+Metadata)를 가져오기 위한 API.
+     * 앱에서는 사용하지 않음.
      */
     public function recommendedBookDetail(Request $req, Application $app, $b_id)
     {

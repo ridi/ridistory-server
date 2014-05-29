@@ -51,6 +51,18 @@ CREATE TABLE `book_intro` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `book_notice` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `b_id` int(11) NOT NULL,
+  `message` varchar(255) NOT NULL,
+  `reg_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_visible` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `b_id` (`b_id`,`message`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `buyer_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `google_id` varchar(255) NOT NULL,
