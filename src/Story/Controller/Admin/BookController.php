@@ -252,11 +252,20 @@ class BookController implements ControllerProviderInterface
         $orders = $req->get('orders');
 
         foreach ($orders as $b_id => $order) {
+            // 순서(오름차순) -> 점수(내림차순)으로의 변환.
             $order = (count($orders) + 1) - $order;
+
             Book::update($b_id, array('score' => $order));
         }
 
         $app['session']->getFlashBag()->add('alert', array('info' => '인기순이 수정되었습니다.'));
+
+        // 캐시 삭제
+        $app['cache']->delete('book_list_1');
+        $app['cache']->delete('book_list_2_0');
+        $app['cache']->delete('book_list_2_1');
+        $app['cache']->delete('book_list_3_0');
+        $app['cache']->delete('book_list_3_1');
 
         return $app->redirect('/admin/book/manage_score');
     }
