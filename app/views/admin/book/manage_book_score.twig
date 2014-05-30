@@ -7,18 +7,22 @@
 </ul>
 
 <h4>인기순 관리</h4>
-<table class='table table-hover'>
+<form id='batch_form' method='post'>
+<table id='js_table' class='table'>
     <thead>
     <tr>
+        <th class='span1'></th>
         <th class='span1'>책 ID</th>
         <th>제목</th>
-        <th class='span3'>시작일</th>
-        <th class='span2'>점수</th>
+        <th class='span2'>시작일</th>
+        <th class='span1'>순서</th>
     </tr>
     </thead>
     <tbody id='js_tbody'>
+    {% set i = 1 %}
     {% for book in books %}
-        <tr data-bid='{{ book.id }}'>
+        <tr id='{{ book.id }}'>
+            <td class="js_drag_handle" style='text-align: center;'><i class='icon-th'></i></td>
             <td>{{ book.id }}</td>
             <td>{{ book.title }}
                 {% if book.adult_only %}
@@ -26,23 +30,61 @@
                 {% endif %}
             </td>
             <td>{{ book.begin_date }}</td>
-            <td><input type='text' class='input-small' name='score' value='{{ book.score }}' /></td>
+            <td>
+                <span id='js_order_show_{{ book.id }}' style='font-weight: bold'>{{ i }}</span>
+                <input id='js_order_{{ book.id }}' type='hidden' name='orders[{{ book.id }}]' value='{{ i }}' />
+            </td>
+            {% set i = i + 1 %}
         </tr>
     {% endfor %}
     </tbody>
 </table>
-
+    <button class='btn btn-success pull-right'>순서 변경(저장)</button>
+</form>
 {% endblock %}
 
 {% block script %}
+    <style type='text/css'>
+        .while_drag td {
+            color: #ffffff;
+            background-color: #666666;
+        }
+
+        .js_drag_handle {
+            cursor: move;
+        }
+    </style>
+
+    <script src="/static/bower_components/TableDnD/js/jquery.tablednd.js"></script>
     <script>
         $(function() {
-            $('#js_tbody tr').hover(function() {
-                        $(this).css('cursor', 'pointer');
-                    }, function() {
-                        $(this).css('cursor', '');
-                    }
-            );
+            $("#js_table").tableDnD({
+                onDragClass: 'while_drag',
+
+                onDrop: function(table, row) {
+                    reOrderTable(table);
+                },
+
+                dragHandle: ".js_drag_handle"
+            });
+
+            $('.btn-success').click(function() {
+                var form = document.getElementById('batch_form');
+                form.action = '/admin/book/manage_score/edit';
+                form.submit();
+            });
         });
+
+        // 순서 다시 매김
+        function reOrderTable(table) {
+            var rows = table.tBodies[0].rows;
+
+            for (var i=0; i<rows.length; i++) {
+                var index = i + 1;
+
+                $('#js_order_' + rows[i].id).val(index);
+                $('#js_order_show_' + rows[i].id).html(index);
+            }
+        }
     </script>
 {% endblock %}
