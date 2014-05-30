@@ -5,6 +5,7 @@ use Exception;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Entity\BookNoticeFactory;
 use Story\Entity\NoticeFactory;
 use Story\Entity\RecommendedBookFactory;
 use Story\Model\Buyer;
@@ -404,6 +405,17 @@ class ApiController implements ControllerProviderInterface
         if ($is_completed) {
             $book['is_completed'] = 1;
         }
+
+        $cache_key = 'book_notice_list_' . $b_id;
+        $book_notices = $app['cache']->fetch(
+            $cache_key,
+            function () use ($b_id) {
+                return BookNoticeFactory::getList($b_id, true);
+            },
+            60 * 10
+        );
+
+        $book['book_notices'] = $book_notices;
 
         $cache_key = 'part_list_' . $active_lock . '_' . intval($show_all) . '_' . $b_id;
         $parts = $app['cache']->fetch(
