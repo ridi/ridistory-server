@@ -18,7 +18,7 @@ class BookController implements ControllerProviderInterface
         $admin = $app['controllers_factory'];
 
         $admin->get('manage_score', array($this, 'onGoingBookList'));
-        $admin->get('manage_score/edit', array($this, 'editBookScoreList'));
+        $admin->post('manage_score/edit', array($this, 'editBookScoreList'));
 
         $admin->get('add', array($this, 'addBook'));
         $admin->get('list', array($this, 'bookList'));
@@ -249,6 +249,15 @@ class BookController implements ControllerProviderInterface
 
     public function editBookScoreList(Request $req, Application $app)
     {
+        $orders = $req->get('orders');
 
+        foreach ($orders as $b_id => $order) {
+            $order = (count($orders) + 1) - $order;
+            Book::update($b_id, array('score' => $order));
+        }
+
+        $app['session']->getFlashBag()->add('alert', array('info' => '인기순이 수정되었습니다.'));
+
+        return $app->redirect('/admin/book/manage_score');
     }
 }

@@ -27,7 +27,7 @@ CREATE TABLE `book` (
   `end_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `total_part_count` int(11) NOT NULL,
   `is_completed` tinyint(4) NOT NULL,
-  `score` int(11) NOT NULL,
+  `score` int(11) NOT NULL DEFAULT '0',
   `upload_days` int(11) NOT NULL COMMENT 'sunday is 2^0',
   `adult_only` tinyint(4) NOT NULL DEFAULT '0',
   `end_action_flag` enum('ALL_FREE','ALL_CHARGED','SALES_CLOSED','ALL_CLOSED') NOT NULL DEFAULT 'ALL_CLOSED' COMMENT 'ALL_FREE: 모두 공개, ALL_CHARGED: 모두 잠금, SALES_CLOSED: 판매 종료 (책 표지만 공개), ALL_CLOSED: 게시 종료 (비공개)',
