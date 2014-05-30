@@ -17,6 +17,7 @@ CREATE TABLE `book` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `category` varchar(32) NOT NULL,
   `store_id` varchar(32) DEFAULT NULL,
+  `sale_store_id` varchar(32) DEFAULT NULL COMMENT '단권판매용 스토어 ID',
   `title` varchar(128) NOT NULL,
   `author` varchar(64) NOT NULL,
   `publisher` varchar(32) NOT NULL,

@@ -16,6 +16,13 @@
 		<th>스토어ID</th>
 		<td><input type='text' class='input-small' name='store_id' value='{{ book.store_id }}' /></td>
 	</tr>
+    <tr>
+        <th>판매용 스토어ID</th>
+        <td>
+            <input type='text' class='input-small' name='sale_store_id' value='{{ book.sale_store_id }}' />
+            * 판매종료&게시종료된 책은 여기에 입력하신 스토어 ID로 리디북스 서점에 연결됩니다.
+        </td>
+    </tr>
 	<tr>
 		<th>표지</th>
 		<td>
