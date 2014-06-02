@@ -160,6 +160,17 @@
 	    </td>
 	</tr>
     <tr>
+        <th>완결확정여부</th>
+        <td>
+            <label class="radio">
+                <input type='radio' name='surely_completed' value='0' />완결 미확정 (리디스토리 앱에 '완결' 표시 안함)
+            </label>
+            <label class="radio">
+                <input type='radio' name='surely_completed' value='1' />완결 확정
+            </label>
+        </td>
+    </tr>
+    <tr>
         <th>성인</th>
         <td>
             <label class="checkbox">
@@ -259,6 +270,10 @@ $(function() {
     $('input:radio[name="is_completed"]')
     .filter('[value="{{ book.is_completed }}"]')
     .attr('checked', true);
+
+    $('input:radio[name="surely_completed"]')
+            .filter('[value="{{ book.surely_completed }}"]')
+            .attr('checked', true);
 
     $('input:radio[name="end_action_flag"]')
             .filter('[value="{{ book.end_action_flag }}"]')
