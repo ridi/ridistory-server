@@ -342,6 +342,16 @@ class ApiController implements ControllerProviderInterface
         $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime(date('Y-m-d H:i:s')) ? 1 : 0);
         $book['is_completed'] = $is_completed;
 
+        $cache_key = 'book_notice_list_' . $b_id;
+        $book_notices = $app['cache']->fetch(
+            $cache_key,
+            function () use ($b_id) {
+                return BookNoticeFactory::getList($b_id, true);
+            },
+            60 * 10
+        );
+        $book['book_notices'] = $book_notices;
+
         $cache_key = 'purchased_part_list_' . $u_id . '_' . $b_id;
         $parts = $app['cache']->fetch(
             $cache_key,
@@ -402,10 +412,6 @@ class ApiController implements ControllerProviderInterface
         $end_action_flag = $book['end_action_flag'];
         $lock_day_term = $book['lock_day_term'];
 
-        if ($is_completed) {
-            $book['is_completed'] = 1;
-        }
-
         $cache_key = 'book_notice_list_' . $b_id;
         $book_notices = $app['cache']->fetch(
             $cache_key,
@@ -414,7 +420,6 @@ class ApiController implements ControllerProviderInterface
             },
             60 * 10
         );
-
         $book['book_notices'] = $book_notices;
 
         $cache_key = 'part_list_' . $active_lock . '_' . intval($show_all) . '_' . $b_id;
