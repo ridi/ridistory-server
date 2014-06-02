@@ -2,20 +2,16 @@
 
 {% block container %}
     <ul class="nav nav-tabs">
-        <li><a href="/admin/push/part_update">관심 작품</a></li>
-        <li class="active"><a href="/admin/push/url">URL</a></li>
+        <li><a href="/admin/push/interest_book/part_update">관심 작품 업데이트</a></li>
+        <li class="active"><a href="/admin/push/interest_book/url">관심 작품 URL</a></li>
     </ul>
 
     <form action='#'>
         <fieldset>
-            <label>메세지 <b>수신</b> 대상 OS</label>
-            <select id='js_os_type' name='os_type'>
-                <option value='All' selected>전체</option>
-                <option value='Android'>Android</option>
-                <option value='iOS'>iOS</option>
-            </select>
+            <label>메세지 <b>수신</b> 대상 책 ID</label>
+            <input id='js_interest_recipient' type="text" name='recipient' class='input-small'>
             <label><b>연결</b>될 URL</label>
-            <input id='js_url' type="text" name='url' class='input-xlarge'>
+            <input id='js_interest_url' type="text" name='b_id' class='input-xxlarge'>
             <label>메세지 <span id='js_payload_length'>(0 / 255)</span></label>
             <input id='js_message' type="text" name='message' class='input-xxlarge'>
         </fieldset>
@@ -26,11 +22,23 @@
 {% block script %}
     <script>
         $(function() {
+            $('#js_interest_recipient').focusout(function() {
+                var b_id = $(this).val();
+                $.getJSON('/api/book/' + b_id, function(data) {
+                    var message = $(':input[name="message"]');
+                    if (data.error) {
+                        message.val(data.error);
+                    } else {
+                        message.val(data.title + " - ");
+                    }
+                });
+            });
+
             $('#js_message').keyup(function() {
-                var url = $('#js_url').val();
+                var url = $('#js_interest_url').val();
                 var message = $(this).val();
 
-                $.getJSON('/admin/push/ios_payload_length/url?url=' + url + '&message=' + message, function(data) {
+                $.getJSON('/admin/push/ios_payload_length/interest_book_url?url=' + url + '&message=' + message, function(data) {
                     var payload_length = data['payload_length'];
                     $('#js_payload_length').text('(' + payload_length + ' / 255)');
 

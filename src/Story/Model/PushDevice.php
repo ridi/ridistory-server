@@ -44,15 +44,21 @@ EOT;
 
     public static function getByDeviceId($device_id)
     {
+        $sql = <<<EOT
+select * from push_devices where device_id = ?
+EOT;
         global $app;
-        $r = $app['db']->fetchAssoc('select * from push_devices where device_id = ?', array($device_id));
+        $r = $app['db']->fetchAssoc($sql, array($device_id));
         return $r;
     }
 
     public static function getByDeviceToken($device_token)
     {
+        $sql = <<<EOT
+select * from push_devices where device_token = ?
+EOT;
         global $app;
-        $r = $app['db']->fetchAssoc('select * from push_devices where device_token = ?', array($device_token));
+        $r = $app['db']->fetchAssoc($sql, array($device_token));
         return $r;
     }
 
@@ -70,10 +76,10 @@ EOT;
         return $r === 1;
     }
 
-    public static function update($pk, $device_token)
+    public static function update($values)
     {
         global $app;
-        $r = $app['db']->update('push_devices', array('device_token' => $device_token), array('id' => $pk));
+        $r = $app['db']->update('push_devices', $values);
         return $r === 1;
     }
 }

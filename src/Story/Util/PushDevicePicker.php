@@ -15,7 +15,6 @@ select p.id, p.device_token, p.platform from user_interest u
  join push_devices p on u.device_id = p.device_id
 where b_id = ? and p.is_active = 1 and u.cancel = 0
 EOT;
-
         $params = array($b_id);
         $devices = $db->fetchAll($sql, $params);
 
@@ -44,7 +43,6 @@ EOT;
         $sql = <<<EOT
 select id, device_token, platform from push_devices where id >= ? and id <= ? and is_active = 1
 EOT;
-
         $params = array($range_begin, $range_end);
         $devices = $db->fetchAll($sql, $params);
 
@@ -56,7 +54,6 @@ EOT;
         $sql = <<<EOT
 select id, device_token, platform from push_devices where reg_date >= ? and reg_date <= ? and is_active = 1
 EOT;
-
         $params = array($date_begin, $date_end);
         $devices = $db->fetchAll($sql, $params);
 

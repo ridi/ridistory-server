@@ -6,7 +6,7 @@ class IosPush
     const COMMAND_PUSH = 1; /* Payload command. */
     const DEVICE_BINARY_SIZE = 32;
 
-    public static function createPartUpdateNotification($b_id)
+    public static function createInterestBookPartUpdateNotification($b_id)
     {
         return array(
             'type' => 'part_update',
@@ -14,26 +14,11 @@ class IosPush
         );
     }
 
-    public static function createUrlNotification($url)
+    public static function createInterestBookUrlNotification($url)
     {
         return array(
             'type' => 'url',
             'url' => $url
-        );
-    }
-
-    public static function createNewBookNotification($b_id)
-    {
-        return array(
-            'type' => 'new_book',
-            'book_id' => $b_id
-        );
-    }
-
-    public static function createLaunchAppNotification()
-    {
-        return array(
-            'type' => 'launch_app',
         );
     }
 

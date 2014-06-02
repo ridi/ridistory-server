@@ -2,11 +2,11 @@
 
 {% block container %}
 <ul class="nav nav-tabs">
-    <li class="active"><a href="/admin/push/part_update">관심 작품</a></li>
-    <li><a href="#">URL (준비중)</a></li>
+    <li class="active"><a href="/admin/push/interest_book/part_update">관심 작품 업데이트</a></li>
+    <li><a href="/admin/push/interest_book/url">관심 작품 URL</a></li>
 </ul>
 
-<form action='/admin/push/notify/part_update'>
+<form action='/admin/push/notify/interest_book/part_update'>
 	<fieldset>
 		<label>메세지 <b>수신</b> 대상 책 ID</label>
 		<input id='js_interest_recipient' type="text" name='recipient' class='input-small'>
@@ -45,7 +45,7 @@
         	var b_id = $('#js_interest_bid').val();
         	var message = $(this).val();
         	
-        	$.getJSON('/admin/push/ios_payload_length/part_update?b_id=' + b_id + '&message=' + message, function(data) {
+        	$.getJSON('/admin/push/ios_payload_length/interest_book_part_update?b_id=' + b_id + '&message=' + message, function(data) {
         		var payload_length = data['payload_length'];
         		$('#js_payload_length').text('(' + payload_length + ' / 255)');
         		

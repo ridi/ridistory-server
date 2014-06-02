@@ -11,20 +11,20 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PushNotificationController implements ControllerProviderInterface
 {
-    const PUSH_TYPE_PART_UPDATE = 'part_update';
-    const PUSH_TYPE_URL = 'url';
+    const PUSH_TYPE_INTEREST_PART_UPDATE = 'interest_book_part_update';
+    const PUSH_TYPE_INTEREST_URL = 'interest_book_url';
 
     public function connect(Application $app)
     {
         $admin = $app['controllers_factory'];
 
-        $admin->get('part_update', array($this, 'pushPartUpdate'));
-        $admin->get('url', array($this, 'pushUrl'));
+        $admin->get('interest_book/part_update', array($this, 'pushInterestBookPartUpdate'));
+        $admin->get('interest_book/url', array($this, 'pushInterestBookUrl'));
 
         $admin->get('ios_payload_length/{type}', array($this, 'iOSPayloadLength'));
 
-        $admin->get('notify/part_update', array($this, 'pushNotifyPartUpdate'));
-        $admin->get('notify/url', array($this, 'pushNotifyUrl'));
+        $admin->get('notify/interest_book/part_update', array($this, 'pushNotifyInterestBookPartUpdate'));
+        $admin->get('notify/interest_book/url', array($this, 'pushNotifyInterestBookUrl'));
 
         return $admin;
     }
@@ -32,14 +32,14 @@ class PushNotificationController implements ControllerProviderInterface
     /**
      * View
      */
-    public static function pushPartUpdate(Request $req, Application $app)
+    public static function pushInterestBookPartUpdate(Request $req, Application $app)
     {
-        return $app['twig']->render('/admin/push_notification_part_update.twig');
+        return $app['twig']->render('/admin/push_notification_interest_book_part_update.twig');
     }
 
-    public static function pushUrl(Request $req, Application $app)
+    public static function pushInterestBookUrl(Request $req, Application $app)
     {
-        return $app['twig']->render('/admin/push_notification_url.twig');
+        return $app['twig']->render('/admin/push_notification_interest_book_url.twig');
     }
 
     /**
@@ -52,12 +52,12 @@ class PushNotificationController implements ControllerProviderInterface
         $notification_ios = null;
         $payload_length = 0;
 
-        if ($type == self::PUSH_TYPE_PART_UPDATE) {
+        if ($type == self::PUSH_TYPE_INTEREST_PART_UPDATE) {
             $b_id = $req->get('b_id');
-            $notification_ios = IosPush::createPartUpdateNotification($b_id);
-        } else if ($type == self::PUSH_TYPE_URL) {
+            $notification_ios = IosPush::createInterestBookPartUpdateNotification($b_id);
+        } else if ($type == self::PUSH_TYPE_INTEREST_URL) {
             $url = $req->get('url');
-            $notification_ios = IosPush::createUrlNotification($url);
+            $notification_ios = IosPush::createInterestBookUrlNotification($url);
         }
 
         if ($notification_ios) {
@@ -71,7 +71,7 @@ class PushNotificationController implements ControllerProviderInterface
     /**
      * Push Notification
      */
-    public static function pushNotifyPartUpdate(Request $req, Application $app)
+    public static function pushNotifyInterestBookPartUpdate(Request $req, Application $app)
     {
         $recipient = $req->get('recipient');
         $b_id = $req->get('b_id');
@@ -82,15 +82,15 @@ class PushNotificationController implements ControllerProviderInterface
         }
 
         $pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $recipient);
-        $notification_android = AndroidPush::createPartUpdateNotification($b_id, $message);
-        $notification_ios = IosPush::createPartUpdateNotification($b_id);
+        $notification_android = AndroidPush::createInterestBookPartUpdateNotification($b_id, $message);
+        $notification_ios = IosPush::createInterestBookPartUpdateNotification($b_id);
 
         $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
 
         return $app->json($result);
     }
 
-    public static function pushNotifyUrl(Request $req, Application $app)
+    public static function pushNotifyInterestBookUrl(Request $req, Application $app)
     {
         $os_type = $req->get('os_type');
         $url = $req->get('url');
@@ -109,8 +109,8 @@ class PushNotificationController implements ControllerProviderInterface
         }
 
         $pick_result = PushDevicePicker::pickDevicesUsingPlatform($app['db'], $platform);
-        $notification_android = AndroidPush::createUrlNotification($url, $message);
-        $notification_ios = IosPush::createUrlNotification($url);
+        $notification_android = AndroidPush::createInterestBookUrlNotification($url, $message);
+        $notification_ios = IosPush::createInterestBookUrlNotification($url);
 
         $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
 
@@ -123,8 +123,8 @@ class PushNotificationController implements ControllerProviderInterface
         $result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
 
         return array(
-            "Android" => $result_android,
-            "iOS" => $result_ios
+            'Android' => $result_android,
+            'iOS' => $result_ios
         );
     }
 }

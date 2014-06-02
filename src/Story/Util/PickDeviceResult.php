@@ -17,7 +17,6 @@ class PickDeviceResult
     /*
      * 플랫폼에 따라 필터링
      */
-
     public function getAllDevices()
     {
         return $this->devices;
@@ -36,7 +35,6 @@ class PickDeviceResult
     private function getDevicesForPlatform($platform)
     {
         $devices_for_platform = array();
-
         foreach ($this->devices as $device) {
             if ($device['platform'] == $platform) {
                 array_push($devices_for_platform, $device);
