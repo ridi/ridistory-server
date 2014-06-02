@@ -92,23 +92,15 @@ class PushNotificationController implements ControllerProviderInterface
 
     public static function pushNotifyInterestBookUrl(Request $req, Application $app)
     {
-        $os_type = $req->get('os_type');
+        $recipient = $req->get('recipient');
         $url = $req->get('url');
         $message = $req->get('message');
 
-        if (empty($os_type) || empty($url) || empty($message)) {
+        if (empty($url) || empty($message)) {
             return 'not all required fields are filled';
         }
 
-        if ($os_type == PickDeviceResult::PLATFORM_ANDROID) {
-            $platform = PickDeviceResult::PLATFORM_ANDROID;
-        } else if ($os_type == PickDeviceResult::PLATFORM_IOS) {
-            $platform = PickDeviceResult::PLATFORM_IOS;
-        } else {
-            $platform = PickDeviceResult::PLATFORM_ALL;
-        }
-
-        $pick_result = PushDevicePicker::pickDevicesUsingPlatform($app['db'], $platform);
+        $pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $recipient);
         $notification_android = AndroidPush::createInterestBookUrlNotification($url, $message);
         $notification_ios = IosPush::createInterestBookUrlNotification($url);
 
@@ -117,7 +109,7 @@ class PushNotificationController implements ControllerProviderInterface
         return $app->json($result);
     }
 
-    public static function _push(PickDeviceResult $pick_result, $message, $notification_ios, $notification_android)
+    private static function _push(PickDeviceResult $pick_result, $message, $notification_ios, $notification_android)
     {
         $result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
         $result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
