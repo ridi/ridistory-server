@@ -32,6 +32,7 @@ EOT;
             }
 
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
+            $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
         }
         return $b;
     }
@@ -81,6 +82,7 @@ EOT;
 
         foreach ($opened_books as &$b) {
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
+            $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
             // TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
             // iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
             $b['begin_date'] = substr($b['begin_date'], 0, 10);
@@ -168,6 +170,7 @@ EOT;
         foreach ($ar as &$b) {
             $b['last_update'] = 0;
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
+            $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
             $b['is_completed'] = 1;
 
             if ($ignore_adult_only) {
@@ -223,6 +226,7 @@ EOT;
         $ar = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($ar as &$b) {
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
+            $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
 
             if (strtotime($b['end_date']) < strtotime($today)) {
                 $b['is_completed'] = 1;
@@ -263,6 +267,15 @@ EOT;
     public static function getCoverUrl($store_id)
     {
         return 'http://misc.ridibooks.com/cover/' . $store_id . '/xxlarge';
+    }
+
+    public static function getRidibooksSaleUrl($sales_store_id)
+    {
+        if ($sales_store_id != null) {
+            return 'http://ridibooks.com/v2/Detail/index?id=' . $sales_store_id;
+        } else {
+            return '';
+        }
     }
 
     /*
