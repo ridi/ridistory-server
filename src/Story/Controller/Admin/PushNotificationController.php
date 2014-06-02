@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PushNotificationController implements ControllerProviderInterface
 {
+    //TODO: iOS 서비스 종료로 인하여, 푸시메세지 발송 부분 삭제. 추후에 iOS 서비스 재개하면 다시 살릴 필요 있음. (Rev. 511)
+
     const PUSH_TYPE_INTEREST_PART_UPDATE = 'interest_book_part_update';
     const PUSH_TYPE_INTEREST_URL = 'interest_book_url';
 
@@ -83,9 +85,8 @@ class PushNotificationController implements ControllerProviderInterface
 
         $pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $recipient);
         $notification_android = AndroidPush::createInterestBookPartUpdateNotification($b_id, $message);
-        $notification_ios = IosPush::createInterestBookPartUpdateNotification($b_id);
 
-        $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
+        $result = self::_push($pick_result, $notification_android);
 
         return $app->json($result);
     }
@@ -102,21 +103,18 @@ class PushNotificationController implements ControllerProviderInterface
 
         $pick_result = PushDevicePicker::pickDevicesUsingInterestBook($app['db'], $recipient);
         $notification_android = AndroidPush::createInterestBookUrlNotification($url, $message);
-        $notification_ios = IosPush::createInterestBookUrlNotification($url);
 
-        $result = self::_push($pick_result, $message, $notification_ios, $notification_android);
+        $result = self::_push($pick_result, $notification_android);
 
         return $app->json($result);
     }
 
-    private static function _push(PickDeviceResult $pick_result, $message, $notification_ios, $notification_android)
+    private static function _push(PickDeviceResult $pick_result, $notification_android)
     {
         $result_android = AndroidPush::sendPush($pick_result->getAndroidDevices(), $notification_android);
-        $result_ios = IosPush::sendPush($pick_result->getIosDevices(), $message, $notification_ios);
 
         return array(
-            'Android' => $result_android,
-            'iOS' => $result_ios
+            'Android' => $result_android
         );
     }
 }
