@@ -180,6 +180,7 @@ class CoinBilling
         }
 
         $user = Buyer::getByUids(array($coin_sale['u_id']));
+        $user = $user[0];
         $product = CoinProduct::getCoinProductBySkuAndType($coin_sale['sku'], $payment);
 
         $user_coin_balance = $user['coin_balance'];

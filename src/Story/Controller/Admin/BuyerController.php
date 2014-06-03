@@ -424,6 +424,7 @@ class BuyerController implements ControllerProviderInterface
     public function buyerDetail(Request $req, Application $app, $id)
     {
         $buyer = Buyer::getByUids(array($id));
+        $buyer = $buyer[0];
 
         $coin_in = Buyer::getCoinInList($id);
         $total_coin_in = 0;
