@@ -33,6 +33,7 @@ EOT;
 
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
             $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
+            $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
         }
         return $b;
     }
@@ -83,6 +84,7 @@ EOT;
         foreach ($opened_books as &$b) {
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
             $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
+            $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
             // TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
             // iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
             $b['begin_date'] = substr($b['begin_date'], 0, 10);
@@ -171,6 +173,7 @@ EOT;
             $b['last_update'] = 0;
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
             $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
+            $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
             $b['is_completed'] = 1;
 
             // 종료액션이 판매종료이고, 완결일이 오늘 날짜 이전일 경우 판매종료
@@ -235,6 +238,7 @@ EOT;
         foreach ($ar as &$b) {
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
             $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
+            $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
 
             if (strtotime($b['end_date']) < strtotime($today)) {
                 $b['is_completed'] = 1;
