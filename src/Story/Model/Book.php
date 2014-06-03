@@ -173,6 +173,14 @@ EOT;
             $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
             $b['is_completed'] = 1;
 
+            // 종료액션이 판매종료이고, 완결일이 오늘 날짜 이전일 경우 판매종료
+            if ($b['end_action_flag'] == Book::SALES_CLOSED
+                && strtotime($b['end_date']) < strtotime($today)) {
+                $b['is_sales_closed'] = 1;
+            } else {
+                $b['is_sales_closed'] = 0;
+            }
+
             if ($ignore_adult_only) {
                 $b['adult_only'] = '0';
             }
