@@ -88,7 +88,10 @@ class PushNotificationController implements ControllerProviderInterface
 
         $result = self::_push($pick_result, $notification_android);
 
-        return $app->json($result);
+        $flash_message = self::getSendFlashMessage($recipient, $result);
+        $app['session']->getFlashBag()->add('alert', array('success' => $flash_message));
+
+        return $app->redirect('/admin/push/interest_book/part_update');
     }
 
     public static function pushNotifyInterestBookUrl(Request $req, Application $app)
@@ -106,7 +109,10 @@ class PushNotificationController implements ControllerProviderInterface
 
         $result = self::_push($pick_result, $notification_android);
 
-        return $app->json($result);
+        $flash_message = self::getSendFlashMessage($recipient, $result);
+        $app['session']->getFlashBag()->add('alert', array('success' => $flash_message));
+
+        return $app->redirect('/admin/push/interest_book/url');
     }
 
     private static function _push(PickDeviceResult $pick_result, $notification_android)
@@ -116,5 +122,15 @@ class PushNotificationController implements ControllerProviderInterface
         return array(
             'Android' => $result_android
         );
+    }
+
+    private static function getSendFlashMessage($b_id, $result)
+    {
+        $result = $result['Android'][0];
+
+        $flash_message = '[책 ID: ' . $b_id . '] 푸시 메세지가 성공적으로 발송되었습니다.';
+        $flash_message .= ' (성공: ' . $result['success'] . '건)';
+
+        return $flash_message;
     }
 }
