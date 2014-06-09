@@ -26,7 +26,7 @@ class PushDevice
         } else {
             $info = PushDevice::getByDeviceToken($device_token);
             if ($info) {
-                if ($u_id && $info['u_id'] != $u_id)) {
+                if ($u_id && $info['u_id'] != $u_id) {
                     self::bindUid($device_id, $u_id);
                 }
 
