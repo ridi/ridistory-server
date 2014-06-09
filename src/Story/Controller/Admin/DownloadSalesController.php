@@ -5,6 +5,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Book;
 use Story\Model\DownloadSales;
+use Story\Util\MakeExcel;
 use Symfony\Component\HttpFoundation\Request;
 use Twig_SimpleFunction;
 
@@ -31,8 +32,20 @@ class DownloadSalesController implements ControllerProviderInterface
             $download_sales = DownloadSales::getWholePartSalesList($begin_date, $end_date);
         }
 
+        $is_excel = $req->get('excel', 0);
+        if ($is_excel) {
+            if ($download_sales) {
+                $file_name = '파트포함전체매출확인(' . date('Ymd', strtotime($begin_date)) . '~' . date('Ymd', strtotime($end_date)) . ')';
+                MakeExcel::setExcelHeader($file_name);
+            } else {
+                // 매출내역이 없으면, 엑셀로 추출하지 않음.
+                $is_excel = 0;
+                $app['session']->getFlashBag()->add('alert', array('error' => '내역이 존재하지 않아 엑셀 파일로 추출할 수 없습니다.'));
+            }
+        }
+
         return $app['twig']->render(
-            '/admin/download_sales_all.twig',
+            ($is_excel ? '/admin/download_sales_all_excel.twig' : '/admin/download_sales_all.twig'),
             array(
                 'begin_date'     => $begin_date,
                 'end_date'       => $end_date,

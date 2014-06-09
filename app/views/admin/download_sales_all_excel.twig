@@ -1,0 +1,37 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>리디스토리</title>
+    <style type='text/css'>
+        table, th, td {border:.5pt solid windowtext}
+        table th {background-color: #b4b4b4;}
+        .excel_table {padding: 2px; border-collapse: collapse;}
+    </style>
+</head>
+<body>
+<table class='excel_table'>
+    <tr>
+        <th>날짜</th>
+        <th>책 ID</th>
+        <th>도서명</th>
+        <th>파트 ID</th>
+        <th>파트명</th>
+        <th>무료다운</th>
+        <th>유료다운</th>
+        <th>판매액</th>
+    </tr>
+    {% for ds in download_sales %}
+        <tr>
+            <td>{{ ds.purchase_date }}</td>
+            <td>{{ ds.b_id }}</td>
+            <td>{{ ds.b_title }}</td>
+            <td>{{ ds.p_id }}</td>
+            <td>{{ ds.p_title }}</td>
+            <td>{{ ds.free_download }}</td>
+            <td>{{ ds.charged_download }}</td>
+            <td>{{ (ds.total_sales * 90)|number_format(0, '', ',') }}</td>
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
