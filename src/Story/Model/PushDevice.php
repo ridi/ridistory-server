@@ -76,10 +76,10 @@ EOT;
         return $r === 1;
     }
 
-    public static function update($values)
+    public static function update($id, $values)
     {
         global $app;
-        $r = $app['db']->update('push_devices', $values);
+        $r = $app['db']->update('push_devices', $values, array('id' => $id));
         return $r === 1;
     }
 }
