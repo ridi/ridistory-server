@@ -258,6 +258,7 @@ CREATE TABLE `purchase_history` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `push_devices` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `u_id` int(11) DEFAULT NULL,
   `device_id` varchar(32) NOT NULL,
   `platform` enum('iOS','Android') NOT NULL DEFAULT 'Android',
   `device_token` varchar(256) NOT NULL,
@@ -268,7 +269,8 @@ CREATE TABLE `push_devices` (
   UNIQUE KEY `device_id` (`device_id`),
   KEY `reg_date` (`reg_date`),
   KEY `device_token` (`device_token`(255)),
-  KEY `platform` (`platform`)
+  KEY `platform` (`platform`),
+  KEY `u_id` (`u_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

@@ -3,12 +3,17 @@ namespace Story\Model;
 
 class PushDevice
 {
-    public static function insertOrUpdate($device_id, $platform, $device_token)
+    public static function insertOrUpdate($device_id, $platform, $device_token, $u_id = null)
     {
         global $app;
-        $info = PushDevice::getByDeviceId($device_id);
 
+        $info = PushDevice::getByDeviceId($device_id);
         if ($info) {
+            // 회원 정보, 푸시 정보 바인딩
+            if ($u_id && $info['u_id'] != $u_id) {
+                self::bindUid($device_id, $u_id);
+            }
+
             // device_id가 이미 있는 경우 처리
             if ($info['platform'] == $platform && $info['device_token'] == $device_token && $info['is_active']) {
                 return true;
@@ -20,8 +25,11 @@ class PushDevice
             return $r === 1;
         } else {
             $info = PushDevice::getByDeviceToken($device_token);
-
             if ($info) {
+                if ($u_id && $info['u_id'] != $u_id)) {
+                    self::bindUid($device_id, $u_id);
+                }
+
                 // device_token이 이미 있는 경우 처리
                 if ($info['platform'] == $platform && $info['device_id'] == $device_id && $info['is_active']) {
                     return true;
@@ -34,12 +42,21 @@ class PushDevice
             } else {
                 // 한번도 등록되지 않은 device_id, device_token일 경우 처리
                 $sql = <<<EOT
-insert ignore into push_devices (device_id, platform, device_token, is_active) values (?, ?, ?, 1)
+insert ignore into push_devices (u_id, device_id, platform, device_token, is_active) values (?, ?, ?, ?, 1)
 EOT;
-                $r = $app['db']->executeUpdate($sql, array($device_id, $platform, $device_token));
+                $r = $app['db']->executeUpdate($sql, array($u_id, $device_id, $platform, $device_token));
                 return $r === 1;
             }
         }
+    }
+
+    private static function bindUid($device_id, $u_id)
+    {
+        $sql = <<<EOT
+update ignore push_devices set u_id = ? where device_id = ?
+EOT;
+        global $app;
+        return $app['db']->executeUpdate($sql, array($u_id, $device_id));
     }
 
     public static function getByDeviceId($device_id)

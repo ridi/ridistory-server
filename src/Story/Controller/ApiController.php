@@ -782,13 +782,21 @@ class ApiController implements ControllerProviderInterface
         $platform = $req->get('platform');
         $device_token = $req->get('device_token');
 
+        $u_id = $req->get('u_id', null);
+        if ($u_id) {
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+            if (!Buyer::isValidUid($u_id)) {
+                return $app->json(array('success' => false, 'reason' => 'invalid user'));
+            }
+        }
+
         if (strlen($device_id) == 0 || strlen($device_token) == 0 ||
             (strcmp($platform, 'iOS') != 0 && strcmp($platform, 'Android') != 0)
         ) {
             return $app->json(array('success' => false, 'reason' => 'invalid parameters'));
         }
 
-        if (PushDevice::insertOrUpdate($device_id, $platform, $device_token)) {
+        if (PushDevice::insertOrUpdate($device_id, $platform, $device_token, $u_id)) {
             return $app->json(array('success' => true));
         } else {
             return $app->json(array('success' => false, 'reason' => 'Insert or Update error'));
