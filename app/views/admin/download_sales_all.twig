@@ -19,6 +19,7 @@
     </div>
 
     <button class='btn btn-primary' id='js_export_excel' style='margin-bottom: 10px; float: right;'>엑셀로 추출하기</button>
+
     <table class='table table-hover'>
         <thead>
         <tr>
@@ -53,6 +54,10 @@
 {% block script %}
     <script>
         $(function() {
+            {% if download_sales|length <= 0 %}
+                $('#js_export_excel').hide();
+            {% endif %}
+
             $('#return_to_list').click(function() {
                 location.href = '/admin/download_sales/list';
             });
@@ -67,11 +72,8 @@
             $('#js_export_excel').click(function() {
                 var begin_date = $('#js_begin_date').val();
                 var end_date = $('#js_end_date').val();
-                if (begin_date && end_date) {
-                    location.href = '/admin/download_sales/all?begin_date=' + begin_date + '&end_date=' + end_date + '&excel=1';
-                } else {
-                    alert('시작일과 종료일을 모두 입력해주세요.');
-                }
+
+                location.href = '/admin/download_sales/all?begin_date=' + begin_date + '&end_date=' + end_date + '&excel=1';
             });
         });
     </script>
