@@ -88,7 +88,7 @@ class PushNotificationController implements ControllerProviderInterface
 
         $result = self::_push($pick_result, $notification_android);
 
-        $flash_message = self::getSendFlashMessage($recipient, $result);
+        $flash_message = self::getResultFlashMessage($recipient, $result);
         $app['session']->getFlashBag()->add('alert', array('success' => $flash_message));
 
         return $app->redirect('/admin/push/interest_book/part_update');
