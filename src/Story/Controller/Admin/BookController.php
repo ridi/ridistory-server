@@ -25,6 +25,7 @@ class BookController implements ControllerProviderInterface
         $admin->get('{id}', array($this, 'bookDetail'));
         $admin->post('{id}/delete', array($this, 'deleteBook'));
         $admin->post('{id}/edit', array($this, 'editBook'));
+        $admin->post('{id}/calc_part_date_auto', array($this, 'calculatePartDateAutomatically'));
 
         return $admin;
     }
@@ -228,6 +229,22 @@ class BookController implements ControllerProviderInterface
         $app['cache']->delete('part_list_1_1_' . $id);
 
         return $app->redirect('/admin/book/' . $id);
+    }
+
+    public function calculatePartDateAutomatically(Request $req, Application $app, $id)
+    {
+        $book = Book::get($id);
+
+        $today = date('Y-m-d H:i:s');
+        $active_lock = $book['is_active_lock'];
+        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime($today) ? 1 : 0);
+        $parts = Part::getListByBid($id, false, $active_lock, $is_completed, $book['end_action_flag'], $book['lock_day_term']);
+
+        //TODO: 파트 시작일/종료일 자동 계산해서 적용
+
+        $app['session']->getFlashBag()->add('alert', array('info' => '파트 시작일/종료일이 자동으로 계산되어 적용되었습니다.'));
+
+        return $app->json(array('success' => true));
     }
 
     public function onGoingBookList(Request $req, Application $app)
