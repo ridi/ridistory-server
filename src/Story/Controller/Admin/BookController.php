@@ -10,6 +10,7 @@ use Story\Model\Book;
 use Story\Model\CpAccount;
 use Story\Model\Part;
 use Twig_SimpleFunction;
+use Exception;
 
 class BookController implements ControllerProviderInterface
 {
@@ -234,17 +235,74 @@ class BookController implements ControllerProviderInterface
     public function calculatePartDateAutomatically(Request $req, Application $app, $id)
     {
         $book = Book::get($id);
+        $parts = Part::getListByBid($id, false, $book['is_active_lock'], false, $book['end_action_flag'], $book['lock_day_term']);
 
-        $today = date('Y-m-d H:i:s');
-        $active_lock = $book['is_active_lock'];
-        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime($today) ? 1 : 0);
-        $parts = Part::getListByBid($id, false, $active_lock, $is_completed, $book['end_action_flag'], $book['lock_day_term']);
+        try {
+            $first_part = array_shift($parts);
+            if (!$first_part) {
+                throw new Exception('파트가 존재하지 않습니다.');
+            }
 
-        //TODO: 파트 시작일/종료일 자동 계산해서 적용
+            // 첫 번째 파트를 기준으로 날짜를 입력한다.
+            $begin_date = $first_part['begin_date'];
+            $end_date = $first_part['end_date'];
+            $day_of_week  = date('w', strtotime($begin_date));  // Sun(0) ~ Sat(6)
 
-        $app['session']->getFlashBag()->add('alert', array('info' => '파트 시작일/종료일이 자동으로 계산되어 적용되었습니다.'));
+            if ($begin_date == null || $end_date == null || $book['upload_days'] == 0) {
+                throw new Exception('연재 요일, 첫 번째 파트의 시작일/종료일을 모두 정확히 입력해주세요.');
+            }
 
-        return $app->json(array('success' => true));
+            $upload_days = array();
+            for ($i=0; $i<7; $i++) {
+                $upload_days[] = ($book['upload_days'] & (1 << $i)) ? 1 : 0;
+            }
+
+            // 연재요일보다 하루 전에 업로드 되므로, 인덱스를 1씩 앞으로 이동.
+            $first_element = array_shift($upload_days);
+            array_push($upload_days, $first_element);
+
+            if ($upload_days[$day_of_week] != 1) {
+                throw new Exception('첫 번째 파트의 연재 요일이, 책의 연재 요일과 다릅니다.');
+            }
+
+            $new_begin_date = $begin_date;
+            $day_index = $day_of_week;
+
+            $app['db']->beginTransaction();
+            try {
+                foreach ($parts as $part) {
+                    $loop_count = 0;    // 혹시나 모를 무한 루프를 방지하기 위한 플래그.
+                    while(true) {
+                        $new_begin_date = date('Y-m-d H:i:s', strtotime($new_begin_date . ' + 1 day'));
+                        if (++$day_index > 6) {
+                            $day_index = 0;
+                        }
+
+                        if ($upload_days[$day_index] == 1) {
+                            Part::update($part['id'], array('begin_date' => $new_begin_date, 'end_date' => $end_date));
+                            break;
+                        }
+
+                        $loop_count++;
+                        if ($loop_count > 7) {
+                            // 최소 1주일에 1회이상 연재를 해야하는데, 그러지 않을 경우 무한루프로 간주하고 break.
+                            throw new Exception('연재 요일 계산 오류가 발생하였습니다. (무한루프)');
+                        }
+                    }
+                }
+
+                $app['db']->commit();
+            } catch (Exception $e) {
+                $app['db']->rollback();
+                throw new Exception('파트의 시작일/종료일을 업데이트하는 도중 오류가 발생했습니다.');
+            }
+
+            $app['session']->getFlashBag()->add('alert', array('info' => '파트 시작일/종료일이 자동으로 계산되어 적용되었습니다.'));
+            return $app->json(array('success' => true));
+        } catch (Exception $e) {
+            $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
+            return $app->json(array('success' => false));
+        }
     }
 
     public function onGoingBookList(Request $req, Application $app)
