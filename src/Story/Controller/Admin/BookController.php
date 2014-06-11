@@ -238,14 +238,22 @@ class BookController implements ControllerProviderInterface
         $parts = Part::getListByBid($id, false, $book['is_active_lock'], false, $book['end_action_flag'], $book['lock_day_term']);
 
         try {
-            $first_part = array_shift($parts);
-            if (!$first_part) {
-                throw new Exception('파트가 존재하지 않습니다.');
+            $criteria_part = null;
+            $criteria_p_id = $req->get('criteria_p_id', 0);
+            while(!empty($parts)) {
+                $part = array_shift($parts);
+                if ($part['id'] == $criteria_p_id) {
+                    $criteria_part = $part;
+                    break;
+                }
+            }
+            if (empty($parts) || $criteria_part == null) {
+                throw new Exception('기준이 되는 파트가 해당 책의 파트 목록에 존재하지 않습니다.');
             }
 
-            // 첫 번째 파트를 기준으로 날짜를 입력한다.
-            $begin_date = $first_part['begin_date'];
-            $end_date = $first_part['end_date'];
+            // 기준이 되는 파트를 첫 파트로 생각하고 날짜를 계산한다.
+            $begin_date = $criteria_part['begin_date'];
+            $end_date = $criteria_part['end_date'];
             $day_of_week  = date('w', strtotime($begin_date));  // Sun(0) ~ Sat(6)
 
             if ($begin_date == null || $end_date == null || $book['upload_days'] == 0) {
