@@ -28,6 +28,8 @@ class RecommendedBook
 
     public $cover_url;
 
+    public $ridibooks_sale_url;
+
     public function __construct($b_id)
     {
         $this->b_id = $b_id;

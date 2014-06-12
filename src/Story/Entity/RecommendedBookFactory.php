@@ -16,6 +16,7 @@ class RecommendedBookFactory
         $rb = $em->find('Story\Entity\RecommendedBook', $id);
         if ($rb) {
             $rb->cover_url = Book::getCoverUrl($rb->store_id);
+            $rb->ridibooks_sale_url = Book::getRidibooksSaleUrl($rb->store_id);
         }
         return $rb;
     }
@@ -34,6 +35,7 @@ class RecommendedBookFactory
         foreach ($recommended_books as $key => &$rb) {
             if ($rb) {
                 $rb->cover_url = Book::getCoverUrl($rb->store_id);
+                $rb->ridibooks_sale_url = Book::getRidibooksSaleUrl($rb->store_id);
 
                 if (($rb->store_id == '' || $rb->title == '') && !$show_all) {
                     unset($recommended_books[$key]);

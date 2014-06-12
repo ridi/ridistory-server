@@ -13,7 +13,7 @@ class EntityManagerProvider
     private static $IS_DEV_MODE = true;
 
     /** Entity가 갱신되었을 경우 아래 NAMESPACE를 반드시 바꿔줘야함 */
-    const METADATA_CACHE_NAMESPACE = "STORY_METADATA_1";
+    const METADATA_CACHE_NAMESPACE = "STORY_METADATA_2";
 
     /**
      * @var EntityManager

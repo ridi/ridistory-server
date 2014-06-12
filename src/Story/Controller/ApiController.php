@@ -388,6 +388,7 @@ class ApiController implements ControllerProviderInterface
      *  - 관심책 지정 여부
      *  - 잠금 여부 (v3 이상)
      *  - 구매 여부 (v3 이상)
+     *  - 작가의 다른 작품 리스트 (v4 이상)
      */
     public function bookDetail(Request $req, Application $app, $b_id)
     {
@@ -402,6 +403,7 @@ class ApiController implements ControllerProviderInterface
          * v1 : Exclude Adult
          * v2 : Include Adult
          * v3 : Use Lock Function
+         * v4 : Include Recommended Book List
          */
         $v = intval($req->get('v', '1'));
         $active_lock = ($v > 2) && ($book['is_active_lock'] == 1);
@@ -467,7 +469,20 @@ class ApiController implements ControllerProviderInterface
         }
 
         $book['parts'] = $parts;
-        $book['has_recommended_books'] = (RecommendedBookFactory::hasRecommendedBooks($b_id) > 0) ? true : false;
+
+        $include_recommended_book_list = ($v > 3);
+        if ($include_recommended_book_list) {
+            $recommended_books = $app['cache']->fetch(
+                'recommended_book_list_' . $b_id,
+                function () use ($b_id) {
+                    return RecommendedBookFactory::getRecommendedBookListByBid($b_id, false);
+                },
+                60 * 10
+            );
+            $book['recommended_books'] = $recommended_books;
+        } else {
+            $book['has_recommended_books'] = (RecommendedBookFactory::hasRecommendedBooks($b_id) > 0) ? true : false;
+        }
 
         $device_id = $req->get('device_id');
         $book['interest'] = ($device_id === null) ? false : UserInterest::hasInterestInBook($device_id, $b_id);
