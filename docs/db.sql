@@ -282,8 +282,7 @@ CREATE TABLE `recommended_book` (
   `title` varchar(128) NOT NULL,
   `seq` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `b_id` (`b_id`,`store_id`) USING BTREE,
-  KEY `b_id_2` (`b_id`,`seq`) USING BTREE
+  UNIQUE KEY `b_id` (`b_id`,`store_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
