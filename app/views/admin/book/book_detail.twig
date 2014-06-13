@@ -226,6 +226,7 @@
                     <th class='span2'>스토어 ID</th>
                     <th class='span5'>도서명</th>
                     <th class='span2'></th>
+                    <th class='span1'>순서</th>
                 </tr>
                 </thead>
                 <tbody id='js_recommended_book_list'>
@@ -236,11 +237,13 @@
                         <td>{{ rb.store_id }}</td>
                         <td>{{ rb.title }}</td>
                         <td><a href='http://ridibooks.com/detail.php?id={{ rb.store_id }}' >[스토어에서 보기]</a></td>
+                        <td><b>{{ rb.seq }}</b></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
             <button class='btn btn-small btn-primary pull-right' id='js_add_recommended_book'>다른 작품 추가</button>
+            <button class='btn btn-small btn-success pull-right' id='js_edit_recommended_book_seq' style='margin-right: 10px;'>순서 변경</button>
         </td>
     </tr>
 </table>
@@ -330,6 +333,11 @@ $(function() {
 
     $('#js_add_recommended_book').click(function() {
         location.href = '/admin/book/recommended_book/add?b_id={{ book.id }}';
+        return false;
+    });
+
+    $('#js_edit_recommended_book_seq').click(function() {
+        location.href = '/admin/book/recommended_book/manage_seq?b_id={{ book.id }}';
         return false;
     });
 

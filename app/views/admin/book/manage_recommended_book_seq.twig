@@ -1,0 +1,88 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <h4>[<span style='color: #0044cc'>{{ book.title }} (책ID: {{ book.id }})</span>] 작가의 다른 작품 순서 관리</h4>
+
+    <form id='batch_form' method='post'>
+        <input type='hidden' name='b_id' value='{{ book.id }}' />
+        <table id='js_table' class='table'>
+            <thead>
+            <tr>
+                <th class='span1'></th>
+                <th class='span1'>책 표지</th>
+                <th>도서명</th>
+                <th class='span1'>순서</th>
+            </tr>
+            </thead>
+            <tbody id='js_tbody'>
+            {% set i = 1 %}
+            {% for rb in recommended_books %}
+                <tr id='{{ rb.id }}'>
+                    <td class="js_drag_handle" style='text-align: center;'><i class='icon-th'></i></td>
+                    <td><img src='{{ rb.cover_url }}' style="height:80px;" /></td>
+                    <td>{{ rb.title }}</td>
+                    <td>
+                        <span id='js_order_show_{{ rb.id }}' style='font-weight: bold'>{{ i }}</span>
+                        <input id='js_order_{{ rb.id }}' type='hidden' name='orders[{{ rb.id }}]' value='{{ i }}' />
+                    </td>
+                    {% set i = i + 1 %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <button class='btn btn-cancel'>책 정보로 돌아가기</button>
+        <button class='btn btn-success pull-right'>순서 변경(저장)</button>
+    </form>
+{% endblock %}
+
+{% block script %}
+    <style type='text/css'>
+        .while_drag td {
+            color: #ffffff;
+            background-color: #666666;
+        }
+
+        .js_drag_handle {
+            cursor: move;
+        }
+    </style>
+
+    <script src="/static/bower_components/TableDnD/js/jquery.tablednd.js"></script>
+    <script>
+        $(function() {
+            $("#js_table").tableDnD({
+                onDragClass: 'while_drag',
+
+                onDrop: function(table, row) {
+                    reOrderTable(table);
+                },
+
+                dragHandle: ".js_drag_handle"
+            });
+
+            $('.btn-cancel').click(function() {
+                location.href = '/admin/book/' + {{ book.id }};
+                return false;
+            });
+
+            $('.btn-success').click(function() {
+                var form = document.getElementById('batch_form');
+                form.action = '/admin/book/recommended_book/manage_seq/edit';
+                form.submit();
+            });
+        });
+
+        // 순서 다시 매김
+        function reOrderTable(table) {
+            var rows = table.tBodies[0].rows;
+
+            for (var i=0; i<rows.length; i++) {
+                var index = i + 1;
+
+                $('#js_order_' + rows[i].id).val(index);
+                $('#js_order_show_' + rows[i].id).html(index);
+            }
+        }
+    </script>
+{% endblock %}

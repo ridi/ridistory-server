@@ -30,7 +30,7 @@ class RecommendedBookFactory
     {
         $em = EntityManagerProvider::getEntityManager();
         $recommended_books = $em->getRepository('Story\Entity\RecommendedBook')
-            ->findBy(array('b_id' => $b_id), array('id' => 'ASC'));
+            ->findBy(array('b_id' => $b_id), array('seq' => 'ASC'));
 
         foreach ($recommended_books as $key => &$rb) {
             if ($rb) {
@@ -48,11 +48,22 @@ class RecommendedBookFactory
 
     public static function create($b_id)
     {
-        $rb = new RecommendedBook($b_id);
+        $last_seq = self::getLastSeq($b_id);
+
+        $rb = new RecommendedBook($b_id, $last_seq + 1);
         $em = EntityManagerProvider::getEntityManager();
         $em->persist($rb);
         $em->flush();
         return $rb->id;
+    }
+
+    private static function getLastSeq($b_id)
+    {
+        $sql = <<<EOT
+select seq from recommended_book where b_id = ? order by seq desc limit 1
+EOT;
+        global $app;
+        return $app['db']->fetchColumn($sql, array($b_id));
     }
 
     public static function hasRecommendedBooks($b_id)
