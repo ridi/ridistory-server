@@ -31,6 +31,8 @@
         </div>
     </form>
 
+    <button class='btn btn-primary pull-right' id='js_export_excel' style='margin-bottom: 10px;'>엑셀로 저장하기</button>
+
     <table class='table table-hover table-striped'>
         <thead>
         <tr>
@@ -73,6 +75,10 @@
 {% block script %}
     <script>
         $(function() {
+            {% if download_sales|length <= 0 %}
+                $('#js_export_excel').hide();
+            {% endif %}
+
             $('#begin_date_picker').datepicker({
                 format: 'yyyy-mm-dd'
             });
@@ -103,6 +109,13 @@
                 $('#end_date_picker').val(year + '-' + month + '-' + getLastDayOfMonth(year, month));
 
                 $('#js_btn_search').trigger('click');
+            });
+
+            $('#js_export_excel').click(function() {
+                var begin_date = $('#begin_date_picker').val();
+                var end_date = $('#end_date_picker').val();
+
+                location.href = '/cp_admin/download_sales/list?begin_date=' + begin_date + '&end_date=' + end_date + '&excel=1';
             });
         });
 

@@ -1,0 +1,54 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>리디스토리</title>
+    <style type='text/css'>
+        table, th, td {border:.5pt solid windowtext}
+        table th {background-color: #b4b4b4;}
+        .excel_table {padding: 2px; border-collapse: collapse;}
+    </style>
+</head>
+<body>
+<table class='excel_table'>
+    <tr>
+        <td colspan='9'>기간: {{ begin_date }} ~ {{ end_date }}</td>
+    </tr>
+    <tr>
+        <th>책제목</th>
+        <th>저자/출판사</th>
+        <th>19세여부</th>
+        <th>상태</th>
+        <th>연재시작일</th>
+        <th>정산율</th>
+        <th>다운로드</th>
+        <th>판매액</th>
+        <th>정산액</th>
+    </tr>
+    {% for ds in download_sales %}
+        <tr>
+            <td>{{ ds.title }}</td>
+            <td>{{ ds.author }} / {{ ds.publisher }}</td>
+            <td>
+                {% if ds.adult_only == 1 %}
+                    Y
+                {% else %}
+                    N
+                {% endif %}
+            </td>
+            <td>{{ get_status(ds.begin_date, ds.end_date, ds.end_action_flag, ds.open_part_count, ds.total_part_count) }}</td>
+            <td>{{ ds.begin_date|simple_date_format }}</td>
+            <td>{{ ds.royalty_percent }}</td>
+            <td>{{ ds.charged_download }}</td>
+            <td>{{ (ds.total_sales * 90)|number_format(0, '', ',') }}</td>
+            <td>{{ (ds.total_sales * (ds.royalty_percent/100) * 90)|number_format(0, '', ',') }}</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan='6' align='right'>합계</td>
+        <td>{{ header.total_download }}</td>
+        <td>{{ header.total_sales|number_format(0, '', ',') }}</td>
+        <td>{{ header.total_sales_royalty|number_format(0, '', ',') }}</td>
+    </tr>
+</table>
+</body>
+</html>

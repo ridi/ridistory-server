@@ -6,6 +6,7 @@ use Silex\ControllerProviderInterface;
 use Story\Model\Book;
 use Story\Model\CpAccount;
 use Story\Model\DownloadSales;
+use Story\Util\MakeExcel;
 use Symfony\Component\HttpFoundation\Request;
 use Twig_SimpleFunction;
 
@@ -131,6 +132,23 @@ class CpAdminController implements ControllerProviderInterface
             $total_charged_download += $ds['charged_download'];
         }
 
+        $is_excel = $req->get('excel', 0);
+        if ($is_excel) {
+            if ($download_sales) {
+                $file_name = $cp['name'] . '님정산';
+                if ($begin_date && $end_date) {
+                    $file_name .= '(' . date('Ymd', strtotime($begin_date)) . '~' . date('Ymd', strtotime($end_date)) . ')';
+                } else {
+                    $file_name .= '(전체)';
+                }
+                MakeExcel::setExcelHeader($file_name);
+            } else {
+                // 매출내역이 없으면, 엑셀로 추출하지 않음.
+                $is_excel = 0;
+                $app['session']->getFlashBag()->add('alert', array('error' => '정산 내역이 존재하지 않아 엑셀 파일로 추출할 수 없습니다.'));
+            }
+        }
+
         $app['twig']->addFilter(
             new \Twig_SimpleFilter('simple_date_format', function($date) {
                 return date('y.m.d', strtotime($date));
@@ -175,7 +193,10 @@ class CpAdminController implements ControllerProviderInterface
             'download_sales' => $download_sales
         );
 
-        return $app['twig']->render('/cp_admin/download_sales_list.twig', $bind);
+        return $app['twig']->render(
+            ($is_excel ? '/cp_admin/download_sales_list_excel.twig' : '/cp_admin/download_sales_list.twig'),
+            $bind
+        );
     }
 
     public static function downloadSalesDetail(Request $req, Application $app, $b_id)
