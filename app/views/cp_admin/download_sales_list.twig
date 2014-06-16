@@ -5,10 +5,23 @@
     <form>
         <div class="well form-inline">
             <h4>기간별 조회</h4>
+            <div id='js_formatted_period' style='margin-bottom: 10px;'>
+                <select id='js_year' style='width: 100px;'>
+                    {% set current_year = 'now'|date('Y') %}
+                    {% for year in 2014..current_year %}
+                        <option value='{{ year }}' {% if year == current_year %} selected {% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+
+                {% for month in 1..12 %}
+                    <button type="button" class="btn btn-default btn-small" value='{{ month }}' id='js_btn_month'>{{ month }}월</button>
+                {% endfor %}
+            </div>
+
             <input type="text" class="span2" name="begin_date" value="{{ begin_date }}" id="begin_date_picker" placeholder="yyyy-mm-dd" >
             ~
             <input type="text" class="span2" name="end_date" value="{{ end_date }}" id="end_date_picker" placeholder="yyyy-mm-dd" >
-            <button class="btn">조회</button>
+            <button class="btn" id='js_btn_search'>조회</button>
             <div style='margin-top: 15px;'>
                 * 기간을 입력하지 않으시면, 전체가 매출이 조회됩니다.<br />
                 <span style="margin-left: 15px;">- 날짜를 입력하지 않을 경우: 전체 누적 정보 조회</span><br />
@@ -81,6 +94,20 @@
                         $(this).css('cursor', '');
                     }
             );
+
+            $('#js_formatted_period button').click(function() {
+                var year = $('#js_year').val();
+                var month = $(this).val();
+
+                $('#begin_date_picker').val(year + '-' + month + '-1');
+                $('#end_date_picker').val(year + '-' + month + '-' + getLastDayOfMonth(year, month));
+
+                $('#js_btn_search').trigger('click');
+            });
         });
+
+        function getLastDayOfMonth(year, month) {
+            return new Date(year, month, 0).getDate();
+        }
     </script>
 {% endblock %}
