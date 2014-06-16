@@ -1,0 +1,45 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>리디스토리</title>
+    <style type='text/css'>
+        table, th, td {border:.5pt solid windowtext}
+        table th {background-color: #b4b4b4;}
+        .excel_table {padding: 2px; border-collapse: collapse;}
+    </style>
+</head>
+<body>
+<table class='excel_table'>
+    <tr>
+        <td colspan='6'>책 제목: {{ book_info.title }}</td>
+    </tr>
+    <tr>
+        <td colspan='6'>기간: {{ date_scope }}</td>
+    </tr>
+    <tr>
+        <th>순서</th>
+        <th>파트 제목</th>
+        <th>판매가격</th>
+        <th>다운로드 수</th>
+        <th>누적 판매 액</th>
+        <th>누적 정산 액</th>
+    </tr>
+    {% for dsd in download_sales_detail %}
+        <tr>
+            <td>{{ dsd.seq }}</td>
+            <td>{{ dsd.title }}</td>
+            <td>{{ (dsd.price * 90)|number_format(0, '', ',') }}</td>
+            <td>{{ dsd.charged_download }}</td>
+            <td>{{ (dsd.total_coin_amount * 90)|number_format(0, '', ',') }}</td>
+            <td>{{ (dsd.total_coin_amount * (book_info.royalty_percent/100) * 90)|number_format(0, '', ',') }}</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan='3' align='right'>합계</td>
+        <td>{{ footer.total_download }}</td>
+        <td>{{ (footer.total_sales * 90)|number_format(0, '', ',') }}</td>
+        <td>{{ (footer.total_sales * (book_info.royalty_percent/100) * 90)|number_format(0, '', ',') }}</td>
+    </tr>
+</table>
+</body>
+</html>

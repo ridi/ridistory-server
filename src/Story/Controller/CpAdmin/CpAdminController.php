@@ -135,12 +135,7 @@ class CpAdminController implements ControllerProviderInterface
         $is_excel = $req->get('excel', 0);
         if ($is_excel) {
             if ($download_sales) {
-                $file_name = $cp['name'] . '님정산';
-                if ($begin_date && $end_date) {
-                    $file_name .= '(' . date('Ymd', strtotime($begin_date)) . '~' . date('Ymd', strtotime($end_date)) . ')';
-                } else {
-                    $file_name .= '(전체)';
-                }
+                $file_name = $cp['name'] . '님_정산(' . self::getDateScopeText($begin_date, $end_date) . ')';
                 MakeExcel::setExcelHeader($file_name);
             } else {
                 // 매출내역이 없으면, 엑셀로 추출하지 않음.
@@ -222,30 +217,45 @@ class CpAdminController implements ControllerProviderInterface
             $total_charged_download += $dsd['charged_download'];
         }
 
-        $app['twig']->addFunction(
-            new Twig_SimpleFunction('get_date_scope', function ($begin_date, $end_date) {
-                if (!$begin_date && !$end_date) {
-                    $scope = '전체';
-                } else if ($begin_date && !$end_date) {
-                    $scope = $begin_date . ' ~ 현재';
-                } else if (!$begin_date && $end_date) {
-                    $scope = '연재시작 ~ ' . $end_date;
-                } else {
-                    $scope = $begin_date . ' ~ ' . $end_date;
-                }
-                return $scope;
-            })
-        );
+        $is_excel = $req->get('excel', 0);
+        if ($is_excel) {
+            if ($download_sales_detail) {
+                $file_name = $book_info['title'] . '_정산(' . self::getDateScopeText($begin_date, $end_date) . ')';
+                MakeExcel::setExcelHeader($file_name);
+            } else {
+                // 매출내역이 없으면, 엑셀로 추출하지 않음.
+                $is_excel = 0;
+                $app['session']->getFlashBag()->add('alert', array('error' => '정산 내역이 존재하지 않아 엑셀 파일로 추출할 수 없습니다.'));
+            }
+        }
 
         $bind = array(
             'cp' => $cp,
             'begin_date' => $begin_date,
             'end_date' => $end_date,
+            'date_scope' => self::getDateScopeText($begin_date, $end_date),
             'book_info' => $book_info,
             'download_sales_detail' => $download_sales_detail,
             'footer' => array('total_sales' => $total_sales, 'total_download' => $total_charged_download)
         );
 
-        return $app['twig']->render('cp_admin/download_sales_detail.twig', $bind);
+        return $app['twig']->render(
+            ($is_excel ? '/cp_admin/download_sales_detail_excel.twig' : '/cp_admin/download_sales_detail.twig'),
+            $bind
+        );
+    }
+
+    private static function getDateScopeText($begin_date, $end_date)
+    {
+        if (!$begin_date && !$end_date) {
+            $scope = '전체';
+        } else if ($begin_date && !$end_date) {
+            $scope = $begin_date . '~현재';
+        } else if (!$begin_date && $end_date) {
+            $scope = '연재시작~' . $end_date;
+        } else {
+            $scope = $begin_date . '~' . $end_date;
+        }
+        return $scope;
     }
 }

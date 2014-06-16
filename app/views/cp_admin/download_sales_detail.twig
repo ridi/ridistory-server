@@ -28,7 +28,7 @@
         </tr>
         <tr>
             <th>조회 기간</th>
-            <td>{{ get_date_scope(begin_date, end_date) }}</td>
+            <td>{{ date_scope }}</td>
         </tr>
         <tr>
             <th>연재별 판매</th>
@@ -65,6 +65,7 @@
 
     <div class='form-actions'>
         <button class='btn btn-cancel'>목록으로</button>
+        <button class='btn btn-primary pull-right' id='js_export_excel'>엑셀로 저장하기</button>
     </div>
 
 {% endblock %}
@@ -72,9 +73,23 @@
 {% block script %}
     <script>
         $(function() {
+            {% if download_sales_detail|length <= 0 %}
+                $('#js_export_excel').hide();
+            {% endif %}
 
             $('.btn-cancel').click(function() {
-                history.back();
+                var begin_date = '{{ begin_date }}';
+                var end_date = '{{ end_date }}';
+
+                location.href = '/cp_admin/download_sales/list?begin_date=' + begin_date + '&end_date=' + end_date;
+                return false;
+            });
+
+            $('#js_export_excel').click(function() {
+                var begin_date = '{{ begin_date }}';
+                var end_date = '{{ end_date }}';
+
+                location.href = '/cp_admin/download_sales/{{ book_info.id }}?begin_date=' + begin_date + '&end_date=' + end_date + '&excel=1';
                 return false;
             });
         });
