@@ -184,6 +184,7 @@ class CpAdminController implements ControllerProviderInterface
             'cp' => $cp,
             'begin_date' => $begin_date,
             'end_date' => $end_date,
+            'date_scope' => self::getDateScopeText($begin_date, $end_date),
             'header' => array('total_sales' => $total_sales, 'total_sales_royalty' => $total_sales_royalty, 'total_download' => $total_charged_download),
             'download_sales' => $download_sales
         );
