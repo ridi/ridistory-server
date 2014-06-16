@@ -94,6 +94,11 @@ class WebController implements ControllerProviderInterface
             return '오류가 발생하였습니다. 다시 시도해주세요.';
         }
 
+        // 작가의 말 기본값
+        if (empty($part['author_comment'])) {
+            $part['author_comment'] = '.';
+        }
+
         $device_id = $req->get('device_id');
 
         $num_comments = PartComment::getCommentsCount($p_id, true);
