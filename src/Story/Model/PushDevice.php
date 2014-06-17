@@ -19,10 +19,11 @@ class PushDevice
                 return true;
             }
 
-            $data = array('platform' => $platform, 'device_token' => $device_token, 'is_active' => 1);
-            $where = array('device_id' => $device_id);
-            $r = $app['db']->update('push_devices', $data, $where);
-            return $r === 1;
+            $sql = <<<EOT
+update ignore push_devices set platform = ?, device_token = ?, is_active = 1
+where device_id = ?
+EOT;
+            return $app['db']->executeUpdate($sql, array($platform, $device_token, $device_id));
         } else {
             $info = PushDevice::getByDeviceToken($device_token);
             if ($info) {
@@ -35,17 +36,17 @@ class PushDevice
                     return true;
                 }
 
-                $data = array('platform' => $platform, 'device_id' => $device_id, 'is_active' => 1);
-                $where = array('device_token' => $device_token);
-                $r = $app['db']->update('push_devices', $data, $where);
-                return $r === 1;
+                $sql = <<<EOT
+update ignore push_devices set platform = ?, device_id = ?, is_active = 1
+where device_token = ?
+EOT;
+                return $app['db']->executeUpdate($sql, array($platform, $device_id, $device_token));
             } else {
                 // 한번도 등록되지 않은 device_id, device_token일 경우 처리
                 $sql = <<<EOT
 insert ignore into push_devices (u_id, device_id, platform, device_token, is_active) values (?, ?, ?, ?, 1)
 EOT;
-                $r = $app['db']->executeUpdate($sql, array($u_id, $device_id, $platform, $device_token));
-                return $r === 1;
+                return $app['db']->executeUpdate($sql, array($u_id, $device_id, $platform, $device_token));
             }
         }
     }

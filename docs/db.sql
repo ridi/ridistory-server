@@ -267,8 +267,8 @@ CREATE TABLE `push_devices` (
   `is_active` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `device_id` (`device_id`),
+  UNIQUE KEY `device_token` (`device_token`(255)) USING BTREE,
   KEY `reg_date` (`reg_date`),
-  KEY `device_token` (`device_token`(255)),
   KEY `platform` (`platform`),
   KEY `u_id` (`u_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
