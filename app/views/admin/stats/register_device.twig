@@ -1,0 +1,42 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="/admin/stats/register_device">기기등록</a></li>
+        <li><a href="/admin/stats/notify_part_update">알림받기</a></li>
+        <li><a href="/admin/stats/like">좋아요</a></li>
+    </ul>
+
+    <form>
+        <div class="well form-inline">
+            <h4>기간 설정</h4>
+            <input type='text' class='input-medium' name='begin_date' value='{{ begin_date }}' placeholder='yyyy-mm-dd' />
+            ~
+            <input type='text' class='input-medium' name='end_date' value='{{ end_date }}' placeholder='yyyy-mm-dd' />
+            <button class="btn">조회</button>
+            <div style='margin-top: 15px;'>
+                * 시작일과 종료일 중 하나는 입력해주셔야 합니다.<br />
+                <span style="margin-left: 15px;">- 시작하는 날짜를 입력하지 않을 경우: 끝나는 날짜까지의 누적 정보 조회</span><br />
+                <span style="margin-left: 15px;">- 끝나는 날짜를 입력하지 않을 경우: 오늘까지의 누적 정보 조회</span><br />
+            </div>
+        </div>
+    </form>
+
+    <div style='margin-bottom: 30px;'>총 기기등록 수: <b>{{ total_registered }}</b></div>
+    <table class='table'>
+        <tr>
+            <td><b>날짜</b></td>
+            <td><b>iOS</b></td>
+            <td><b>Android</b></td>
+            <td><b>총계</b></td>
+        </tr>
+        {% for rs in register_stat %}
+            <tr>
+                <td>{{ rs.date }}</td>
+                <td>{{ rs.ios }}</td>
+                <td>{{ rs.android }}</td>
+                <td><b>{{ rs.total }}</b></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

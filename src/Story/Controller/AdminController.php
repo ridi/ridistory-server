@@ -65,9 +65,6 @@ class AdminController implements ControllerProviderInterface
         $admin->get('/ridicash_sales/{id}', array($this, 'coinSalesDetail'));
         $admin->post('/ridicash_sales/{id}/refund', array($this, 'refundCoinSales'));
 
-        $admin->get('/stats', array($this, 'stats'));
-        $admin->get('/stats_like', array($this, 'statsLike'));
-
         $admin->get('/stats_kpi/buy_coin', array($this, 'statsKpiBuyCoin'));
         $admin->get('/stats_kpi/buy_coin/detail', array($this, 'statsKpiBuyCoinDetail'));
         $admin->get('/stats_kpi/use_coin', array($this, 'statsKpiUseCoin'));
@@ -235,93 +232,6 @@ class AdminController implements ControllerProviderInterface
         }
 
         return $app->json(array('success' => true));
-    }
-
-    /*
-     * Stats
-     */
-    public static function stats(Application $app)
-    {
-        // 기기등록 통계
-        $total_registered = $app['db']->fetchColumn('select count(*) from push_devices');
-        $sql = <<<EOT
-select date, ifnull(A.num_registered_ios, 0) ios, ifnull(B.num_registered_android, 0) android, (ifnull(A.num_registered_ios, 0) + ifnull(B.num_registered_android, 0)) total from
-    (select date(reg_date) date, count(*) num_registered_ios from push_devices where datediff(now(), reg_date) < 20 and platform = 'iOS' group by date) A
-  natural right outer join
-    (select date(reg_date) date, count(*) num_registered_android from push_devices where datediff(now(), reg_date) < 20 and platform = 'android' group by date) B
-  order by date desc
-EOT;
-        $register_stat = $app['db']->fetchAll($sql);
-
-        // 책별 알림 설정수
-        $sql = <<<EOT
-select A.title,
-  ifnull(interested_d6, 0) interested_d6, ifnull(interested_d5, 0) interested_d5, ifnull(interested_d4, 0) interested_d4, ifnull(interested_d3, 0) interested_d3,
-  ifnull(interested_d2, 0) interested_d2, ifnull(interested_d1, 0) interested_d1, ifnull(interested_d0, 0) interested_d0,
-  (ifnull(interested_d6, 0) + ifnull(interested_d5, 0) + ifnull(interested_d4, 0) + ifnull(interested_d3, 0) + ifnull(interested_d2, 0) + ifnull(interested_d1, 0) + ifnull(interested_d0, 0)) as interested_sum,
-  interested_total from book A
-    left join (select b_id, count(b_id) interested_d6 from user_interest where datediff(now(), `timestamp`) = 6 group by b_id, date(`timestamp`)) D6 on A.id = D6.b_id
-    left join (select b_id, count(b_id) interested_d5 from user_interest where datediff(now(), `timestamp`) = 5 group by b_id, date(`timestamp`)) D5 on A.id = D5.b_id
-    left join (select b_id, count(b_id) interested_d4 from user_interest where datediff(now(), `timestamp`) = 4 group by b_id, date(`timestamp`)) D4 on A.id = D4.b_id
-    left join (select b_id, count(b_id) interested_d3 from user_interest where datediff(now(), `timestamp`) = 3 group by b_id, date(`timestamp`)) D3 on A.id = D3.b_id
-    left join (select b_id, count(b_id) interested_d2 from user_interest where datediff(now(), `timestamp`) = 2 group by b_id, date(`timestamp`)) D2 on A.id = D2.b_id
-    left join (select b_id, count(b_id) interested_d1 from user_interest where datediff(now(), `timestamp`) = 1 group by b_id, date(`timestamp`)) D1 on A.id = D1.b_id
-    left join (select b_id, count(b_id) interested_d0 from user_interest where datediff(now(), `timestamp`) = 0 group by b_id, date(`timestamp`)) D0 on A.id = D0.b_id
-    left join (select b_id, count(b_id) interested_total from user_interest group by b_id) TOTAL on A.id = TOTAL.b_id
-order by title
-EOT;
-        $interest_stat = $app['db']->fetchAll($sql);
-
-        return $app['twig']->render(
-            '/admin/stats.twig',
-            compact(
-                'total_registered',
-                'register_stat',
-                'interest_stat'
-            )
-        );
-    }
-
-    public static function statsLike(Application $app, Request $req)
-    {
-        $begin_date = $req->get('begin_date');
-        $end_date = $req->get('end_date');
-
-        $twig_var = array();
-        $twig_var['begin_date'] = $begin_date;
-
-        if ($end_date) {
-            $sql_interests = <<<EOT
-    select a.b_id, b.title, count(*) count from user_interest a
-    join book b on a.b_id = b.id
-    where a.timestamp <= ?
-    group by a.b_id
-EOT;
-
-            $sql_likes = <<<EOT
-    select part.b_id, book.title, count(distinct part.id) count, sum(M.CNT) sum, sum(M.CNT) / count(distinct part.id) avg from
-    (
-      select p_id, count(device_id) CNT from user_part_like
-      where timestamp <= ?
-      group by p_id
-    ) M join part on M.p_id = part.id
-    left outer join book on part.b_id = book.id
-    group by part.b_id;
-EOT;
-
-            $twig_var['end_date'] = $end_date;
-            $twig_var['interests_per_book'] = $app['db']->fetchAll($sql_interests, array($end_date));
-            $twig_var['likes_per_book'] = $app['db']->fetchAll($sql_likes, array($end_date));
-        } else {
-            $twig_var['end_date'] = date('Y-m-d');
-            $twig_var['interests_per_book'] = null;
-            $twig_var['likes_per_book'] = null;
-        }
-
-        return $app['twig']->render(
-            '/admin/stats_like.twig',
-            $twig_var
-        );
     }
 
     /*
