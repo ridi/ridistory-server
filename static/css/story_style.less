@@ -3,7 +3,8 @@
 
 @green1:#324d5d; /* 진한 순서 */
 @green2:#98a6ae;
-@green3:#d6dbdf; 
+@green3:#d6dbdf;
+@green4:#f3f5fb;
 
 @num_font: Tahoma,sans-serif;
 
@@ -33,8 +34,8 @@
 }
 
 body{ background:@default_bg; }
-button.default_btn{ 
-  -webkit-appearance:none; border: none; border-radius:2px; background:#a4b0b7; height: 30px; line-height:30px; 
+button.default_btn{
+  -webkit-appearance:none; border: none; border-radius:2px; background:#a4b0b7; height: 30px; line-height:30px;
   color: #fff; font-weight:bold; font-size: 13px; letter-spacing: -.05em; padding: 0 15px;
 
 }
@@ -45,7 +46,7 @@ button.default_btn{
     display:inline-block; position:relative;
     .img_wrap{
       display:block; box-shadow: 2px 2px 5px #999;
-      img{ 
+      img{
         display:block; width:100px;
       }
       &:before{
@@ -63,14 +64,14 @@ button.default_btn{
 .module_book_info{
   box-sizing: border-box;
   padding-right: 15px;
-  .info_title{ 
+  .info_title{
     margin-bottom:4px; font-size:16px; line-height:1.3em; letter-spacing:-1px; color:black; font-weight:bold; word-break:break-all;
     a{font-size:16px; line-height:1.3em; letter-spacing:-1px; color:black; font-weight:bold; word-break:break-all;}
   }
   .info_title_sub{
     margin-bottom:4px; color:#777; word-break:break-all; line-height: 1.3em;
   }
-  .info_author{ 
+  .info_author{
     li{
       color:#777; float:left; padding: 0 7px; border-left: 1px solid #777; margin-bottom:5px; word-break:break-all;
       a{ color:#777; word-break:break-all;}
@@ -93,7 +94,7 @@ button.default_btn{
       }
       .module_book_info{
         width:80px; text-align:left; height:40px; overflow-y:hidden;
-        .info_title{ 
+        .info_title{
           font-size:11px; font-weight:normal; color:#333;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -119,7 +120,7 @@ button.default_btn{
   border-top: 2px solid @green1;
   h2.title{
     margin: 14px 14px 8px; color:@green1; font-size:16px; font-weight:bold; letter-spacing:-0.05em; line-height: 1.5;
-  } 
+  }
 }//.module_title2
 
 .module_title3{
@@ -146,7 +147,7 @@ button.default_btn{
         }
         &.active{
           width:50%; height:27px; margin-top:3px; border-bottom: 1px solid @default_bg;
-          a{ 
+          a{
             width:101%; height:22px; padding-top:5px; position:absolute; left:0; top:0;  border-left:none; color:#666;
             background:@default_bg; border:1px solid #76bacf; border-bottom:none; border-top-right-radius:3px; border-top-left-radius:3px; z-index:500;
           }
@@ -169,18 +170,18 @@ button.default_btn{
 
 
 //================================================ main
-#story{  
+#story{
   section.main{
     width:100%;
     article.main_recom{
       background:url( ../images/bg_recom.png) left top repeat; background-size: 100px 404px; position:relative;
       height:186px; border-bottom:1px solid #ccb58e;
-      
+
       h2.recom_title{
         height:24px; text-indent:-20000px;
         background:url( ../images/text_recom.png) left top no-repeat; background-size: 48px 18px;
       }
-      
+
       // 겔러리 하단 원형버튼
       nav.recom_nav{
         width:100%; position:absolute; bottom: 16px; left: 0;
@@ -189,7 +190,7 @@ button.default_btn{
           li{
             display:inline-block;
             button{
-              display:block; width:5px; height:5px; background: #d9c9ad; border: 1px solid #cdb895; border-radius:10px; 
+              display:block; width:5px; height:5px; background: #d9c9ad; border: 1px solid #cdb895; border-radius:10px;
               -webkit-appearance:none; text-indent:-20000px;
             }
             &.active{
@@ -200,7 +201,7 @@ button.default_btn{
           }// li
         }// ul
       }// nav.recom_nav
-      
+
       //겔러리 리스트
       ul.recom_gallery{
         width:100%; position:absolute; top:18px; left:0;
@@ -210,7 +211,7 @@ button.default_btn{
             .module_book_thumb{
               width:40%; float:left; text-align:right;
               .thumb_wrap{
-                 margin-right:20px;
+                margin-right:20px;
               }
             }
             .module_book_info{
@@ -222,10 +223,10 @@ button.default_btn{
           }//.book_list
         }//li
       }//ul
-      
+
     }// article.main_recom
     article.main_new{
-      
+
       .book_list{
         width:100%; border-bottom:1px solid #e1dcd4; margin-top:23px; padding-bottom:20px;
         .module_book_thumb{
@@ -244,7 +245,7 @@ button.default_btn{
       .list_grid_wrap{
         padding: 15px 0; border-top:1px solid #cac1b8;
         .module_list_grid{
-          
+
         }
       }
     }// article.main_best
@@ -253,32 +254,44 @@ button.default_btn{
 
 
 //================================================ comment
-#story{  
+#story{
   section.comment{
     article.comment_wrap{
+      .comment_by_author{
+        background: #fffde5;
+        padding: 14px;
+        border-top: 1px solid #ebe4cb;
+        border-bottom: 1px solid #ebe4cb;
+        .title {
+          color: #95663f; font-weight: bold; font-size: 13px; padding-bottom: 10px;
+        }
+        .comment {
+          color: #6a625c; font-size: 12px; line-height: 1.5;
+        }
+      }
       .comment_tab{
         .tab_off{
-          height:40px; border-bottom: 1px solid @green3;
+          height:42px; border-bottom: 1px solid @green3;
           .comment_num{
-            float:left; margin:8px 0 0 14px; color:#333; font-weight:bold;
+            float:left; margin:12px 0 0 14px; color:#333; font-weight:bold;
             .num{ color:@green1; font-family: @num_font; border: 1px solid @green1;
-              padding: 2px 4px; border-radius: 3px; display: inline-block;} 
+              padding: 2px 4px; border-radius: 3px; display: inline-block;}
           }
           .btn_tab_open{
-            float:right; margin: 4px 5px 0 0;
+            float:right; margin: 6px 5px 0 0; background: @green1;
           }
         }
         .tab_on{
-            background:#e8f1f6; border-bottom:1px solid @green3;
-          form{ 
+          background:#e8f1f6; border-bottom:1px solid @green3;
+          form{
             padding: 7px 10px 10px 10px;
             .input_nick{
-              width: 100%; height:30px; background:white; line-height:30px; text-indent:10px; border: 1px solid #c8d4db; 
+              width: 100%; height:30px; background:white; line-height:30px; text-indent:10px; border: 1px solid #c8d4db;
               border-radius:3px; -webkit-appearance:none; margin-bottom:5px;
               box-sizing: border-box; -webkit-box-sizing: border-box;
             }
             #input_comment{
-              width:100%; height:60px; background:white; box-sizing:border-box; padding:6px 10px; border: 1px solid #c8d4db; 
+              width:100%; height:60px; background:white; box-sizing:border-box; padding:6px 10px; border: 1px solid #c8d4db;
               border-radius:3px; -webkit-appearance:none; margin-bottom:5px; line-height:1.3em;
               box-sizing: border-box; -webkit-box-sizing: border-box;
             }
@@ -305,7 +318,7 @@ button.default_btn{
               position:absolute; left:10px; top:5px; width:32px;
               img{ width:32px; }
             }
-            &.contents_admin { background: #f3f5fb; }
+            &.contents_admin { background: @green4; }
             .contents_wrap{
               position: relative;
               .contents_info{
