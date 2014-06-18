@@ -21,23 +21,6 @@
         {% endfor %}
     </table>
     </div>
-    <div class='span8'>
-    <h3>다운로드 ({{ total_downloaded }})</h3>
-    <table class='table'>
-    	<tr>
-            <td><b>책제목</b></td>
-    		<td><b>파트제목</b></td>
-    		<td><b>COUNT</b></td>
-    	</tr>
-        {% for ds in download_stat %}
-        <tr>
-            <td>{{ ds.b_title }}</td>
-            <td>{{ ds.p_title }}</td>
-            <td>{{ ds.download_count }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    </div>
 </section>
 
 <hr class='separator'>
@@ -76,72 +59,4 @@
     </div>
 </section>
 
-<section class='row'>
-    <div class='span12'>
-    <h3>스토리+ 다운로드 통계</h3>
-    <table class='table'>
-    	<tr>
-    		<td><b>TITLE</b></td>
-    		<td><b>COUNT</b></td>
-    	</tr>
-        {% for d in download_stat_storyplusbook %}
-        <tr>
-        	<td>{{ d.title }}</td>
-            <td>{{ d.download_count }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    </div>
-</section>
-
-<hr class='separator'>
-
-<section class='row' id='js_tooltip'>
-    <div class='span6'>    
-        <h3>댓글이 많은 파트</h3>
-        <table class='table'>
-            <tr>
-               <th>책</th>
-               <th>파트</th> 
-               <th>댓글수</th> 
-            </tr>
-            {% for p in most_comment_parts %}
-            <tr>
-                <td>{{ p.book_title }}</td>
-                <td><a href='#' data-toggle='tooltip' title='{{ p.book_title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
-                <td>{{ p.num_comment }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    <div class='span6'>    
-        <h3>댓글이 적은 파트</h3>
-        <table class='table'>
-            <tr>
-               <th>책</th>
-               <th>파트</th> 
-               <th>댓글수</th> 
-            </tr>
-            {% for p in least_comment_parts %}
-            <tr>
-                <td>{{ p.book_title }}</td>
-                <td><a href='#' data-toggle='tooltip' title='{{ p.book_title }}'>{{ p.seq }}. {{ p.part_title }}</a></td>
-                <td>{{ p.num_comment }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-</section>
-{% endblock %}
-
-
-{% block script %}
-<script>
-$(function() {
-	$('#js_tooltip').tooltip({
-	    selector: "a[data-toggle=tooltip]"
-    })
-});
-</script>
-<script src="/static/bower_components/bootstrap/js/bootstrap-tooltip.js"></script>
 {% endblock %}

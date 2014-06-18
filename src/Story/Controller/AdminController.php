@@ -253,18 +253,6 @@ select date, ifnull(A.num_registered_ios, 0) ios, ifnull(B.num_registered_androi
 EOT;
         $register_stat = $app['db']->fetchAll($sql);
 
-        // 다운로드 통계
-        $total_downloaded = $app['db']->fetchColumn('select count(*) from stat_download');
-
-        $sql = <<<EOT
-select part.id p_id, b.title b_title, part.title p_title, download_count from part
- join (select p_id, count(p_id) download_count from stat_download
- 		group by p_id order by count(p_id) desc limit 20) stat on part.id = stat.p_id
- left join book b on b.id = part.b_id
- order by download_count desc
-EOT;
-        $download_stat = $app['db']->fetchAll($sql);
-
         // 책별 알림 설정수
         $sql = <<<EOT
 select A.title,
@@ -284,34 +272,12 @@ order by title
 EOT;
         $interest_stat = $app['db']->fetchAll($sql);
 
-        // 스토리+ 책 다운로드 통계
-        $sql = <<<EOT
-select storyplusbook.title, ifnull(download_count, 0) download_count from storyplusbook
- left join (select storyplusbook_id, count(storyplusbook_id) download_count from stat_download_storyplusbook group by storyplusbook_id) A on storyplusbook.id = A.storyplusbook_id
-order by download_count desc
-EOT;
-        $download_stat_storyplusbook = $app['db']->fetchAll($sql);
-
-        // 댓글 통계
-        $sql = <<<EOT
-select b.title book_title, seq, part_title, num_comment from book b
- join (select p.b_id, p.seq, p.title part_title, count(*) num_comment from part_comment c join part p on p.id = c.p_id group by p_id) c on c.b_id = b.id 
-EOT;
-
-        $most_comment_parts = $app['db']->fetchAll($sql . 'order by num_comment desc limit 10');
-        $least_comment_parts = $app['db']->fetchAll($sql . 'order by num_comment limit 10');
-
         return $app['twig']->render(
             '/admin/stats.twig',
             compact(
                 'total_registered',
                 'register_stat',
-                'total_downloaded',
-                'download_stat',
-                'interest_stat',
-                'download_stat_storyplusbook',
-                'most_comment_parts',
-                'least_comment_parts'
+                'interest_stat'
             )
         );
     }
