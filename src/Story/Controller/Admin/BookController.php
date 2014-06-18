@@ -131,6 +131,10 @@ class BookController implements ControllerProviderInterface
                     }
                 }
             }
+
+            if (strtotime($part['begin_date']) >= strtotime($part['end_date'])) {
+                $part['status'] = '오류';
+            }
         }
 
         $book_notices = BookNoticeFactory::getList($id, false);
