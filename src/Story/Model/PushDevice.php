@@ -96,13 +96,21 @@ EOT;
 
     public static function update($id, $values)
     {
-        try {
-            global $app;
-            $app['db']->update('push_devices', $values, array('id' => $id));
-        } catch (\Exception $e) {
-        }
+        $sql = <<<EOT
+update ignore push_devices set
+EOT;
+        $bind = array();
 
-        // update ignore을 대체.
-        return true;
+        foreach ($values as $key => $value) {
+            $sql .= ' ' . $key . ' = ?,';
+            array_push($bind, $value);
+        }
+        $sql = substr($sql, 0, strlen($sql) - 1);
+        $sql .= ' where id = ?';
+
+        array_push($bind, $id);
+
+        global $app;
+        return $app['db']->executeUpdate($sql, $bind);
     }
 }
