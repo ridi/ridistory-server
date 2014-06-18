@@ -96,8 +96,13 @@ EOT;
 
     public static function update($id, $values)
     {
-        global $app;
-        $r = $app['db']->update('push_devices', $values, array('id' => $id));
-        return $r === 1;
+        try {
+            global $app;
+            $app['db']->update('push_devices', $values, array('id' => $id));
+        } catch (\Exception $e) {
+        }
+
+        // update ignore을 대체.
+        return true;
     }
 }
