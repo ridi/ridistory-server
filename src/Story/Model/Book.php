@@ -192,7 +192,7 @@ EOT;
         return $ar;
     }
 
-    public static function getListByIds(array $b_ids, $with_part_info = false)
+    public static function getListByIds(array $b_ids, $with_part_info = false, $ignore_adult_only = false)
     {
         if (count($b_ids) === 0) {
             return array();
@@ -242,6 +242,10 @@ EOT;
 
             if (strtotime($b['end_date']) < strtotime($today)) {
                 $b['is_completed'] = 1;
+            }
+
+            if ($ignore_adult_only) {
+                $b['adult_only'] = '0';
             }
         }
 

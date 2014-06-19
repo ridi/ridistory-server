@@ -727,7 +727,7 @@ EOT;
                 $b_id = trim($b_id);
             }
 
-            $books = Book::getListByIds($b_ids, false);
+            $books = Book::getListByIds($b_ids, false, false);
 
             if (!empty($books)) {
                 $sql = <<<EOT

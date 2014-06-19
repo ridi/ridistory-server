@@ -299,10 +299,13 @@ class ApiController implements ControllerProviderInterface
             return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
         }
 
-        $cache_key = 'purchased_book_list_' . $u_id;
+        // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
+        $ignore_adult_only = (IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']) == false) ? 1 : 0;
+
+        $cache_key = 'purchased_book_list_' . $ignore_adult_only . '_' . $u_id;
         $book = $app['cache']->fetch(
             $cache_key,
-            function () use ($u_id) {
+            function () use ($u_id, $ignore_adult_only) {
                 $purchases = Buyer::getWholePurchasedList($u_id);
 
                 $b_ids = array();
@@ -312,7 +315,7 @@ class ApiController implements ControllerProviderInterface
                         array_push($b_ids, $part['b_id']);
                     }
                 }
-                return Book::getListByIds($b_ids, true);
+                return Book::getListByIds($b_ids, true, $ignore_adult_only);
             },
             60 * 10
         );
@@ -641,7 +644,11 @@ class ApiController implements ControllerProviderInterface
     public function userInterestList(Application $app, $device_id)
     {
         $b_ids = UserInterest::getList($device_id);
-        $list = Book::getListByIds($b_ids, true);
+
+        // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
+        $ignore_adult_only = (IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']) == false) ? 1 : 0;
+
+        $list = Book::getListByIds($b_ids, true, $ignore_adult_only);
 
         $today = date('Y-m-d H:i:s');
         foreach ($list as $key => &$book) {
