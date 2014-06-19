@@ -13,7 +13,7 @@ class StatsController implements ControllerProviderInterface
         $admin = $app['controllers_factory'];
 
         $admin->get('/register_device', array($this, 'registerDeviceStats'));
-        $admin->get('/notify_part_update', array($this, 'notifyPartUpdateStats'));
+        $admin->get('/user_interests', array($this, 'userInterestsStats'));
         $admin->get('/user_likes', array($this, 'userLikesStats'));
 
         return $admin;
@@ -60,7 +60,7 @@ EOT;
         );
     }
 
-    public static function notifyPartUpdateStats(Request $req, Application $app)
+    public static function userInterestsStats(Request $req, Application $app)
     {
         $bid_list = trim($req->get('bid_list'));
         $search_all = $req->get('search_all', false);
@@ -104,7 +104,7 @@ EOT;
         }
 
         return $app['twig']->render(
-            '/admin/stats/notify_part_update.twig',
+            '/admin/stats/user_interests.twig',
             array(
                 'bid_list' => $bid_list,
                 'search_all' => $search_all,
