@@ -59,6 +59,7 @@ $app->mount('/admin/download_sales', new Story\Controller\Admin\DownloadSalesCon
 $app->mount('/admin/notice', new \Story\Controller\Admin\NoticeController());
 $app->mount('/admin/part', new Story\Controller\Admin\PartController());
 $app->mount('/admin/push', new Story\Controller\Admin\PushNotificationController());
+$app->mount('/admin/stats', new \Story\Controller\Admin\StatsController());
 $app->mount('/admin/storyplusbook', new Story\Controller\Admin\StoryPlusBookController());
 $app->mount('/admin/storyplusbook_intro', new Story\Controller\Admin\StoryPlusBookIntroController());
 $app->mount('/admin/test_user', new Story\Controller\Admin\TestUserController());
