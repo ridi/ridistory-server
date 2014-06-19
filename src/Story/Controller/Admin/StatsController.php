@@ -13,7 +13,7 @@ class StatsController implements ControllerProviderInterface
 
         $admin->get('/register_device', array($this, 'registerDeviceStats'));
         $admin->get('/notify_part_update', array($this, 'notifyPartUpdateStats'));
-        $admin->get('/like', array($this, 'likeStats'));
+        $admin->get('/user_likes', array($this, 'userLikesStats'));
 
         return $admin;
     }
@@ -36,11 +36,11 @@ class StatsController implements ControllerProviderInterface
         // 시작일, 종료일 둘 중 하나는 입력해야함.
         if ($begin_date || $end_date) {
             $sql = <<<EOT
-    select date, ifnull(A.num_registered_ios, 0) ios, ifnull(B.num_registered_android, 0) android, (ifnull(A.num_registered_ios, 0) + ifnull(B.num_registered_android, 0)) total from
-        (select date(reg_date) date, count(*) num_registered_ios from push_devices where reg_date >= ? and reg_date < ? and platform = 'iOS' group by date) A
-      natural right outer join
-        (select date(reg_date) date, count(*) num_registered_android from push_devices where reg_date >= ? and reg_date < ? and platform = 'android' group by date) B
-      order by date desc
+select date, ifnull(A.num_registered_ios, 0) ios, ifnull(B.num_registered_android, 0) android, (ifnull(A.num_registered_ios, 0) + ifnull(B.num_registered_android, 0)) total from
+ (select date(reg_date) date, count(*) num_registered_ios from push_devices where reg_date >= ? and reg_date < ? and platform = 'iOS' group by date) A
+natural right outer join
+ (select date(reg_date) date, count(*) num_registered_android from push_devices where reg_date >= ? and reg_date < ? and platform = 'android' group by date) B
+order by date desc
 EOT;
             $bind = array($temp_begin_date, $temp_end_date, $temp_begin_date, $temp_end_date);
             $register_stat = $app['db']->fetchAll($sql, $bind);
@@ -64,8 +64,44 @@ EOT;
         return $app['twig']->render('/admin/stats/notify_part_update.twig');
     }
 
-    public static function likeStats(Request $req, Application $app)
+    public static function userLikesStats(Request $req, Application $app)
     {
-        return $app['twig']->render('/admin/stats/like.twig');
+        $begin_date = $temp_begin_date = $req->get('begin_date');
+        $end_date = $temp_end_date = $req->get('end_date');
+
+        $user_likes = null;
+
+        if (!$temp_begin_date) {
+            $temp_begin_date = '0000-00-00';
+        }
+        if (!$temp_end_date) {
+            $temp_end_date = date('Y-m-d');
+        }
+        $temp_end_date = date('Y-m-d', strtotime($temp_end_date . ' + 1 day'));
+
+        // 시작일, 종료일 둘 중 하나는 입력해야함.
+        if ($begin_date || $end_date) {
+            $sql = <<<EOT
+select p.b_id, b.title, count(distinct p.id) count, sum(T.CNT) sum, sum(T.CNT) / count(distinct p.id) avg from
+ (
+  select p_id, count(device_id) CNT from user_part_like
+  where timestamp >= ? and timestamp < ? group by p_id
+ ) T
+ join part p on T.p_id = p.id
+ left outer join book b on p.b_id = b.id
+group by p.b_id;
+EOT;
+            $bind = array($temp_begin_date, $temp_end_date);
+            $user_likes = $app['db']->fetchAll($sql, $bind);
+        }
+
+        return $app['twig']->render(
+            '/admin/stats/user_likes.twig',
+            array(
+                'begin_date' => $begin_date,
+                'end_date' => $end_date,
+                'user_likes' => $user_likes
+            )
+        );
     }
 }

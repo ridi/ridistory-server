@@ -1,29 +1,6 @@
 {% extends '/admin/base.twig' %}
 
 {% block container %}
-<section class='row'>
-    <div class='span4'>
-    <h3>기기등록 ({{ total_registered }})</h3>
-    <table class='table'>
-    	<tr>
-    		<td><b>DATE</b></td>
-    		<td><b>iOS</b></td>
-    		<td><b>Android</b></td>
-    		<td><b>TOTAL</b></td>
-    	</tr>
-        {% for r in register_stat %}
-        <tr>
-            <td>{{ r.date }}</td>
-            <td>{{ r.ios }}</td>
-            <td>{{ r.android }}</td>
-            <td><b>{{ r.total }}</b></td>
-        </tr>
-        {% endfor %}
-    </table>
-    </div>
-</section>
-
-<hr class='separator'>
 
 <section class='row'>
     <div class='span12'>

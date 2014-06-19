@@ -30,28 +30,6 @@
                 {% endfor %}
             </table>
         </div>
-
-        <div class='span8'>
-            <h3>각 도서별 좋아요 수</h3>
-            <table class='table table-bordered'>
-                <tr>
-                    <td><b>B_ID</b></td>
-                    <td><b>TITLE</b></td>
-                    <td><b>연재회차</b></td>
-                    <td><b>좋아요</b></td>
-                    <td><b>회차당평균좋아요</b></td>
-                </tr>
-                {% for item in likes_per_book %}
-                    <tr>
-                        <td>{{ item.b_id }}</td>
-                        <td>{{ item.title }}</td>
-                        <td>{{ item.count }}</td>
-                        <td>{{ item.sum }}</td>
-                        <td>{{ item.avg }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
     </section>
 
 {% endblock %}

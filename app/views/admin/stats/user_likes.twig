@@ -2,9 +2,9 @@
 
 {% block container %}
     <ul class="nav nav-tabs">
-        <li class="active"><a href="/admin/stats/register_device">기기등록</a></li>
+        <li><a href="/admin/stats/register_device">기기등록</a></li>
         <li><a href="/admin/stats/notify_part_update">알림받기</a></li>
-        <li><a href="/admin/stats/user_likes">좋아요</a></li>
+        <li class="active"><a href="/admin/stats/user_likes">좋아요</a></li>
     </ul>
 
     <form>
@@ -22,20 +22,22 @@
         </div>
     </form>
 
-    <div style='margin-bottom: 15px;'>총 기기등록 수: <b>{{ total_registered }}</b></div>
+    <h3>각 도서별 좋아요 수</h3>
     <table class='table table-bordered'>
         <tr>
-            <td><b>날짜</b></td>
-            <td><b>iOS</b></td>
-            <td><b>Android</b></td>
-            <td><b>총계</b></td>
+            <td><b>책ID</b></td>
+            <td><b>제목</b></td>
+            <td><b>연재회차</b></td>
+            <td><b>좋아요</b></td>
+            <td><b>회차당평균좋아요</b></td>
         </tr>
-        {% for rs in register_stat %}
+        {% for ul in user_likes %}
             <tr>
-                <td>{{ rs.date }}</td>
-                <td>{{ rs.ios }}</td>
-                <td>{{ rs.android }}</td>
-                <td><b>{{ rs.total }}</b></td>
+                <td>{{ ul.b_id }}</td>
+                <td>{{ ul.title }}</td>
+                <td>{{ ul.count }}</td>
+                <td>{{ ul.sum }}</td>
+                <td>{{ ul.avg }}</td>
             </tr>
         {% endfor %}
     </table>
