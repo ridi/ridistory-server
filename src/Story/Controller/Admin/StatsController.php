@@ -64,6 +64,10 @@ EOT;
     {
         $bid_list = trim($req->get('bid_list'));
         $search_all = $req->get('search_all', false);
+        $base_date = $req->get('base_date');
+        if (!$base_date) {
+            $base_date = date('Y-m-d');
+        }
 
         $user_interests = null;
 
@@ -73,15 +77,17 @@ select b.id, b.title,
  ifnull(interested_d6, 0) interested_d6, ifnull(interested_d5, 0) interested_d5, ifnull(interested_d4, 0) interested_d4, ifnull(interested_d3, 0) interested_d3, ifnull(interested_d2, 0) interested_d2, ifnull(interested_d1, 0) interested_d1, ifnull(interested_d0, 0) interested_d0,
  (ifnull(interested_d6, 0) + ifnull(interested_d5, 0) + ifnull(interested_d4, 0) + ifnull(interested_d3, 0) + ifnull(interested_d2, 0) + ifnull(interested_d1, 0) + ifnull(interested_d0, 0)) as interested_sum,
  interested_total from book b
-    left join (select b_id, count(b_id) interested_d6 from user_interest where datediff(now(), `timestamp`) = 6 group by b_id, date(`timestamp`)) D6 on b.id = D6.b_id
-    left join (select b_id, count(b_id) interested_d5 from user_interest where datediff(now(), `timestamp`) = 5 group by b_id, date(`timestamp`)) D5 on b.id = D5.b_id
-    left join (select b_id, count(b_id) interested_d4 from user_interest where datediff(now(), `timestamp`) = 4 group by b_id, date(`timestamp`)) D4 on b.id = D4.b_id
-    left join (select b_id, count(b_id) interested_d3 from user_interest where datediff(now(), `timestamp`) = 3 group by b_id, date(`timestamp`)) D3 on b.id = D3.b_id
-    left join (select b_id, count(b_id) interested_d2 from user_interest where datediff(now(), `timestamp`) = 2 group by b_id, date(`timestamp`)) D2 on b.id = D2.b_id
-    left join (select b_id, count(b_id) interested_d1 from user_interest where datediff(now(), `timestamp`) = 1 group by b_id, date(`timestamp`)) D1 on b.id = D1.b_id
-    left join (select b_id, count(b_id) interested_d0 from user_interest where datediff(now(), `timestamp`) = 0 group by b_id, date(`timestamp`)) D0 on b.id = D0.b_id
+    left join (select b_id, count(b_id) interested_d6 from user_interest where datediff(?, `timestamp`) = 6 group by b_id, date(`timestamp`)) D6 on b.id = D6.b_id
+    left join (select b_id, count(b_id) interested_d5 from user_interest where datediff(?, `timestamp`) = 5 group by b_id, date(`timestamp`)) D5 on b.id = D5.b_id
+    left join (select b_id, count(b_id) interested_d4 from user_interest where datediff(?, `timestamp`) = 4 group by b_id, date(`timestamp`)) D4 on b.id = D4.b_id
+    left join (select b_id, count(b_id) interested_d3 from user_interest where datediff(?, `timestamp`) = 3 group by b_id, date(`timestamp`)) D3 on b.id = D3.b_id
+    left join (select b_id, count(b_id) interested_d2 from user_interest where datediff(?, `timestamp`) = 2 group by b_id, date(`timestamp`)) D2 on b.id = D2.b_id
+    left join (select b_id, count(b_id) interested_d1 from user_interest where datediff(?, `timestamp`) = 1 group by b_id, date(`timestamp`)) D1 on b.id = D1.b_id
+    left join (select b_id, count(b_id) interested_d0 from user_interest where datediff(?, `timestamp`) = 0 group by b_id, date(`timestamp`)) D0 on b.id = D0.b_id
     left join (select b_id, count(b_id) interested_total from user_interest group by b_id) TOTAL on b.id = TOTAL.b_id
 EOT;
+            $bind = array($base_date, $base_date, $base_date, $base_date, $base_date, $base_date, $base_date);
+            $param_type = array(\PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR);
             if (!$search_all) {
                 $b_ids = explode(PHP_EOL, $bid_list);  // 조회할 책 목록
                 foreach ($b_ids as &$b_id) {
@@ -89,18 +95,14 @@ EOT;
                 }
 
                 $sql .= ' where b.id in (?) order by b.title';
-
-                $stmt = $app['db']->executeQuery(
-                    $sql,
-                    array($b_ids),
-                    array(Connection::PARAM_INT_ARRAY)
-                );
-                $user_interests = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                array_push($bind, $b_ids);
+                array_push($param_type, Connection::PARAM_INT_ARRAY);
             } else {
                 $sql .= ' order by b.title';
-
-                $user_interests = $app['db']->fetchAll($sql);
             }
+
+            $stmt = $app['db']->executeQuery($sql, $bind, $param_type);
+            $user_interests = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         return $app['twig']->render(
@@ -108,6 +110,7 @@ EOT;
             array(
                 'bid_list' => $bid_list,
                 'search_all' => $search_all,
+                'base_date' => $base_date,
                 'user_interests' => $user_interests
             )
         );
