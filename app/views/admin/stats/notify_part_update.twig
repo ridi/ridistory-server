@@ -1,0 +1,65 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/stats/register_device">기기등록</a></li>
+        <li class="active"><a href="/admin/stats/notify_part_update">알림받기</a></li>
+        <li><a href="/admin/stats/user_likes">좋아요</a></li>
+    </ul>
+
+    <form>
+        <div class="well form-inline">
+            <h4>조회할 책 설정</h4>
+            * 조회하실 책 ID 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)<br />
+            * 책 ID에 해당하는 책이 없는 경우에는, 조회되지 않습니다.<br />
+            <textarea style='margin-top:20px;' rows='8' class='input-medium' name='bid_list' id='js_bid_list'>{{ bid_list }}</textarea>
+
+            <div style='margin-top: 15px;'>
+                <input type='checkbox' name='search_all' id='js_search_all' {{ search_all ? 'checked="checked"' }} /> 책 전체 조회
+                <button class="btn" style='margin-left: 15px;'>조회</button>
+            </div>
+        </div>
+    </form>
+
+    <h3>알림받기 설정수</h3>
+    <table class='table table-bordered'>
+        <tr>
+            <td><b>책ID</b></td>
+            <td><b>제목</b></td>
+            <td><b>D-6</b></td>
+            <td><b>D-5</b></td>
+            <td><b>D-4</b></td>
+            <td><b>D-3</b></td>
+            <td><b>D-2</b></td>
+            <td><b>D-1</b></td>
+            <td><b>오늘</b></td>
+            <td><b>합계</b></td>
+            <td><b>총 누적</b></td>
+        </tr>
+        {% for ui in user_interests %}
+            <tr>
+                <td>{{ ui.id }}</td>
+                <td>{{ ui.title }}</td>
+                <td>{{ ui.interested_d6 }}</td>
+                <td>{{ ui.interested_d5 }}</td>
+                <td>{{ ui.interested_d4 }}</td>
+                <td>{{ ui.interested_d3 }}</td>
+                <td>{{ ui.interested_d2 }}</td>
+                <td>{{ ui.interested_d1 }}</td>
+                <td>{{ ui.interested_d0 }}</td>
+                <td><b>{{ ui.interested_sum }}</b></td>
+                <td><b>{{ ui.interested_total }}</b></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#js_search_all').click(function() {
+                $("#js_bid_list").prop('disabled', this.checked);
+            });
+        });
+    </script>
+{% endblock %}

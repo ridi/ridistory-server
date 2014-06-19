@@ -1,6 +1,7 @@
 <?php
 namespace Story\Controller\Admin;
 
+use Doctrine\DBAL\Connection;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,7 +62,55 @@ EOT;
 
     public static function notifyPartUpdateStats(Request $req, Application $app)
     {
-        return $app['twig']->render('/admin/stats/notify_part_update.twig');
+        $bid_list = trim($req->get('bid_list'));
+        $search_all = $req->get('search_all', false);
+
+        $user_interests = null;
+
+        if ($bid_list || $search_all) {
+            $sql = <<<EOT
+select b.id, b.title,
+ ifnull(interested_d6, 0) interested_d6, ifnull(interested_d5, 0) interested_d5, ifnull(interested_d4, 0) interested_d4, ifnull(interested_d3, 0) interested_d3, ifnull(interested_d2, 0) interested_d2, ifnull(interested_d1, 0) interested_d1, ifnull(interested_d0, 0) interested_d0,
+ (ifnull(interested_d6, 0) + ifnull(interested_d5, 0) + ifnull(interested_d4, 0) + ifnull(interested_d3, 0) + ifnull(interested_d2, 0) + ifnull(interested_d1, 0) + ifnull(interested_d0, 0)) as interested_sum,
+ interested_total from book b
+    left join (select b_id, count(b_id) interested_d6 from user_interest where datediff(now(), `timestamp`) = 6 group by b_id, date(`timestamp`)) D6 on b.id = D6.b_id
+    left join (select b_id, count(b_id) interested_d5 from user_interest where datediff(now(), `timestamp`) = 5 group by b_id, date(`timestamp`)) D5 on b.id = D5.b_id
+    left join (select b_id, count(b_id) interested_d4 from user_interest where datediff(now(), `timestamp`) = 4 group by b_id, date(`timestamp`)) D4 on b.id = D4.b_id
+    left join (select b_id, count(b_id) interested_d3 from user_interest where datediff(now(), `timestamp`) = 3 group by b_id, date(`timestamp`)) D3 on b.id = D3.b_id
+    left join (select b_id, count(b_id) interested_d2 from user_interest where datediff(now(), `timestamp`) = 2 group by b_id, date(`timestamp`)) D2 on b.id = D2.b_id
+    left join (select b_id, count(b_id) interested_d1 from user_interest where datediff(now(), `timestamp`) = 1 group by b_id, date(`timestamp`)) D1 on b.id = D1.b_id
+    left join (select b_id, count(b_id) interested_d0 from user_interest where datediff(now(), `timestamp`) = 0 group by b_id, date(`timestamp`)) D0 on b.id = D0.b_id
+    left join (select b_id, count(b_id) interested_total from user_interest group by b_id) TOTAL on b.id = TOTAL.b_id
+EOT;
+            if (!$search_all) {
+                $b_ids = explode(PHP_EOL, $bid_list);  // 조회할 책 목록
+                foreach ($b_ids as &$b_id) {
+                    $b_id = trim($b_id);
+                }
+
+                $sql .= ' where b.id in (?) order by b.title';
+
+                $stmt = $app['db']->executeQuery(
+                    $sql,
+                    array($b_ids),
+                    array(Connection::PARAM_INT_ARRAY)
+                );
+                $user_interests = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            } else {
+                $sql .= ' order by b.title';
+
+                $user_interests = $app['db']->fetchAll($sql);
+            }
+        }
+
+        return $app['twig']->render(
+            '/admin/stats/notify_part_update.twig',
+            array(
+                'bid_list' => $bid_list,
+                'search_all' => $search_all,
+                'user_interests' => $user_interests
+            )
+        );
     }
 
     public static function userLikesStats(Request $req, Application $app)
