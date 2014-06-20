@@ -43,7 +43,14 @@
             <tr>
                 <td>{{ searched_account.id }}</td>
                 <td>{{ searched_account.google_id }}</td>
-                <td>{{ searched_account.ridibooks_id }}</td>
+                <td>
+                    {% for ridibooks_id in searched_account.ridibooks_id %}
+                        {{ ridibooks_id }}
+                        {% if not loop.last %}
+                            ,
+                        {% endif %}
+                    {% endfor %}
+                </td>
                 <td>{{ searched_account.coin_balance }}</td>
                 <td>{{ searched_account.google_reg_date }}</td>
             </tr>

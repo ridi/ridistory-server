@@ -125,7 +125,10 @@ class BuyerController implements ControllerProviderInterface
                         throw new Exception('존재하지 않는 계정이 ' . count($invalid_ids) . '건 존재합니다. (' . implode(',', $invalid_ids) . ')');
                     }
 
-                    $searched_accounts = Buyer::getByUids($accounts);
+                    $searched_accounts = array();
+                    foreach($accounts as $account) {
+                        $searched_accounts[] = Buyer::getByUid($account);
+                    }
                 } catch (Exception $e) {
                     $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
                 }
@@ -423,9 +426,7 @@ class BuyerController implements ControllerProviderInterface
 
     public function buyerDetail(Request $req, Application $app, $id)
     {
-        $buyer = Buyer::getByUids(array($id));
-        $buyer = $buyer[0];
-
+        $buyer = Buyer::getByUid($id);
         $coin_in = Buyer::getCoinInList($id);
         $total_coin_in = 0;
         foreach ($coin_in as $in) {

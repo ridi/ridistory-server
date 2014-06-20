@@ -29,7 +29,14 @@
     </tr>
     <tr>
         <th>리디북스 계정</th>
-        <td>{{ buyer.ridibooks_id }}</td>
+        <td>
+            {% for ridibooks_id in buyer.ridibooks_id %}
+                {{ ridibooks_id }}
+                {% if not loop.last %}
+                    ,
+                {% endif %}
+            {% endfor %}
+        </td>
     </tr>
     <tr>
         <th>남은 코인 수</th>
