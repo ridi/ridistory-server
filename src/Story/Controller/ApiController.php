@@ -111,11 +111,11 @@ class ApiController implements ControllerProviderInterface
             $buyer = null;
             $server_google_id = $response['email'];
             $is_verified_email = $response['verified_email'];
-            if ($server_google_id == $google_id && $is_verified_email) {
-                $buyer = Buyer::getByGoogleAccount($google_id);
+            if (($server_google_id == $google_id) && $is_verified_email) {
+                $buyer = Buyer::getByGoogleAccount($google_id, false);
                 if ($buyer == null) {
                     $id = Buyer::add($google_id);
-                    $buyer = Buyer::getByUid($id);
+                    $buyer = Buyer::getByUid($id, false);
                 }
                 $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
             }
