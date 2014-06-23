@@ -413,7 +413,7 @@ class BuyerController implements ControllerProviderInterface
             $buyers = Buyer::getListByOffsetAndSize($offset, $limit);
         }
 
-        $buyer_count = Buyer::getTotalUserCount();
+        $buyer_count = Buyer::getTotalUserCount(false);
 
         return $app['twig']->render(
             'admin/buyer/buyer_list.twig',
