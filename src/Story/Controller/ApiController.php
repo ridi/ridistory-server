@@ -117,7 +117,10 @@ class ApiController implements ControllerProviderInterface
                     $id = Buyer::add($google_id);
                     $buyer = Buyer::getByUid($id, false);
                 }
-                $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
+
+                if (isset($buyer['id'])) {
+                    $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
+                }
             }
 
             if (empty($buyer)) {

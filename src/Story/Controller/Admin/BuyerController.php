@@ -127,7 +127,10 @@ class BuyerController implements ControllerProviderInterface
 
                     $searched_accounts = array();
                     foreach($accounts as $account) {
-                        $searched_accounts[] = Buyer::getByUid($account, true);
+                        $buyer = Buyer::getByUid($account, true);
+                        if ($buyer != null) {
+                            $searched_accounts[] = $buyer;
+                        }
                     }
                 } catch (Exception $e) {
                     $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
