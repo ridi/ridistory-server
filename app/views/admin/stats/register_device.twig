@@ -22,6 +22,13 @@
         </div>
     </form>
 
+    <div class='well'>
+        <h4>기기등록 + 회원 매칭</h4>
+        누적회원 수: <b>{{ total_user_count }}명</b><br />
+        기기정보-회원 매칭 갯수: <b>{{ device_user_match.total_count }}명</b><br />
+        <span style='margin-left: 10px;'>ㄴ 매칭회원 중 2대 이상의 기기를 사용하는 회원 수: <b>{{ device_user_match.distinct_count }}명</b></span>
+    </div>
+
     <div style='margin-bottom: 15px;'>총 기기등록 수: <b>{{ total_registered }}</b></div>
     <table class='table table-bordered'>
         <tr>

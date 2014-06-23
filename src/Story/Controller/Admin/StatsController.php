@@ -4,6 +4,8 @@ namespace Story\Controller\Admin;
 use Doctrine\DBAL\Connection;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Entity\TestUserFactory;
+use Story\Model\Buyer;
 use Symfony\Component\HttpFoundation\Request;
 
 class StatsController implements ControllerProviderInterface
@@ -36,7 +38,7 @@ class StatsController implements ControllerProviderInterface
 
         // 시작일, 종료일 둘 중 하나는 입력해야함.
         if ($begin_date || $end_date) {
-            $sql = <<<EOT
+            $registered_device_sql = <<<EOT
 select date, ifnull(A.num_registered_ios, 0) ios, ifnull(B.num_registered_android, 0) android, (ifnull(A.num_registered_ios, 0) + ifnull(B.num_registered_android, 0)) total from
  (select date(reg_date) date, count(*) num_registered_ios from push_devices where reg_date >= ? and reg_date < ? and platform = 'iOS' group by date) A
 natural right outer join
@@ -44,16 +46,33 @@ natural right outer join
 order by date desc
 EOT;
             $bind = array($temp_begin_date, $temp_end_date, $temp_begin_date, $temp_end_date);
-            $register_stat = $app['db']->fetchAll($sql, $bind);
+            $register_stat = $app['db']->fetchAll($registered_device_sql, $bind);
         }
 
         $total_registered = $app['db']->fetchColumn('select count(*) from push_devices');
+
+        // 누적 회원 수
+        $total_user_count = Buyer::getTotalUserCount(false);
+
+        // 기기정보 - 회원정보 매칭
+        $device_user_match_sql = <<<EOT
+select count(*) total_count, count(distinct u_id) distinct_count from push_devices
+where u_id is not null and u_id not in (39)
+EOT;
+        // 테스트 유저 제외
+        $test_users = TestUserFactory::getConcatUidList(true);
+        if ($test_users) {
+            $device_user_match_sql .= ' and u_id not in (' . $test_users . ')';
+        }
+        $device_user_match = $app['db']->fetchAssoc($device_user_match_sql);
 
         return $app['twig']->render(
             '/admin/stats/register_device.twig',
             array(
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
+                'total_user_count' => $total_user_count,
+                'device_user_match' => $device_user_match,
                 'total_registered' => $total_registered,
                 'register_stat' => $register_stat
             )
