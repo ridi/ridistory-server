@@ -57,7 +57,7 @@ EOT;
         // 기기정보 - 회원정보 매칭
         $device_user_match_sql = <<<EOT
 select count(*) total_count, count(distinct u_id) distinct_count from push_devices
-where u_id is not null and u_id not in (39)
+where u_id is not null
 EOT;
         // 테스트 유저 제외
         $test_users = TestUserFactory::getConcatUidList(true);
