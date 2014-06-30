@@ -59,6 +59,10 @@ class PartController implements ControllerProviderInterface
     public function editPart(Request $req, Application $app, $id)
     {
         $inputs = $req->request->all();
+
+        // 스토어 ID 입력시에, 공백 제거해달라는 요청이 있어서 반영.
+        $inputs['store_id'] = trim($inputs['store_id']);
+
         $part = Part::get($id);
         Part::update($id, $inputs);
         $app['session']->getFlashBag()->add('alert', array('info' => '파트가 수정되었습니다.'));
