@@ -107,12 +107,13 @@
 	    </td>
 	</tr>
 	<tr>
-	    <th>연재분</th>
-	    <td>
+	    <td colspan='2'>
+            <h4>연재분</h4>
 	        <table class='table table-hover table-striped table-condensed'>
                 <thead>
                     <tr>
                         <th>파트 제목</th>
+                        <th>스토어ID</th>
                         <th class='span1'>코인</th>
                         <th class='span3'>시작일</th>
                         <th class='span3'>종료일</th>
@@ -123,6 +124,7 @@
             		{% for part in parts %}
             		<tr data-cid='{{ part.id }}'>
             			<td><a href='/admin/part/{{ part.id }}'>{{ part.seq }}. {{ part.title }} </a></td>
+                        <td>{{ part.store_id }}</td>
                         <td>{{ part.price }}</td>
             			<td><span class='begin_date'>{{ part.begin_date }}</span></td>
             			<td>{{ part.end_date }}</td>
