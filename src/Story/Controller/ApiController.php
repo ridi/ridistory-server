@@ -122,9 +122,10 @@ class ApiController implements ControllerProviderInterface
                     $buyer['is_new_user'] = true;
 
                     // 트랜잭션 시작 (신규 유저 이벤트 5코인 지급)
+                    $event_provide_coin = 5;
                     $app['db']->beginTransaction();
                     try {
-                        $ch_id = Buyer::addCoin($id, 5, Buyer::COIN_SOURCE_IN_EVENT);
+                        $ch_id = Buyer::addCoin($id, $event_provide_coin, Buyer::COIN_SOURCE_IN_EVENT);
                         if (!$ch_id) {
                             throw new Exception('코인 충전 오류');
                         }
@@ -135,6 +136,7 @@ class ApiController implements ControllerProviderInterface
                         }
 
                         $app['db']->commit();
+                        $buyer['coin_balance'] += $event_provide_coin;
                     } catch (Exception $e) {
                         $app['db']->rollback();
                         $buyer = null;
