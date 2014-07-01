@@ -11,6 +11,7 @@ use Story\Entity\RecommendedBookFactory;
 use Story\Model\Buyer;
 use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
+use Story\Model\Event;
 use Story\Util\AES128;
 use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
@@ -119,7 +120,27 @@ class ApiController implements ControllerProviderInterface
 
                     //TODO: 허니스크린 적립금 지급 이벤트. 이벤트 종료 후, 아래 코드들 삭제. @유대열
                     $buyer['is_new_user'] = true;
-                    //TODO: 신규 유저 5코인 지급 추가. @유대열
+
+                    // 트랜잭션 시작 (신규 유저 이벤트 5코인 지급)
+                    $app['db']->beginTransaction();
+                    try {
+                        $ch_id = Buyer::addCoin($id, 5, Buyer::COIN_SOURCE_IN_EVENT);
+                        if (!$ch_id) {
+                            throw new Exception('코인 충전 오류');
+                        }
+
+                        $r = Event::add(array('u_id' => $id, 'ch_id' => $ch_id, 'comment' => '허니스크린 신규 유저 코인 지급 이벤트 (7/4)'));
+                        if (!$r) {
+                            throw new Exception('EventHistory 등록 오류');
+                        }
+
+                        $app['db']->commit();
+                    } catch (Exception $e) {
+                        $app['db']->rollback();
+                        $buyer = null;
+                        trigger_error('[HoneyScreen Event] Failed giving 5 event coins. (GoogleId: ' . $google_id . ')', E_USER_ERROR);
+                    }
+                    //TODO: 여기까지 삭제. @유대열
                 }
 
                 if (isset($buyer['id'])) {
