@@ -116,6 +116,10 @@ class ApiController implements ControllerProviderInterface
                 if ($buyer == null) {
                     $id = Buyer::add($google_id);
                     $buyer = Buyer::getByUid($id, false);
+
+                    //TODO: 허니스크린 적립금 지급 이벤트. 이벤트 종료 후, 아래 코드들 삭제. @유대열
+                    $buyer['is_new_user'] = true;
+                    //TODO: 신규 유저 5코인 지급 추가. @유대열
                 }
 
                 if (isset($buyer['id'])) {
