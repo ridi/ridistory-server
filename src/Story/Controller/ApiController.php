@@ -97,7 +97,7 @@ class ApiController implements ControllerProviderInterface
     {
         $google_id = $req->get('google_account');
         $token = $req->get('token');
-        $is_from_cashslide = $req->get('is_from_cashslide');
+        $is_from_cashslide = $req->get('is_from_cashslide', 0);
 
         if ($google_id && $token) {
             // Google Services Auth
