@@ -122,8 +122,18 @@ class ApiController implements ControllerProviderInterface
                     //TODO: 캐시슬라이드 적립금 지급 이벤트. 이벤트 종료 후, 아래 코드들 삭제. @유대열
                     $buyer['is_new_user'] = true;
 
+                    // 이벤트 기간 설정
+                    $event_start_date = '2014-07-08 10:00:00';
+                    $event_end_date = '2014-07-14 10:00:00';
+
+                    if (strtotime('now') >= strtotime($event_start_date)
+                    && strtotime('now') <= strtotime($event_end_date)) {
+                        $should_provide_coin = true;
+                    } else {
+                        $should_provide_coin = false;
+                    }
+
                     // 트랜잭션 시작 (신규 유저 이벤트 5코인 지급)
-                    $event_provide_coin = 5;
                     $app['db']->beginTransaction();
                     try {
                         if ($is_from_cashslide) {
@@ -133,14 +143,19 @@ class ApiController implements ControllerProviderInterface
                             }
                         }
 
-                        $ch_id = Buyer::addCoin($id, $event_provide_coin, Buyer::COIN_SOURCE_IN_EVENT);
-                        if (!$ch_id) {
-                            throw new Exception('코인 충전 오류');
-                        }
+                        if ($should_provide_coin) {
+                            $event_provide_coin = 5;
+                            $ch_id = Buyer::addCoin($id, $event_provide_coin, Buyer::COIN_SOURCE_IN_EVENT);
+                            if (!$ch_id) {
+                                throw new Exception('코인 충전 오류');
+                            }
 
-                        $r = Event::add(array('u_id' => $id, 'ch_id' => $ch_id, 'comment' => '캐시슬라이드 신규 유저 코인 지급 이벤트 (7/4)'));
-                        if (!$r) {
-                            throw new Exception('EventHistory 등록 오류');
+                            $r = Event::add(array('u_id' => $id, 'ch_id' => $ch_id, 'comment' => '캐시슬라이드 신규 유저 코인 지급 이벤트 (7/4)'));
+                            if (!$r) {
+                                throw new Exception('EventHistory 등록 오류');
+                            }
+                        } else {
+                            $event_provide_coin = 0;
                         }
 
                         $app['db']->commit();
