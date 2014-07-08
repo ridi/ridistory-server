@@ -136,11 +136,9 @@ class ApiController implements ControllerProviderInterface
                     // 트랜잭션 시작 (신규 유저 이벤트 5코인 지급)
                     $app['db']->beginTransaction();
                     try {
-                        if ($device_id) {
-                            $r = $app['db']->insert('from_cashslide', array('u_id' => $id, 'device_id' => $device_id));
-                            if (!$r) {
-                                throw new Exception('from_cashslide 등록 오류');
-                            }
+                        $r = $app['db']->insert('cashslide_event_history', array('u_id' => $id, 'device_id' => $device_id));
+                        if (!$r) {
+                            throw new Exception('cashslide_event_history 등록 오류');
                         }
 
                         if ($should_provide_coin) {
