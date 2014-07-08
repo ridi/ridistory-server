@@ -97,6 +97,7 @@ class ApiController implements ControllerProviderInterface
     {
         $google_id = $req->get('google_account');
         $token = $req->get('token');
+        $is_from_cashslide = $req->get('is_from_cashslide');
 
         if ($google_id && $token) {
             // Google Services Auth
@@ -118,19 +119,26 @@ class ApiController implements ControllerProviderInterface
                     $id = Buyer::add($google_id);
                     $buyer = Buyer::getByUid($id, false);
 
-                    //TODO: 허니스크린 적립금 지급 이벤트. 이벤트 종료 후, 아래 코드들 삭제. @유대열
+                    //TODO: 캐시슬라이드 적립금 지급 이벤트. 이벤트 종료 후, 아래 코드들 삭제. @유대열
                     $buyer['is_new_user'] = true;
 
                     // 트랜잭션 시작 (신규 유저 이벤트 5코인 지급)
                     $event_provide_coin = 5;
                     $app['db']->beginTransaction();
                     try {
+                        if ($is_from_cashslide) {
+                            $r = $app['db']->insert('from_cashslide', array('u_id' => $id));
+                            if (!$r) {
+                                throw new Exception('from_cashslide 등록 오류');
+                            }
+                        }
+
                         $ch_id = Buyer::addCoin($id, $event_provide_coin, Buyer::COIN_SOURCE_IN_EVENT);
                         if (!$ch_id) {
                             throw new Exception('코인 충전 오류');
                         }
 
-                        $r = Event::add(array('u_id' => $id, 'ch_id' => $ch_id, 'comment' => '허니스크린 신규 유저 코인 지급 이벤트 (7/4)'));
+                        $r = Event::add(array('u_id' => $id, 'ch_id' => $ch_id, 'comment' => '캐시슬라이드 신규 유저 코인 지급 이벤트 (7/4)'));
                         if (!$r) {
                             throw new Exception('EventHistory 등록 오류');
                         }
@@ -140,7 +148,7 @@ class ApiController implements ControllerProviderInterface
                     } catch (Exception $e) {
                         $app['db']->rollback();
                         $buyer = null;
-                        trigger_error('[HoneyScreen Event] Failed giving 5 event coins. (GoogleId: ' . $google_id . ')', E_USER_ERROR);
+                        trigger_error('[Cashslide Event] Failed giving 5 event coins. (GoogleId: ' . $google_id . ')', E_USER_ERROR);
                     }
                     //TODO: 여기까지 삭제. @유대열
                 }
