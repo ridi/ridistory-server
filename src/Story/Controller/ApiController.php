@@ -97,7 +97,7 @@ class ApiController implements ControllerProviderInterface
     {
         $google_id = $req->get('google_account');
         $token = $req->get('token');
-        $is_from_cashslide = $req->get('is_from_cashslide', 0);
+        $imei = $req->get('imei', null);
 
         if ($google_id && $token) {
             // Google Services Auth
@@ -136,8 +136,8 @@ class ApiController implements ControllerProviderInterface
                     // 트랜잭션 시작 (신규 유저 이벤트 5코인 지급)
                     $app['db']->beginTransaction();
                     try {
-                        if ($is_from_cashslide) {
-                            $r = $app['db']->insert('from_cashslide', array('u_id' => $id));
+                        if ($imei) {
+                            $r = $app['db']->insert('from_cashslide', array('u_id' => $id, 'imei' => $imei));
                             if (!$r) {
                                 throw new Exception('from_cashslide 등록 오류');
                             }
