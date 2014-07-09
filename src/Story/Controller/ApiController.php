@@ -124,11 +124,8 @@ class ApiController implements ControllerProviderInterface
                         $buyer['is_new_user_cashslide'] = true;
 
                         // 이벤트 기간 설정
-                        $event_start_date = '2014-07-08 10:00:00';
-                        $event_end_date = '2014-07-14 10:00:00';
-
-                        if (strtotime('now') >= strtotime($event_start_date)
-                        && strtotime('now') <= strtotime($event_end_date)) {
+                        if (strtotime('now') >= strtotime('2014-07-10 00:00:00')
+                        && strtotime('now') <= strtotime('2014-07-14 23:59:59')) {
                             $should_provide_coin = true;
                         } else {
                             $should_provide_coin = false;
