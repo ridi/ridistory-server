@@ -146,7 +146,7 @@ class ApiController implements ControllerProviderInterface
                                     throw new Exception('코인 충전 오류');
                                 }
 
-                                $r = Event::add(array('u_id' => $id, 'ch_id' => $ch_id, 'comment' => '캐시슬라이드 신규 유저 코인 지급 이벤트 (7/4)'));
+                                $r = Event::add(array('u_id' => $id, 'ch_id' => $ch_id, 'comment' => '캐시슬라이드 신규 유저 코인 지급 이벤트 (7/10)'));
                                 if (!$r) {
                                     throw new Exception('EventHistory 등록 오류');
                                 }
