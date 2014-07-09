@@ -11,9 +11,13 @@
     </ul>
 
     <form method='post'>
+        <input type='hidden' name='is_real' value='{{ is_real }}' />
         <table class='table'>
             <tr>
-                <td colspan="2">* 코인은 '<b>회수</b>' 항목으로 일괄 회수됩니다.</td>
+                <td colspan="2">
+                    * '<b>코인 회수</b>' 버튼을 최초로 처음 누르면 예시 결과를 보실 수 있습니다. <b>다시 한 번 더 누르면</b> 실제로 회수 됩니다.<br />
+                    * 코인은 '<b>회수</b>' 항목으로 일괄 회수됩니다.
+                </td>
             </tr>
             <tr>
                 <th>유저 ID</th>
@@ -43,7 +47,13 @@
 
         <div class='form-actions'>
             <button class='btn btn-cancel'>입력 초기화</button>
-            <button type='submit' class='btn btn-danger pull-right'>코인 회수</button>
+            <button type='submit' class='btn btn-danger pull-right'>
+                {% if is_real == 0 %}
+                    코인 회수(테스트)
+                {% else %}
+                    코인 회수
+                {% endif %}
+            </button>
         </div>
     </form>
 

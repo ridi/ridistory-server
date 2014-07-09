@@ -318,6 +318,7 @@ class BuyerController implements ControllerProviderInterface
         $standard_coin_amount = $req->get('standard_coin_amount', 0);
         $begin_date = $req->get('begin_date');
         $end_date = $req->get('end_date');
+        $is_real = $req->get('is_real', 0);
         $coin_usages = null;
 
         $u_ids = explode(PHP_EOL, $user_list);
@@ -366,17 +367,25 @@ class BuyerController implements ControllerProviderInterface
                         }
 
                         // 코인 회수
-                        $ch_id = Buyer::reduceCoin($coin_usage['u_id'], -$reduce_coin_amount, Buyer::COIN_SOURCE_OUT_WITHDRAW);
-                        if (!$ch_id) {
-                            throw new Exception('코인을 회수하는 도중 오류가 발생했습니다. (유저 ID: ' . $coin_usage['u_id'] . ')');
-                        } else {
-                            $total_withdraw_coin_amount += $reduce_coin_amount;
-                            $withdraw_user_count++;
+                        if ($is_real) {
+                            $ch_id = Buyer::reduceCoin($coin_usage['u_id'], -$reduce_coin_amount, Buyer::COIN_SOURCE_OUT_WITHDRAW);
+                            if (!$ch_id) {
+                                throw new Exception('코인을 회수하는 도중 오류가 발생했습니다. (유저 ID: ' . $coin_usage['u_id'] . ')');
+                            }
                         }
+
+                        $total_withdraw_coin_amount += $reduce_coin_amount;
+                        $withdraw_user_count++;
                     }
                 }
                 $app['db']->commit();
-                $app['session']->getFlashBag()->add('alert', array('success' => '코인을 회수하였습니다. (총: ' . count($u_ids) . '명 / 회수대상: ' . $withdraw_user_count . '명 / 회수코인: ' . $total_withdraw_coin_amount . '코인)'));
+                $app['session']->getFlashBag()->add('alert', array('success' => (($is_real) ? '' : '[테스트] ') . '코인을 회수하였습니다. (총: ' . count($u_ids) . '명 / 회수대상: ' . $withdraw_user_count . '명 / 회수코인: ' . $total_withdraw_coin_amount . '코인)'));
+
+                if ($is_real == 0) {
+                    $is_real = 1;
+                } else {
+                    $is_real = 0;
+                }
             } catch (Exception $e) {
                 $app['db']->rollback();
                 $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
@@ -390,7 +399,8 @@ class BuyerController implements ControllerProviderInterface
                 'standard_coin_amount' => $standard_coin_amount,
                 'begin_date' => $begin_date,
                 'end_date' => $end_date,
-                'coin_usages' => $coin_usages
+                'coin_usages' => $coin_usages,
+                'is_real' => $is_real
             )
         );
     }
