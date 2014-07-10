@@ -448,8 +448,9 @@ class BuyerController implements ControllerProviderInterface
         $offset = $cur_page * $limit;
 
         $sql = <<<EOT
-select bu.id, bu.google_id, bu.google_reg_date, ceh.device_id cashslide_device_id from cashslide_event_history ceh
+select bu.id, ifnull(coin_balance, 0) coin_balance, bu.google_reg_date, ceh.device_id cashslide_device_id from cashslide_event_history ceh
  left join buyer_user bu on bu.id = ceh.u_id
+ left join (select u_id, sum(amount) coin_balance from coin_history group by u_id) ch on ch.u_id = ceh.u_id
 order by bu.google_reg_date desc limit ?, ?
 EOT;
         $stmt = $app['db']->executeQuery($sql,

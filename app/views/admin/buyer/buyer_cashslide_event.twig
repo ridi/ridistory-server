@@ -17,18 +17,18 @@
         <thead>
         <tr>
             <th class='span1'>유저 ID</th>
-            <th>구글 계정</th>
-            <th>구글 계정 등록일</th>
+            <th>잔여코인</th>
             <th>DeviceID(IMEI)</th>
+            <th>구글 계정 등록일</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
         {% for buyer in buyers %}
-            <tr>
+            <tr data-bid='{{ buyer.id }}'>
                 <td>{{ buyer.id }}</td>
-                <td>{{ buyer.google_id }}</td>
-                <td>{{ buyer.google_reg_date }}</td>
+                <td>{{ buyer.coin_balance }}</td>
                 <td>{{ buyer.cashslide_device_id }}</td>
+                <td>{{ buyer.google_reg_date }}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -51,6 +51,11 @@
 {% block script %}
     <script>
         $(function() {
+            $('#js_tbody tr').click(function() {
+                var b_id = $(this).data('bid');
+                location.href = '/admin/buyer/' + b_id;
+            });
+
             $('#js_tbody tr').hover(function() {
                         $(this).css('cursor', 'pointer');
                     }, function() {
