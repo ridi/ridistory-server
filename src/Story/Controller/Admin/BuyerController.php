@@ -4,6 +4,7 @@ namespace Story\Controller\Admin;
 use Exception;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Entity\TestUserFactory;
 use Story\Model\Book;
 use Story\Model\Buyer;
 use Story\Model\CsReward;
@@ -459,10 +460,21 @@ EOT;
         );
         $buyers = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+        $sql = <<<EOT
+select count(*) user_count from cashslide_event_history
+EOT;
+        // 테스트 유저 제외
+        $test_users = TestUserFactory::getConcatUidList(true);
+        if ($test_users) {
+            $sql .= ' where id not in (' . $test_users . ')';
+        }
+        $buyer_count = $app['db']->fetchColumn($sql);
+
         return $app['twig']->render(
             'admin/buyer/buyer_cashslide_event.twig',
             array(
                 'buyers' => $buyers,
+                'buyer_count' => $buyer_count,
                 'cur_page' => $cur_page
             )
         );
