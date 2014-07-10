@@ -34,6 +34,7 @@ class BuyerController implements ControllerProviderInterface
         $admin->get('migration_history', array($this, 'buyerMigrationHistory'));
 
         $admin->get('list', array($this, 'buyerList'));
+        $admin->get('cashslide_event', array($this, 'cashslideEventBuyerList'));
         $admin->get('{id}', array($this, 'buyerDetail'));
         $admin->post('{id}/coin/add', array($this, 'addBuyerCoin'));
         $admin->post('{id}/coin/reduce', array($this, 'reduceBuyerCoin'));
@@ -431,6 +432,35 @@ class BuyerController implements ControllerProviderInterface
                 'search_type' => $search_type,
                 'search_keyword' => $search_keyword,
                 'buyer_count' => $buyer_count,
+                'buyers' => $buyers,
+                'cur_page' => $cur_page
+            )
+        );
+    }
+
+    /*
+     * Cashslide Event (Temp)
+     */
+    public function cashslideEventBuyerList(Request $req, Application $app) {
+        $cur_page = $req->get('page', 0);
+
+        $limit = 50;
+        $offset = $cur_page * $limit;
+
+        $sql = <<<EOT
+select bu.id, bu.google_id, bu.google_reg_date, ceh.device_id cashslide_device_id from cashslide_event_history ceh
+ left join buyer_user bu on bu.id = ceh.u_id
+order by bu.google_reg_date desc limit ?, ?
+EOT;
+        $stmt = $app['db']->executeQuery($sql,
+            array($offset, $limit),
+            array(\PDO::PARAM_INT, \PDO::PARAM_INT)
+        );
+        $buyers = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $app['twig']->render(
+            'admin/buyer/buyer_cashslide_event.twig',
+            array(
                 'buyers' => $buyers,
                 'cur_page' => $cur_page
             )
