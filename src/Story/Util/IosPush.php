@@ -22,6 +22,14 @@ class IosPush
         );
     }
 
+    public static function createNoticeNotification($url)
+    {
+        return array(
+            'type' => 'notice',
+            'url' => $url
+        );
+    }
+
     public static function sendPush($devices, $message, $notification)
     {
         $device_tokens = array();

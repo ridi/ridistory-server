@@ -49,6 +49,22 @@ EOT;
         return new PickDeviceResult($devices);
     }
 
+    static function pickDevicesUsingUids(Connection $db, $u_ids)
+    {
+        $sql = <<<EOT
+select id, device_token, platform from push_devices
+where u_id in (?) and is_active = 1
+EOT;
+        $stmt = $db->executeQuery(
+            $sql,
+            array($u_ids),
+            array(Connection::PARAM_INT_ARRAY)
+        );
+        $devices = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return new PickDeviceResult($devices);
+    }
+
     static function pickDevicesUsingRegDateRange(Connection $db, $date_begin, $date_end)
     {
         $sql = <<<EOT
