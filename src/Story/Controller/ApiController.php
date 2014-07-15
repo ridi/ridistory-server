@@ -811,7 +811,7 @@ class ApiController implements ControllerProviderInterface
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             if (!Buyer::isValidUid($u_id)) {
-                return $app->json(array('success' => false, 'reason' => 'invalid user'));
+                $u_id = null;
             }
         }
 
