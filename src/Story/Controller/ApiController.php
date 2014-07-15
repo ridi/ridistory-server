@@ -97,7 +97,6 @@ class ApiController implements ControllerProviderInterface
     {
         $google_id = $req->get('google_account');
         $token = $req->get('token');
-        $device_id = $req->get('device_id', null);
 
         if ($google_id && $token) {
             // Google Services Auth
@@ -118,51 +117,6 @@ class ApiController implements ControllerProviderInterface
                 if ($buyer == null) {
                     $id = Buyer::add($google_id);
                     $buyer = Buyer::getByUid($id, false);
-
-                    //TODO: 캐시슬라이드 적립금 지급 이벤트. 이벤트 종료 후, 아래 코드들 삭제. @유대열
-                    if ($device_id) {
-                        $buyer['is_new_user_cashslide'] = true;
-
-                        // 이벤트 기간 설정
-                        if (strtotime('now') >= strtotime('2014-07-10 00:00:00')
-                        && strtotime('now') <= strtotime('2014-07-14 23:59:59')) {
-                            $should_provide_coin = true;
-                        } else {
-                            $should_provide_coin = false;
-                        }
-
-                        // 트랜잭션 시작 (신규 유저 이벤트 5코인 지급)
-                        $app['db']->beginTransaction();
-                        try {
-                            $r = $app['db']->insert('cashslide_event_history', array('u_id' => $id, 'device_id' => $device_id));
-                            if (!$r) {
-                                throw new Exception('cashslide_event_history 등록 오류');
-                            }
-
-                            if ($should_provide_coin) {
-                                $event_provide_coin = 5;
-                                $ch_id = Buyer::addCoin($id, $event_provide_coin, Buyer::COIN_SOURCE_IN_EVENT);
-                                if (!$ch_id) {
-                                    throw new Exception('코인 충전 오류');
-                                }
-
-                                $r = Event::add(array('u_id' => $id, 'ch_id' => $ch_id, 'comment' => '캐시슬라이드 신규 유저 코인 지급 이벤트 (7/10)'));
-                                if (!$r) {
-                                    throw new Exception('EventHistory 등록 오류');
-                                }
-                            } else {
-                                $event_provide_coin = 0;
-                            }
-
-                            $app['db']->commit();
-                            $buyer['coin_balance'] += $event_provide_coin;
-                        } catch (Exception $e) {
-                            $app['db']->rollback();
-                            $buyer = null;
-                            trigger_error('[Cashslide Event] Failed giving 5 event coins. (GoogleId: ' . $google_id . ') - ' . $e->getMessage(), E_USER_ERROR);
-                        }
-                    }
-                    //TODO: 여기까지 삭제. @유대열
                 }
 
                 if (isset($buyer['id'])) {
