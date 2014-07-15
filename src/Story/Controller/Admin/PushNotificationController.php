@@ -29,9 +29,9 @@ class PushNotificationController implements ControllerProviderInterface
 
         $admin->get('ios_payload_length/{type}', array($this, 'iOSPayloadLength'));
 
-        $admin->get('notify/interest_book/part_update', array($this, 'pushNotifyInterestBookPartUpdate'));
-        $admin->get('notify/interest_book/url', array($this, 'pushNotifyInterestBookUrl'));
-        $admin->get('notify/notice', array($this, 'pushNotifyNotice'));;
+        $admin->post('notify/interest_book/part_update', array($this, 'pushNotifyInterestBookPartUpdate'));
+        $admin->post('notify/interest_book/url', array($this, 'pushNotifyInterestBookUrl'));
+        $admin->post('notify/notice', array($this, 'pushNotifyNotice'));;
 
         return $admin;
     }
@@ -131,8 +131,11 @@ class PushNotificationController implements ControllerProviderInterface
     public static function pushNotifyNotice(Request $req, Application $app)
     {
         $user_list = $req->get('user_list');
-        $url = $req->get('url');
-        $message = $req->get('message');
+        $url = $req->get('url', null);
+        $message = $req->get('message', null);
+
+        $url = empty($url) ? null : $url;
+        $message = empty($message) ? null : $message;
 
         $push_token_exist_u_ids = null;
         $push_token_inexist_u_ids = null;

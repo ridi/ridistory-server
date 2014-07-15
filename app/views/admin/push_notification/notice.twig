@@ -8,7 +8,7 @@
         <li class="active"><a href="/admin/push/notice">공지사항(일반 메세지)</a></li>
     </ul>
 
-    <form action='/admin/push/notify/notice'>
+    <form action='/admin/push/notify/notice' method='post'>
         <fieldset>
             <label>메세지 <b>수신</b> 대상 유저 ID 목록</label>
             <textarea rows='8' class='input-xlarge' name='user_list'>{{ user_list }}</textarea>
