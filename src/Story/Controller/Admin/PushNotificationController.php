@@ -51,7 +51,7 @@ class PushNotificationController implements ControllerProviderInterface
 
     public static function pushNotice(Request $req, Application $app)
     {
-        return $app['twig']->render('/admin/push_notification/notice.twig', array('user_list' => null, 'push_token_inexist_u_ids' => null));
+        return $app['twig']->render('/admin/push_notification/notice.twig', array('user_list' => null));
     }
 
     /**
@@ -176,18 +176,17 @@ class PushNotificationController implements ControllerProviderInterface
 
             $result = self::_push($pick_result, $notification_andorid);
             $flash_message = self::getResultFlashMessage('[공지사항] 푸시 메세지가 성공적으로 발송되었습니다.', $result);
+
             $app['session']->getFlashBag()->add('alert', array('success' => $flash_message));
+
+            if (!empty($push_token_inexist_u_ids)) {
+                $app['session']->getFlashBag()->add('alert', array('error' => '기기 정보가 존재하지 않는 회원(유저ID): ' . implode(', ', $push_token_inexist_u_ids)));
+            }
         } catch (\Exception $e) {
             $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
         }
 
-        return $app['twig']->render(
-            '/admin/push_notification/notice.twig',
-            array(
-                'user_list' => $user_list,
-                'push_token_inexist_u_ids' => $push_token_inexist_u_ids
-            )
-        );
+        return $app->redirect('/admin/push/notice');
     }
 
     private static function _push(PickDeviceResult $pick_result, $notification_android)

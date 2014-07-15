@@ -20,18 +20,6 @@
         </fieldset>
         <button type="submit" class="btn btn-danger" onclick="return confirm('발송하시겠습니까?');">PUSH 발송!</button>
     </form>
-
-    <h4>Push 기기 정보가 존재하지 않는 회원들</h4>
-    <table class='table'>
-        <tr>
-            <th>유저 ID</th>
-        </tr>
-        {% for u_id in push_token_inexist_u_ids %}
-            <tr>
-                <td>{{ u_id }}</td>
-            </tr>
-        {% endfor %}
-    </table>
 {% endblock %}
 
 {% block script %}
