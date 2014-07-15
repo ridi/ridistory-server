@@ -778,7 +778,7 @@ class ApiController implements ControllerProviderInterface
         $platform = $req->get('platform');
         if (strcasecmp($platform, 'android') === 0) {
             $r = array(
-                'version' => '4.13',
+                'version' => '4.15',
                 'force' => false,
                 'update_url' => 'http://play.google.com/store/apps/details?id=com.initialcoms.story',
                 'description' => '리디스토리를 최신 버전으로 업데이트 해주세요. 더욱 더 다양한 신간 연재 도서를 만나보실 수 있습니다.'
