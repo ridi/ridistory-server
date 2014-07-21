@@ -71,6 +71,7 @@ EOT;
             $sql = null;
             $bind = null;
         }
+        $sql .= ' order by pc.timestamp desc';
 
         global $app;
         return $app['db']->fetchAll($sql, $bind);
