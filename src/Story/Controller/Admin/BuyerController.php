@@ -41,6 +41,8 @@ class BuyerController implements ControllerProviderInterface
         $admin->post('{id}/coin/reduce', array($this, 'reduceBuyerCoin'));
         $admin->post('{id}/purchase_history/delete', array($this, 'deletePurchasedHistory'));
 
+        $admin->post('{id}/edit', array($this, 'editBuyer'));
+
         return $admin;
     }
 
@@ -634,5 +636,24 @@ EOT;
         $app['cache']->delete('purchased_part_list_' . $id . '_' . $part['b_id']);
 
         return $app->json(array('success' => $result));
+    }
+
+    /*
+     * C.R.U.D
+     */
+    public function editBuyer(Request $req, Application $app, $id)
+    {
+        $inputs = $req->request->all();
+
+        $inputs['is_adult'] = isset($inputs['is_adult']);
+
+        $r = Buyer::update($id, $inputs);
+        if ($r) {
+            $app['session']->getFlashBag()->add('alert', array('info' => '회원 정보가 수정되었습니다.'));
+        } else {
+            $app['session']->getFlashBag()->add('alert', array('error' => '회원 정보를 수정하지 못했습니다.'));
+        }
+
+        return $app->redirect('/admin/buyer/' . $id);
     }
 }

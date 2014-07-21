@@ -263,7 +263,7 @@ class ApiController implements ControllerProviderInterface
         if ($r) {
             return $app->json(array('success' => true, 'message' => '성공'));
         } else {
-            return $app->json(array('success' => false, 'message' => '성인인증 결과를 저장하지 못했습니다. 다시 시도해주세요.'));
+            return $app->json(array('success' => false, 'message' => '성인인증에 실패하였습니다. 다시 시도해주세요.'));
         }
     }
 

@@ -11,6 +11,7 @@
     <li><a href="/admin/buyer/cashslide_event">캐시슬라이드 이벤트(임시)</a></li>
 </ul>
 
+<form action="/admin/buyer/{{ buyer.id }}/edit" method='post'>
 <table class='table'>
     <colgroup>
         <col class="span1">
@@ -37,6 +38,14 @@
                     ,
                 {% endif %}
             {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <th>성인</th>
+        <td>
+            <label class="checkbox">
+                <input type='checkbox' name='is_adult' {{ buyer.is_adult ? 'checked="checked"' }} /> 성인인증이 된 경우에 체크
+            </label>
         </td>
     </tr>
     <tr>
@@ -161,8 +170,10 @@
 </table>
 
 <div class='form-actions'>
+    <button type='submit' class='btn btn-success'>수정 완료</button>
     <button class='btn btn-cancel'>목록으로</button>
 </div>
+</form>
 
 {% endblock %}
 
@@ -185,7 +196,7 @@
                         } else {
                             location.href = '/admin/buyer/{{ buyer.id }}';
                         }
-                    })
+                    });
                 }
                 return false;
             });
@@ -197,16 +208,17 @@
                 if (coin_amount > {{ buyer.coin_balance }}) {
                     alert('감소시키려는 코인이, 현재 보유하고 있는 코인보다 많습니다.');
                 } else {
-                    if (confirm('코인을 감소시키겠습니까?')) {
+                    if (confirm('코인을 감소시키겠습니까? (코인 회수는, 기간제 코인 회수 메뉴를 이용해주세요.)')) {
                         $.post('/admin/buyer/{{ buyer.id }}/coin/reduce', {'source': coin_source, 'coin_amount': coin_amount}, function(r) {
                             if (r.error) {
                                 alert(r.error);
                             } else {
                                 location.href = '/admin/buyer/{{ buyer.id }}';
                             }
-                        })
+                        });
                     }
                 }
+                return false;
             });
 
             {#$('.delete_purchase').click(function() {#}
