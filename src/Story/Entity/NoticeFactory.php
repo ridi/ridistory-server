@@ -3,7 +3,8 @@ namespace Story\Entity;
 
 use Story\DB\EntityManagerProvider;
 
-class NoticeFactory {
+class NoticeFactory
+{
     /**
      * @param $id
      * @param bool $exclude_invisible

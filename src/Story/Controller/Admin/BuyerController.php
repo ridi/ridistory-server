@@ -4,11 +4,11 @@ namespace Story\Controller\Admin;
 use Exception;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Story\Entity\CsRewardFactory;
+use Story\Entity\EventFactory;
 use Story\Entity\TestUserFactory;
 use Story\Model\Book;
 use Story\Model\Buyer;
-use Story\Model\CsReward;
-use Story\Model\Event;
 use Story\Model\Part;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -221,11 +221,11 @@ class BuyerController implements ControllerProviderInterface
                     throw new Exception('코인을 추가하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
                 }
 
-                $history_values = array('u_id' => $u_id, 'ch_id' => $ch_id, 'comment' => trim($comment));
+                $comment = trim($comment);
                 if ($coin_source == Buyer::COIN_SOURCE_IN_EVENT) {
-                    $r = Event::add($history_values);
+                    $r = EventFactory::create($ch_id, $u_id, $comment);
                 } else {
-                    $r = CsReward::add($history_values);
+                    $r = CsRewardFactory::create($ch_id, $u_id, $comment);
                 }
                 if (!$r) {
                     throw new Exception('코인 추가 히스토리를 등록하는 도중 오류가 발생했습니다. (유저 ID: ' . $u_id . ')');
