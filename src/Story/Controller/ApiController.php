@@ -11,7 +11,6 @@ use Story\Entity\RecommendedBookFactory;
 use Story\Model\Buyer;
 use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
-use Story\Model\Event;
 use Story\Util\AES128;
 use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,6 +38,7 @@ class ApiController implements ControllerProviderInterface
         $api->get('/buyer/coin', array($this, 'getBuyerCoinBalance'));
         $api->post('/buyer/coin/add', array($this, 'addBuyerCoin'));
         $api->post('/buyer/inapp_data/save', array($this, 'saveInAppBillingData'));
+        $api->post('/buyer/adult/verified', array($this, 'setBuyerAdultVerified'));
 
         $api->get('/book/list', array($this, 'bookList'));
         $api->get('/book/completed_list', array($this, 'completedBookList'));
@@ -149,27 +149,6 @@ class ApiController implements ControllerProviderInterface
         return $app->json(compact("coin_balance"));
     }
 
-    public function saveInAppBillingData(Request $req, Application $app)
-    {
-        $inputs = $req->request->all();
-        if ($inputs['u_id']) {
-            $inputs['u_id'] = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $inputs['u_id']);
-            if (!Buyer::isValidUid($inputs['u_id'])) {
-                return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
-            }
-        } else {
-            return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
-        }
-
-        $iab_data = CoinBilling::getInAppBillingBindIfNotNull($inputs);
-        $r = CoinBilling::saveBillingHistory($iab_data, CoinProduct::TYPE_INAPP);
-        if ($r) {
-            return $app->json(array('success' => true, 'message' => '성공'));
-        } else {
-            return $app->json(array('success' => false, 'message' => '결제 정보에 오류가 있습니다.'));
-        }
-    }
-
     public function addBuyerCoin(Request $req, Application $app)
     {
         $inputs = $req->request->all();
@@ -244,6 +223,48 @@ class ApiController implements ControllerProviderInterface
         }
 
         return $app->json($result);
+    }
+
+    public function saveInAppBillingData(Request $req, Application $app)
+    {
+        $inputs = $req->request->all();
+        if ($inputs['u_id']) {
+            $inputs['u_id'] = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $inputs['u_id']);
+            if (!Buyer::isValidUid($inputs['u_id'])) {
+                return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+            }
+        } else {
+            return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+        }
+
+        $iab_data = CoinBilling::getInAppBillingBindIfNotNull($inputs);
+        $r = CoinBilling::saveBillingHistory($iab_data, CoinProduct::TYPE_INAPP);
+        if ($r) {
+            return $app->json(array('success' => true, 'message' => '성공'));
+        } else {
+            return $app->json(array('success' => false, 'message' => '결제 정보에 오류가 있습니다.'));
+        }
+    }
+
+    public function setBuyerAdultVerified(Request $req, Application $app)
+    {
+        $u_id = $req->get('u_id', null);
+        if ($u_id) {
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+            if (!Buyer::isValidUid($u_id)) {
+                return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+            }
+        } else {
+            return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+        }
+
+        $is_adult = $req->get('is_adult', 0);
+        $r = Buyer::update($u_id, array('is_adult' => $is_adult));
+        if ($r) {
+            return $app->json(array('success' => true, 'message' => '성공'));
+        } else {
+            return $app->json(array('success' => false, 'message' => '성인인증 결과를 저장하지 못했습니다. 다시 시도해주세요.'));
+        }
     }
 
     /*
@@ -567,7 +588,6 @@ class ApiController implements ControllerProviderInterface
                 }
 
                 // 구매목록 캐시 삭제
-                // 캐시 삭제
                 $app['cache']->delete('purchased_book_list_' . $u_id);
                 $app['cache']->delete('purchased_part_list_' . $u_id . '_' . $part['b_id']);
 

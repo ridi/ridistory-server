@@ -31,6 +31,7 @@
             <th>구글 계정 등록일</th>
             <th>구매 코인 수</th>
             <th>사용 코인 수</th>
+            <th>성인인증</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -41,6 +42,13 @@
                 <td>{{ buyer.google_reg_date }}</td>
                 <td>{{ buyer.total_coin_in }}</td>
                 <td>{{ buyer.total_coin_out }}</td>
+                <td>
+                    {% if buyer.is_adult == 0 %}
+                        N
+                    {% else %}
+                        Y
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>
