@@ -69,6 +69,7 @@ CREATE TABLE `buyer_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `google_id` varchar(255) NOT NULL,
   `google_reg_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_adult` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`) USING BTREE,
   KEY `id` (`id`) USING BTREE
