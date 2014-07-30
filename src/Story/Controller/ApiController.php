@@ -132,8 +132,6 @@ class ApiController implements ControllerProviderInterface
             trigger_error('Failed verify google account. | Ori: ' . $google_id . ' / Server: ' . $server_google_id . ' (Verified: ' . $is_verified_email . ')', E_USER_ERROR);
         }
 
-        compact();
-
         return $app->json($buyer);
     }
 
@@ -514,8 +512,8 @@ class ApiController implements ControllerProviderInterface
             $book['has_recommended_books'] = (RecommendedBookFactory::hasRecommendedBooks($b_id) > 0) ? true : false;
         }
 
-        $device_id = $req->get('device_id');
-        $book['interest'] = ($device_id === null) ? false : UserInterest::hasInterestInBook($device_id, $b_id);
+        $device_id = $req->get('device_id', null);
+        $book['interest'] = empty($device_id) ? false : UserInterest::hasInterestInBook($device_id, $b_id);
 
         return $app->json($book);
     }

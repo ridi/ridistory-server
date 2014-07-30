@@ -42,8 +42,7 @@ class CoinBilling
         $purchase_token = $purchase_data['purchaseToken'];
         $signature = $values['signature'];
 
-        // Null Check
-        if ($u_id == null || $order_id == null || $sku == null || $payload == null || $purchase_time == null || $purchase_token == null || $signature == null) {
+        if (empty($u_id) || empty($order_id) || empty($sku) || empty($payload) || empty($purchase_time) || empty($purchase_token) || empty($signature)) {
             return null;
         }
 
@@ -104,7 +103,7 @@ class CoinBilling
         $payment_token = $values['payment_token'];
         $sku = $values['sku'];
 
-        if ($u_id == null || $ridibooks_id == null || $payment_token == null || $sku == null) {
+        if (empty($u_id) || empty($ridibooks_id) || empty($payment_token) || empty($sku)) {
             return false;
         }
 
