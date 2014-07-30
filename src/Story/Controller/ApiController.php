@@ -100,7 +100,7 @@ class ApiController implements ControllerProviderInterface
         $token = $req->get('token', null);
 
         if (empty($google_id) || empty($token)) {
-            return new Response('', 403);
+            return Response::create('Google account or Token is missing', Response::HTTP_BAD_REQUEST);
         }
 
         // Google Services Auth
