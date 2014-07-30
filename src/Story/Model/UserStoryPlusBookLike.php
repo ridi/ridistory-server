@@ -16,7 +16,7 @@ class UserStoryPlusBookLike
     public static function unlike($device_id, $b_id)
     {
         global $app;
-        $r = $app['db']->delete('user_storyplusbook_like', compact('device_id', 'b_id'));
+        $r = $app['db']->delete('user_storyplusbook_like', array('device_id' => $device_id, 'b_id' => $b_id));
         return $r;
     }
 

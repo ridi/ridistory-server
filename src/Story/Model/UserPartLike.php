@@ -16,7 +16,7 @@ class UserPartLike
     public static function unlike($device_id, $p_id)
     {
         global $app;
-        $r = $app['db']->delete('user_part_like', compact('device_id', 'p_id'));
+        $r = $app['db']->delete('user_part_like', array('device_id' => $device_id, 'p_id' => $p_id));
         return $r;
     }
 

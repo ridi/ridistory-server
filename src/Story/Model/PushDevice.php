@@ -83,7 +83,7 @@ EOT;
     public static function delete($device_id)
     {
         global $app;
-        $r = $app['db']->delete('push_devices', compact('device_id'));
+        $r = $app['db']->delete('push_devices', array('device_id' => $device_id));
         return $r === 1;
     }
 

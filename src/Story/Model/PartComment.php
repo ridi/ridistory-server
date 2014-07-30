@@ -7,8 +7,16 @@ class PartComment
 
     public static function add($p_id, $device_id, $nickname, $comment, $ip)
     {
+        $bind = array(
+            'p_id' => $p_id,
+            'device_id' => $device_id,
+            'nickname' => $nickname,
+            'comment' => $comment,
+            'ip' => $ip,
+        );
+
         global $app;
-        $r = $app['db']->insert('part_comment', compact('p_id', 'device_id', 'nickname', 'comment', 'ip'));
+        $r = $app['db']->insert('part_comment', $bind);
         return $r;
     }
 

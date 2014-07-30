@@ -16,7 +16,7 @@ class UserInterest
     public static function clear($device_id, $b_id)
     {
         global $app;
-        $r = $app['db']->update('user_interest', array('cancel' => 1), compact('device_id', 'b_id'));
+        $r = $app['db']->update('user_interest', array('cancel' => 1), array('device_id' => $device_id, 'b_id' => $b_id));
         return $r === 1;
     }
 

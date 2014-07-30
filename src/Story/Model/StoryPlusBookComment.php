@@ -5,8 +5,15 @@ class StoryPlusBookComment
 {
     public static function add($b_id, $device_id, $comment, $ip)
     {
+        $bind = array(
+            'b_id' => $b_id,
+            'device_id' => $device_id,
+            'comment' => $comment,
+            'ip' => $ip,
+        );
+
         global $app;
-        $r = $app['db']->insert('storyplusbook_comment', compact('b_id', 'device_id', 'comment', 'ip'));
+        $r = $app['db']->insert('storyplusbook_comment', $bind);
         return $r;
     }
 
