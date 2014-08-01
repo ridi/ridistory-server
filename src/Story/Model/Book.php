@@ -59,47 +59,24 @@ EOT;
 SELECT * FROM book b WHERE b.begin_date <= ? AND b.end_date >= ?
 EOT;
         $today = date('Y-m-d H:00:00');
-        $bind = array($today, $today);
 
         global $app;
-        $opened_books = $app['db']->fetchAll($sql, $bind);
+        $opened_books = $app['db']->fetchAll($sql, array($today, $today));
+        return self::setAdditionalInfo($opened_books, $ignore_adult_only, true);
+    }
 
-        $b_ids = array();
-        foreach ($opened_books as $b) {
-            $b_ids[] = $b['id'];
-        }
+    public static function getCompletedBookList($ignore_adult_only = 0)
+    {
+        $sql = <<<EOT
+select b.*, ifnull(open_part_count, 0) open_part_count from book b
+ left join (select b_id, count(*) open_part_count from part group by b_id) pc on b.id = pc.b_id
+where (b.is_completed = 1 or b.end_date < ?) and end_action_flag != 'ALL_CLOSED'
+EOT;
+        $today = date('Y-m-d H:00:00');
 
-        $last_updates = self::getLastUpdated($b_ids);
-
-	    $like_sum = $app['cache']->fetch(
-		    'like_sum_v2',
-		    function () use ($b_ids) {
-			    return Book::getLikeSum($b_ids);
-		    },
-		    60 * 30
-	    );
-
-        $open_part_count = self::getOpenPartCount($b_ids);
-
-        foreach ($opened_books as &$b) {
-            $b['cover_url'] = Book::getCoverUrl($b['store_id']);
-            $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
-            $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
-            // TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
-            // iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
-            $b['begin_date'] = substr($b['begin_date'], 0, 10);
-            $b['end_date'] = substr($b['end_date'], 0, 10);
-
-            $b['last_update'] = in_array($b['id'], $last_updates) ? '1' : '0';
-            $b['like_sum'] = isset($like_sum[$b['id']]) ? $like_sum[$b['id']] : '0';
-            $b['open_part_count'] = isset($open_part_count[$b['id']]) ? $open_part_count[$b['id']] : '0';
-
-	        if ($ignore_adult_only) {
-		        $b['adult_only'] = '0';
-	        }
-        }
-
-        return $opened_books;
+        global $app;
+        $completed_books = $app['db']->fetchAll($sql, array($today));
+        return self::setAdditionalInfo($completed_books, $ignore_adult_only, false);
     }
 
     /**
@@ -109,28 +86,43 @@ EOT;
      */
     private static function getLastUpdated($b_ids)
     {
-        global $app;
-
-        $one_day_before = date('Y-m-d H:i:s', mktime(0, 0, 0, date("m"), date("d") - 1, date("Y")));
+        $sql = <<<EOT
+select b_id from part
+where begin_date >= ? and begin_date <= ?
+group by b_id
+having b_id in (?)
+EOT;
+        $yesterday = date('Y-m-d H:i:s', mktime(0, 0, 0, date("m"), date("d") - 1, date("Y")));
         $today = date('Y-m-d H:00:00');
 
-        $sql = "SELECT b_id FROM part WHERE begin_date >= ? AND begin_date <= ? GROUP BY b_id HAVING b_id IN (?)";
-        $bind = array($one_day_before, $today, $b_ids);
-        $bind_type = array(\PDO::PARAM_STR, \PDO::PARAM_STR, Connection::PARAM_INT_ARRAY);
-        $ar = $app['db']->fetchAll($sql, $bind, $bind_type);
+        global $app;
+        $ar = $app['db']->fetchAll($sql,
+            array(
+                $yesterday,
+                $today,
+                $b_ids
+            ), array(
+                \PDO::PARAM_STR,
+                \PDO::PARAM_STR,
+                Connection::PARAM_INT_ARRAY
+            )
+        );
 
         $last_updates = array();
         foreach ($ar as $r) {
             $last_updates[] = $r['b_id'];
         }
-
         return $last_updates;
     }
 
     public function getLikeSum($b_ids)
     {
+        $sql = <<<EOT
+select b_id, sum(num_likes) like_sum from part
+where b_id in (?)
+group by b_id
+EOT;
         global $app;
-        $sql = "SELECT b_id, sum(num_likes) like_sum FROM part WHERE b_id IN (?) GROUP BY b_id";
         $ar = $app['db']->fetchAll($sql, array($b_ids), array(Connection::PARAM_INT_ARRAY));
 
         $like_sum = array();
@@ -142,13 +134,27 @@ EOT;
 
     private function getOpenPartCount($b_ids)
     {
-        global $app;
-
+        $sql = <<<EOT
+select b_id, count(*) open_part_count from part
+where begin_date <= ? and end_date >= ?
+group by b_id
+having b_id in (?)
+EOT;
         $today = date('Y-m-d H:00:00');
-        $sql = "SELECT b_id, count(*) open_part_count FROM part WHERE begin_date <= ? AND end_date >= ? GROUP BY b_id HAVING b_id IN (?)";
-        $bind = array($today, $today, $b_ids);
-        $bind_type = array(\PDO::PARAM_STR, \PDO::PARAM_STR, Connection::PARAM_INT_ARRAY);
-        $ar = $app['db']->fetchAll($sql, $bind, $bind_type);
+
+        global $app;
+        $ar = $app['db']->fetchAll($sql,
+            array(
+                $today,
+                $today,
+                $b_ids
+            ),
+            array(
+                \PDO::PARAM_STR,
+                \PDO::PARAM_STR,
+                Connection::PARAM_INT_ARRAY
+            )
+        );
 
         $open_part_count = array();
         foreach ($ar as $r) {
@@ -157,31 +163,55 @@ EOT;
         return $open_part_count;
     }
 
-    public static function getCompletedBookList($ignore_adult_only = 0)
+    private function setAdditionalInfo($books, $ignore_adult_only, $is_opened_book_list)
     {
-        $sql = <<<EOT
-select ifnull(open_part_count, 0) open_part_count, ifnull(like_sum, 0) like_sum, b.* from book b
- left join (select b_id, count(*) open_part_count from part group by b_id) pc on b.id = pc.b_id
- left join (select b_id, sum(num_likes) like_sum from part group by b_id) ls on b.id = ls.b_id
-where (b.is_completed = 1 or b.end_date < ?) and end_action_flag != 'ALL_CLOSED'
-EOT;
-        $today = date('Y-m-d H:00:00');
         global $app;
-        $ar = $app['db']->fetchAll($sql, array($today));
 
-        foreach ($ar as &$b) {
-            $b['last_update'] = 0;
+        $b_ids = array();
+        foreach ($books as $b) {
+            $b_ids[] = $b['id'];
+        }
+
+        if ($is_opened_book_list) {
+            $last_updates = self::getLastUpdated($b_ids);
+            $open_part_count = self::getOpenPartCount($b_ids);
+        }
+
+        $cache_key = 'like_sum_' . ($is_opened_book_list) ? 0 : 1 . '_v2';
+        $like_sum = $app['cache']->fetch(
+            $cache_key,
+            function () use ($b_ids) {
+                return Book::getLikeSum($b_ids);
+            },
+            60 * 30
+        );
+
+        foreach ($books as &$b) {
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
             $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
             $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
-            $b['is_completed'] = 1;
 
-            // 종료액션이 판매종료이고, 완결일이 오늘 날짜 이전일 경우 판매종료
-            if ($b['end_action_flag'] == Book::SALES_CLOSED
-                && strtotime($b['end_date']) < strtotime($today)) {
-                $b['is_sales_closed'] = 1;
-            } else {
-                $b['is_sales_closed'] = 0;
+            // TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
+            // iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
+            $b['begin_date'] = substr($b['begin_date'], 0, 10);
+            $b['end_date'] = substr($b['end_date'], 0, 10);
+
+            $b['like_sum'] = isset($like_sum[$b['id']]) ? $like_sum[$b['id']] : '0';
+
+            if ($is_opened_book_list) {
+                $b['last_update'] = in_array($b['id'], $last_updates) ? '1' : '0';
+                $b['open_part_count'] = isset($open_part_count[$b['id']]) ? $open_part_count[$b['id']] : '0';
+            }else {
+                $b['is_completed'] = '1';
+                $b['last_update'] = '0';
+
+                // 종료액션이 판매종료이고, 완결일이 오늘 날짜 이전일 경우 판매종료
+                if ($b['end_action_flag'] == Book::SALES_CLOSED
+                    && strtotime($b['end_date']) < strtotime(date('Y-m-d H:00:00'))) {
+                    $b['is_sales_closed'] = '1';
+                } else {
+                    $b['is_sales_closed'] = '0';
+                }
             }
 
             if ($ignore_adult_only) {
@@ -189,7 +219,7 @@ EOT;
             }
         }
 
-        return $ar;
+        return $books;
     }
 
     public static function getListByIds(array $b_ids, $with_part_info = false, $ignore_adult_only = false)
