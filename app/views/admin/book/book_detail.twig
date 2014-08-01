@@ -157,14 +157,6 @@
                 {% endfor %}	                
             </div>
             <div class='span2'>
-    		    <label class="radio">
-    			    <input type='radio' name='is_completed' value='0' />연재 중
-    		    </label>
-    		    <label class="radio">
-    			    <input type='radio' name='is_completed' value='1' />연재 완료
-    		    </label>
-            </div>
-            <div class='span2'>
     		    <label>총 <input type='text' class='input-small' name='total_part_count' value='{{ book.total_part_count }}' /> 회
     		    </label>
 		    </div>
@@ -278,10 +270,6 @@
 <script>
 $(function() {
     $('#js_cp_id_list').val('{{ book.cp_id }}');
-    
-    $('input:radio[name="is_completed"]')
-    .filter('[value="{{ book.is_completed }}"]')
-    .attr('checked', true);
 
     $('input:radio[name="surely_completed"]')
             .filter('[value="{{ book.surely_completed }}"]')
