@@ -70,13 +70,73 @@ EOT;
         $sql = <<<EOT
 select b.*, ifnull(open_part_count, 0) open_part_count from book b
  left join (select b_id, count(*) open_part_count from part group by b_id) pc on b.id = pc.b_id
-where (b.is_completed = 1 or b.end_date < ?) and end_action_flag != 'ALL_CLOSED'
+where b.end_date < ? and end_action_flag != 'ALL_CLOSED'
 EOT;
         $today = date('Y-m-d H:00:00');
 
         global $app;
         $completed_books = $app['db']->fetchAll($sql, array($today));
         return self::setAdditionalInfo($completed_books, $ignore_adult_only, false);
+    }
+
+    private function setAdditionalInfo($books, $ignore_adult_only, $is_opened_book_list)
+    {
+        global $app;
+
+        $b_ids = array();
+        foreach ($books as $b) {
+            $b_ids[] = $b['id'];
+        }
+
+        if ($is_opened_book_list) {
+            $last_updates = self::getLastUpdated($b_ids);
+            $open_part_count = self::getOpenPartCount($b_ids);
+        }
+
+        $cache_key = 'like_sum_' . ($is_opened_book_list) ? 0 : 1 . '_v2';
+        $like_sum = $app['cache']->fetch(
+            $cache_key,
+            function () use ($b_ids) {
+                return Book::getLikeSum($b_ids);
+            },
+            60 * 30
+        );
+
+        foreach ($books as &$b) {
+            $b['cover_url'] = Book::getCoverUrl($b['store_id']);
+            $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
+            $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
+
+            // TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
+            // iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
+            $b['begin_date'] = substr($b['begin_date'], 0, 10);
+            $b['end_date'] = substr($b['end_date'], 0, 10);
+
+            $b['like_sum'] = isset($like_sum[$b['id']]) ? $like_sum[$b['id']] : '0';
+
+            if ($is_opened_book_list) {
+                $b['last_update'] = in_array($b['id'], $last_updates) ? '1' : '0';
+                $b['open_part_count'] = isset($open_part_count[$b['id']]) ? $open_part_count[$b['id']] : '0';
+                $b['is_completed'] = ($b['total_part_count'] <= $b['open_part_count']);
+            }else {
+                $b['is_completed'] = '1';
+                $b['last_update'] = '0';
+
+                // 종료액션이 판매종료이고, 완결일이 오늘 날짜 이전일 경우 판매종료
+                if ($b['end_action_flag'] == Book::SALES_CLOSED
+                    && strtotime($b['end_date']) < strtotime(date('Y-m-d H:00:00'))) {
+                    $b['is_sales_closed'] = '1';
+                } else {
+                    $b['is_sales_closed'] = '0';
+                }
+            }
+
+            if ($ignore_adult_only) {
+                $b['adult_only'] = '0';
+            }
+        }
+
+        return $books;
     }
 
     /**
@@ -163,65 +223,6 @@ EOT;
         return $open_part_count;
     }
 
-    private function setAdditionalInfo($books, $ignore_adult_only, $is_opened_book_list)
-    {
-        global $app;
-
-        $b_ids = array();
-        foreach ($books as $b) {
-            $b_ids[] = $b['id'];
-        }
-
-        if ($is_opened_book_list) {
-            $last_updates = self::getLastUpdated($b_ids);
-            $open_part_count = self::getOpenPartCount($b_ids);
-        }
-
-        $cache_key = 'like_sum_' . ($is_opened_book_list) ? 0 : 1 . '_v2';
-        $like_sum = $app['cache']->fetch(
-            $cache_key,
-            function () use ($b_ids) {
-                return Book::getLikeSum($b_ids);
-            },
-            60 * 30
-        );
-
-        foreach ($books as &$b) {
-            $b['cover_url'] = Book::getCoverUrl($b['store_id']);
-            $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
-            $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
-
-            // TODO: iOS 앱 업데이트 후 아래 코드 제거할 것
-            // iOS에서 시간 영역을 파싱하지 못하는 문제가 있어 하위호환을 위해 기존처럼 날짜만 내려줌.
-            $b['begin_date'] = substr($b['begin_date'], 0, 10);
-            $b['end_date'] = substr($b['end_date'], 0, 10);
-
-            $b['like_sum'] = isset($like_sum[$b['id']]) ? $like_sum[$b['id']] : '0';
-
-            if ($is_opened_book_list) {
-                $b['last_update'] = in_array($b['id'], $last_updates) ? '1' : '0';
-                $b['open_part_count'] = isset($open_part_count[$b['id']]) ? $open_part_count[$b['id']] : '0';
-            }else {
-                $b['is_completed'] = '1';
-                $b['last_update'] = '0';
-
-                // 종료액션이 판매종료이고, 완결일이 오늘 날짜 이전일 경우 판매종료
-                if ($b['end_action_flag'] == Book::SALES_CLOSED
-                    && strtotime($b['end_date']) < strtotime(date('Y-m-d H:00:00'))) {
-                    $b['is_sales_closed'] = '1';
-                } else {
-                    $b['is_sales_closed'] = '0';
-                }
-            }
-
-            if ($ignore_adult_only) {
-                $b['adult_only'] = '0';
-            }
-        }
-
-        return $books;
-    }
-
     public static function getListByIds(array $b_ids, $with_part_info = false, $ignore_adult_only = false)
     {
         if (count($b_ids) === 0) {
@@ -271,7 +272,7 @@ EOT;
             $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
 
             if (strtotime($b['end_date']) < strtotime($today)) {
-                $b['is_completed'] = 1;
+                $b['is_completed'] = '1';
             }
 
             if ($ignore_adult_only) {
