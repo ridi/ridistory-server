@@ -299,7 +299,14 @@ class BookController implements ControllerProviderInterface
 
     public function onGoingBookList(Request $req, Application $app)
     {
-        $books = Book::getOpenedBookList(false);
+        $opened_books = Book::getOpenedBookList(false);
+        $completed_books = Book::getCompletedBookList(false);
+        foreach ($completed_books as $key => $cb) {
+            if ($cb['is_sales_closed'] == 1) {
+                unset($completed_books[$key]);
+            }
+        }
+        $books = array_merge($opened_books, $completed_books);
 
         // 작품 점수 순으로 정렬
         usort($books, function ($a, $b) {
