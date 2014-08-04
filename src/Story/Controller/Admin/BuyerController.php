@@ -626,10 +626,7 @@ EOT;
         }
 
         // 캐시 삭제
-        $app['cache']->delete('part_list_0_0_' . $part['b_id']);
-        $app['cache']->delete('part_list_0_1_' . $part['b_id']);
-        $app['cache']->delete('part_list_1_0_' . $part['b_id']);
-        $app['cache']->delete('part_list_1_1_' . $part['b_id']);
+        Part::deleteCache($part['b_id']);
 
         // 구매목록 캐시 삭제
         $app['cache']->delete('purchased_book_list_' . $id);

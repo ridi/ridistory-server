@@ -174,19 +174,8 @@ class BookController implements ControllerProviderInterface
         $app['session']->getFlashBag()->add('alert', array('info' => '책이 삭제되었습니다.'));
 
         // 캐시 삭제
-        $app['cache']->delete('book_list_1');
-        $app['cache']->delete('book_list_2_0');
-        $app['cache']->delete('book_list_2_1');
-        $app['cache']->delete('book_list_3_0');
-        $app['cache']->delete('book_list_3_1');
-        $app['cache']->delete('book_list_4_0');
-        $app['cache']->delete('book_list_4_1');
-        $app['cache']->delete('completed_book_list_0');
-        $app['cache']->delete('completed_book_list_1');
-        $app['cache']->delete('part_list_0_0_' . $id);
-        $app['cache']->delete('part_list_0_1_' . $id);
-        $app['cache']->delete('part_list_1_0_' . $id);
-        $app['cache']->delete('part_list_1_1_' . $id);
+        Book::deleteCache();
+        Part::deleteCache($id);
 
         return $app->json(array('success' => true));
     }
@@ -221,19 +210,8 @@ class BookController implements ControllerProviderInterface
         $app['session']->getFlashBag()->add('alert', array('info' => '책이 수정되었습니다.'));
 
         // 캐시 삭제
-        $app['cache']->delete('book_list_1');
-        $app['cache']->delete('book_list_2_0');
-        $app['cache']->delete('book_list_2_1');
-        $app['cache']->delete('book_list_3_0');
-        $app['cache']->delete('book_list_3_1');
-        $app['cache']->delete('book_list_4_0');
-        $app['cache']->delete('book_list_4_1');
-        $app['cache']->delete('completed_book_list_0');
-        $app['cache']->delete('completed_book_list_1');
-        $app['cache']->delete('part_list_0_0_' . $id);
-        $app['cache']->delete('part_list_0_1_' . $id);
-        $app['cache']->delete('part_list_1_0_' . $id);
-        $app['cache']->delete('part_list_1_1_' . $id);
+        Book::deleteCache();
+        Part::deleteCache($id);
 
         return $app->redirect('/admin/book/' . $id);
     }
@@ -350,13 +328,7 @@ class BookController implements ControllerProviderInterface
         $app['session']->getFlashBag()->add('alert', array('info' => '인기순이 수정되었습니다.'));
 
         // 캐시 삭제
-        $app['cache']->delete('book_list_1');
-        $app['cache']->delete('book_list_2_0');
-        $app['cache']->delete('book_list_2_1');
-        $app['cache']->delete('book_list_3_0');
-        $app['cache']->delete('book_list_3_1');
-        $app['cache']->delete('book_list_4_0');
-        $app['cache']->delete('book_list_4_1');
+        Book::deleteCache();
 
         return $app->redirect('/admin/book/manage_score');
     }

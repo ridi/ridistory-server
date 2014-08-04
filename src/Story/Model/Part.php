@@ -179,5 +179,14 @@ EOT;
         global $app;
         return $app['db']->delete('part', array('id' => $id));
     }
+
+    public static function deleteCache($b_id)
+    {
+        global $app;
+        $app['cache']->delete('part_list_0_0_' . $b_id);
+        $app['cache']->delete('part_list_0_1_' . $b_id);
+        $app['cache']->delete('part_list_1_0_' . $b_id);
+        $app['cache']->delete('part_list_1_1_' . $b_id);
+    }
 }
 

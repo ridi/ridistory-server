@@ -322,6 +322,20 @@ EOT;
         }
     }
 
+    public static function deleteCache()
+    {
+        global $app;
+        $app['cache']->delete('book_list_1');
+        $app['cache']->delete('book_list_2_0');
+        $app['cache']->delete('book_list_2_1');
+        $app['cache']->delete('book_list_3_0');
+        $app['cache']->delete('book_list_3_1');
+        $app['cache']->delete('book_list_4_0');
+        $app['cache']->delete('book_list_4_1');
+        $app['cache']->delete('completed_book_list_0');
+        $app['cache']->delete('completed_book_list_1');
+    }
+
     /*
      * Book Intro
      */
