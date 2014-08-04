@@ -93,7 +93,7 @@ EOT;
             $open_part_count = self::getOpenPartCount($b_ids);
         }
 
-        $cache_key = 'like_sum_' . ($is_opened_book_list) ? 0 : 1 . '_v2';
+        $cache_key = 'like_sum_' . (($is_opened_book_list) ? 0 : 1) . '_v2';
         $like_sum = $app['cache']->fetch(
             $cache_key,
             function () use ($b_ids) {

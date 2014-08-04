@@ -179,6 +179,8 @@ class BookController implements ControllerProviderInterface
         $app['cache']->delete('book_list_2_1');
         $app['cache']->delete('book_list_3_0');
         $app['cache']->delete('book_list_3_1');
+        $app['cache']->delete('book_list_4_0');
+        $app['cache']->delete('book_list_4_1');
         $app['cache']->delete('completed_book_list_0');
         $app['cache']->delete('completed_book_list_1');
         $app['cache']->delete('part_list_0_0_' . $id);
@@ -224,6 +226,8 @@ class BookController implements ControllerProviderInterface
         $app['cache']->delete('book_list_2_1');
         $app['cache']->delete('book_list_3_0');
         $app['cache']->delete('book_list_3_1');
+        $app['cache']->delete('book_list_4_0');
+        $app['cache']->delete('book_list_4_1');
         $app['cache']->delete('completed_book_list_0');
         $app['cache']->delete('completed_book_list_1');
         $app['cache']->delete('part_list_0_0_' . $id);
@@ -351,6 +355,8 @@ class BookController implements ControllerProviderInterface
         $app['cache']->delete('book_list_2_1');
         $app['cache']->delete('book_list_3_0');
         $app['cache']->delete('book_list_3_1');
+        $app['cache']->delete('book_list_4_0');
+        $app['cache']->delete('book_list_4_1');
 
         return $app->redirect('/admin/book/manage_score');
     }
