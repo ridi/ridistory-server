@@ -96,10 +96,8 @@ class BookController implements ControllerProviderInterface
         $today = date('Y-m-d H:i:s');
 
         $active_lock = $book['is_active_lock'];
-        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime($today) ? 1 : 0);
+        $is_completed = strtotime($book['end_date']) < strtotime($today);
         $parts = Part::getListByBid($id, false, $active_lock, $is_completed, $book['end_action_flag'], $book['lock_day_term']);
-
-        $is_completed = strtotime($today) > strtotime($book['end_date']);
 
         foreach ($parts as &$part) {
             // 1화가 아직 시작하지 않은 경우에는, 모두 '비공개'로 변경
@@ -181,6 +179,8 @@ class BookController implements ControllerProviderInterface
         $app['cache']->delete('book_list_2_1');
         $app['cache']->delete('book_list_3_0');
         $app['cache']->delete('book_list_3_1');
+        $app['cache']->delete('book_list_4_0');
+        $app['cache']->delete('book_list_4_1');
         $app['cache']->delete('completed_book_list_0');
         $app['cache']->delete('completed_book_list_1');
         $app['cache']->delete('part_list_0_0_' . $id);
@@ -226,6 +226,8 @@ class BookController implements ControllerProviderInterface
         $app['cache']->delete('book_list_2_1');
         $app['cache']->delete('book_list_3_0');
         $app['cache']->delete('book_list_3_1');
+        $app['cache']->delete('book_list_4_0');
+        $app['cache']->delete('book_list_4_1');
         $app['cache']->delete('completed_book_list_0');
         $app['cache']->delete('completed_book_list_1');
         $app['cache']->delete('part_list_0_0_' . $id);
@@ -353,6 +355,8 @@ class BookController implements ControllerProviderInterface
         $app['cache']->delete('book_list_2_1');
         $app['cache']->delete('book_list_3_0');
         $app['cache']->delete('book_list_3_1');
+        $app['cache']->delete('book_list_4_0');
+        $app['cache']->delete('book_list_4_1');
 
         return $app->redirect('/admin/book/manage_score');
     }

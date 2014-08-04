@@ -276,9 +276,8 @@ class ApiController implements ControllerProviderInterface
         /**
          * @var $v Api Version
          *
-         * v1 : Exclude Adult (deprecated, not working)
-         * v2 : Include Adult
-         * v3 : Use Lock Function
+         * v1~3 : Exclude Completed Book List
+         * v4   : Include Completed Book List
          */
         $v = intval($req->get('v', '1'));
 
@@ -288,8 +287,18 @@ class ApiController implements ControllerProviderInterface
         $cache_key = 'book_list_' . $v . '_' . $ignore_adult_only;
         $book = $app['cache']->fetch(
             $cache_key,
-            function () use ($ignore_adult_only) {
-                return Book::getOpenedBookList($ignore_adult_only);
+            function () use ($v, $ignore_adult_only) {
+                if ($v > 3) {
+                    $opened_books = Book::getOpenedBookList($ignore_adult_only);
+                    foreach ($opened_books as &$b) {
+                        $b['is_completed'] = 0;
+                    }
+
+                    $completed_books = Book::getCompletedBookList($ignore_adult_only);
+                    return array_merge($opened_books, $completed_books);
+                } else {
+                    return Book::getOpenedBookList($ignore_adult_only);
+                }
             },
             60 * 10
         );
@@ -367,9 +376,7 @@ class ApiController implements ControllerProviderInterface
         }
 
         $book['is_active_lock'] = 1;
-
-        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime(date('Y-m-d H:i:s')) ? 1 : 0);
-        $book['is_completed'] = $is_completed;
+        $book['is_completed'] =(strtotime($book['end_date']) < strtotime('now')) ? 1 : 0;
 
         $cache_key = 'book_notice_list_' . $b_id;
         $book_notices = $app['cache']->fetch(
@@ -438,8 +445,8 @@ class ApiController implements ControllerProviderInterface
 
         // 완결되었고, 종료 후 액션이 모두 공개 혹은 모두 잠금이면 파트 모두 보임
         $show_all = false;
-        $is_completed = ($book['is_completed'] == 1 || strtotime($book['end_date']) < strtotime(date('Y-m-d H:i:s')) ? 1 : 0);
-        $book['is_completed'] = $is_completed;
+        $is_completed = strtotime($book['end_date']) < strtotime('now');
+        $book['is_completed'] = $is_completed ? 1 : 0;
         $end_action_flag = $book['end_action_flag'];
         $lock_day_term = $book['lock_day_term'];
 
@@ -537,7 +544,7 @@ class ApiController implements ControllerProviderInterface
 
         $today = date("Y-m-d H:i:s");
 
-        $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
+        $is_completed = strtotime($today) >= strtotime($book['end_date']);
 
         $is_free = (!$is_completed && (strtotime($part['begin_date']) <= strtotime($today) || $part['price'] == 0))
             || ($is_completed && (($book['end_action_flag'] == Book::ALL_CHARGED && $part['price'] == 0) || $book['end_action_flag'] == Book::ALL_FREE));
@@ -870,7 +877,7 @@ class ApiController implements ControllerProviderInterface
             $valid = Part::isOpenedPart($p_id, $store_id);
         } else {
             $is_locked = $book['is_active_lock'] && ($part['price'] > 0) && (strtotime($today) <= strtotime($part['begin_date']) && strtotime($today . ' + ' . $book['lock_day_term'] . ' days') >= $part['begin_date']);
-            $is_completed = (strtotime($today) >= strtotime($book['end_date']) ? true : false);
+            $is_completed = strtotime($today) >= strtotime($book['end_date']);
 
             /*
              * 유료화 버전(v3)부터는 u_id를 추가적으로 받아서,
