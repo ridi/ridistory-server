@@ -112,27 +112,27 @@ EOT;
             $b['begin_date'] = substr($b['begin_date'], 0, 10);
             $b['end_date'] = substr($b['end_date'], 0, 10);
 
-            $b['like_sum'] = isset($like_sum[$b['id']]) ? $like_sum[$b['id']] : '0';
+            $b['like_sum'] = isset($like_sum[$b['id']]) ? $like_sum[$b['id']] : 0;
 
             if ($is_opened_book_list) {
-                $b['last_update'] = in_array($b['id'], $last_updates) ? '1' : '0';
-                $b['open_part_count'] = isset($open_part_count[$b['id']]) ? $open_part_count[$b['id']] : '0';
-                $b['is_completed'] = ($b['total_part_count'] <= $b['open_part_count']) ? '1' : '0';
+                $b['last_update'] = in_array($b['id'], $last_updates) ? 1 : 0;
+                $b['open_part_count'] = isset($open_part_count[$b['id']]) ? $open_part_count[$b['id']] : 1;
+                $b['is_completed'] = ($b['total_part_count'] <= $b['open_part_count']) ? 1 : 0;
             }else {
-                $b['is_completed'] = '1';
-                $b['last_update'] = '0';
+                $b['last_update'] = 0;
+                $b['is_completed'] = 1;
 
                 // 종료액션이 판매종료이고, 완결일이 오늘 날짜 이전일 경우 판매종료
                 if ($b['end_action_flag'] == Book::SALES_CLOSED
                     && strtotime($b['end_date']) < strtotime(date('Y-m-d H:00:00'))) {
-                    $b['is_sales_closed'] = '1';
+                    $b['is_sales_closed'] = 1;
                 } else {
-                    $b['is_sales_closed'] = '0';
+                    $b['is_sales_closed'] = 0;
                 }
             }
 
             if ($ignore_adult_only) {
-                $b['adult_only'] = '0';
+                $b['adult_only'] = 0;
             }
         }
 
@@ -270,13 +270,10 @@ EOT;
             $b['cover_url'] = Book::getCoverUrl($b['store_id']);
             $b['ridibooks_sale_url'] = Book::getRidibooksSaleUrl($b['sale_store_id']);
             $b['ridibooks_sale_cover_url'] = Book::getCoverUrl($b['sale_store_id']);
-
-            if (strtotime($b['end_date']) < strtotime($today)) {
-                $b['is_completed'] = '1';
-            }
+            $b['is_completed'] = (strtotime($b['end_date']) < strtotime($today)) ? 1 : 0;
 
             if ($ignore_adult_only) {
-                $b['adult_only'] = '0';
+                $b['adult_only'] = 0;
             }
         }
 

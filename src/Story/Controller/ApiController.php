@@ -291,7 +291,7 @@ class ApiController implements ControllerProviderInterface
                 if ($v > 3) {
                     $opened_books = Book::getOpenedBookList($ignore_adult_only);
                     foreach ($opened_books as &$b) {
-                        $b['is_completed'] = '0';
+                        $b['is_completed'] = 0;
                     }
 
                     $completed_books = Book::getCompletedBookList($ignore_adult_only);
@@ -376,9 +376,7 @@ class ApiController implements ControllerProviderInterface
         }
 
         $book['is_active_lock'] = 1;
-
-        $is_completed = strtotime($book['end_date']) < strtotime(date('Y-m-d H:i:s'));
-        $book['is_completed'] = $is_completed ? 1 : 0;
+        $book['is_completed'] =(strtotime($book['end_date']) < strtotime('now')) ? 1 : 0;
 
         $cache_key = 'book_notice_list_' . $b_id;
         $book_notices = $app['cache']->fetch(
@@ -447,7 +445,7 @@ class ApiController implements ControllerProviderInterface
 
         // 완결되었고, 종료 후 액션이 모두 공개 혹은 모두 잠금이면 파트 모두 보임
         $show_all = false;
-        $is_completed = strtotime($book['end_date']) < strtotime(date('Y-m-d H:i:s'));
+        $is_completed = strtotime($book['end_date']) < strtotime('now');
         $book['is_completed'] = $is_completed ? 1 : 0;
         $end_action_flag = $book['end_action_flag'];
         $lock_day_term = $book['lock_day_term'];
