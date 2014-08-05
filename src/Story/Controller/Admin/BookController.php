@@ -300,8 +300,16 @@ class BookController implements ControllerProviderInterface
     public function onGoingBookList(Request $req, Application $app)
     {
         $opened_books = Book::getOpenedBookList(false);
+        foreach ($opened_books as $key => $ob) {
+            // 예고중인 책 제외
+            if ($ob['open_part_count'] <= 0) {
+                unset($opened_books[$key]);
+            }
+        }
+
         $completed_books = Book::getCompletedBookList(false);
         foreach ($completed_books as $key => $cb) {
+            // 판매종료된 책 제외
             if ($cb['is_sales_closed'] == 1) {
                 unset($completed_books[$key]);
             }

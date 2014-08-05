@@ -116,7 +116,7 @@ EOT;
 
             if ($is_opened_book_list) {
                 $b['last_update'] = in_array($b['id'], $last_updates) ? 1 : 0;
-                $b['open_part_count'] = isset($open_part_count[$b['id']]) ? $open_part_count[$b['id']] : 1;
+                $b['open_part_count'] = isset($open_part_count[$b['id']]) ? $open_part_count[$b['id']] : 0;
                 $b['is_completed'] = ($b['total_part_count'] <= $b['open_part_count']) ? 1 : 0;
             }else {
                 $b['last_update'] = 0;
