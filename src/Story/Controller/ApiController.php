@@ -36,6 +36,7 @@ class ApiController implements ControllerProviderInterface
         $api = $app['controllers_factory'];
 
         $api->post('/buyer/auth', array($this, 'authBuyerGoogleAccount'));
+        $api->post('/buyer/ridibooks_account/register', array($this, 'registBuyerRidibooksAccount'));
         $api->get('/buyer/coin', array($this, 'getBuyerCoinBalance'));
         $api->post('/buyer/coin/add', array($this, 'addBuyerCoin'));
         $api->post('/buyer/inapp_data/save', array($this, 'saveInAppBillingData'));
@@ -126,6 +127,9 @@ class ApiController implements ControllerProviderInterface
             if (isset($buyer['id'])) {
                 $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
             }
+            if (empty($buyer['ridibooks_id'])) {
+                unset($buyer['ridibooks_id']);
+            }
         }
 
         if (empty($buyer)) {
@@ -133,6 +137,29 @@ class ApiController implements ControllerProviderInterface
         }
 
         return $app->json($buyer);
+    }
+
+    public function registBuyerRidibooksAccount(Request $req, Application $app)
+    {
+        $u_id = $req->get('u_id', null);
+        if ($u_id) {
+            $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+            if (!Buyer::isValidUid($u_id)) {
+                return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
+            }
+        }
+
+        $ridibooks_id = $req->get('ridibooks_id', null);
+        if ($ridibooks_id == null) {
+            return $app->json(array('success' => false, 'message' => '리디북스 계정 정보를 찾을 수 없습니다.'));
+        }
+
+        $r = Buyer::update($u_id, array('ridibooks_id' => $ridibooks_id));
+        if ($r) {
+            return $app->json(array('success' => true, 'message' => '성공'));
+        } else {
+            return $app->json(array('success' => false, 'message' => '리디북스 로그인 도중 오류가 발생했습니다.\n다시 시도해주세요.'));
+        }
     }
 
     public function getBuyerCoinBalance(Request $req, Application $app)
@@ -167,6 +194,7 @@ class ApiController implements ControllerProviderInterface
          *
          * v1 : Save InAppBilling data when done Consume (Android RidiStory Ver <= 4.12)
          * v2 : Save InAppBilling data when done Purchase (Android RidiStory Ver > 4.12)
+         * v3 : Deactivate InAppBilling (Android RidiStory Ver > 4.16)
          */
         $v = intval($req->get('v', '1'));
 
