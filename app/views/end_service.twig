@@ -3,22 +3,18 @@
 {% block container %}
     <style type="text/css">
         * {
-            padding: 0 !important;
-            margin: 0 !important;
-            border: 0 !important;
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            background: #efefef;
         }
     </style>
-    <section class="module_layer_popup">
-        <h2 class="popup_title hidden">팝업</h2>
-        <div class="popup_wrap">
-            <article>
-                <div class="popup_contents" style="text-align: center;">
-                    <img src="/static/images/end_service_contents.png" style="width: 100%;" />
-                    <input type="image" src="/static/images/btn_ridibooks_login.png" onclick="loginWithRidibooksAccount()" />
-                </div>
-            </article>
-        </div>
-    </section>
+
+    <div style="text-align: center; padding-bottom: 20px; max-width: 480px; margin: 0 auto; background: #fff;">
+        <img src="/static/images/end_service_contents.png" style="width: 100%;" />
+        <input type="image" src="/static/images/btn_ridibooks_login.png" onclick="loginWithRidibooksAccount()" style="width: 90%;" />
+    </div>
 {% endblock %}
 
 {% block script %}

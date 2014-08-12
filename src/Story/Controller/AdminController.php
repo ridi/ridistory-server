@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AdminController implements ControllerProviderInterface
 {
     //TODO: 리디스토리 안드로이드 4.17 버전 배너 숨김/보임 옵션 (0: 숨김, 1: 보임)
-    const BANNER_VISIBILITY = 1;
+    const BANNER_VISIBILITY = 0;
 
     public function connect(Application $app)
     {
