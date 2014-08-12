@@ -37,6 +37,8 @@ class WebController implements ControllerProviderInterface
 
         $web->get('/recommended_book/{b_id}', array($this, 'recommendedBook'));
 
+        $web->get('/end_service', array($this, 'endService'));
+
         return $web;
     }
 
@@ -187,6 +189,14 @@ class WebController implements ControllerProviderInterface
         );
 
         return $app['twig']->render('/recommended_book.twig', array('books' => $recommended_books));
+    }
+
+    /*
+     * End Service
+     */
+    public function endService(Request $req, Application $app)
+    {
+        return $app['twig']->render('/end_service.twig');
     }
 }
 
