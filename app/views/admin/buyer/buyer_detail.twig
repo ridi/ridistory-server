@@ -30,9 +30,15 @@
         <td>{{ buyer.google_reg_date }}</td>
     </tr>
     <tr>
+        <th>매칭된 리디북스 계정</th>
+        <td>
+            {{ buyer.ridibooks_id }}
+        </td>
+    </tr>
+    <tr>
         <th>리디북스 계정</th>
         <td>
-            {% for ridibooks_id in buyer.ridibooks_id %}
+            {% for ridibooks_id in buyer.ridibooks_ids_for_ridicash %}
                 {{ ridibooks_id }}
                 {% if not loop.last %}
                     ,

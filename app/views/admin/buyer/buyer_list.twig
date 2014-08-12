@@ -32,6 +32,7 @@
             <th>구매 코인 수</th>
             <th>사용 코인 수</th>
             <th>성인인증</th>
+            <th>리디북스 매칭 여부</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -47,6 +48,13 @@
                         N
                     {% else %}
                         Y
+                    {% endif %}
+                </td>
+                <td>
+                    {% if buyer.ridibooks_id != '' %}
+                        Y
+                    {% else %}
+                        N
                     {% endif %}
                 </td>
             </tr>

@@ -34,6 +34,7 @@
         <tr>
             <th>유저 ID</th>
             <th>구글 계정</th>
+            <th>매칭된 리디북스 계정</th>
             <th>리디북스 계정</th>
             <th>잔여 코인</th>
             <th>가입일</th>
@@ -44,8 +45,9 @@
             <tr>
                 <td>{{ searched_account.id }}</td>
                 <td>{{ searched_account.google_id }}</td>
+                <td>{{ searched_account.ridibooks_id }}</td>
                 <td>
-                    {% for ridibooks_id in searched_account.ridibooks_id %}
+                    {% for ridibooks_id in searched_account.ridibooks_ids_for_ridicash %}
                         {{ ridibooks_id }}
                         {% if not loop.last %}
                             ,
