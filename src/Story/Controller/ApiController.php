@@ -203,6 +203,11 @@ class ApiController implements ControllerProviderInterface
         // 결제 수단
         $payment = isset($inputs['buy_method']) ? $inputs['buy_method'] : CoinProduct::TYPE_INAPP;
 
+        //TODO: 리디북스 서비스 종료에 따른 인앱결제 사용 중단. (인앱결제 중단일: 2014.08.12)
+        if ($payment != CoinProduct::TYPE_RIDICASH) {
+            return $app->json(array('success' => false, 'message' => '사용할 수 없는 결제 수단입니다'));
+        }
+
         // v1 에서는 여기서 결제정보를 저장
         // v2 에서는 결제완료 후, save api를 호출해서 따로 저장
         if ($v == 1 && $payment == CoinProduct::TYPE_INAPP) {
