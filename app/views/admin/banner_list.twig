@@ -2,6 +2,18 @@
 
 {% block container %}
 
+<div class="well form-inline">
+    <h4>리디스토리 안드로이드 4.17 버전 배너 Hide/Show</h4>
+    현재 :
+    {% if banner_visibility == 1 %}
+        <span style='font-weight: bold; color: #0000ff'>보임</span>
+    {% else %}
+        <span style='font-weight: bold; color: #ff0000'>숨김</span>
+    {% endif %}
+    <br />
+    * 수정이 필요할 경우, 관리자에게 문의해주세요.
+</div>
+
 <table class='table table-hover'>
 	<thead>
 		<tr>

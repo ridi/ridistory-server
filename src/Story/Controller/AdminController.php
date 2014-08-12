@@ -15,6 +15,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminController implements ControllerProviderInterface
 {
+    //TODO: 리디스토리 안드로이드 4.17 버전 배너 숨김/보임 옵션 (0: 숨김, 1: 보임)
+    const BANNER_VISIBILITY = 1;
+
     public function connect(Application $app)
     {
         /**
@@ -131,7 +134,7 @@ class AdminController implements ControllerProviderInterface
     public static function bannerList(Request $req, Application $app)
     {
         $banner_list = $app['db']->fetchAll('select * from banner');
-        return $app['twig']->render('/admin/banner_list.twig', array('banner_list' => $banner_list));
+        return $app['twig']->render('/admin/banner_list.twig', array('banner_list' => $banner_list, 'banner_visibility' => self::BANNER_VISIBILITY));
     }
 
     public static function bannerDetail(Request $req, Application $app, $banner_id)

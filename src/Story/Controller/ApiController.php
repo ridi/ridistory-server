@@ -87,6 +87,8 @@ class ApiController implements ControllerProviderInterface
         $api->get('/inapp_product/list', array($this, 'coinProductList'));
         $api->get('/coin_product/list', array($this, 'coinProductList'));
 
+        $api->get('/banner/visibility', array($this, 'getBannerVisibility'));
+
         $api->get('/shorten_url/{id}', array($this, 'shortenUrl'));
 
         return $api;
@@ -1000,6 +1002,14 @@ class ApiController implements ControllerProviderInterface
         $sku_list = CoinProduct::getCoinProductsByType($type);
 
         return $app->json($sku_list);
+    }
+
+    /*
+     * Banner Visibility
+     */
+    public function getBannerVisibility(Request $req, Application $app)
+    {
+        return $app->json(array('visible' => AdminController::BANNER_VISIBILITY));
     }
 
     /*
