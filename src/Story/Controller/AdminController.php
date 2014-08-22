@@ -268,7 +268,7 @@ select date(rh.purchase_time) purchase_date, count(distinct rh.u_id) user_count,
 where rh.status != 'PENDING' and date(rh.purchase_time) >= ? and date(rh.purchase_time) <= ?
 EOT;
             $event_sql = <<<EOT
-select date(eh.timestamp) event_date, count(distinct eh.u_id) user_count, sum(ch.amount) coin_amount, 0 withdraw_coin_amount from event_history eh
+select date(eh.timestamp) event_date, count(distinct eh.u_id) user_count, sum(ch.amount) coin_amount, 0 withdraw_user_count, 0 withdraw_coin_amount from event_history eh
  left join coin_history ch on eh.ch_id = ch.id
 where date(eh.timestamp) >= ? and date(eh.timestamp) <= ?
 EOT;
@@ -289,7 +289,7 @@ select date(rh.refunded_time) refunded_date, sum(ip.coin_amount+ip.bonus_coin_am
 where rh.status = 'REFUNDED' and date(rh.refunded_time) >= ? and date(rh.refunded_time) <= ?
 EOT;
             $event_withdraw_sql = <<<EOT
-select date(timestamp) withdraw_date, abs(sum(amount)) withdraw_coin_amount from coin_history
+select date(timestamp) withdraw_date, count(distinct u_id) withdraw_user_count, abs(sum(amount)) withdraw_coin_amount from coin_history
 where source = 'OUT_WITHDRAW' and date(timestamp) >= ? and date(timestamp) <= ?
 EOT;
 
@@ -387,6 +387,7 @@ EOT;
                 foreach($event_coins as &$ec) {
                     if ($ewc['withdraw_date'] == $ec['event_date']) {
                         $ec['withdraw_coin_amount'] = $ewc['withdraw_coin_amount'];
+                        $ec['withdraw_user_count'] = $ewc['withdraw_user_count'];
                         unset($event_withdraw_coins[$key]);
                         break;
                     }
@@ -432,6 +433,7 @@ EOT;
                             'event_date' => $ewc['withdraw_date'],
                             'user_count' => 0,
                             'coin_amount' => 0,
+                            'withdraw_user_count' => $ewc['withdraw_user_count'],
                             'withdraw_coin_amount' => $ewc['withdraw_coin_amount']
                         )
                     );

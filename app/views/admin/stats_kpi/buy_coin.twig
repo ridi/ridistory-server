@@ -98,6 +98,7 @@
                 <th>날짜</th>
                 <th>지급유저수</th>
                 <th>지급코인수</th>
+                <th>회수유저수</th>
                 <th>회수코인수</th>
             </tr>
             </thead>
@@ -107,6 +108,7 @@
                     <td>{{ ec.event_date }}</td>
                     <td>{{ ec.user_count }}</td>
                     <td>{{ ec.coin_amount }}</td>
+                    <td>{{ ec.withdraw_user_count }}</td>
                     <td>{{ ec.withdraw_coin_amount }}</td>
                 </tr>
             {% endfor %}
