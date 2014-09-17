@@ -5,15 +5,16 @@
     <ul class="nav nav-tabs">
         <li><a href="/admin/push/interest_book/part_update">관심 작품 업데이트</a></li>
         <li><a href="/admin/push/interest_book/url">관심 작품 URL</a></li>
-        <li class="active"><a href="/admin/push/notice">공지사항(일반 메세지)</a></li>
-        <li><a href="/admin/push/notice_to_many_devices">[전체(임시)] 공지사항(일반 메세지)</a></li>
+        <li><a href="/admin/push/notice">공지사항(일반 메세지)</a></li>
+        <li class="active"><a href="/admin/push/notice_to_many_devices">[전체(임시)] 공지사항(일반 메세지)</a></li>
     </ul>
 
-    <form action='/admin/push/notify/notice' method='post'>
+    <form action='/admin/push/notify/notice_to_many_devices' method='post'>
         <fieldset>
-            <label>메세지 <b>수신</b> 대상 유저 ID 목록</label>
-            <textarea rows='8' class='input-xlarge' name='user_list'>{{ user_list }}</textarea>
-            * 푸시 메세지를 보낼 회원(유저 ID) 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)
+            <label>메세지 <b>수신</b> 대상 기기 범위 (Offset / Size)</label>
+            * 0 ~ 400,000까지 100,000 단위로 끊어서 입력해주세요. (예. 0 / 100000 , 200000 / 100000)<br />
+            <input type='text' name='offset' class='input-medium' placeholder='Offset' value='{{ offset }}' />
+             / <input type='text' name='size' class='input-medium' placeholder='Size' value='{{ size }}' />
             <label><b>연결</b>될 URL (리디스토리 안드로이드 4.15 버전부터 사용 가능)</label>
             <input id='js_notice_url' type="text" name='url' class='input-xxlarge' placeholder="입력하지 않으시면, 푸시메세지를 눌렀을 때 그냥 앱만 켜집니다.">
             <label>메세지 <span id='js_payload_length'>(0 / 255)</span></label>

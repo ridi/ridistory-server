@@ -38,6 +38,30 @@ EOT;
         return new PickDeviceResult($devices);
     }
 
+    static function pickDevicesUsingPlatformAndOffsetAndSize(Connection $db, $platform, $offset, $size)
+    {
+        if ($platform == PickDeviceResult::PLATFORM_ALL) {
+            $sql = <<<EOT
+select id, device_token, platform from push_devices where is_active = 1 order by id limit ?, ?
+EOT;
+            $stmt = $db->executeQuery($sql,
+                array($offset, $size),
+                array(\PDO::PARAM_INT, \PDO::PARAM_INT)
+            );
+        } else {
+            $sql = <<<EOT
+select id, device_token, platform from push_devices where platform = ? and is_active = 1 order by id limit ?, ?
+EOT;
+            $stmt = $db->executeQuery($sql,
+                array($platform, $offset, $size),
+                array(\PDO::PARAM_STR, \PDO::PARAM_INT, \PDO::PARAM_INT)
+            );
+        }
+
+        $devices = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return new PickDeviceResult($devices);
+    }
+
     static function pickDevicesUsingIdRange(Connection $db, $range_begin, $range_end)
     {
         $sql = <<<EOT

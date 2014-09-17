@@ -19,6 +19,8 @@ class PushNotificationController implements ControllerProviderInterface
     const PUSH_TYPE_INTEREST_URL = 'interest_book_url';
     const PUSH_TYPE_NOTICE = 'notice';
 
+    const MAX_PUSH_COUNT = 100000;
+
     public function connect(Application $app)
     {
         $admin = $app['controllers_factory'];
@@ -26,12 +28,14 @@ class PushNotificationController implements ControllerProviderInterface
         $admin->get('interest_book/part_update', array($this, 'pushInterestBookPartUpdate'));
         $admin->get('interest_book/url', array($this, 'pushInterestBookUrl'));
         $admin->get('notice', array($this, 'pushNotice'));
+        $admin->get('notice_to_many_devices', array($this, 'pushNoticeToManyDevices'));
 
         $admin->get('ios_payload_length/{type}', array($this, 'iOSPayloadLength'));
 
         $admin->post('notify/interest_book/part_update', array($this, 'pushNotifyInterestBookPartUpdate'));
         $admin->post('notify/interest_book/url', array($this, 'pushNotifyInterestBookUrl'));
         $admin->post('notify/notice', array($this, 'pushNotifyNotice'));;
+        $admin->post('notify/notice_to_many_devices', array($this, 'pushNotifyNoticeToManyDevices'));
 
         return $admin;
     }
@@ -52,6 +56,14 @@ class PushNotificationController implements ControllerProviderInterface
     public static function pushNotice(Request $req, Application $app)
     {
         return $app['twig']->render('/admin/push_notification/notice.twig', array('user_list' => null));
+    }
+
+    public static function pushNoticeToManyDevices(Request $req, Application $app)
+    {
+        $offset = $req->get('offset', 0);
+        $size = $req->get('size', 0);
+
+        return $app['twig']->render('/admin/push_notification/notice_to_many_devices.twig', array('offset' => $offset, 'size' => $size));
     }
 
     /**
@@ -187,6 +199,36 @@ class PushNotificationController implements ControllerProviderInterface
         }
 
         return $app->redirect('/admin/push/notice');
+    }
+
+    public static function pushNotifyNoticeToManyDevices(Request $req, Application $app)
+    {
+        $offset = intval($req->get('offset', 0));
+        $size = intval($req->get('size', 0));
+        $url = $req->get('url', null);
+        $message = $req->get('message', null);
+
+        $url = empty($url) ? null : $url;
+        $message = empty($message) ? null : $message;
+
+        try {
+            // 정보 입력 검사
+            if ((empty($url) && empty($message)) || $offset < 0 || $size <= 0 || $size > self::MAX_PUSH_COUNT) {
+                throw new Exception('정보를 모두 정확히 입력해주세요.');
+            }
+
+            $pick_result = PushDevicePicker::pickDevicesUsingPlatformAndOffsetAndSize($app['db'], PickDeviceResult::PLATFORM_ANDROID, $offset, $size);
+            $notification_andorid = AndroidPush::createNoticeNotification($url, $message);
+
+            $result = self::_push($pick_result, $notification_andorid);
+            $flash_message = self::getResultFlashMessage('[공지사항] 푸시 메세지가 성공적으로 발송되었습니다.', $result);
+
+            $app['session']->getFlashBag()->add('alert', array('success' => $flash_message));
+        } catch (\Exception $e) {
+            $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
+        }
+
+        return $app->redirect('/admin/push/notice_to_many_devices?offset=' . $offset . '&size=' . $size);
     }
 
     private static function _push(PickDeviceResult $pick_result, $notification_android)
