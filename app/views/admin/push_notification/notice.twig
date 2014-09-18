@@ -34,13 +34,13 @@
                     var payload_length = data['payload_length'];
                     $('#js_payload_length').text('(' + payload_length + ' / 255)');
 
-                    if (payload_length >= 256) {
-                        $('#js_message').css('color', 'red');
-                        $('.btn-danger').attr("disabled", "disabled");
-                    } else {
-                        $('#js_message').css('color', 'black');
-                        $('.btn-danger').removeAttr("disabled");
-                    }
+//                    if (payload_length >= 256) {
+//                        $('#js_message').css('color', 'red');
+//                        $('.btn-danger').attr("disabled", "disabled");
+//                    } else {
+//                        $('#js_message').css('color', 'black');
+//                        $('.btn-danger').removeAttr("disabled");
+//                    }
                 });
             });
 
