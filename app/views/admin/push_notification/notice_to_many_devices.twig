@@ -16,9 +16,9 @@
             <input type='text' name='offset' class='input-medium' placeholder='Offset' value='{{ offset }}' />
              / <input type='text' name='size' class='input-medium' placeholder='Size' value='{{ size }}' />
             <label><b>연결</b>될 URL (리디스토리 안드로이드 4.15 버전부터 사용 가능)</label>
-            <input id='js_notice_url' type="text" name='url' class='input-xxlarge' placeholder="입력하지 않으시면, 푸시메세지를 눌렀을 때 그냥 앱만 켜집니다.">
-            <label>메세지 <span id='js_payload_length'>(0 / 255)</span></label>
-            <input id='js_message' type="text" name='message' class='input-xxlarge'>
+            <input type="text" name='url' class='input-xxlarge' placeholder="입력하지 않으시면, 푸시메세지를 눌렀을 때 그냥 앱만 켜집니다.">
+            <label>메세지</label>
+            <input type="text" name='message' class='input-xxlarge'>
         </fieldset>
         <button type="submit" class="btn btn-danger" onclick="return confirm('발송하시겠습니까?');">PUSH 발송!</button>
     </form>
@@ -27,24 +27,6 @@
 {% block script %}
     <script>
         $(function() {
-            $('#js_message').keyup(function() {
-                var url = $('#js_notice_url').val();
-                var message = $(this).val();
-
-                $.getJSON('/admin/push/ios_payload_length/notice?url=' + url + '&message=' + message, function(data) {
-                    var payload_length = data['payload_length'];
-                    $('#js_payload_length').text('(' + payload_length + ' / 255)');
-
-//                    if (payload_length >= 256) {
-//                        $('#js_message').css('color', 'red');
-//                        $('.btn-danger').attr("disabled", "disabled");
-//                    } else {
-//                        $('#js_message').css('color', 'black');
-//                        $('.btn-danger').removeAttr("disabled");
-//                    }
-                });
-            });
-
             $('form').submit(function() {
                 return true;
             });

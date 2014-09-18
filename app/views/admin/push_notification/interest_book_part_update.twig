@@ -15,7 +15,7 @@
 		<input id='js_interest_recipient' type="text" name='recipient' class='input-small'>
 		<label><b>연결</b>될 책 ID</label>
 		<input id='js_interest_bid' type="text" name='b_id' class='input-small'>
-		<label>메세지 <span id='js_payload_length'>(0 / 255)</span></label>
+		<label>메세지</label>
 		<input id='js_message' type="text" name='message' class='input-xxlarge'>
 	</fieldset>
 	<button type="submit" class="btn btn-danger" onclick="return confirm('발송하시겠습니까?');">PUSH 발송!</button>
@@ -43,25 +43,7 @@
             	}
             });
         });
-        
-        $('#js_message').keyup(function() {
-        	var b_id = $('#js_interest_bid').val();
-        	var message = $(this).val();
-        	
-        	$.getJSON('/admin/push/ios_payload_length/interest_book_part_update?b_id=' + b_id + '&message=' + message, function(data) {
-        		var payload_length = data['payload_length'];
-        		$('#js_payload_length').text('(' + payload_length + ' / 255)');
-        		
-        		if (payload_length >= 256) {
-        			$('#js_message').css('color', 'red');
-                    $('.btn-danger').attr("disabled", "disabled");
-        		} else {
-        			$('#js_message').css('color', 'black');
-                    $('.btn-danger').removeAttr("disabled");
-        		}
-        	});
-        });
-        
+
         $('form').submit(function() {
             return true;
         });

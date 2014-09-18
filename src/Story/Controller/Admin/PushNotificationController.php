@@ -6,7 +6,6 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Story\Model\Buyer;
 use Story\Util\AndroidPush;
-use Story\Util\IosPush;
 use Story\Util\PickDeviceResult;
 use Story\Util\PushDevicePicker;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,8 +28,6 @@ class PushNotificationController implements ControllerProviderInterface
         $admin->get('interest_book/url', array($this, 'pushInterestBookUrl'));
         $admin->get('notice', array($this, 'pushNotice'));
         $admin->get('notice_to_many_devices', array($this, 'pushNoticeToManyDevices'));
-
-        $admin->get('ios_payload_length/{type}', array($this, 'iOSPayloadLength'));
 
         $admin->post('notify/interest_book/part_update', array($this, 'pushNotifyInterestBookPartUpdate'));
         $admin->post('notify/interest_book/url', array($this, 'pushNotifyInterestBookUrl'));
@@ -64,35 +61,6 @@ class PushNotificationController implements ControllerProviderInterface
         $size = $req->get('size', 0);
 
         return $app['twig']->render('/admin/push_notification/notice_to_many_devices.twig', array('offset' => $offset, 'size' => $size));
-    }
-
-    /**
-     * Push Length Checker
-     */
-    public static function iOSPayloadLength(Request $req, Application $app, $type)
-    {
-        $message = $req->get('message');
-
-        $notification_ios = null;
-        $payload_length = 0;
-
-        if ($type == self::PUSH_TYPE_INTEREST_PART_UPDATE) {
-            $b_id = $req->get('b_id');
-            $notification_ios = IosPush::createInterestBookPartUpdateNotification($b_id);
-        } else if ($type == self::PUSH_TYPE_INTEREST_URL) {
-            $url = $req->get('url');
-            $notification_ios = IosPush::createInterestBookUrlNotification($url);
-        } else if ($type == self::PUSH_TYPE_NOTICE) {
-            $url = $req->get('url');
-            $notification_ios = IosPush::createNoticeNotification($url);
-        }
-
-        if ($notification_ios) {
-            $payload = IosPush::getPayloadInJson($message, $notification_ios);
-            $payload_length = strlen($payload);
-        }
-
-        return $app->json(array("payload_length" => $payload_length));
     }
 
     /**
