@@ -14,11 +14,64 @@ class StatsController implements ControllerProviderInterface
     {
         $admin = $app['controllers_factory'];
 
+        $admin->get('/register_ridibooks_id', array($this, 'registerRidibooksIdStats'));
         $admin->get('/register_device', array($this, 'registerDeviceStats'));
         $admin->get('/user_interests', array($this, 'userInterestsStats'));
         $admin->get('/user_likes', array($this, 'userLikesStats'));
 
         return $admin;
+    }
+
+    public static function registerRidibooksIdStats(Request $req, Application $app)
+    {
+        $begin_date = $temp_begin_date = $req->get('begin_date');
+        $end_date = $temp_end_date = $req->get('end_date');
+
+        $register_stat = null;
+
+        if (!$temp_begin_date) {
+            $temp_begin_date = '0000-00-00';
+        }
+        if (!$temp_end_date) {
+            $temp_end_date = date('Y-m-d');
+        }
+        $temp_end_date = date('Y-m-d', strtotime($temp_end_date . ' + 1 day'));
+
+        $test_users = TestUserFactory::getConcatUidList(true);
+
+        // 시작일, 종료일 둘 중 하나는 입력해야함.
+        if ($begin_date || $end_date) {
+            $registered_ridibooks_id_sql = <<<EOT
+SELECT DATE(ridibooks_reg_date) date, count(*) count FROM buyer_user
+WHERE ((ridibooks_reg_date >= ? AND ridibooks_reg_date < ?) OR (ridibooks_id IS NOT NULL AND ridibooks_reg_date IS NULL))
+EOT;
+            if ($test_users) {
+                $registered_ridibooks_id_sql .= ' AND id NOT IN (' . $test_users . ')';
+            }
+            $registered_ridibooks_id_sql .= ' GROUP BY DATE(ridibooks_reg_date)';
+
+            $bind = array($temp_begin_date, $temp_end_date);
+            $register_stat = $app['db']->fetchAll($registered_ridibooks_id_sql, $bind);
+        }
+
+        $total_registered_sql = <<<EOT
+SELECT COUNT(*) FROM buyer_user
+WHERE ridibooks_id IS NOT NULL
+EOT;
+        if ($test_users) {
+            $total_registered_sql .= ' AND id NOT IN (' . $test_users . ')';
+        }
+        $total_registered = $app['db']->fetchColumn($total_registered_sql);
+
+        return $app['twig']->render(
+            '/admin/stats/register_ridibooks_id.twig',
+            array(
+                'begin_date' => $begin_date,
+                'end_date' => $end_date,
+                'total_registered' => $total_registered,
+                'register_stat' => $register_stat
+            )
+        );
     }
 
     public static function registerDeviceStats(Request $req, Application $app)
