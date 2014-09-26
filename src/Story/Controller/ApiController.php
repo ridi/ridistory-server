@@ -156,7 +156,7 @@ class ApiController implements ControllerProviderInterface
             return $app->json(array('success' => false, 'message' => '리디북스 계정 정보를 찾을 수 없습니다.'));
         }
 
-        $r = Buyer::update($u_id, array('ridibooks_id' => $ridibooks_id));
+        $r = Buyer::update($u_id, array('ridibooks_id' => $ridibooks_id, 'ridibooks_reg_date' => date('Y-m-d H:i:s')));
         if ($r) {
             return $app->json(array('success' => true, 'message' => '성공'));
         } else {
