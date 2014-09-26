@@ -70,9 +70,12 @@ CREATE TABLE `buyer_user` (
   `google_id` varchar(255) NOT NULL,
   `google_reg_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_adult` tinyint(4) NOT NULL DEFAULT '0',
+  `ridibooks_id` varchar(255) DEFAULT NULL,
+  `ridibooks_reg_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `google_id` (`google_id`) USING BTREE,
-  KEY `id` (`id`) USING BTREE
+  KEY `id` (`id`) USING BTREE,
+  KEY `ridibooks_id` (`ridibooks_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
