@@ -32,11 +32,18 @@
     <tr>
         <th>전환신청 리디북스 계정</th>
         <td>
-            {{ buyer.ridibooks_id }}
+            <input type='text' class='input' id='ridibooks_id' placeholder='전환할 리디북스 계정을 입력해주세요.' value='{{ buyer.ridibooks_id }}' />
+            <button class='btn btn-success regist_ridibooks_id' style='margin-top:-11px;'>
+                {% if buyer.ridibooks_id %}
+                    수정
+                {% else %}
+                    등록
+                {% endif %}
+            </button>
         </td>
     </tr>
     <tr>
-        <th>전환신청 리디북스 계정 등록일</th>
+        <th>전환신청 리디북스 계정 등록(수정)일</th>
         <td>
             {{ buyer.ridibooks_reg_date }}
         </td>
@@ -190,11 +197,33 @@
 {% endblock %}
 
 {% block script %}
+    <script src='/static/bower_components/datejs/build/date.js'></script>
     <script>
         $(function() {
 
             $('.btn-cancel').click(function() {
                 location.href = '/admin/buyer/list';
+                return false;
+            });
+
+            $('.regist_ridibooks_id').click(function() {
+                var ridibooks_id = $('#ridibooks_id').val();
+                if (ridibooks_id.length <= 0) {
+                    alert('리디북스 계정을 입력해주세요.');
+                    return false;
+                }
+
+                var ridibooks_reg_date = new Date().toString('yyyy-MM-dd HH:mm:ss');
+                if (confirm('전환할 리디북스 계정을 등록하시겠습니까?')) {
+                    $.post('/admin/buyer/{{ buyer.id }}/edit', {'ridibooks_id': ridibooks_id, 'ridibooks_reg_date': ridibooks_reg_date}, function(r) {
+                        if (r.error) {
+                            alert(r.error);
+                        } else {
+                            alert('계정이 등록되었습니다.');
+                            location.href = '/admin/buyer/{{ buyer.id }}';
+                        }
+                    });
+                }
                 return false;
             });
 

@@ -22,6 +22,7 @@
     "jquery-autosize": "~1.18.7",
     "jquery-cookie": "~1.4.1",
     "modernizr": "~2.7.2",
-    "TableDnD": "*"
+    "TableDnD": "*",
+    "datejs": "~1.0.0-rc1"
   }
 }
