@@ -14,7 +14,7 @@ $app['db.options'] = array(
     //)
 );
 
-$app['cache.namespace'] = 'story_test_v9';
+$app['cache.namespace'] = 'story_test_v10';
 
 $app['debug'] = true;
 
