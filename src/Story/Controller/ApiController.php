@@ -121,21 +121,18 @@ class ApiController implements ControllerProviderInterface
         $is_verified_email = $response['verified_email'];
         if (($server_google_id == $google_id) && $is_verified_email) {
             $buyer = Buyer::getByGoogleAccount($google_id, false);
-            if ($buyer == null) {
-                $id = Buyer::add($google_id);
-                $buyer = Buyer::getByUid($id, false);
-            }
-
-            if (isset($buyer['id'])) {
-                $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
-            }
-            if (empty($buyer['ridibooks_id'])) {
-                unset($buyer['ridibooks_id']);
+            if ($buyer != null) {
+                if (isset($buyer['id'])) {
+                    $buyer['id'] = AES128::encrypt(Buyer::USER_ID_AES_SECRET_KEY, $buyer['id']);
+                }
+                if (empty($buyer['ridibooks_id'])) {
+                    unset($buyer['ridibooks_id']);
+                }
             }
         }
 
         if (empty($buyer)) {
-            trigger_error('Failed verify google account. | Ori: ' . $google_id . ' / Server: ' . $server_google_id . ' (Verified: ' . $is_verified_email . ')', E_USER_ERROR);
+            return Response::create('BuyerUser Info is missing', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return $app->json($buyer);
