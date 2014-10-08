@@ -57,6 +57,19 @@
         </tbody>
     </table>
 
+    <ul class="pager">
+        <li class="previous">
+            {% if cur_page - 1 < 0 %}
+                <a href="/admin/ridibooks_migration/list?page=0">&larr; Newer</a>
+            {% else %}
+                <a href="/admin/ridibooks_migration/list?page={{ cur_page - 1 }}">&larr; Newer</a>
+            {% endif %}
+        </li>
+        <li class="next">
+            <a href="/admin/ridibooks_migration/list?page={{ cur_page + 1 }}">Older &rarr;</a>
+        </li>
+    </ul>
+
 {% endblock %}
 
 {% block script %}
