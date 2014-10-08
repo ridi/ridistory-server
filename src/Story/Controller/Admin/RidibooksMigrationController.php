@@ -75,8 +75,12 @@ class RidibooksMigrationController implements ControllerProviderInterface
 
     public function deleteRidibooksMigrationHistory(Request $req, Application $app, $u_id)
     {
-        RidibooksMigration::delete($u_id);
-        $app['session']->getFlashBag()->add('alert', array('info' => '리디북스 계정이전 정보가 삭제되었습니다.'));
-        return $app->json(array('success' => true));
+        $r = RidibooksMigration::delete($u_id);
+        if ($r) {
+            $app['session']->getFlashBag()->add('alert', array('info' => '리디북스 계정이전 정보가 삭제되었습니다.'));
+        } else {
+            $app['session']->getFlashBag()->add('alert', array('error' => '리디북스 계정이전 정보를 삭제하지 못했습니다.'));
+        }
+        return $app->redirect('/admin/ridibooks_migration/list');
     }
 }

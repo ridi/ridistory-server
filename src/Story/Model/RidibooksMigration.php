@@ -78,6 +78,6 @@ EOT;
     public static function delete($u_id)
     {
         global $app;
-        return $app['db']->delete('ridibooks_migration_history', array('_id' => $u_id));
+        return $app['db']->delete('ridibooks_migration_history', array('u_id' => $u_id));
     }
 }

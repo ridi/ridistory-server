@@ -11,6 +11,15 @@
         <li class="active"><a href="/admin/ridibooks_migration/list">리디북스 계정이전 히스토리</a></li>
     </ul>
 
+    <h4>리디북스 계정이전 히스토리 <button class='btn btn-primary' id='js_add_ridibooks_migration' style='margin-bottom: 10px;'>추가</button></h4>
+    <form id="admin_ridibooks_migration_form" action='/admin/ridibooks_migration/add' method='post' style='display: none'>
+        <div class="well form-inline">
+            <input type='text' class='input-small' id='js_user_id' name='u_id' placeholder='유저 ID' style='margin-bottom: 10px;'/><br />
+            <input type='text' class='input-xlarge' id='js_ridibooks_id' name='ridibooks_id' placeholder='리디북스 ID' style='margin-bottom: 10px;'/><br />
+            <button id='js_submit' class='btn' type='submit'>등록</button>
+        </div>
+    </form>
+
     <form>
         <div class="well form-inline">
             <h4>계정이전된 회원 검색 (총 {{ migrated_count }}명)</h4>
@@ -26,9 +35,10 @@
     <table class='table table-hover'>
         <thead>
         <tr>
-            <th class='span1'>유저 ID</th>
+            <th>유저 ID</th>
             <th>계정이전 리디북스 ID</th>
             <th>계정 이전일</th>
+            <th>삭제</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -37,6 +47,11 @@
                 <td><a href='/admin/buyer/{{ migration.u_id }}'>{{ migration.u_id }}</a></td>
                 <td>{{ migration.ridibooks_id }}</td>
                 <td>{{ migration.migration_time }}</td>
+                <td>
+                    <form method='post' action='/admin/ridibooks_migration/{{ migration.u_id }}/delete' style='margin: 0; padding: 0;'>
+                        <button type='submit' class='btn btn-danger btn-mini'><i class='icon-remove icon-white'></i></button>
+                    </form>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -48,6 +63,30 @@
     <script>
         $(function() {
             $('#search').val('{{ search_type }}');
+
+            $('#js_add_ridibooks_migration').click(function() {
+                if ($(this).text() == '추가') {
+                    $(this).text('취소');
+                    $('#admin_ridibooks_migration_form').show();
+                } else {
+                    $(this).text('추가');
+                    $('#admin_ridibooks_migration_form').hide();
+                }
+            });
+
+            $('#admin_ridibooks_migration_form').submit(function() {
+                var u_id = $(':input[name=u_id]').val();
+                var ridibooks_id = $(':input[name=ridibooks_id]').val();
+
+                if ($.trim(u_id) == '' || $.trim(ridibooks_id) == '') {
+                    alert('유저 ID와 리디북스 ID를 모두 입력해 주세요');
+                    return false;
+                }
+
+                $('#js_submit').hide();
+
+                return true;
+            });
         });
     </script>
 {% endblock %}
