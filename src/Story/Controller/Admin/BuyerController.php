@@ -10,6 +10,7 @@ use Story\Entity\TestUserFactory;
 use Story\Model\Book;
 use Story\Model\Buyer;
 use Story\Model\Part;
+use Story\Model\RidibooksMigration;
 use Symfony\Component\HttpFoundation\Request;
 
 class BuyerController implements ControllerProviderInterface
@@ -33,9 +34,9 @@ class BuyerController implements ControllerProviderInterface
         $admin->post('bloc/coin/period_reduce', array($this, 'reduceBuyerListBlocPeriodCoin'));
 
         $admin->get('migration_history', array($this, 'buyerMigrationHistory'));
+        $admin->get('ridibooks_migration_history', array($this, 'ridibooksMigrationHistory'));
 
         $admin->get('list', array($this, 'buyerList'));
-        $admin->get('cashslide_event', array($this, 'cashslideEventBuyerList'));
         $admin->get('{id}', array($this, 'buyerDetail'));
         $admin->post('{id}/coin/add', array($this, 'addBuyerCoin'));
         $admin->post('{id}/coin/reduce', array($this, 'reduceBuyerCoin'));
@@ -441,47 +442,6 @@ class BuyerController implements ControllerProviderInterface
         );
     }
 
-    /*
-     * Cashslide Event (Temp)
-     */
-    public function cashslideEventBuyerList(Request $req, Application $app) {
-        $cur_page = $req->get('page', 0);
-
-        $limit = 50;
-        $offset = $cur_page * $limit;
-
-        $sql = <<<EOT
-select bu.id, ifnull(coin_balance, 0) coin_balance, bu.google_reg_date, ceh.device_id cashslide_device_id from cashslide_event_history ceh
- left join buyer_user bu on bu.id = ceh.u_id
- left join (select u_id, sum(amount) coin_balance from coin_history group by u_id) ch on ch.u_id = ceh.u_id
-order by bu.google_reg_date desc limit ?, ?
-EOT;
-        $stmt = $app['db']->executeQuery($sql,
-            array($offset, $limit),
-            array(\PDO::PARAM_INT, \PDO::PARAM_INT)
-        );
-        $buyers = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-        $sql = <<<EOT
-select count(*) user_count from cashslide_event_history
-EOT;
-        // 테스트 유저 제외
-        $test_users = TestUserFactory::getConcatUidList(true);
-        if ($test_users) {
-            $sql .= ' where id not in (' . $test_users . ')';
-        }
-        $buyer_count = $app['db']->fetchColumn($sql);
-
-        return $app['twig']->render(
-            'admin/buyer/buyer_cashslide_event.twig',
-            array(
-                'buyers' => $buyers,
-                'buyer_count' => $buyer_count,
-                'cur_page' => $cur_page
-            )
-        );
-    }
-
     public function buyerDetail(Request $req, Application $app, $id)
     {
         $buyer = Buyer::getByUid($id, true);
@@ -542,6 +502,35 @@ EOT;
     {
         $buyers = Buyer::getMigrationHistoryList();
         return $app['twig']->render('admin/buyer/buyer_migration_history.twig', array('buyers' => $buyers));
+    }
+
+    public function ridibooksMigrationHistory(Request $req, Application $app)
+    {
+        $search_type = $req->get('search_type', 'uid');
+        $search_keyword = $req->get('search_keyword', null);
+        $cur_page = $req->get('page', 0);
+
+        $size = 50;
+        $offset = $cur_page * $size;
+
+        if ($search_keyword) {
+            $buyers = RidibooksMigration::getListBySearchTypeAndKeyword($search_type, $search_keyword);
+        } else {
+            $buyers = RidibooksMigration::getListByOffsetAndSize($offset, $size);
+        }
+
+        $migrated_count = RidibooksMigration::getMigratedCount();
+
+        return $app['twig']->render(
+            'admin/buyer/buyer_ridibooks_migration_history.twig',
+            array(
+                'search_type' => $search_type,
+                'search_keyword' => $search_keyword,
+                'migrated_count' => $migrated_count,
+                'buyers' => $buyers,
+                'cur_page' => $cur_page
+            )
+        );
     }
 
     /*

@@ -302,6 +302,15 @@ CREATE TABLE `recommended_book` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ridibooks_migration_history` (
+  `u_id` int(11) NOT NULL AUTO_INCREMENT,
+  `ridibooks_id` varchar(255) NOT NULL,
+  `migration_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`u_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ridicash_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `t_id` varchar(50) DEFAULT NULL,
