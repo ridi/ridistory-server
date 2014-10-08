@@ -34,7 +34,6 @@ class BuyerController implements ControllerProviderInterface
         $admin->post('bloc/coin/period_reduce', array($this, 'reduceBuyerListBlocPeriodCoin'));
 
         $admin->get('migration_history', array($this, 'buyerMigrationHistory'));
-        $admin->get('ridibooks_migration_history', array($this, 'ridibooksMigrationHistory'));
 
         $admin->get('list', array($this, 'buyerList'));
         $admin->get('{id}', array($this, 'buyerDetail'));
@@ -502,35 +501,6 @@ class BuyerController implements ControllerProviderInterface
     {
         $buyers = Buyer::getMigrationHistoryList();
         return $app['twig']->render('admin/buyer/buyer_migration_history.twig', array('buyers' => $buyers));
-    }
-
-    public function ridibooksMigrationHistory(Request $req, Application $app)
-    {
-        $search_type = $req->get('search_type', 'uid');
-        $search_keyword = $req->get('search_keyword', null);
-        $cur_page = $req->get('page', 0);
-
-        $size = 50;
-        $offset = $cur_page * $size;
-
-        if ($search_keyword) {
-            $buyers = RidibooksMigration::getListBySearchTypeAndKeyword($search_type, $search_keyword);
-        } else {
-            $buyers = RidibooksMigration::getListByOffsetAndSize($offset, $size);
-        }
-
-        $migrated_count = RidibooksMigration::getMigratedCount();
-
-        return $app['twig']->render(
-            'admin/buyer/buyer_ridibooks_migration_history.twig',
-            array(
-                'search_type' => $search_type,
-                'search_keyword' => $search_keyword,
-                'migrated_count' => $migrated_count,
-                'buyers' => $buyers,
-                'cur_page' => $cur_page
-            )
-        );
     }
 
     /*

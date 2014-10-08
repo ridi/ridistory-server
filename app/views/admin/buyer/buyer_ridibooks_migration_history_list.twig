@@ -8,15 +8,15 @@
         <li><a href="/admin/buyer/bloc/coin">코인 지급/회수</a></li>
         <li><a href="/admin/buyer/bloc/coin/period_reduce">기간제 코인 회수</a></li>
         <li><a href="/admin/buyer/migration_history">회원 계정이전 히스토리</a></li>
-        <li class="active"><a href="/admin/buyer/ridibooks_migration_history">리디북스 계정이전 히스토리</a></li>
+        <li class="active"><a href="/admin/ridibooks_migration/list">리디북스 계정이전 히스토리</a></li>
     </ul>
 
     <form>
         <div class="well form-inline">
             <h4>계정이전된 회원 검색 (총 {{ migrated_count }}명)</h4>
             <select id='search' name='search_type'>
-                <option value='google_account'>구글 계정</option>
                 <option value='uid'>유저 ID</option>
+                <option value='ridibooks_id'>리디북스 ID</option>
             </select>
             <input type='text' class='input-xlarge' name='search_keyword' value='{{ search_keyword }}' placeholder='검색어를 입력해주세요.' />
             <button class="btn">검색</button>
@@ -32,14 +32,22 @@
         </tr>
         </thead>
         <tbody id='js_tbody'>
-        {% for buyer in buyers %}
-            <tr>
-                <td>{{ buyer.u_id }}</td>
-                <td>{{ buyer.ridibooks_id }}</td>
-                <td>{{ buyer.migration_time }}</td>
+        {% for migration in migrations %}
+            <tr data-uid='{{ migration.u_id }}'>
+                <td><a href='/admin/buyer/{{ migration.u_id }}'>{{ migration.u_id }}</a></td>
+                <td>{{ migration.ridibooks_id }}</td>
+                <td>{{ migration.migration_time }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function() {
+            $('#search').val('{{ search_type }}');
+        });
+    </script>
 {% endblock %}

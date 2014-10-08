@@ -11,7 +11,8 @@ class RidibooksMigration
         );
         global $app;
         $app['db']->insert('ridibooks_migration_history', $bind);
-        return $app['db']->lastInsertId();
+        $r = $app['db']->lastInsertId();
+        return ($r > 0) ? true : false;
     }
 
     public static function isMigrated($u_id)
