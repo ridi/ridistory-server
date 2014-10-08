@@ -21,7 +21,8 @@ SELECT COUNT(*) FROM ridibooks_migration_history
 WHERE u_id = ?
 EOT;
         global $app;
-        return $app['db']->fetchColumn($sql, array($u_id));
+        $r = $app['db']->fetchColumn($sql, array($u_id));
+        return ($r > 0) ? true : false;
     }
 
     public static function getMigratedCount()

@@ -11,6 +11,7 @@ use Story\Entity\RecommendedBookFactory;
 use Story\Model\Buyer;
 use Story\Model\CoinBilling;
 use Story\Model\CoinProduct;
+use Story\Model\RidibooksMigration;
 use Story\Util\AES128;
 use Story\Util\IpChecker;
 use Symfony\Component\HttpFoundation\Request;
@@ -139,6 +140,11 @@ class ApiController implements ControllerProviderInterface
             return Response::create('BuyerUser Info is missing', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
+        // 리디북스로 계정 마이그레이션된 경우 잔여 코인 0으로 반환
+        if (RidibooksMigration::isMigrated($buyer['id'])) {
+            $buyer['coin_balance'] = 0;
+        }
+
         return $app->json($buyer);
     }
 
@@ -168,11 +174,10 @@ class ApiController implements ControllerProviderInterface
     public function getBuyerCoinBalance(Request $req, Application $app)
     {
         $coin_balance = 0;
-
         $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
-            if (Buyer::isValidUid($u_id)) {
+            if (Buyer::isValidUid($u_id) && !RidibooksMigration::isMigrated($u_id)) {
                 $coin_balance = Buyer::getCoinBalance($u_id);
             }
         }
@@ -410,6 +415,11 @@ class ApiController implements ControllerProviderInterface
             return $app->json(array('success' => false, 'message' => '회원 정보를 찾을 수 없습니다.'));
         }
 
+        // 이미 리디북스로 마이그레이션된 경우에는 구매목록을 표출하지 않음
+        if (RidibooksMigration::isMigrated($u_id)) {
+            return $app->json(array());
+        }
+
         // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
         $ignore_adult_only = (IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']) == false) ? 1 : 0;
 
@@ -438,7 +448,7 @@ class ApiController implements ControllerProviderInterface
     {
         $book = Book::get($b_id);
         if ($book == false) {
-            return $app->json(array('success' => false, 'error' => 'no such book'));
+            return $app->json(array('success' => false, 'error' => '유효하지 않은 책입니다.'));
         }
 
         $u_id = $req->get('u_id', null);
@@ -446,10 +456,15 @@ class ApiController implements ControllerProviderInterface
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
             $is_valid_uid = Buyer::isValidUid($u_id);
             if (!$is_valid_uid) {
-                return $app->json(array('success' => false, 'error' => 'not valid user'));
+                return $app->json(array('success' => false, 'error' => '회원 정보를 찾을 수 없습니다.'));
             }
         } else {
-            return $app->json(array('success' => false, 'error' => 'not valid parameter'));
+            return $app->json(array('success' => false, 'error' => '회원 정보를 찾을 수 없습니다.'));
+        }
+
+        // 이미 리디북스로 마이그레이션된 경우에는 구매목록을 표출하지 않음
+        if (RidibooksMigration::isMigrated($u_id)) {
+            return $app->json(array('success' => false, 'error' => '리디북스로 구매목록이 이전되었습니다.'));
         }
 
         $book['is_active_lock'] = 1;
@@ -542,12 +557,14 @@ class ApiController implements ControllerProviderInterface
             $parts = $app['cache']->fetch(
                 $cache_key,
                 function () use ($b_id, $active_lock, $is_completed, $end_action_flag, $lock_day_term) {
-                    return Part::getListByBid($b_id, true, $active_lock, $is_completed, $end_action_flag, $lock_day_term);
+                    return Part::getListByBid($b_id, true, $active_lock, $is_completed, $end_action_flag,
+                        $lock_day_term);
                 },
                 60 * 10
             );
 
             $is_valid_uid = false;
+            $is_migrated_to_ridibooks = false;
             $purchased_p_ids = null;
             // 유료화 버전(v3)이고, Uid가 유효할 경우 구매내역 받아옴.
             if ($v > 2) {
@@ -556,6 +573,7 @@ class ApiController implements ControllerProviderInterface
                     $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
                     $is_valid_uid = Buyer::isValidUid($u_id);
                     if ($is_valid_uid) {
+                        $is_migrated_to_ridibooks = RidibooksMigration::isMigrated($u_id);
                         $purchased_p_ids = Buyer::getPurchasedPartIdListByBid($u_id, $b_id, false);
                     }
                 }
@@ -571,7 +589,7 @@ class ApiController implements ControllerProviderInterface
                 $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
 
                 $part['is_purchased'] = 0;
-                if ($is_valid_uid) {
+                if ($is_valid_uid && !$is_migrated_to_ridibooks) {
                     foreach ($purchased_p_ids as $p_id) {
                         if ($p_id == $part['id']) {
                             $part['is_purchased'] = 1;
@@ -987,14 +1005,14 @@ class ApiController implements ControllerProviderInterface
                     } else if ($book['end_action_flag'] == Book::ALL_CHARGED) {
                         if ($part['price'] > 0) {
                             // 구매내역 확인
-                            $valid = Buyer::hasPurchasedPart($u_id, $p_id);
+                            $valid = Buyer::hasPurchasedPart($u_id, $p_id) && !RidibooksMigration::isMigrated($u_id);
                         } else {
                             // 모두 잠금이지만, 가격이 공짜인 경우 다운로드 허가.
                             $valid = true;
                         }
                     } else if ($book['end_action_flag'] == Book::SALES_CLOSED || $book['end_action_flag'] == Book::ALL_CLOSED) {
                         // 구매내역 확인
-                        $valid = Buyer::hasPurchasedPart($u_id, $p_id);
+                        $valid = Buyer::hasPurchasedPart($u_id, $p_id) && !RidibooksMigration::isMigrated($u_id);
 
                         //TODO: 첫 회를 무료로 제공하는 것이 확정되면 추가. @유대열
                         // 첫 회를 구매한 적이 없지만, 해당 책의 파트 구매내역이 있으면, 첫 회 제공.
@@ -1005,7 +1023,7 @@ class ApiController implements ControllerProviderInterface
                 } else {
                     // 잠겨져 있는 경우 -> 구매내역 확인
                     if ($is_locked) {
-                        $valid = Buyer::hasPurchasedPart($u_id, $p_id);
+                        $valid = Buyer::hasPurchasedPart($u_id, $p_id) && !RidibooksMigration::isMigrated($u_id);
                     } else {
                         // 원래 잠금이어야 하는데, 무료라 강제 공개시킨 경우.
                         if ($part['price'] <= 0) {
