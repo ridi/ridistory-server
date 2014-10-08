@@ -30,6 +30,16 @@
         <td>{{ buyer.google_reg_date }}</td>
     </tr>
     <tr>
+        <th>리디북스 이관 여부</th>
+        <td>
+            {% if buyer.is_migrated %}
+                Y
+            {% else %}
+                N
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
         <th>전환신청 리디북스 계정</th>
         <td>
             * 리디북스 계정 검증 기능은 없으므로, 꼭 <b>유효한 계정</b>인지 먼저 체크해주세요.<br />

@@ -450,6 +450,8 @@ class BuyerController implements ControllerProviderInterface
             $total_coin_in += $in['amount'];
         }
 
+        $buyer['is_migrated'] = RidibooksMigration::isMigrated($id);
+
         $coin_out = Buyer::getCoinOutList($id);
         $total_coin_out = 0;
         foreach ($coin_out as &$out) {

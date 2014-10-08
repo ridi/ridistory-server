@@ -31,8 +31,8 @@
             <th>구글 계정 등록일</th>
             <th>구매 코인 수</th>
             <th>사용 코인 수</th>
-            <th>성인인증</th>
             <th>리디북스 매칭 여부</th>
+            <th>리디북스 이관 여부</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -44,17 +44,17 @@
                 <td>{{ buyer.total_coin_in }}</td>
                 <td>{{ buyer.total_coin_out }}</td>
                 <td>
-                    {% if buyer.is_adult == 0 %}
-                        N
-                    {% else %}
-                        Y
-                    {% endif %}
-                </td>
-                <td>
                     {% if buyer.ridibooks_id != '' %}
                         Y
                     {% else %}
                         N
+                    {% endif %}
+                </td>
+                <td>
+                    {% if buyer.is_migrated == 0 %}
+                        N
+                    {% else %}
+                        Y
                     {% endif %}
                 </td>
             </tr>
