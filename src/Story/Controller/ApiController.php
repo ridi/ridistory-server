@@ -28,6 +28,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiController implements ControllerProviderInterface
 {
+    // 서비스 종료일
+    const END_SERVICE_DATE = '2014-10-13 00:00:00';
+
     public function connect(Application $app)
     {
         /**
@@ -108,6 +111,7 @@ class ApiController implements ControllerProviderInterface
 
         // Google Services Auth
         $ch =curl_init();
+        //TODO: Oauth2.0 Login(Early Version)은 deprecated 되었음. Google+ 로그인으로 변경해야함. (참고: https://developers.google.com/accounts/docs/OAuth2LoginV1)
         curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' . $token);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
@@ -178,6 +182,10 @@ class ApiController implements ControllerProviderInterface
 
     public function addBuyerCoin(Request $req, Application $app)
     {
+        if (!self::canUseRidistoryAPI()) {
+            return $app->json(array('success' => false, 'message' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $inputs = $req->request->all();
         if ($inputs['u_id']) {
             $inputs['u_id'] = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $inputs['u_id']);
@@ -260,6 +268,10 @@ class ApiController implements ControllerProviderInterface
 
     public function saveInAppBillingData(Request $req, Application $app)
     {
+        if (!self::canUseRidistoryAPI()) {
+            return $app->json(array('success' => false, 'message' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $inputs = $req->request->all();
         if ($inputs['u_id']) {
             $inputs['u_id'] = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $inputs['u_id']);
@@ -316,24 +328,49 @@ class ApiController implements ControllerProviderInterface
 	    // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
 	    $ignore_adult_only = (IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']) == false) ? 1 : 0;
 
+        /*
+         * 서비스 종료 이후에는 책 목록을 반환하지 않음 (v4일 때 완결책 반환하는 경우 제외)
+         * 최근읽은책이 여기를 참고해서, 여기서 빈 배열을 반환해주어야함.
+         */
         $cache_key = 'book_list_' . $v . '_' . $ignore_adult_only;
-        $book = $app['cache']->fetch(
-            $cache_key,
-            function () use ($v, $ignore_adult_only) {
-                if ($v > 3) {
-                    $opened_books = Book::getOpenedBookList($ignore_adult_only);
-                    foreach ($opened_books as &$b) {
-                        $b['is_completed'] = 0;
-                    }
+        if (self::canUseRidistoryAPI()) {
+            $cache_key .= '_0';
+            $book = $app['cache']->fetch(
+                $cache_key,
+                function () use ($v, $ignore_adult_only) {
+                    if ($v > 3) {
+                        $opened_books = Book::getOpenedBookList($ignore_adult_only);
+                        foreach ($opened_books as &$b) {
+                            $b['is_completed'] = 0;
+                        }
 
-                    $completed_books = Book::getCompletedBookList($ignore_adult_only);
-                    return array_merge($opened_books, $completed_books);
-                } else {
-                    return Book::getOpenedBookList($ignore_adult_only);
-                }
-            },
-            60 * 10
-        );
+                        $completed_books = Book::getCompletedBookList($ignore_adult_only);
+                        return array_merge($opened_books, $completed_books);
+                    } else {
+                        return Book::getOpenedBookList($ignore_adult_only);
+                    }
+                },
+                60 * 10
+            );
+        } else {
+            if ($v > 3) {
+                $cache_key .= '_1';
+                $book = $app['cache']->fetch(
+                    $cache_key,
+                    function () use ($ignore_adult_only) {
+                        $completed_books = Book::getCompletedBookList($ignore_adult_only);
+                        foreach ($completed_books as &$b) {
+                            $b['end_action_flag'] = Book::SALES_CLOSED;
+                            $b['is_sales_closed'] = 1;
+                        }
+                        return $completed_books;
+                    },
+                    60 * 10
+                );
+            } else {
+                $book = array();
+            }
+        }
         return $app->json($book);
     }
 
@@ -342,11 +379,19 @@ class ApiController implements ControllerProviderInterface
         // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
         $ignore_adult_only = (IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']) == false) ? 1 : 0;
 
-        $cache_key = 'completed_book_list_' . $ignore_adult_only;
+        $end_service = !ApiController::canUseRidistoryAPI();
+        $cache_key = 'completed_book_list_' . $ignore_adult_only . '_' . ($end_service ? '1' : '0');
         $book = $app['cache']->fetch(
             $cache_key,
-            function () use ($ignore_adult_only) {
-                return Book::getCompletedBookList($ignore_adult_only);
+            function () use ($end_service, $ignore_adult_only) {
+                $completed_books = Book::getCompletedBookList($ignore_adult_only);
+                if ($end_service) {
+                    foreach ($completed_books as &$b) {
+                        $b['end_action_flag'] = Book::SALES_CLOSED;
+                        $b['is_sales_closed'] = 1;
+                    }
+                }
+                return $completed_books;
             },
             60 * 10
         );
@@ -492,49 +537,52 @@ class ApiController implements ControllerProviderInterface
         );
         $book['book_notices'] = $book_notices;
 
-        $cache_key = 'part_list_' . $active_lock . '_' . intval($show_all) . '_' . $b_id;
-        $parts = $app['cache']->fetch(
-            $cache_key,
-            function () use ($b_id, $active_lock, $is_completed, $end_action_flag, $lock_day_term) {
-                return Part::getListByBid($b_id, true, $active_lock, $is_completed, $end_action_flag, $lock_day_term);
-            },
-            60 * 10
-        );
+        if (self::canUseRidistoryAPI()) {
+            $cache_key = 'part_list_' . $active_lock . '_' . intval($show_all) . '_' . $b_id;
+            $parts = $app['cache']->fetch(
+                $cache_key,
+                function () use ($b_id, $active_lock, $is_completed, $end_action_flag, $lock_day_term) {
+                    return Part::getListByBid($b_id, true, $active_lock, $is_completed, $end_action_flag, $lock_day_term);
+                },
+                60 * 10
+            );
 
-        $is_valid_uid = false;
-        $purchased_p_ids = null;
-        // 유료화 버전(v3)이고, Uid가 유효할 경우 구매내역 받아옴.
-        if ($v > 2) {
-            $u_id = $req->get('u_id', null);
-            if ($u_id) {
-                $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
-                $is_valid_uid = Buyer::isValidUid($u_id);
-                if ($is_valid_uid) {
-                    $purchased_p_ids = Buyer::getPurchasedPartIdListByBid($u_id, $b_id, false);
-                }
-            }
-        }
-
-        foreach ($parts as &$part) {
-            // 1화가 아직 시작하지 않은 경우에는, '잠금' 도서 무시하고, 앱 내에서 Coming Soon 처리
-            if ($part['seq'] <= 1 && strtotime($part['begin_date']) > strtotime(date('Y-m-d H:i:s'))) {
-                $parts = array();
-                break;
-            }
-
-            $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
-
-            $part['is_purchased'] = 0;
-            if ($is_valid_uid) {
-                foreach ($purchased_p_ids as $p_id) {
-                    if ($p_id == $part['id']) {
-                        $part['is_purchased'] = 1;
-                        break;
+            $is_valid_uid = false;
+            $purchased_p_ids = null;
+            // 유료화 버전(v3)이고, Uid가 유효할 경우 구매내역 받아옴.
+            if ($v > 2) {
+                $u_id = $req->get('u_id', null);
+                if ($u_id) {
+                    $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
+                    $is_valid_uid = Buyer::isValidUid($u_id);
+                    if ($is_valid_uid) {
+                        $purchased_p_ids = Buyer::getPurchasedPartIdListByBid($u_id, $b_id, false);
                     }
                 }
             }
-        }
 
+            foreach ($parts as &$part) {
+                // 1화가 아직 시작하지 않은 경우에는, '잠금' 도서 무시하고, 앱 내에서 Coming Soon 처리
+                if ($part['seq'] <= 1 && strtotime($part['begin_date']) > strtotime(date('Y-m-d H:i:s'))) {
+                    $parts = array();
+                    break;
+                }
+
+                $part['last_update'] = ($part['begin_date'] == date('Y-m-d')) ? 1 : 0;
+
+                $part['is_purchased'] = 0;
+                if ($is_valid_uid) {
+                    foreach ($purchased_p_ids as $p_id) {
+                        if ($p_id == $part['id']) {
+                            $part['is_purchased'] = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            $parts = array();
+        }
         $book['parts'] = $parts;
 
         $include_recommended_book_list = ($v > 3);
@@ -559,6 +607,10 @@ class ApiController implements ControllerProviderInterface
 
     public function buyBookPart(Request $req, Application $app)
     {
+        if (!self::canUseRidistoryAPI()) {
+            return $app->json(array('success' => false, 'message' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
@@ -706,6 +758,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function userInterestList(Application $app, $device_id)
     {
+        if (!self::canUseRidistoryAPI()) {
+            return $app->json(array());
+        }
+
         $b_ids = UserInterest::getList($device_id);
 
         // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
@@ -1067,6 +1123,15 @@ class ApiController implements ControllerProviderInterface
         $json_result = json_decode($result, true);
 
         return $json_result['shorturl'];
+    }
+
+    /*
+     * End Service
+     */
+    public function canUseRidistoryAPI()
+    {
+        $today = date('Y-m-d H:i:s');
+        return (strtotime($today) < strtotime(self::END_SERVICE_DATE)) ? 1 : 0;
     }
 }
 

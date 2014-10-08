@@ -325,15 +325,24 @@ EOT;
     public static function deleteCache()
     {
         global $app;
-        $app['cache']->delete('book_list_1');
-        $app['cache']->delete('book_list_2_0');
-        $app['cache']->delete('book_list_2_1');
-        $app['cache']->delete('book_list_3_0');
-        $app['cache']->delete('book_list_3_1');
-        $app['cache']->delete('book_list_4_0');
-        $app['cache']->delete('book_list_4_1');
-        $app['cache']->delete('completed_book_list_0');
-        $app['cache']->delete('completed_book_list_1');
+        $app['cache']->delete('book_list_1_0');
+        $app['cache']->delete('book_list_1_1');
+        $app['cache']->delete('book_list_2_0_0');
+        $app['cache']->delete('book_list_2_0_1');
+        $app['cache']->delete('book_list_2_1_0');
+        $app['cache']->delete('book_list_2_1_1');
+        $app['cache']->delete('book_list_3_0_0');
+        $app['cache']->delete('book_list_3_0_1');
+        $app['cache']->delete('book_list_3_1_0');
+        $app['cache']->delete('book_list_3_1_1');
+        $app['cache']->delete('book_list_4_0_0');
+        $app['cache']->delete('book_list_4_0_1');
+        $app['cache']->delete('book_list_4_1_0');
+        $app['cache']->delete('book_list_4_1_1');
+        $app['cache']->delete('completed_book_list_0_0');
+        $app['cache']->delete('completed_book_list_0_1');
+        $app['cache']->delete('completed_book_list_1_0');
+        $app['cache']->delete('completed_book_list_0_1');
     }
 
     /*
