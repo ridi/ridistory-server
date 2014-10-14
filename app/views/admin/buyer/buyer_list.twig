@@ -51,10 +51,10 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if buyer.is_migrated == 0 %}
-                        N
-                    {% else %}
+                    {% if buyer.is_migrated %}
                         Y
+                    {% else %}
+                        N
                     {% endif %}
                 </td>
             </tr>
