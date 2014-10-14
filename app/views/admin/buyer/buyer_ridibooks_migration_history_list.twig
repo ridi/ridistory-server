@@ -50,7 +50,7 @@
             <th>유저 ID</th>
             <th>계정이전 리디북스 ID</th>
             <th>계정 이전일</th>
-            <th>삭제</th>
+            {#<th>삭제</th>#}
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -59,11 +59,11 @@
                 <td><a href='/admin/buyer/{{ migration.u_id }}'>{{ migration.u_id }}</a></td>
                 <td>{{ migration.ridibooks_id }}</td>
                 <td>{{ migration.migration_time }}</td>
-                <td>
-                    <form method='post' action='/admin/ridibooks_migration/{{ migration.u_id }}/delete' style='margin: 0; padding: 0;'>
-                        <button type='submit' class='btn btn-danger btn-mini'><i class='icon-remove icon-white'></i></button>
-                    </form>
-                </td>
+                {#<td>#}
+                    {#<form method='post' action='/admin/ridibooks_migration/{{ migration.u_id }}/delete' style='margin: 0; padding: 0;'>#}
+                        {#<button type='submit' class='btn btn-danger btn-mini'><i class='icon-remove icon-white'></i></button>#}
+                    {#</form>#}
+                {#</td>#}
             </tr>
         {% endfor %}
         </tbody>
