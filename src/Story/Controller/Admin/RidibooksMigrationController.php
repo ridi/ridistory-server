@@ -13,39 +13,14 @@ class RidibooksMigrationController implements ControllerProviderInterface
     {
         $admin = $app['controllers_factory'];
 
-        $admin->post('add', array($this, 'addRidibooksMigrationHistory'));
-        $admin->post('bloc/add', array($this, 'addRidibooksMigrationHistoryBloc'));
+        $admin->post('add', array($this, 'addRidibooksMigrationHistoryList'));
         $admin->get('list', array($this, 'ridibooksMigrationHistoryList'));
         $admin->post('{u_id}/delete', array($this, 'deleteRidibooksMigrationHistory'));
 
         return $admin;
     }
 
-    public function addRidibooksMigrationHistory(Request $req, Application $app)
-    {
-        $u_id = $req->get('u_id', null);
-        $ridibooks_id = $req->get('ridibooks_id', null);
-
-        try {
-            if ($u_id == null || $ridibooks_id == null) {
-                throw new \Exception('유저 ID와 리디북스 계정을 모두 입력해주셔야 합니다.');
-            }
-            if (!Buyer::isValidUid($u_id)) {
-                throw new \Exception('잘못된 유저 ID 입니다.');
-            }
-
-            $r = RidibooksMigration::add($u_id, $ridibooks_id);
-            if (!$r) {
-                throw new \Exception('리디북스 계정이전 정보를 추가하지 못했습니다.');
-            }
-            $app['session']->getFlashBag()->add('alert', array('success' => '리디북스 계정이전 정보가 추가되었습니다.'));
-        } catch (\Exception $e) {
-            $app['session']->getFlashBag()->add('alert', array('error' => $e->getMessage()));
-        }
-        return $app->redirect('/admin/ridibooks_migration/list');
-    }
-
-    public function addRidibooksMigrationHistoryBloc(Request $req, Application $app)
+    public function addRidibooksMigrationHistoryList(Request $req, Application $app)
     {
         $user_list = $req->get('user_list', null);
 

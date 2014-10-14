@@ -14,18 +14,10 @@
     <h4>
         리디북스 계정이전 히스토리
         <button class='btn btn-primary' id='js_add_ridibooks_migration' style='margin-bottom: 10px;'>추가</button>
-        <button class='btn btn-primary' id='js_add_bloc_ridibooks_migration' style='margin-bottom: 10px;'>일괄 추가</button>
     </h4>
     <form id="admin_ridibooks_migration_form" action='/admin/ridibooks_migration/add' method='post' style='display: none'>
         <div class="well form-inline">
-            <input type='text' class='input-small' id='js_user_id' name='u_id' placeholder='유저 ID' style='margin-bottom: 10px;'/><br />
-            <input type='text' class='input-xlarge' id='js_ridibooks_id' name='ridibooks_id' placeholder='리디북스 ID' style='margin-bottom: 10px;'/><br />
-            <button id='js_submit' class='btn' type='submit'>등록</button>
-        </div>
-    </form>
-    <form id="admin_ridibooks_bloc_migration_form" action='/admin/ridibooks_migration/bloc/add' method='post' style='display: none'>
-        <div class="well form-inline">
-            <b>* 일괄 추가는 고객님이 등록하신 전환용 리디북스 계정과 이관되는 리디북스 계정이 동일할 때만 사용이 가능합니다.</b><br /><br />
+            <b>* 고객님이 등록하신 전환용 리디북스 계정과 이관되는 리디북스 계정이 동일할 때만 전환이 가능합니다.</b><br /><br />
             <textarea rows='8' class='input-xlarge' name='user_list' id='js_user_list'></textarea>
             * 이관에 성공한 회원(유저 ID) 목록을 입력해주세요. (구분은 엔터(줄바꿈)로 해주세요.)<br />
             <button id='js_submit' class='btn' type='submit' style='margin-top: 10px;'>등록</button>
@@ -93,9 +85,6 @@
                 if ($(this).text() == '추가') {
                     $(this).text('취소');
                     $('#admin_ridibooks_migration_form').show();
-
-                    $('#js_add_bloc_ridibooks_migration').text('일괄 추가');
-                    $('#admin_ridibooks_bloc_migration_form').hide();
                 } else {
                     $(this).text('추가');
                     $('#admin_ridibooks_migration_form').hide();
@@ -103,35 +92,7 @@
             });
 
             $('#admin_ridibooks_migration_form').submit(function() {
-                var u_id = $(':input[name=u_id]').val();
-                var ridibooks_id = $(':input[name=ridibooks_id]').val();
-
-                if ($.trim(u_id) == '' || $.trim(ridibooks_id) == '') {
-                    alert('유저 ID와 리디북스 ID를 모두 입력해 주세요');
-                    return false;
-                }
-
-                $('#js_submit').hide();
-
-                return true;
-            });
-
-            $('#js_add_bloc_ridibooks_migration').click(function() {
-                if ($(this).text() == '일괄 추가') {
-                    $(this).text('취소');
-                    $('#admin_ridibooks_bloc_migration_form').show();
-
-                    $('#js_add_ridibooks_migration').text('추가');
-                    $('#admin_ridibooks_migration_form').hide();
-                } else {
-                    $(this).text('일괄 추가');
-                    $('#admin_ridibooks_bloc_migration_form').hide();
-                }
-            });
-
-            $('#admin_ridibooks_bloc_migration_form').submit(function() {
                 var u_ids = $('#js_user_list').val();
-
                 if ($.trim(u_ids) == '') {
                     alert('유저 ID 목록을 입력해 주세요');
                     return false;
