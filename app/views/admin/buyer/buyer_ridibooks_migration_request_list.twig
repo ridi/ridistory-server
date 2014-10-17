@@ -28,9 +28,11 @@
     <table class='table table-hover'>
         <thead>
         <tr>
-            <th>신청일</th>
-            <th>유저 ID</th>
+            <th class='span3'>신청일</th>
+            <th class='span2'>유저 ID</th>
             <th>전환용 리디북스 ID</th>
+            <th class='span2'>전환될 코인 유무</th>
+            <th class='span2'>전환될 파트 유무</th>
         </tr>
         </thead>
         <tbody id='js_tbody'>
@@ -39,6 +41,20 @@
                 <td>{{ request.ridibooks_reg_date }}</td>
                 <td>{{ request.id }}</td>
                 <td>{{ request.ridibooks_id }}</td>
+                <td>
+                    {% if request.coin > 0 %}
+                        Y
+                    {% else %}
+                        N
+                    {% endif %}
+                </td>
+                <td>
+                    {% if request.purchased != 0 %}
+                        Y
+                    {% else %}
+                        N
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>

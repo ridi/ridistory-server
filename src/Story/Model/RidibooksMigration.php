@@ -56,7 +56,7 @@ EOT;
                 $sql .= ' AND bu.id NOT IN (' . $test_users . ')';
             }
         }
-        $sql .= ' GROUP BY bu.id HAVING (coin > 0 or purchased != 0) ORDER BY ridibooks_reg_date';
+        $sql .= ' GROUP BY bu.id HAVING (coin > 0 OR purchased != 0) ORDER BY ridibooks_reg_date';
 
         global $app;
         return $app['db']->fetchAll($sql, array($end_date));
