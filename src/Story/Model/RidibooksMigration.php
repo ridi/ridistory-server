@@ -35,6 +35,15 @@ EOT;
         return $app['db']->fetchColumn($sql);
     }
 
+    public static function getWholeUidList()
+    {
+        $sql = <<<EOT
+SELECT u_id from ridibooks_migration_history
+EOT;
+        global $app;
+        return $app['db']->fetchAll($sql);
+    }
+
     public static function getListByOffsetAndSize($offset, $size)
     {
         $sql = <<<EOT

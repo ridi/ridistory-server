@@ -13,11 +13,18 @@ class RidibooksMigrationController implements ControllerProviderInterface
     {
         $admin = $app['controllers_factory'];
 
+        $admin->get('all', array($this, 'ridibooksMigrationHistoryAll'));
         $admin->post('add', array($this, 'addRidibooksMigrationHistoryList'));
         $admin->get('list', array($this, 'ridibooksMigrationHistoryList'));
         $admin->post('{u_id}/delete', array($this, 'deleteRidibooksMigrationHistory'));
 
         return $admin;
+    }
+
+    public function ridibooksMigrationHistoryAll(Request $req, Application $app)
+    {
+        $migration_uids = RidibooksMigration::getWholeUidList();
+        return $app['twig']->render('/admin/buyer/buyer_ridibooks_migration_history_all.twig', array('migrations' => $migration_uids));
     }
 
     public function addRidibooksMigrationHistoryList(Request $req, Application $app)
