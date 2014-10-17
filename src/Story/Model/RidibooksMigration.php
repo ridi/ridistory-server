@@ -1,6 +1,8 @@
 <?php
 namespace Story\Model;
 
+use Story\Entity\TestUserFactory;
+
 class RidibooksMigration
 {
     public static function add($u_id, $ridibooks_id)
@@ -24,6 +26,40 @@ EOT;
         global $app;
         $r = $app['db']->fetchColumn($sql, array($u_id));
         return ($r > 0) ? true : false;
+    }
+
+    public static function getMigrateRequestCount($exclude_done = true)
+    {
+        $sql = <<<EOT
+SELECT COUNT(*) FROM buyer_user
+WHERE ridibooks_id != ''
+EOT;
+        if ($exclude_done) {
+            $sql .= ' AND id NOT IN (SELECT u_id FROM ridibooks_migration_history)';
+        }
+
+        global $app;
+        return $app['db']->fetchColumn($sql);
+    }
+
+    public static function getMigrateRequestList($end_date, $include_test_users = false)
+    {
+        $sql = <<<EOT
+SELECT bu.id, bu.ridibooks_id, bu.ridibooks_reg_date, IFNULL(SUM(ch.amount), 0) coin, IFNULL(ph.id, 0) purchased FROM buyer_user bu
+ LEFT JOIN coin_history ch ON ch.u_id = bu.id
+ LEFT JOIN purchase_history ph ON ph.u_id = bu.id
+WHERE bu.ridibooks_id != '' AND bu.id NOT IN (SELECT u_id FROM ridibooks_migration_history) AND bu.ridibooks_reg_date < ? AND ph.is_paid = 1
+EOT;
+        if (!$include_test_users) {
+            $test_users = TestUserFactory::getConcatUidList(true);
+            if ($test_users) {
+                $sql .= ' AND bu.id NOT IN (' . $test_users . ')';
+            }
+        }
+        $sql .= ' GROUP BY bu.id HAVING (coin > 0 or purchased != 0) ORDER BY ridibooks_reg_date';
+
+        global $app;
+        return $app['db']->fetchAll($sql, array($end_date));
     }
 
     public static function getMigratedCount()

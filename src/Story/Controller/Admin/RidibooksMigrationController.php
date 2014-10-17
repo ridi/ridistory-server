@@ -15,6 +15,7 @@ class RidibooksMigrationController implements ControllerProviderInterface
 
         $admin->get('all', array($this, 'ridibooksMigrationHistoryAll'));
         $admin->post('add', array($this, 'addRidibooksMigrationHistoryList'));
+        $admin->get('request_list', array($this, 'ridibooksMigrationRequestList'));
         $admin->get('list', array($this, 'ridibooksMigrationHistoryList'));
         $admin->post('{u_id}/delete', array($this, 'deleteRidibooksMigrationHistory'));
 
@@ -78,6 +79,30 @@ class RidibooksMigrationController implements ControllerProviderInterface
             }
         }
         return $app->redirect('/admin/ridibooks_migration/list');
+    }
+
+    public function ridibooksMigrationRequestList(Request $req, Application $app)
+    {
+        $end_date = $temp_end_date = $req->get('end_date');
+        if (!$temp_end_date) {
+            $temp_end_date = date('Y-m-d');
+        }
+        $temp_end_date = date('Y-m-d', strtotime($temp_end_date . ' + 1 day'));
+
+        $requests = array();
+        if ($end_date) {
+            $requests = RidibooksMigration::getMigrateRequestList($temp_end_date, false);
+        }
+        $request_count = count($requests);
+
+        return $app['twig']->render(
+            '/admin/buyer/buyer_ridibooks_migration_request_list.twig',
+            array(
+                'end_date' => $end_date,
+                'request_count' => $request_count,
+                'requests' => $requests
+            )
+        );
     }
 
     public function ridibooksMigrationHistoryList(Request $req, Application $app)

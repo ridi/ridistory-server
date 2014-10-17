@@ -1,0 +1,47 @@
+{% extends '/admin/base.twig' %}
+
+{% block container %}
+    <ul class="nav nav-tabs">
+        <li><a href="/admin/buyer/list">회원 목록</a></li>
+        {#<li><a href="/admin/buyer/bloc/verify">회원 검증</a></li>#}
+        <li><a href="/admin/buyer/bloc/search">회원 일괄 검색</a></li>
+        <li><a href="/admin/buyer/bloc/coin">코인 지급/회수</a></li>
+        {#<li><a href="/admin/buyer/bloc/coin/period_reduce">기간제 코인 회수</a></li>#}
+        <li><a href="/admin/buyer/migration_history">회원 계정이전 히스토리</a></li>
+        <li class="active"><a href="/admin/ridibooks_migration/request_list">리디북스 계정이전 신청자 목록</a></li>
+        <li><a href="/admin/ridibooks_migration/list">리디북스 계정이전 히스토리</a></li>
+    </ul>
+
+    <form>
+        <div class="well form-inline">
+            <h4>리디북스 계정이전 신청자 목록 (총 {{ request_count }}명)</h4>
+            * 이미 리디북스로 이전된 계정 제외<br />
+            * 테스트 계정 제외<br />
+            * 옮길 잔여 코인이 0개이거나, 유료 구매 파트가 없는 계정 제외<br /><br />
+            <input type='text' class='input-medium' disabled />
+            ~
+            <input type='text' class='input-xlarge' name='end_date' value='{{ end_date }}' placeholder='종료일 (yyyy-mm-dd)' />
+            <button class="btn">조회</button>
+        </div>
+    </form>
+
+    <table class='table table-hover'>
+        <thead>
+        <tr>
+            <th>신청일</th>
+            <th>유저 ID</th>
+            <th>전환용 리디북스 ID</th>
+        </tr>
+        </thead>
+        <tbody id='js_tbody'>
+        {% for request in requests %}
+            <tr>
+                <td>{{ request.ridibooks_reg_date }}</td>
+                <td>{{ request.id }}</td>
+                <td>{{ request.ridibooks_id }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
