@@ -31,6 +31,7 @@ class ApiController implements ControllerProviderInterface
 {
     // 서비스 종료일
     const END_SERVICE_DATE = '2014-10-13 00:00:00';
+    const END_MIGRATION_DATE = '2014-12-31 23:59:59';
 
     public function connect(Application $app)
     {
@@ -103,6 +104,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function authBuyerGoogleAccount(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return Response::create('RIDIStory is closed', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         $google_id = $req->get('google_account', null);
         $token = $req->get('token', null);
 
@@ -150,6 +155,10 @@ class ApiController implements ControllerProviderInterface
 
     public function registBuyerRidibooksAccount(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false, 'message' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
@@ -173,6 +182,10 @@ class ApiController implements ControllerProviderInterface
 
     public function getBuyerCoinBalance(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('coin_balance' => 0));
+        }
+
         $coin_balance = 0;
         $u_id = $req->get('u_id', null);
         if ($u_id) {
@@ -298,6 +311,10 @@ class ApiController implements ControllerProviderInterface
 
     public function setBuyerAdultVerified(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false, 'message' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
@@ -322,6 +339,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function bookList(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array());
+        }
+
         /**
          * @var $v Api Version
          *
@@ -381,6 +402,10 @@ class ApiController implements ControllerProviderInterface
 
     public function completedBookList(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array());
+        }
+
         // 해외 IP인 경우는 앱에서 실명인증을 처리하지 않기 위해
         $ignore_adult_only = (IpChecker::isKoreanIp($_SERVER['REMOTE_ADDR']) == false) ? 1 : 0;
 
@@ -405,6 +430,10 @@ class ApiController implements ControllerProviderInterface
 
     public function purchasedBookList(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false, 'message' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $u_id = $req->get('u_id', null);
         if ($u_id) {
             $u_id = AES128::decrypt(Buyer::USER_ID_AES_SECRET_KEY, $u_id);
@@ -446,6 +475,10 @@ class ApiController implements ControllerProviderInterface
 
     public function purchasedBookDetail(Request $req, Application $app, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false, 'error' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $book = Book::get($b_id);
         if ($book == false) {
             return $app->json(array('success' => false, 'error' => '유효하지 않은 책입니다.'));
@@ -519,6 +552,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function bookDetail(Request $req, Application $app, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false, 'error' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $book = Book::get($b_id);
         if ($book == false) {
             return $app->json(array('success' => false, 'error' => 'no such book'));
@@ -718,6 +755,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function partDetail(Request $req, Application $app, $p_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false, 'error' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $part = Part::get($p_id);
         if ($part == false) {
             return $app->json(array('success' => false, 'error' => '파트 ID에 해당하는 파트가 존재하지 않습니다.'));
@@ -754,6 +795,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function userLikePart(Application $app, $device_id, $p_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $p = Part::get($p_id);
         if ($p == false) {
             return $app->json(array('success' => false));
@@ -766,6 +811,10 @@ class ApiController implements ControllerProviderInterface
 
     public function userUnlikePart(Application $app, $device_id, $p_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $r = UserPartLike::unlike($device_id, $p_id);
         $like_count = UserPartLike::getLikeCount($p_id);
         return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
@@ -810,18 +859,30 @@ class ApiController implements ControllerProviderInterface
 
     public function getUserInterest(Application $app, $device_id, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $r = UserInterest::get($device_id, $b_id);
         return $app->json(array('success' => $r));
     }
 
     public function setUserInterest(Application $app, $device_id, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $r = UserInterest::set($device_id, $b_id);
         return $app->json(array('success' => $r));
     }
 
     public function clearUserInterest(Application $app, $device_id, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $r = UserInterest::clear($device_id, $b_id);
         return $app->json(array('success' => $r));
     }
@@ -831,6 +892,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function storyPlusBookList(Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array());
+        }
+
         $book = $app['cache']->fetch(
             'storyplusbook_list',
             function () {
@@ -843,6 +908,10 @@ class ApiController implements ControllerProviderInterface
 
     public function storyPlusBookDetail(Request $req, Application $app, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array());
+        }
+
         $book = StoryPlusBook::get($b_id);
         $intro = StoryPlusBookIntro::getListByBid($b_id);
         $comment = StoryPlusBookComment::getList($b_id);
@@ -860,6 +929,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function userLikeStoryPlusBook(Application $app, $device_id, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $b = StoryPlusBook::get($b_id);
         if ($b == false) {
             return $app->json(array('success' => false));
@@ -872,6 +945,10 @@ class ApiController implements ControllerProviderInterface
 
     public function userUnlikeStoryPlusBook(Application $app, $device_id, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $r = UserStoryPlusBookLike::unlike($device_id, $b_id);
         $like_count = UserStoryPlusBookLike::getLikeCount($b_id);
         return $app->json(array('success' => ($r === 1), 'like_count' => $like_count));
@@ -882,6 +959,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function addStoryPlusBookComment(Request $req, Application $app, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $device_id = $req->get('device_id');
         $comment = trim($req->get('comment'));
         $ip = ip2long($_SERVER['REMOTE_ADDR']);
@@ -892,6 +973,10 @@ class ApiController implements ControllerProviderInterface
 
     public function storyPlusBookCommentList(Application $app, $b_id)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array());
+        }
+
         $comments = StoryPlusBookComment::getList($b_id);
         return $app->json($comments);
     }
@@ -937,6 +1022,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function registerPushDevice(Application $app, Request $req)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false, 'reason' => '리디스토리 서비스를 사용하실 수 없습니다. (리디스토리 서비스 종료)'));
+        }
+
         $device_id = $req->get('device_id');
         $platform = $req->get('platform');
         $device_token = $req->get('device_token');
@@ -967,6 +1056,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function validatePartDownload(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $p_id = $req->get('p_id');
         $store_id = $req->get('store_id');
 
@@ -1042,6 +1135,10 @@ class ApiController implements ControllerProviderInterface
 
     public function validateStoryPlusBookDownload(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array('success' => false));
+        }
+
         $storyplusbook_id = $req->get('storyplusbook_id');
         $store_id = $req->get('store_id');
 
@@ -1063,6 +1160,10 @@ class ApiController implements ControllerProviderInterface
      */
     public function coinProductList(Request $req, Application $app)
     {
+        if (!self::canRequestMigration()) {
+            return $app->json(array());
+        }
+
         /**
          * @var $v Api Version
          *
@@ -1148,8 +1249,11 @@ class ApiController implements ControllerProviderInterface
      */
     public function canUseRidistoryAPI()
     {
-        $today = date('Y-m-d H:i:s');
-        return (strtotime($today) < strtotime(self::END_SERVICE_DATE)) ? 1 : 0;
+        return (strtotime('now') < strtotime(self::END_SERVICE_DATE)) ? 1 : 0;
+    }
+
+    public function canRequestMigration()
+    {
+        return (strtotime('now') < strtotime(self::END_MIGRATION_DATE)) ? 1 : 0;
     }
 }
-
